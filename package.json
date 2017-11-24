@@ -1,0 +1,29 @@
+{
+  "name": "roommates",
+  "version": "1.0.0",
+  "description": "Roommates website for Software Engineering Yearly Project.",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.16.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechnionYearlyProject/Roommates.git"
+  },
+  "keywords": [
+    "roommates",
+    "appartments",
+    "find"
+  ],
+  "author": "Alon, Or, Daniel, Omri, Idan, Chanan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TechnionYearlyProject/Roommates/issues"
+  },
+  "homepage": "https://github.com/TechnionYearlyProject/Roommates#readme"
+}
