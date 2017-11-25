@@ -4,11 +4,11 @@
   "description": "Roommates website for Software Engineering Yearly Project.",
   "main": "server.js",
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "mongodb": "^2.2.33"
   },
   "devDependencies": {
-    "mocha": "^4.0.1",
-    "mongodb": "^2.2.33"
+    "mocha": "^4.0.1"
   },
   "scripts": {
     "test": "mocha tests/*.test.js --exit",
