@@ -10,7 +10,7 @@
     "mocha": "^4.0.1"
   },
   "scripts": {
-    "test": "mocha tests/*.test.js",
+    "test": "mocha tests/*.test.js --exit",
     "start": "node server.js"
   },
   "repository": {
