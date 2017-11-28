@@ -1,5 +1,5 @@
 
-https://travis-ci.com/TechnionYearlyProject/Roommates.svg?token=ibppDZZUUX68EpWppim9&branch=master
+[![Build Status](https://travis-ci.com/TechnionYearlyProject/Roommates.svg?token=ibppDZZUUX68EpWppim9&branch=master)](https://travis-ci.com/TechnionYearlyProject/Roommates?token=ibppDZZUUX68EpWppim9)
 
 ### Instructions
 The cornerstone of the project has been set !
