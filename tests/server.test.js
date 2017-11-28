@@ -6,6 +6,6 @@ it('should succeed', () => {
     }
 });
 
-// it('should fail', () => {
-//     throw new Error('it should fail');
-// });
+it('should fail', () => {
+     throw new Error('it should fail');
+ });
