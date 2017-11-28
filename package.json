@@ -13,9 +13,8 @@
     "nyc": "^11.3.0"
   },
   "scripts": {
-    "test": "mocha tests/*.test.js --exit",
-    "start": "node server.js",
-    "coverage": "nyc --reporter=html --reporter=text _mocha tests/*.test.js --exit"
+    "test": "nyc --reporter=html --reporter=text _mocha tests/*.test.js --exit",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
