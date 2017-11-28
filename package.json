@@ -10,12 +10,13 @@
   "devDependencies": {
     "mocha": "^4.0.1",
     "istanbul": "^0.4.5",
-    "nyc": "^11.3.0"
+    "nyc": "^11.3.0",
+    "codecov": "^3.0.0" 
   },
   "scripts": {
     "test": "mocha tests/*.test.js --exit",
     "start": "node server.js",
-    "coverage": "nyc --reporter=html --reporter=text _mocha tests/*.test.js --exit"
+    "coverage": "nyc _mocha tests/*.test.js --exit && nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "repository": {
     "type": "git",

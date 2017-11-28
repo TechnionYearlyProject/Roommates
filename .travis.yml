@@ -1,4 +1,7 @@
 language: node_js
 node_js:
   - "node"
-after_success: npm run coverage
+env:
+  CODECOV_TOKEN="d567746b-c194-4e25-b36a-fe492d41cef2"
+after_success: 
+  npm run coverage
