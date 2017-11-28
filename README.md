@@ -1,3 +1,6 @@
+
+https://travis-ci.com/TechnionYearlyProject/Roommates.svg?token=ibppDZZUUX68EpWppim9&branch=master
+
 ### Instructions
 The cornerstone of the project has been set !
 
