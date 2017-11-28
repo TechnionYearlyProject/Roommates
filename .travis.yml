@@ -2,5 +2,5 @@ language: node_js
 node_js:
   - "node"
 deploy:
-provider: heroku
-api_key: 5b048e8f-b7d3-465c-a422-eba8a4568664
+  provider: heroku
+  api_key: "5b048e8f-b7d3-465c-a422-eba8a4568664"
