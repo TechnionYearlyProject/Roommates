@@ -4,6 +4,7 @@
   "description": "Roommates website for Software Engineering Yearly Project.",
   "main": "server.js",
   "dependencies": {
+    "colors": "^1.1.2",
     "express": "^4.16.2",
     "mongodb": "^2.2.33"
   },
@@ -13,8 +14,8 @@
     "nyc": "^11.3.0"
   },
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text _mocha tests/*.test.js --exit",
-    "start": "node server.js"
+    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && nyc --reporter=html --reporter=text _mocha tests/**/*.test.js --exit",
+    "start": "node server/server.js"
   },
   "repository": {
     "type": "git",

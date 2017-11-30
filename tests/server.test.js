@@ -1,4 +1,4 @@
-const server = require('../server');
+const server = require('../server/server');
 
 it('should succeed', () => {
     if(1 !== 1) {

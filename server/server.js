@@ -1,8 +1,8 @@
 const express = require('express');
 
-const port = process.env.PORT || 3000;
+const serverConfig = require('./server-config');
 
-var app = express();
+const app = express();
 
 //app.use(express.static(__dirname + '/public')); //register middleware
 
@@ -10,6 +10,6 @@ app.get('/', (request, response) => {
     response.send('<h1>CI Test</h1><h1>Roommates..</h1><p>you can send me your credit card number if you want :)</p>');
 });
 
-app.listen(port, () => {
-    console.log(`Server is up on port ${port}`);
+app.listen(process.env.PORT, () => {
+    console.log(`Server is up on port ${process.env.PORT}`);
 });
