@@ -1,6 +1,6 @@
 const colors = require('colors/safe');
 
-const databaseName = 'RoomatesApp'
+const databaseName = 'RoommatesApp'
 const testDatabaseName = `${databaseName}Test`
 
 const env = process.env.NODE_ENV || 'development';
