@@ -11,7 +11,8 @@ const UserSchema = new mongoose.Schema({
     lastName: {
         type: String,
         minlength: 2,
-        trim: true
+        trim: true,
+        default: ''
     },
     birthDate: {
         type: Date,
@@ -25,16 +26,28 @@ const UserSchema = new mongoose.Schema({
         lowercase: true,
         required: true
     },
+    mobilePhone: {
+        type: String,
+        minlength: 3,
+        trim: true,
+        validate: {
+            validator: (value) => validator.isMobilePhone(value, 'he-IL') || value === '',
+            message: '{VALUE} is not a valid mobile phone number'
+        },
+        default: ''
+    },
     image: {
         type: String,
         trim: true,
         validate: {
             validator: (value) => validator.isURL(value),
             message: '{VALUE} is not a valid URL'
-        }
+        },
+        default: '' //TODO:put url to some anonymous image
     },
     about: {
         type: String,
+        default: ''
     },
     hobbies: [{
         name: {
@@ -57,19 +70,19 @@ const UserSchema = new mongoose.Schema({
     }],   
     email: {
         type: String,
-        required: true,
         minlength: 5,
         trim: true,
         unique: true,
         validate: {
             validator: (value) => validator.isEmail(value),
             message: '{VALUE} is not a valid email'
-        }
+        },
+        required: true
     },
     password: {
         type: String,
-        require: true,
-        minlength: 6
+        minlength: 6,
+        require: true
     },
     tokens: [{
         access: {
