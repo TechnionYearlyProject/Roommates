@@ -127,7 +127,7 @@ const apartmentAdScema = new mongoose.Schema({
     }]
 });
 
-const ApartmentAd = mongoose.model('User', apartmentAdScema);
+const ApartmentAd = mongoose.model('ApartmentAd', apartmentAdScema);
 
 module.exports = {
     ApartmentAd
