@@ -6,13 +6,15 @@
   "dependencies": {
     "colors": "^1.1.2",
     "express": "^4.16.2",
+    "geolib": "^2.0.24",
     "mongodb": "^2.2.33",
     "mongoose": "^4.13.5",
     "validator": "^9.1.2"
   },
   "devDependencies": {
-    "mocha": "^4.0.1",
+    "expect": "^21.2.1",
     "istanbul": "^0.4.5",
+    "mocha": "^4.0.1",
     "nyc": "^11.3.0"
   },
   "scripts": {
