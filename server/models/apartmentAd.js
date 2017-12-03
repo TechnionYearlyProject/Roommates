@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const apartmentAd = {
+const apartmentAdScema = new mongoose.Schema({
     _createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
@@ -125,4 +125,10 @@ const apartmentAd = {
             required: true
         }
     }]
-}
+});
+
+const ApartmentAd = mongoose.model('User', apartmentAdScema);
+
+module.exports = {
+    ApartmentAd
+};
