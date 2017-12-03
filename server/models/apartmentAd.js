@@ -52,15 +52,9 @@ const apartmentAdScema = new mongoose.Schema({
                 max: 1000
             }
         },
-        geolocation: {
-            latitude: {
-                type: Number,
-                default: 0.00000
-            },
-            longitude: {
-                type: Number,
-                default: 0.00000
-            }
+        geolocation: { 
+            type: [Number], 
+            default: [0, 0]
         }
     },
     numberOfRooms: {
@@ -126,6 +120,12 @@ const apartmentAdScema = new mongoose.Schema({
         }
     }]
 });
+
+
+apartmentAdScema.query.inRange = function(centerLong, centerLat, radius) {
+    return this.find({'location.geolocation': {$geoWithin: {$center: [[centerLong, centerLat], radius]},}});
+};
+
 
 const ApartmentAd = mongoose.model('ApartmentAd', apartmentAdScema);
 
