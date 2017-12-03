@@ -70,8 +70,8 @@ const coords = {
 
 var populateApartments = (done) => {
 		ApartmentAd.remove({})
-		.then(ApartmentAd.create(apartments))
-		.then(done())
+		.then(() => ApartmentAd.insertMany(apartments))
+		.then(() => done())
 		.catch(done);
 };
 
