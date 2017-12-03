@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const {EARTH_RADIUS_IN_KM} = require('../constants');
+
 const apartmentAdScema = new mongoose.Schema({
     _createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -53,7 +55,8 @@ const apartmentAdScema = new mongoose.Schema({
             }
         },
         geolocation: { 
-            type: [Number], 
+            type: [Number],
+            index: '2dsphere', 
             default: [0, 0]
         }
     },
@@ -122,10 +125,18 @@ const apartmentAdScema = new mongoose.Schema({
 });
 
 
-apartmentAdScema.query.inRange = function(centerLong, centerLat, radius) {
-    return this.find({'location.geolocation': {$geoWithin: {$center: [[centerLong, centerLat], radius]},}});
+apartmentAdScema.statics.findInRange = function(centerLong, centerLat, radius) {
+    const kmToRadians = radius / EARTH_RADIUS_IN_KM;
+    return this.find({
+    'location.geolocation': {
+        $geoWithin: {
+            $centerSphere: [
+            [centerLong, centerLat],
+            kmToRadians
+            ]
+        }
+    }});
 };
-
 
 const ApartmentAd = mongoose.model('ApartmentAd', apartmentAdScema);
 
