@@ -3,7 +3,7 @@ const {ObjectID} = require('mongodb');
 
 const {ApartmentAd} = require('../../server/models/apartmentAd');
 
-const apartment1 = {
+const apartment1 = new ApartmentAd ({
     _createdBy: new ObjectID(),
     createdAt: new Date(),
     price: 1000,
@@ -11,12 +11,13 @@ const apartment1 = {
     enteranceDate: new Date(),
     location : {
         address : {
+            state: "israel",
             city: "Haifa",
             street: "Gilboa",
             number: 35
             //apartmentNumber: 
         },
-        geolocation: [35.017253, 32.784037]
+        geolocation: [35.016402, 32.783242]
     },
     numberOfRooms: 4,
     floor: 2,
@@ -28,9 +29,9 @@ const apartment1 = {
     requiredNumberOfRoommates: 2,
     currentlyNumberOfRoomates: 1
     //comments
-};
+});
 
-const apartment2 = {
+const apartment2 = new ApartmentAd ({
     _createdBy: new ObjectID(),
     createdAt: new Date(),
     price: 1000,
@@ -38,6 +39,7 @@ const apartment2 = {
     enteranceDate: new Date(),
     location : {
         address : {
+            state: "israel",
             city: "Tel-Aviv",
             street: "Rothschild",
             number: 23
@@ -55,7 +57,7 @@ const apartment2 = {
     requiredNumberOfRoommates: 1,
     currentlyNumberOfRoomates: 1
     //comments
-};
+});
 
 
 const apartments = [
