@@ -4,12 +4,14 @@
   "description": "Roommates website for Software Engineering Yearly Project.",
   "main": "server.js",
   "dependencies": {
+    "codecov.io": "^0.1.6",
     "colors": "^1.1.2",
     "express": "^4.16.2",
     "geolib": "^2.0.24",
     "mongodb": "^2.2.33",
     "mongoose": "^4.13.5",
-    "validator": "^9.1.2"
+    "node-geocoder": "^3.21.1",
+    "validator": "^9.1.2",
   },
   "devDependencies": {
     "expect": "^21.2.1",

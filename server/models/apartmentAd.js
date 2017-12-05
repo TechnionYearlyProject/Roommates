@@ -26,6 +26,14 @@ const apartmentAdScema = new mongoose.Schema({
     },
     location : {
         address : {
+            state: {
+                type: String,
+                minlength: 2,
+                maxlength: 30,
+                lowercase: true,
+                trim: true,
+                required: true
+            },
             city: {
                 type: String,
                 minlength: 2,
@@ -136,6 +144,11 @@ apartmentAdScema.statics.findInRange = function(centerLong, centerLat, radius) {
             ]
         }
     }});
+};
+
+apartmentAdScema.methods.getAddressString = function() {
+    const address = this.location.address;
+    return address.number + " " + address.street + " " + address.city + " " + address.state;
 };
 
 const ApartmentAd = mongoose.model('ApartmentAd', apartmentAdScema);
