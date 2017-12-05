@@ -11,7 +11,7 @@
     "mongodb": "^2.2.33",
     "mongoose": "^4.13.5",
     "node-geocoder": "^3.21.1",
-    "validator": "^9.1.2",
+    "validator": "^9.1.2"
   },
   "devDependencies": {
     "expect": "^21.2.1",
