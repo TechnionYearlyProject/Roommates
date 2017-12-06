@@ -1,10 +1,12 @@
 {
     "development": {
         "PORT": 3000,
-        "MONGODB_URI": "mongodb://localhost:27017/RoommatesApp"
+        "MONGODB_URI": "mongodb://localhost:27017/RoommatesApp",
+        "JWT_SECRET": "developmentjwtsecret-hdjgmk3d0932mcm3x"
     },
     "test": {
         "PORT": 3000,
-        "MONGODB_URI": "mongodb://localhost:27017/RoommatesAppTest"
+        "MONGODB_URI": "mongodb://localhost:27017/RoommatesAppTest",
+        "JWT_SECRET": "testjwtsecret-k4fdc4k3oc4i320jfjt54"
     }
 }

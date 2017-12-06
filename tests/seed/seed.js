@@ -1,16 +1,16 @@
+const { ObjectID } = require('mongodb');
 
-const {ObjectID} = require('mongodb');
+const { Apartment } = require('../../server/models/apartment');
+const { User } = require('../../server/models/user');
 
-const {ApartmentAd} = require('../../server/models/apartmentAd');
-
-const apartment1 = new ApartmentAd ({
+const apartment1 = new Apartment({
     _createdBy: new ObjectID(),
     createdAt: new Date(),
     price: 1000,
     //_interested:
     enteranceDate: new Date(),
-    location : {
-        address : {
+    location: {
+        address: {
             state: "israel",
             city: "Haifa",
             street: "Gilboa",
@@ -31,14 +31,14 @@ const apartment1 = new ApartmentAd ({
     //comments
 });
 
-const apartment2 = new ApartmentAd ({
+const apartment2 = new Apartment({
     _createdBy: new ObjectID(),
     createdAt: new Date(),
     price: 1000,
     //_interested:
     enteranceDate: new Date(),
-    location : {
-        address : {
+    location: {
+        address: {
             state: "israel",
             city: "Tel-Aviv",
             street: "Rothschild",
@@ -61,24 +61,46 @@ const apartment2 = new ApartmentAd ({
 
 
 const apartments = [
-	apartment1,
-	apartment2
+    apartment1,
+    apartment2
+];
+
+const populateApartments = (done) => {
+    Apartment.remove({})
+        .then(() => Apartment.insertMany(apartments))
+        .then(() => done())
+        .catch(done);
+};
+
+const user1 = {
+    email: 'user1@gmail.com',
+    password: '123456',
+    firstName: 'user1_firstName',
+    lastName: 'user1_lastName',
+    birthdate: '1992-06-24',
+    gender: 'male'
+};
+
+const users = [
+    user1
 ];
 
 const coords = {
-	andalusiaSpain: [-3.222444, 37.916345],
-	technionIsrael: [35.020568, 32.776515]
+    andalusiaSpain: [-3.222444, 37.916345],
+    technionIsrael: [35.020568, 32.776515]
 };
 
-var populateApartments = (done) => {
-		ApartmentAd.remove({})
-		.then(() => ApartmentAd.insertMany(apartments))
-		.then(() => done())
-		.catch(done);
+const populateUsers = (done) => {
+    User.remove({})
+        .then(() => User.insertMany(users))
+        .then(() => done())
+        .catch(done);
 };
 
 module.exports = {
-	apartments,
-	coords,
-	populateApartments,
+    apartments,
+    populateApartments,
+    users,
+    populateUsers,
+    coords
 };

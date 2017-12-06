@@ -1,17 +1,18 @@
 const expect = require('expect');
 const geolib = require('geolib');
 
-const {apartments, coords, populateApartments} = require('./utils/utils');
-const {ApartmentAd} = require('../server/models/apartmentAd');
+const {coords, populateApartments} = require('../../seed/seed');
+const {Apartment} = require('../../../server/models/apartment');
 
+beforeEach(populateApartments);
 
-describe ('ApartmentAd Tests', () => {
+describe('Apartment Tests', () => {
 
 	beforeEach(populateApartments);
 
 	describe('#findInRange Tests', () => {
 		it('should return no apartments', (done) => {
-			ApartmentAd.findInRange(coords.andalusiaSpain[0], coords.andalusiaSpain[1], 10)
+			Apartment.findInRange(coords.andalusiaSpain[0], coords.andalusiaSpain[1], 10)
 			.then( (result) => {
 				expect(result.length).toBe(0);
 				done();
@@ -20,7 +21,7 @@ describe ('ApartmentAd Tests', () => {
 
 		it('should return apartments near technion', (done) => {
 			
-			ApartmentAd.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 1)
+			Apartment.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 1)
 			.then( (result) => {
 				expect(result.length).toBe(1);
 				result.forEach( (apartment) => {
@@ -37,7 +38,7 @@ describe ('ApartmentAd Tests', () => {
 		});
 
 		it('should return all apartments', (done) => {	
-			ApartmentAd.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 150)
+			Apartment.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 150)
 			.then( (result) => {
 				expect(result.length).toBe(2);
 				done();

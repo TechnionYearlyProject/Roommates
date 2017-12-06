@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const _ = require('lodash');
 
 const UserSchema = new mongoose.Schema({
     firstName: {
@@ -10,13 +12,12 @@ const UserSchema = new mongoose.Schema({
     },
     lastName: {
         type: String,
-        minlength: 2,
         trim: true,
         default: ''
     },
-    birthDate: {
+    birthdate: {
         type: Date,
-        min: Date('1900-01-01'),
+        min: new Date('1900-01-01'),
         max: +new Date() - 15*365*24*60*60*1000,
         required: true
     },
@@ -28,7 +29,6 @@ const UserSchema = new mongoose.Schema({
     },
     mobilePhone: {
         type: String,
-        minlength: 3,
         trim: true,
         validate: {
             validator: (value) => validator.isMobilePhone(value, 'he-IL') || value === '',
@@ -40,7 +40,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
         validate: {
-            validator: (value) => validator.isURL(value),
+            validator: (value) => validator.isURL(value) || value === '',
             message: '{VALUE} is not a valid URL'
         },
         default: '' //TODO:put url to some anonymous image
@@ -95,6 +95,33 @@ const UserSchema = new mongoose.Schema({
         }
     }]
 });
+
+UserSchema.methods.toJSON = function () {
+    const user = this;
+
+    const userObject = user.toObject();
+
+    return _.pick(userObject, ['email', 'firstName', 'lastName', 'birthdate', 'gender']);
+};
+
+UserSchema.methods.generateAuthenticationToken = function () {
+    const user = this;
+
+    const access = 'authentication';
+    const token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+
+    user.tokens.push({access, token});
+
+    return user.save()
+    .then(() => token);
+};
+
+UserSchema.methods.register = function () {
+    const user = this;
+
+    return user.save()
+    .then((user) => user.generateAuthenticationToken())
+}
 
 const User = mongoose.model('User', UserSchema);
 

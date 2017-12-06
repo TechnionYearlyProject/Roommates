@@ -1,11 +1,11 @@
 const expect = require('expect');
 const geolib = require('geolib');
 
-const geoLocationService = require('../server/tools/geoLocationService');
-const {apartments, coords} = require('./utils/utils');
+const geoLocationService = require('../../../server/services/geoLocation-service');
+const {apartments, coords} = require('../../seed/seed');
 
 
-describe ('geoLocationService Tests', () => {
+describe ('geoLocation-service Tests', () => {
 
 	describe('#locateLocation', () => {
 		it('should return correct geo-location for the given address', (done) => {
