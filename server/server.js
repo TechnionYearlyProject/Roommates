@@ -37,6 +37,18 @@ app.post('/users', async (req, res) => {
     }
 });
 
+app.post('/users/login', async (req, res) => {
+    try {
+        const body = _.pick(req.body, ['email', 'password']);
+
+        const user = await User.findByCredentials(body.email, body.password);
+        const token = await user.generateAuthToken();
+        res.status(OK).header(XAUTH, token).send(user);
+    } catch (err) {
+        res.status(BAD_REQUEST).send(err);
+    }
+});
+
 app.listen(process.env.PORT, () => {
     console.log(`Server is up on port ${process.env.PORT}.`);
 });

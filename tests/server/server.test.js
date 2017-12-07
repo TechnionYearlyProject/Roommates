@@ -293,6 +293,33 @@ describe('Server Tests', () => {
                 .end(done);
         });
 
+        it('should encrypt password', (done) => {
+            const user = {
+                email: 'alon@gmail.com',
+                password: '123456',
+                firstName: 'Alon',
+                lastName: 'Talmor',
+                birthdate: '1992-06-24',
+                gender: 'male'
+            };
+
+            request(app)
+                .post('/users')
+                .send(user)
+                .expect(OK)
+                .end((err) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    User.findOne({ email: user.email }).then((savedUser) => {
+                        expect(savedUser.password).toBeTruthy();
+                        expect(savedUser.password).not.toBe(user.password);
+                        done();
+                    }).catch((err) => done(err));
+                });
+        });
+
     });
 
 });

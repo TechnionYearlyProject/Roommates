@@ -59,19 +59,6 @@ const apartment2 = new Apartment({
     //comments
 });
 
-
-const apartments = [
-    apartment1,
-    apartment2
-];
-
-const populateApartments = (done) => {
-    Apartment.remove({})
-        .then(() => Apartment.insertMany(apartments))
-        .then(() => done())
-        .catch(done);
-};
-
 const user1 = {
     email: 'user1@gmail.com',
     password: '123456',
@@ -80,6 +67,11 @@ const user1 = {
     birthdate: '1992-06-24',
     gender: 'male'
 };
+
+const apartments = [
+    apartment1,
+    apartment2
+];
 
 const users = [
     user1
@@ -90,17 +82,29 @@ const coords = {
     technionIsrael: [35.020568, 32.776515]
 };
 
+
+const populateApartments = (done) => {
+    Apartment.remove({})
+        .then(() => Apartment.insertMany(apartments))
+        .then(() => done())
+        .catch(done);
+};
+
 const populateUsers = (done) => {
     User.remove({})
-        .then(() => User.insertMany(users))
+        .then(() => {
+            const user1 = new User(users[0]).save();
+    
+            return Promise.all([user1]);
+        })
         .then(() => done())
         .catch(done);
 };
 
 module.exports = {
     apartments,
-    populateApartments,
     users,
-    populateUsers,
-    coords
+    coords,
+    populateApartments,
+    populateUsers
 };
