@@ -15,7 +15,7 @@ if(env === 'development' || env === 'test') {
 	setEnvironemntVarsAccordingToConfig(env);
 }
 
-setEnvironemntVarsAccordingToConfig("all_env");
+setEnvironemntVarsAccordingToConfig('all_env');
 
 console.log(`Enviroment: 			${colors.green(env)}`);
 console.log(`Port:       			${colors.green(process.env.PORT)}`);

@@ -1,15 +1,15 @@
 const expect = require('expect');
 const geolib = require('geolib');
 
-const geoLocationService = require('../../../server/services/geoLocation-service');
-const {apartments, coords} = require('../../seed/seed');
+const geoLocation = require('../../../../server/services/geoLocation/geoLocation');
+const { apartments, coords } = require('../../../seed/seed');
 
 
-describe ('geoLocation-service Tests', () => {
+describe ('geoLocation Tests', () => {
 
 	describe('#locateLocation', () => {
 		it('should return correct geo-location for the given address', (done) => {
-			geoLocationService.getGeoLocation(apartments[0].getAddressString())
+			geoLocation.getGeoLocation(apartments[0].getAddressString())
 			.then((result) => {
 				expect(result.length).toBe(1);
 				expect(geolib.getDistance({
@@ -24,7 +24,7 @@ describe ('geoLocation-service Tests', () => {
 		});
 
 		it('should return correct geo-location for a given place', (done) => {
-			geoLocationService.getGeoLocation("Technion Israel")
+			geoLocation.getGeoLocation("Technion Israel")
 			.then((result) => {
 				expect(result.length).toBe(1);
 				expect(geolib.getDistance({
