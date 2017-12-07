@@ -42,7 +42,7 @@ app.post('/users/login', async (req, res) => {
         const body = _.pick(req.body, ['email', 'password']);
 
         const user = await User.findByCredentials(body.email, body.password);
-        const token = await user.generateAuthToken();
+        const token = await user.generateAuthenticationToken();
         res.status(OK).header(XAUTH, token).send(user);
     } catch (err) {
         res.status(BAD_REQUEST).send(err);

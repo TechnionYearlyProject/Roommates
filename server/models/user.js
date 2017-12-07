@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
 
+const { XAUTH } = require('../constants');
+
 const UserSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -97,14 +99,6 @@ const UserSchema = new mongoose.Schema({
     }]
 });
 
-UserSchema.methods.toJSON = function () {
-    const user = this;
-
-    const userObject = user.toObject();
-
-    return _.pick(userObject, ['email', 'firstName', 'lastName', 'birthdate', 'gender']);
-};
-
 UserSchema.pre('save', function(next) {
     let user = this;
 
@@ -120,10 +114,38 @@ UserSchema.pre('save', function(next) {
     }
 });
 
+UserSchema.statics.findByCredentials = function(email, password) {
+    const User = this;
+
+    return User.findOne({email}).then((user) => {
+        if (!user) {
+            return Promise.reject();
+        }
+
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(password, user.password, (err, res) => {
+                if(res) {
+                    resolve(user);
+                } else {
+                    reject();
+                }                
+            });
+        });
+    });
+};
+
+UserSchema.methods.toJSON = function () {
+    const user = this;
+
+    const userObject = user.toObject();
+
+    return _.pick(userObject, ['email', 'firstName', 'lastName', 'birthdate', 'gender']);
+};
+
 UserSchema.methods.generateAuthenticationToken = function () {
     const user = this;
 
-    const access = 'authentication';
+    const access = XAUTH;
     const token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
 
     user.tokens.push({access, token});

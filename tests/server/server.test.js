@@ -31,7 +31,7 @@ describe('Server Tests', () => {
                 .send(user)
                 .expect(OK)
                 .expect((res) => {
-                    
+
                     expect(res.headers[XAUTH]).toBeTruthy();
                     expect(res.body).toMatchObject(expectedRes);
                     expect(res.body.birthdate).toBe(new Date(user.birthdate).toJSON());
@@ -51,7 +51,7 @@ describe('Server Tests', () => {
                 });
         });
 
-        
+
         it('should register a new user without last name', (done) => {
             const user = {
                 email: 'alon@gmail.com',
@@ -67,7 +67,7 @@ describe('Server Tests', () => {
                 .send(user)
                 .expect(OK)
                 .expect((res) => {
-                    
+
                     expect(res.headers[XAUTH]).toBeTruthy();
                     expect(res.body).toMatchObject(expectedRes);
                     expect(res.body.birthdate).toBe(new Date(user.birthdate).toJSON());
@@ -92,7 +92,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -112,7 +112,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -131,7 +131,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -151,12 +151,12 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
         });
-        
+
         it('should not register a user without password', (done) => {
             const user = {
                 email: 'alon@gmail.com',
@@ -170,7 +170,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -190,7 +190,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -209,7 +209,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -229,7 +229,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -248,7 +248,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -268,7 +268,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -287,7 +287,7 @@ describe('Server Tests', () => {
                 .post('/users')
                 .send(users[0])
                 .expect(BAD_REQUEST)
-                .expect((res) => { 
+                .expect((res) => {
                     expect(res.headers[XAUTH]).toBeFalsy();
                 })
                 .end(done);
@@ -322,8 +322,61 @@ describe('Server Tests', () => {
 
     });
 
-});
+    describe('#POST /users/login', () => {
+        it('should login user and return auth token', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: users[0].email,
+                    password: users[0].password
+                })
+                .expect(OK)
+                .expect((res) => expect(res.headers[XAUTH]).toBeTruthy())
+                .end((err, res) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    User.findOne({ email: users[0].email }).then((user) => {
+                        expect(user.toObject().tokens[0]).toMatchObject({
+                            access: XAUTH,
+                            token: res.headers[XAUTH]
+                        });
+                        done();
+                    }).catch((err) => done(err));
+                });
+        });
 
-//it('should fail', () => {
-//     throw new Error('it should fail');
-// });
+        it('should reject login with invalid email', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: 'invalid@gmail.com',
+                    password: users[0].password
+                })
+                .expect(BAD_REQUEST)
+                .expect((res) => expect(res.headers[XAUTH]).toBeFalsy())
+                .end((err) => done(err));
+        });
+
+        it('should reject login with invalid password', (done) => {
+            request(app)
+                .post('/users/login')
+                .send({
+                    email: users[0].email,
+                    password: users[0].password + '2'
+                })
+                .expect(BAD_REQUEST)
+                .expect((res) => expect(res.headers[XAUTH]).toBeFalsy())
+                .end((err, res) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    User.findOne({ email: users[0].email }).then((user) => {
+                        expect(user.tokens.length).toBe(0);
+                        done();
+                    }).catch((err) => done(err));;
+                });
+        });
+
+    });
+});
