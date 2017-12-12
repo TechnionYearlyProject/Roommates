@@ -1,7 +1,10 @@
 const { ObjectID } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
+const { app } = require('../../server/server');
 const { Apartment } = require('../../server/models/apartment');
 const { User } = require('../../server/models/user');
+const { XAUTH } = require('../../server/constants');
 
 const apartment1 = new Apartment({
     _createdBy: new ObjectID(),
@@ -59,63 +62,33 @@ const apartment2 = new Apartment({
     //comments
 });
 
+const user1Id = new ObjectID();
+const user2Id= new ObjectID();
+
 const user1 = {
+    _id: user1Id,
     email: 'user1@gmail.com',
     password: '123456',
     firstName: 'user1_firstName',
     lastName: 'user1_lastName',
     birthdate: '1992-06-24',
-    gender: 'male',
-    hobbies: [1,2,3]
+    gender: 'male'
 };
 
 const user2 = {
+    _id: user2Id,
     email: 'user2@gmail.com',
-    password: '123456',
+    password: '654321',
     firstName: 'user2_firstName',
     lastName: 'user2_lastName',
-    birthdate: '1992-06-24',
+    birthdate: '1995-04-17',
     gender: 'male',
-    hobbies: [4,5,6]
+    tokens: [{
+        access: XAUTH,
+        token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString()
+      }]
 };
 
-const user3 = {
-    email: 'user3@gmail.com',
-    password: '123456',
-    firstName: 'user3_firstName',
-    lastName: 'user3_lastName',
-    birthdate: '1992-06-24',
-    gender: 'male',
-    hobbies: [7,8,9]
-};
-
-const user4 = {
-    email: 'user4@gmail.com',
-    password: '123456',
-    firstName: 'user4_firstName',
-    lastName: 'user4_lastName',
-    birthdate: '1992-06-24',
-    gender: 'male',
-    hobbies: [4,5,7]
-};
-
-const user5 = {
-    email: 'user5@gmail.com',
-    password: '123456',
-    firstName: 'user5_firstName',
-    lastName: 'user5_lastName',
-    birthdate: '1992-06-24',
-    gender: 'female'
-};
-
-const user6 = {
-    email: 'user6@gmail.com',
-    password: '123456',
-    firstName: 'user6_firstName',
-    lastName: 'user6_lastName',
-    birthdate: '1992-06-24',
-    gender: 'male'
-};
 
 const apartments = [
     apartment1,
@@ -124,11 +97,7 @@ const apartments = [
 
 const users = [
     user1,
-    user2,
-    user3,
-    user4,
-    user5,
-    user6
+    user2
 ];
 
 const coords = {
@@ -136,47 +105,30 @@ const coords = {
     technionIsrael: [35.020568, 32.776515]
 };
 
-var populatedUsers = [];
-
-const populateUsers = (done) => {
-    User.remove({})
-        .then(() => {
-            populatedUsers[0] =  new User(users[0]);
-            populatedUsers[1] =  new User(users[1]);
-            populatedUsers[2] =  new User(users[2]);
-            populatedUsers[3] =  new User(users[3]);
-            populatedUsers[4] =  new User(users[4]);
-            populatedUsers[5] =  new User(users[5]);
-            return Promise.all([populatedUsers[0].save(), 
-                                populatedUsers[1].save(),
-                                populatedUsers[2].save(),
-                                populatedUsers[3].save(),
-                                populatedUsers[4].save(),
-                                populatedUsers[5].save()
-            ]);
-        })
-        .then(() => done())
-        .catch(done);
-};
 
 const populateApartments = (done) => {
-    apartment1._interested.push( populatedUsers[0]._id);
-    apartment1._interested.push( populatedUsers[1]._id);
-    apartment1._interested.push( populatedUsers[2]._id);
     Apartment.remove({})
         .then(() => Apartment.insertMany(apartments))
         .then(() => done())
         .catch(done);
 };
 
-
-
+const populateUsers = (done) => {
+    User.remove({})
+        .then(() => {
+            const user1 = new User(users[0]).save();
+            const user2 = new User(users[1]).save();
+    
+            return Promise.all([user1, user2]);
+        })
+        .then(() => done())
+        .catch(done);
+};
 
 module.exports = {
     apartments,
     users,
     coords,
     populateApartments,
-    populateUsers,
-    populatedUsers
+    populateUsers
 };
