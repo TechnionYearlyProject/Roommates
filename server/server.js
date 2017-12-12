@@ -55,10 +55,15 @@ app.post('/apartments', authenticate, async (req, res) => {
     }    
 });
 
-app.post('/apartment', async (req, res) => {
-    geoLocation.getGeoLocation('Gilboa 35 Haifa israel').then((r) => {
-        res.send(r);
-    });   
+app.get('/apartments', async (req, res) => {
+    try {
+        const body = _.pick(req.query, ['id', 'createdBy', 'fromPrice', 'toPrice', 'untilEnteranceDate', 'address', 'radius', 'roommatesNumber', 'tags']);
+
+        const results = await Apartment.findByProperties(body.id, body.createdBy, body.fromPrice, body.toPrice, body.untilEnteranceDate, body.address, body.radius);
+        res.send(results);  
+    } catch (err) {
+        res.status(BAD_REQUEST).send(err);
+    } 
 });
 
 app.post('/users', async (req, res) => {
