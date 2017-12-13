@@ -3,26 +3,26 @@ const expect = require('expect');
 
 describe('Array Functions Tests', () => {
 
-    describe('#findMatchValuesInArrays', () => {
+    describe('#findMatchingValuesInArrays', () => {
     	const array1  = [1,2,3];
 		const array2  = [4,5,6];
 		const array3  = [1,2,3,4];
 
     	it('should return no match', (done) => {
-    		var res = array_functions.findMatchValuesInArrays(array1, array2);
+    		var res = array_functions.findMatchingValuesInArrays(array1, array2);
     		expect(res.length).toBe(0);
     		done();
     	});
 
     	it('should return one match', (done) => {
-    		var res = array_functions.findMatchValuesInArrays(array2, array3);
+    		var res = array_functions.findMatchingValuesInArrays(array2, array3);
             expect(res.length).toBe(1);
             expect(res[0]).toBe(4);
     		done();
     	});
 
     	it('should return three matchs', (done) => {
-    		var res = array_functions.findMatchValuesInArrays(array1, array3);
+    		var res = array_functions.findMatchingValuesInArrays(array1, array3);
             expect(res.length).toBe(3);
     		done();
     	});
