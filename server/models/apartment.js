@@ -165,13 +165,15 @@ apartmentSchema.statics.findByProperties = async function (_id, _createdBy, from
   }
 
   var enteranceDate = undefined;
-  if(validator.toDate(enterancedate)) {
+  if(enterancedate && validator.toDate(enterancedate)) {
     enteranceDate = { $lte: enterancedate };
   }
-
   var geolocation = undefined;
   if (address) {
     geolocation = await geoLocation.getGeoLocationCoords(address);
+    if(!geolocation) {
+      return new Promise((resolve, reject) => resolve([]));
+    }
     geolocation = radius ? getGeoWithinObj(geolocation, radius) : geolocation;
   }
 
@@ -183,7 +185,6 @@ apartmentSchema.statics.findByProperties = async function (_id, _createdBy, from
     'location.geolocation': geolocation,
     currentlyNumberOfRoomates
   }, _.identity);
-
   return Apartment.find(properties);
 };
 

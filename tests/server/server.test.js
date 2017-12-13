@@ -56,7 +56,7 @@ describe('Server Tests', () => {
           if (err) {
             return done(err);
           }
-         Apartment.find({ description: apartment.description }).then((a) => {      
+          Apartment.find({ description: apartment.description }).then((a) => {
             expect(a[0]._createdBy).toEqual(users[1]._id);
             expect(a[0].createdAt).toBeTruthy();
             expect(a[0].price).toBe(apartment.price);
@@ -68,7 +68,7 @@ describe('Server Tests', () => {
             expect(a[0].floor).toBe(apartment.floor);
             expect(a[0].totalFloors).toBe(apartment.totalFloors);
             expect(a[0].area).toBe(apartment.area);
-            expect(a[0].location.address).toMatchObject(apartment.address);            
+            expect(a[0].location.address).toMatchObject(apartment.address);
             expect(a[0].location.geolocation).not.toEqual([0, 0]);
             expect(a[0].comments.length).toBe(0);
             expect(a[0].tags.length).toEqual(0);
@@ -79,12 +79,12 @@ describe('Server Tests', () => {
     });
 
     it('should not create apartment to unautherized user', (done) => {
-        request(app)
-            .post('/apartments')
-            .set(XAUTH, '1234')
-            .send({})
-            .expect(UNAUTHORIZED)
-            .end(done);
+      request(app)
+        .post('/apartments')
+        .set(XAUTH, '1234')
+        .send({})
+        .expect(UNAUTHORIZED)
+        .end(done);
     });
 
     it('should not create apartment with invalid data', (done) => {
@@ -92,22 +92,198 @@ describe('Server Tests', () => {
         description: 'This is a great price. only for this test !!'
       };
       request(app)
-          .post('/apartments')
-          .set(XAUTH, users[1].tokens[0].token)
-          .send({})
-          .expect(BAD_REQUEST)
-          .end((err, res) => {
-              if (err) {
-                  return done(err);
-              }
+        .post('/apartments')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({})
+        .expect(BAD_REQUEST)
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
 
-              Apartment.find({ description: apartment.description }).then((apartments) => {
-                  expect(apartments.length).toBe(0);
-                  done();
-              }).catch((e) => done(e));
-          })
+          Apartment.find({ description: apartment.description }).then((apartments) => {
+            expect(apartments.length).toBe(0);
+            done();
+          }).catch((e) => done(e));
+        })
+    });
   });
-  });
+
+  describe('#GET /apartments', () => {
+
+    it('should find apartment by id', (done) => {
+      const id = apartments[0]._id.toHexString();
+
+      request(app)
+        .get('/apartments')
+        .query({ id })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          expect(res.body.results[0]._id).toBe(id);
+        })
+        .end(done);
+    });
+
+    it('should not find apartment with invalid id', (done) => {
+      const id = '12345';
+
+      request(app)
+        .get('/apartments')
+        .query({ id })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should find apartment by owner\'s id', (done) => {
+      const createdBy = apartments[1]._createdBy.toHexString();
+
+      request(app)
+        .get('/apartments')
+        .query({ createdBy })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          expect(res.body.results[0]._createdBy).toBe(createdBy);
+        })
+        .end(done);
+    });
+
+    it('should not find apartment with invalid owner\'s id', (done) => {
+      const createdBy = '12345';
+
+      request(app)
+        .get('/apartments')
+        .query({ createdBy })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should find apartment in price range', (done) => {
+      const fromPrice = apartments[1].price - 10;
+      const toPrice = apartments[1].price + 10;
+
+      request(app)
+        .get('/apartments')
+        .query({ fromPrice, toPrice })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          expect(res.body.results[0].price).toBe(apartments[1].price);
+        })
+        .end(done);
+    });
+
+    it('should not find apartment in invalid price range', (done) => {
+      const fromPrice = 100;
+      const toPrice = 200;
+
+      request(app)
+        .get('/apartments')
+        .query({ fromPrice, toPrice })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(0);
+        })
+        .end(done);
+    });
+
+    it('should find apartment due enterance date', (done) => {
+      const untilEnteranceDate = apartments[0].enteranceDate.toJSON();
+
+      request(app)
+        .get('/apartments')
+        .query({ untilEnteranceDate })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          expect(new Date(res.body.results[0].enteranceDate).getTime()).toBeLessThanOrEqual(apartments[0].enteranceDate.getTime());
+        })
+        .end(done);
+    });
+
+    it('should not find apartment due invalid enterance date', (done) => {
+      const untilEnteranceDate = '1-1-2017';
+
+      request(app)
+        .get('/apartments')
+        .query({ untilEnteranceDate })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(0);
+        })
+        .end(done);
+    });
+
+    it('should find apartment by address', (done) => {
+      const address = apartments[0].getAddressString();
+
+      request(app)
+        .get('/apartments')
+        .query({ address })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          //expect(res.body.results[0].location.geolocation).toEqual(apartments[0].location.geolocation);
+          expect(res.body.results[0].location.address).toEqual(apartments[0].location.address);
+        })
+        .end(done);
+    });
+
+    it('should not find apartment by invalid address', (done) => {
+      const address = 'antartica'
+
+      request(app)
+        .get('/apartments')
+        .query({ address })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(0);
+        })
+        .end(done);
+    });
+
+    it('should find apartments in radius', (done) => {
+      const address = 'Technion israel'
+      const radius = 3;
+            request(app)
+              .get('/apartments')
+              .query({ address, radius })
+              .expect(OK)
+              .expect((res) => {
+                expect(res.body.results.length).toBe(1);
+                //expect(res.body.results[0].location.geolocation).toEqual(apartments[0].location.geolocation);
+                expect(res.body.results[0].location.address).toEqual(apartments[0].location.address);
+              })
+              .end(done);
+    });
+
+    it('should find apartment by total number of roommates', (done) => {
+      const roommatesNumber = apartments[1].currentlyNumberOfRoomates;
+
+      request(app)
+        .get('/apartments')
+        .query({ roommatesNumber })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          expect(res.body.results[0].currentlyNumberOfRoomates).toBe(roommatesNumber);
+        })
+        .end(done);
+    });
+    it('should not find apartment with invalid number of roommates', (done) => {
+      const roommatesNumber = 11;
+
+      request(app)
+        .get('/apartments')
+        .query({ roommatesNumber })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(0);
+        })
+        .end(done);
+    });
+  })
 
   describe('#POST /users', () => {
 
@@ -475,4 +651,5 @@ describe('Server Tests', () => {
     });
 
   });
+
 });

@@ -6,7 +6,7 @@ const { OK, BAD_REQUEST } = require('http-status');
 const serverConfig = require('./server-config');
 const geoLoc = require('./services/geoLocation/geoLocation');
 const { mongoose } = require('./db/mongoose');
-const { Apartment } =  require('./models/apartment');
+const { Apartment } = require('./models/apartment');
 const { User } = require('./models/user');
 const { XAUTH } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
@@ -25,11 +25,11 @@ app.post('/apartments', authenticate, async (req, res) => {
     try {
         const address = _.pick(req.body, 'address').address;
         const locations = await geoLoc.getGeoLocation(`${address.street} ${address.number} ${address.city} ${address.state}`);
-        if(locations.length === 0){
+        if (locations.length === 0) {
             return res.status(BAD_REQUEST).send();
         }
         const geolocation = [locations[0].longitude, locations[0].latitude];
-        const location = {address, geolocation};
+        const location = { address, geolocation };
 
         const apartmentData = _.pick(req.body, [
             'price',
@@ -49,21 +49,21 @@ app.post('/apartments', authenticate, async (req, res) => {
         apartmentData.location = location;
         const apartment = new Apartment(apartmentData);
         await apartment.save();
-        res.send({apartment});
+        res.send({ apartment });
     } catch (err) {
         res.status(BAD_REQUEST).send(err);
-    }    
+    }
 });
 
 app.get('/apartments', async (req, res) => {
     try {
         const body = _.pick(req.query, ['id', 'createdBy', 'fromPrice', 'toPrice', 'untilEnteranceDate', 'address', 'radius', 'roommatesNumber', 'tags']);
 
-        const results = await Apartment.findByProperties(body.id, body.createdBy, body.fromPrice, body.toPrice, body.untilEnteranceDate, body.address, body.radius);
-        res.send(results);  
+        const results = await Apartment.findByProperties(body.id, body.createdBy, body.fromPrice, body.toPrice, body.untilEnteranceDate, body.address, body.radius, body.roommatesNumber);
+        res.send({ results });
     } catch (err) {
         res.status(BAD_REQUEST).send(err);
-    } 
+    }
 });
 
 app.post('/users', async (req, res) => {
@@ -79,7 +79,7 @@ app.post('/users', async (req, res) => {
 
         const user = new User(body);
         const token = await user.register();
-        res.header(XAUTH, token).send({user});
+        res.header(XAUTH, token).send({ user });
     } catch (err) {
         res.status(BAD_REQUEST).send(err);
     }
@@ -91,7 +91,7 @@ app.post('/users/login', async (req, res) => {
 
         const user = await User.findByCredentials(body.email, body.password);
         const token = await user.generateAuthenticationToken();
-        res.header(XAUTH, token).send({user});
+        res.header(XAUTH, token).send({ user });
     } catch (err) {
         res.status(BAD_REQUEST).send(err);
     }

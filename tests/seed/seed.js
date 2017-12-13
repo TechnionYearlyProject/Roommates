@@ -6,21 +6,24 @@ const { Apartment } = require('../../server/models/apartment');
 const { User } = require('../../server/models/user');
 const { XAUTH } = require('../../server/constants');
 
+const apartment1Id = new ObjectID();
+const apartment2Id = new ObjectID();
 const apartment1 = new Apartment({
+    _id: apartment1Id,
     _createdBy: new ObjectID(),
     createdAt: new Date(),
-    price: 1000,
+    price: 2000,
     //_interested:
-    enteranceDate: new Date(),
+    enteranceDate: new Date('1-1-2018'),
     location: {
         address: {
             state: "israel",
-            city: "Haifa",
-            street: "Gilboa",
+            city: "haifa",
+            street: "gilboa",
             number: 35
             //apartmentNumber: 
         },
-        geolocation: [35.016402, 32.783242]
+        geolocation: [35.0164783, 32.7831797]
     },
     numberOfRooms: 4,
     floor: 2,
@@ -35,11 +38,12 @@ const apartment1 = new Apartment({
 });
 
 const apartment2 = new Apartment({
+    _id: apartment2Id,
     _createdBy: new ObjectID(),
     createdAt: new Date(),
     price: 1000,
     //_interested:
-    enteranceDate: new Date(),
+    enteranceDate: new Date('12-29-2019'),
     location: {
         address: {
             state: "israel",
@@ -58,7 +62,7 @@ const apartment2 = new Apartment({
     //description: 
     //tags: 
     requiredNumberOfRoommates: 1,
-    currentlyNumberOfRoomates: 1
+    currentlyNumberOfRoomates: 2
     //comments
 });
 

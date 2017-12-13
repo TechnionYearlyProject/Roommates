@@ -13,7 +13,7 @@ const getGeoLocationCoords = (location) => {
 			if (res.length !== 0) {
 				return [res[0].longitude, res[0].latitude];
 			} else {
-				return [-148.000000, -76.300003];
+				return undefined;
 			}
 		});
 }
