@@ -1,6 +1,6 @@
 const _ = require('underscore');
 
-const findMatchValuesInArrays = (arrayA, arrayB) => {
+const findMatchingValuesInArrays = (arrayA, arrayB) => {
 	return _.intersection(arrayA, arrayB);
 };
 
@@ -13,7 +13,7 @@ const sortArrayASC = (array, elementValueCalculatorFunction) => {
 };
 
 module.exports = {
-    findMatchValuesInArrays,
+    findMatchingValuesInArrays,
     containsElementWithProperty,
     sortArrayASC
 };
