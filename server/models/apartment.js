@@ -4,6 +4,8 @@ const validator = require('validator');
 
 const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation')
+const { User } = require('./user');
+const array_functions = require('../helpers/array_functions');
 
 const apartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -21,6 +23,7 @@ const apartmentSchema = new mongoose.Schema({
   },
   _interested: [{
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }],
   enteranceDate: {
     type: Date,
@@ -191,6 +194,17 @@ apartmentSchema.statics.findByProperties = async function (_id, _createdBy, from
 apartmentSchema.methods.getAddressString = function () {
   const address = this.location.address;
   return address.number + " " + address.street + " " + address.city + " " + address.state;
+};
+
+apartmentSchema.methods.getInterestedUsersSortedByMatching = function (user) {
+    const currentApartment = this;
+    return User.find({
+    '_id': { $in: currentApartment._interested}
+    }).then( (users) => {
+        return array_functions.sortArrayASC(users, function(currentUser) {
+            return -1 * user.getMatchingResult(currentUser);
+        });
+    });
 };
 
 const Apartment = mongoose.model('Apartment', apartmentSchema);
