@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+
+const {isSupportedHobbieId} = require('./hobbie');
+const {getMatchScore} = require('../logic/matcher');
+
 const _ = require('lodash');
 
 const { XAUTH } = require('../constants');
@@ -53,16 +57,10 @@ const UserSchema = new mongoose.Schema({
     default: ''
   },
   hobbies: [{
-    name: {
-      type: String,
-      trim: true,
-      uppercase: true,
-      // TODO: add enum list of all hobbies, should be in a different file!
-      required: true
-    },
-    score: {
-      type: Number,
-      required: true
+    type: Number,
+          validate: {
+            validator: (value) => isSupportedHobbieId(value),
+            message: '{VALUE} is not a supported hobbie'
     }
   }],
   _publishedApartments: [{
@@ -176,7 +174,12 @@ UserSchema.methods.register = function () {
 
   return user.save()
     .then((user) => user.generateAuthenticationToken());
-}
+};
+
+UserSchema.methods.getMatchingResult = function (userToGetMatchingWith) {
+    const currentUser = this;
+    return getMatchScore(currentUser.hobbies, userToGetMatchingWith.hobbies);
+};
 
 const User = mongoose.model('User', UserSchema);
 
