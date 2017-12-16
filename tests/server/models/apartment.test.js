@@ -1,13 +1,14 @@
 const expect = require('expect');
 const geolib = require('geolib');
 
-const {coords, populateApartments} = require('../../seed/seed');
+const {coords, populateApartments, populateUsers, populatedUsers, apartments} = require('../../seed/seed');
 const {Apartment} = require('../../../server/models/apartment');
 
 beforeEach(populateApartments);
 
 describe('Apartment Tests', () => {
 
+	beforeEach(populateUsers);
 	beforeEach(populateApartments);
 
 	describe('#findInRange Tests', () => {
@@ -43,6 +44,30 @@ describe('Apartment Tests', () => {
 				expect(result.length).toBe(2);
 				done();
 			}).catch(done);
+		});
+	});
+
+	describe('#getInterestedUsersSortedssByMatching', () => {
+		it('should return users in order: 2,3,1 - different score for each user', (done) => {
+			var currUser = populatedUsers[3];
+			var curApartment = apartments[0];
+			curApartment.getInterestedUsersSortedByMatching(currUser).then( (res)=>{
+				expect(res.length).toBe(3);
+				expect(res[0].email).toBe(populatedUsers[1].email);
+				expect(res[1].email).toBe(populatedUsers[2].email);
+				expect(res[2].email).toBe(populatedUsers[0].email);
+				done();
+			});		
+		});
+
+		it('should return no users - no one is interested', (done) => {
+			var currUser = populatedUsers[3];
+			var curApartment = apartments[1];
+			curApartment.getInterestedUsersSortedByMatching(currUser).then( (res)=>{
+				expect(res.length).toBe(0);
+				done();
+			});
+			
 		});
 	});
 
