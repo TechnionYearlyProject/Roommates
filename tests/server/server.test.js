@@ -3,6 +3,7 @@ const request = require('supertest');
 const { OK, BAD_REQUEST, UNAUTHORIZED } = require('http-status');
 const { ObjectID } = require('mongodb');
 const _ = require('lodash');
+const sleep = require('system-sleep');
 
 const { app } = require('../../server/server');
 const { XAUTH } = require('../../server/constants');
@@ -14,6 +15,10 @@ describe('Server Tests', () => {
 
   beforeEach(populateUsers);
   beforeEach(populateApartments);
+  beforeEach( (done) => {
+		sleep(1.5*1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
+		done();
+  }); 
 
   describe('POST /apartments', () => {
     it('should create a new apartment', (done) => {
