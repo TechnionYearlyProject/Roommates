@@ -8,12 +8,12 @@ You should have node.js installed on your machine.
 
 After pulling filles, you need to download dependencies (such as Express) by running:
 
-"npm install"
+  `npm install`
 
 inside the project main directory.
 
-to run test hit:
+To run test hit:
 
-"npm test"
+  `npm test`
 
 site url: [https://powerful-tundra-42649.herokuapp.com/](https://powerful-tundra-42649.herokuapp.com/)
