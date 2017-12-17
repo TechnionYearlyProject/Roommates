@@ -37,7 +37,7 @@
     created: function() {
       var context = this;
 
-      $.getJSON('put json address here ;-)', function(apartments) {
+      $.getJSON('localhost:3000/apartments', function(apartments) {
         context.apartments = apartments;
       });
     },
