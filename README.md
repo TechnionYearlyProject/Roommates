@@ -12,7 +12,7 @@ After pulling filles, you need to download dependencies (such as Express) by run
 
 inside the project main directory.
 
-To run test hit:
+To run the tests type:
 
   `npm test`
 
