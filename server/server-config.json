@@ -8,13 +8,5 @@
         "PORT": 3000,
         "MONGODB_URI": "mongodb://localhost:27017/RoommatesAppTest",
         "JWT_SECRET": "testjwtsecret-k4fdc4k3oc4i320jfjt54"
-    },
-    "all_env": {
-    	"GEO_LOCATION_PROVIDER_CONFIG": {
-	  		"provider": "google",
-	  		"httpAdapter": "https", 
-	  		"apiKey": "AIzaSyACNtWeBLMofOLzeGpBl7Vg2OQOcgLHDf8", 
-	  		"formatter" : null
-		}   
-	} 
+    }
 }

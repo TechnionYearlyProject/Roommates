@@ -1,10 +1,10 @@
 const colors = require('colors/safe');
 
+const serverConfig = require('./server-config.json');
+
 const env = process.env.NODE_ENV || 'development';
 
-var serverConfig = require('./server-config.json');
-
-const setEnvironemntVarsAccordingToConfig = (enviromentName) =>{
+const setEnvironmentVariables = () => {
 	var envConfig = serverConfig[env];
 	Object.keys(envConfig).forEach((key) => {
         process.env[key] = envConfig[key];
@@ -12,10 +12,8 @@ const setEnvironemntVarsAccordingToConfig = (enviromentName) =>{
 }
 
 if(env === 'development' || env === 'test') {
-	setEnvironemntVarsAccordingToConfig(env);
+	setEnvironmentVariables();
 }
-
-setEnvironemntVarsAccordingToConfig('all_env');
 
 console.log(`Enviroment: 			${colors.green(env)}`);
 console.log(`Port:       			${colors.green(process.env.PORT)}`);

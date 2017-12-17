@@ -4,7 +4,7 @@ const _ = require('lodash');
 const { OK, BAD_REQUEST } = require('http-status');
 
 const serverConfig = require('./server-config');
-const geoLoc = require('./services/geoLocation/geoLocation');
+const geoLocation = require('./services/geoLocation/geoLocation');
 const { mongoose } = require('./db/mongoose');
 const { Apartment } = require('./models/apartment');
 const { User } = require('./models/user');
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 app.post('/apartments', authenticate, async (req, res) => {
     try {
         const address = _.pick(req.body, 'address').address;
-        const locations = await geoLoc.getGeoLocation(`${address.street} ${address.number} ${address.city} ${address.state}`);
+        const locations = await geoLocation.getGeoLocation(`${address.street} ${address.number} ${address.city} ${address.state}`);
         if (locations.length === 0) {
             return res.status(BAD_REQUEST).send();
         }
@@ -92,6 +92,17 @@ app.post('/users/login', async (req, res) => {
         const user = await User.findByCredentials(body.email, body.password);
         const token = await user.generateAuthenticationToken();
         res.header(XAUTH, token).send({ user });
+    } catch (err) {
+        res.status(BAD_REQUEST).send(err);
+    }
+});
+
+app.get('/users/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const user = await User.findById(id);
+        res.send({ user });
     } catch (err) {
         res.status(BAD_REQUEST).send(err);
     }

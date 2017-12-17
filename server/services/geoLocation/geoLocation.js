@@ -1,6 +1,7 @@
 const NodeGeocoder = require('node-geocoder');
+var geoLocationConfig = require('./geoLocation-config.json');
 
-const geoService = NodeGeocoder(process.env.GEO_LOCATION_PROVIDER_CONFIG);
+const geoService = NodeGeocoder(geoLocationConfig['GEO_LOCATION_PROVIDER']);
 
 //Get geo-location data for the given address (e.g '13 gilboa haifa israel'), returns a promise.
 const getGeoLocation = (location) => {

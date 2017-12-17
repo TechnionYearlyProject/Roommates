@@ -1,0 +1,8 @@
+{
+  "GEO_LOCATION_PROVIDER": {
+    "provider": "google",
+    "httpAdapter": "https",
+    "apiKey": "AIzaSyACNtWeBLMofOLzeGpBl7Vg2OQOcgLHDf8",
+    "formatter": null
+  }
+}
