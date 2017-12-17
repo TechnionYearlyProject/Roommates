@@ -7,3 +7,6 @@ before_script:
   - sleep 15
 after_success: 
   - npm run coverage
+env:
+  global:
+    - CODECOV_TOKEN="d567746b-c194-4e25-b36a-fe492d41cef2"
