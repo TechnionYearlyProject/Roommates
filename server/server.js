@@ -1,9 +1,11 @@
+const path = require('path')
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
 const { OK, BAD_REQUEST } = require('http-status');
 
 const serverConfig = require('./server-config');
+const { useVue } = require('./middleware/vuejs');
 const geoLocation = require('./services/geoLocation/geoLocation');
 const { mongoose } = require('./db/mongoose');
 const { Apartment } = require('./models/apartment');
@@ -11,15 +13,15 @@ const { User } = require('./models/user');
 const { XAUTH } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 
+
 const app = express();
 
 app.use(bodyParser.json());
+useVue(app);
 
-//app.use(express.static(__dirname + '/public')); //register middleware
-
-app.get('/', (req, res) => {
-    res.send('<h1>Roommates..</h1><p>you can send me your credit card number if you want :)</p>');
-});
+// app.get('/', (req, res) => {
+//     res.send('<h1>Roommates..</h1><p>you can send me your credit card number if you want :)</p>');
+// });
 
 app.post('/apartments', authenticate, async (req, res) => {
     try {
