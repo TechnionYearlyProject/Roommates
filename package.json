@@ -28,8 +28,9 @@
     "supertest": "^3.0.0"
   },
   "scripts": {
-    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && nyc --reporter=html --reporter=text _mocha --recursive tests/ --exit --reporter=text-lcov > coverage.lcov && codecov",
-    "start": "node server/server.js"
+    "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && nyc --reporter=html --reporter=text _mocha --recursive tests/ --exit",
+    "start": "node server/server.js",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
   "repository": {
     "type": "git",
