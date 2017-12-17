@@ -12,4 +12,8 @@ After pulling filles, you need to download dependencies (such as Express) by run
 
 inside the project main directory.
 
+to run test hit:
+
+"npm test"
+
 site url: [https://powerful-tundra-42649.herokuapp.com/](https://powerful-tundra-42649.herokuapp.com/)
