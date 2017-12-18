@@ -1,6 +1,6 @@
 const expect = require('expect');
 const request = require('supertest');
-const { OK, BAD_REQUEST, UNAUTHORIZED } = require('http-status');
+const { OK, BAD_REQUEST, UNAUTHORIZED, NOT_FOUND } = require('http-status');
 const { ObjectID } = require('mongodb');
 const _ = require('lodash');
 const sleep = require('system-sleep');
@@ -15,10 +15,10 @@ describe('Server Tests', () => {
 
   beforeEach(populateUsers);
   beforeEach(populateApartments);
-  beforeEach( (done) => {
-		sleep(1.5*1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
-		done();
-  }); 
+  beforeEach((done) => {
+    sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
+    done();
+  });
 
   describe('POST /apartments', () => {
     it('should create a new apartment', (done) => {
@@ -140,6 +140,19 @@ describe('Server Tests', () => {
         .end(done);
     });
 
+    it('should not find apartment with nonexistent id', (done) => {
+      const id = new ObjectID().toHexString();
+
+      request(app)
+        .get('/apartments')
+        .query({ id })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(0);
+        })
+        .end(done);
+    });
+
     it('should find apartment by owner\'s id', (done) => {
       const createdBy = apartments[1]._createdBy.toHexString();
 
@@ -161,6 +174,19 @@ describe('Server Tests', () => {
         .get('/apartments')
         .query({ createdBy })
         .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should not find apartment with nonexistent owner\'s id', (done) => {
+      const createdBy = new ObjectID().toHexString();
+
+      request(app)
+        .get('/apartments')
+        .query({ createdBy })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(0);
+        })
         .end(done);
     });
 
@@ -251,16 +277,16 @@ describe('Server Tests', () => {
     it('should find apartments in radius', (done) => {
       const address = 'Technion israel'
       const radius = 3;
-            request(app)
-              .get('/apartments')
-              .query({ address, radius })
-              .expect(OK)
-              .expect((res) => {
-                expect(res.body.results.length).toBe(1);
-                //expect(res.body.results[0].location.geolocation).toEqual(apartments[0].location.geolocation);
-                expect(res.body.results[0].location.address).toEqual(apartments[0].location.address);
-              })
-              .end(done);
+      request(app)
+        .get('/apartments')
+        .query({ address, radius })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          //expect(res.body.results[0].location.geolocation).toEqual(apartments[0].location.geolocation);
+          expect(res.body.results[0].location.address).toEqual(apartments[0].location.address);
+        })
+        .end(done);
     });
 
     it('should find apartment by total number of roommates', (done) => {
@@ -653,6 +679,40 @@ describe('Server Tests', () => {
             done();
           }).catch((err) => done(err));;
         });
+    });
+
+  });
+
+  describe('#GET /users/:id', () => {
+
+    it('should find existing user by id', (done) => {
+      const id = users[1]._id.toHexString();
+
+      request(app)
+        .get(`/users/${id}`)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.user).toEqual(User.toJSON(users[1]));
+        })
+        .end(done);
+    });
+
+    it('should not find user with invalid id', (done) => {
+      const id = '1234';
+
+      request(app)
+        .get(`/users/${id}`)
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should not find nonexistent user', (done) => {
+      const id = new ObjectID();
+
+      request(app)
+        .get(`/users/${id}`)
+        .expect(NOT_FOUND)
+        .end(done);
     });
 
   });

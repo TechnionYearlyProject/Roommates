@@ -6,6 +6,7 @@ const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation')
 const { User } = require('./user');
 const array_functions = require('../helpers/array_functions');
+const { removeFalsyProps } = require('../helpers/removeFalsyProps');
 
 const apartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -138,7 +139,7 @@ const apartmentSchema = new mongoose.Schema({
   }]
 });
 
-getGeoWithinObj = (coords, radius) => {
+const getGeoWithinObj = (coords, radius) => {
   const kmToRadians = radius / EARTH_RADIUS_IN_KM;
   return {
     $geoWithin: {
@@ -164,7 +165,7 @@ apartmentSchema.statics.findByProperties = async function (_id, _createdBy, from
 
   var price = undefined;
   if(fromPrice || toPrice) {
-    price = _.pickBy({ $gte: fromPrice, $lte: toPrice }, _.identity);
+    price = removeFalsyProps({ $gte: fromPrice, $lte: toPrice });
   }
 
   var enteranceDate = undefined;
@@ -180,14 +181,13 @@ apartmentSchema.statics.findByProperties = async function (_id, _createdBy, from
     geolocation = radius ? getGeoWithinObj(geolocation, radius) : geolocation;
   }
 
-  const properties = _.pickBy({
-    _id,
-    _createdBy,
-    price,
+  const properties = removeFalsyProps({_id, 
+    _createdBy, 
+    price, 
     enteranceDate,
-    'location.geolocation': geolocation,
+    'location.geolocation': geolocation, 
     currentlyNumberOfRoomates
-  }, _.identity);
+  });
   return Apartment.find(properties);
 };
 

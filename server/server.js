@@ -2,7 +2,7 @@ const path = require('path')
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
-const { OK, BAD_REQUEST } = require('http-status');
+const { OK, BAD_REQUEST, NOT_FOUND } = require('http-status');
 
 const serverConfig = require('./server-config');
 const { useVue } = require('./middleware/vuejs');
@@ -18,10 +18,6 @@ const app = express();
 
 app.use(bodyParser.json());
 useVue(app);
-
-// app.get('/', (req, res) => {
-//     res.send('<h1>Roommates..</h1><p>you can send me your credit card number if you want :)</p>');
-// });
 
 app.post('/apartments', authenticate, async (req, res) => {
     try {
@@ -104,6 +100,9 @@ app.get('/users/:id', async (req, res) => {
         const id = req.params.id;
 
         const user = await User.findById(id);
+        if(!user) {
+            return res.status(NOT_FOUND).send();
+        }
         res.send({ user });
     } catch (err) {
         res.status(BAD_REQUEST).send(err);

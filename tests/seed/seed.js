@@ -79,7 +79,7 @@ const user1 = {
     password: '123456',
     firstName: 'user1_firstName',
     lastName: 'user1_lastName',
-    birthdate: '1992-06-24',
+    birthdate: '1992-06-24T00:00:00.000Z',
     gender: 'male',
     hobbies: [1,2,3]
 };
@@ -90,7 +90,7 @@ const user2 = {
     password: '654321',
     firstName: 'user2_firstName',
     lastName: 'user2_lastName',
-    birthdate: '1995-04-17',
+    birthdate: '1995-04-17T00:00:00.000Z',
     gender: 'male',
     hobbies: [4,5,6],
     tokens: [{
@@ -105,7 +105,7 @@ const user3 = {
     password: '123456',
     firstName: 'user3_firstName',
     lastName: 'user3_lastName',
-    birthdate: '1992-06-24',
+    birthdate: '1992-06-24T00:00:00.000Z',
     gender: 'male',
     hobbies: [7,8,9]
 };
@@ -116,7 +116,7 @@ const user4 = {
     password: '123456',
     firstName: 'user4_firstName',
     lastName: 'user4_lastName',
-    birthdate: '1992-06-24',
+    birthdate: '1992-06-24T00:00:00.000Z',
     gender: 'male',
     hobbies: [4,5,7]
 };
@@ -127,7 +127,7 @@ const user5 = {
     password: '123456',
     firstName: 'user5_firstName',
     lastName: 'user5_lastName',
-    birthdate: '1992-06-24',
+    birthdate: '1992-06-24T00:00:00.000Z',
     gender: 'female'
 };
 
@@ -137,7 +137,7 @@ const user6 = {
     password: '123456',
     firstName: 'user6_firstName',
     lastName: 'user6_lastName',
-    birthdate: '1992-06-24',
+    birthdate: '1992-06-24T00:00:00.000Z',
     gender: 'male'
 };
 

@@ -149,12 +149,16 @@ UserSchema.statics.findByToken = function (token) {
   });
 };
 
+UserSchema.statics.toJSON = function (user) {
+  return _.pick(user, ['email', 'firstName', 'lastName', 'birthdate', 'gender'])
+}
+
 UserSchema.methods.toJSON = function () {
   const user = this;
 
   const userObject = user.toObject();
 
-  return _.pick(userObject, ['email', 'firstName', 'lastName', 'birthdate', 'gender']);
+  return User.toJSON(userObject);
 };
 
 UserSchema.methods.generateAuthenticationToken = function () {
@@ -178,6 +182,7 @@ UserSchema.methods.register = function () {
 
 UserSchema.methods.getMatchingResult = function (userToGetMatchingWith) {
     const currentUser = this;
+    
     return getMatchScore(currentUser.hobbies, userToGetMatchingWith.hobbies);
 };
 
