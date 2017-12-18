@@ -13,6 +13,9 @@ export default new Router({
   routes: [
     {
       path: '/',
+    },
+    {
+      path: '/apartment'
     }
   ]
 })

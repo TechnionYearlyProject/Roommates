@@ -11,10 +11,11 @@
        <ul>
            <li
                is="apartmentListItem"
-               v-for="(apartment, index) in apartments"
-               :item-index="index"
-               :item-address="apartment.address"
+               v-for="apartment in apartments"
+               :item-id="apartment._id"
+               :item-address="apartment.addr"
                :item-price="apartment.price"
+               :item-img="apartment.img"
            ></li>
        </ul>
    </div>
@@ -37,8 +38,8 @@
     created: function() {
       var context = this;
 
-      $.getJSON('localhost:3000/apartments', function(apartments) {
-        context.apartments = apartments;
+      $.getJSON('/apartments', function(data) {
+        context.apartments = data.results;
       });
     },
     methods: {

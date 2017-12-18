@@ -1,20 +1,22 @@
 <template>
     <li>
         Address: {{ address }}, Price: {{ price }}
+      <img :src="img" alt="Error :-(" style="width: 100px; height: auto" />
 
-        <button>details</button>
+        <router-link :to="{ path: '/apartment', query: { id: id }}">Go To Apartment</router-link>
     </li>
 </template>
 
 <script>
     export default {
         name: 'ap-list-item',
-        props: ['itemIndex', 'itemAddress', 'itemPrice'],
+        props: ['itemId', 'itemAddress', 'itemPrice', 'itemImg'],
         data: function() {
             return {
                 address: this.itemAddress,
-                index: this.itemIndex,
-                price: this.itemPrice
+                id: this.itemId,
+                price: this.itemPrice,
+                img: this.itemImg
             }
         },
         methods: {
