@@ -30,7 +30,7 @@
   "scripts": {
     "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && nyc --reporter=html --reporter=text _mocha --recursive tests/ --exit",
     "start": "npm run build && node server/server.js",
-    "coverage": "nyc --reporter=lcov > coverage.lcov && ./node_modules/.bin/codecov",
+    "coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "build": "node views/build/build.js"
   },
   "repository": {
