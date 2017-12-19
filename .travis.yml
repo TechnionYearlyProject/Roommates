@@ -7,3 +7,4 @@ before_script:
   - sleep 15
 after_success: 
   - npm run coverage
+  - npm run report-coverage
