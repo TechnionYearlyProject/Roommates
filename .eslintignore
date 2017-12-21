@@ -1,0 +1,6 @@
+views/
+temp/
+deployment/
+coverage/
+.nyc_output/
+public/

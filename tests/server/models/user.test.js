@@ -1,42 +1,68 @@
 const expect = require('expect');
 
-const { populateUsers, populatedUsers } = require('../../seed/seed');
+const { populateUsers, users } = require('../../seed/seed');
 const { User } = require('../../../server/models/user');
-const {getMatchScore} = require('../../../server/logic/matcher');
+const { getMatchScore } = require('../../../server/logic/matcher');
 
 describe('User Tests', () => {
-
-    beforeEach(populateUsers);
-    describe('#getMatchingResult', () => {
-        it('should return 0 - hobbies defined but no match', (done) => {
-        	expect(populatedUsers[0].getMatchingResult(populatedUsers[1])).toBe(getMatchScore(populatedUsers[0].hobbies, populatedUsers[1].hobbies));
-        	done();
-        });
-
-        it('should return 0 - hobbies are not defined for both users', (done) => {
-        	expect(populatedUsers[4].getMatchingResult(populatedUsers[5])).toBe(getMatchScore(populatedUsers[4].hobbies, populatedUsers[5].hobbies));
-        	done();
-        });
-
-        it('should return 0 - hobbies are not defined for one user (caller)', (done) => {
-        	expect(populatedUsers[4].getMatchingResult(populatedUsers[0])).toBe(getMatchScore(populatedUsers[0].hobbies, populatedUsers[4].hobbies));
-        	done();
-        });
-
-        it('should return 0 - hobbies are not defined for one user (callee)', (done) => {
-        	expect(populatedUsers[0].getMatchingResult(populatedUsers[4])).toBe(getMatchScore(populatedUsers[0].hobbies, populatedUsers[1].hobbies));
-        	done();
-        });
-
-        it('should return 1 - single match', (done) => {
-        	expect(populatedUsers[2].getMatchingResult(populatedUsers[3])).toBe(getMatchScore(populatedUsers[2].hobbies, populatedUsers[3].hobbies));
-        	done();
-        });
-
-        it('should return 2 - multiple match', (done) => {
-        	expect(populatedUsers[1].getMatchingResult(populatedUsers[3])).toBe(getMatchScore(populatedUsers[3].hobbies, populatedUsers[1].hobbies));
-        	done();
-        });
-
+  beforeEach(populateUsers);
+  describe('#getMatchingResult', () => {
+    it('should return 0 - hobbies defined but no match', (done) => {
+      const user = new User(users[0]);
+      expect(user.getMatchingResult(users[1])).toBe(getMatchScore(users[0].hobbies, users[1].hobbies));
+      done();
     });
+
+    it('should return 0 - hobbies are not defined for both users', (done) => {
+      const user = new User(users[4]);
+      expect(user.getMatchingResult(users[5])).toBe(getMatchScore(users[4].hobbies, users[5].hobbies));
+      done();
+    });
+
+    it('should return 0 - hobbies are not defined for one user (caller)', (done) => {
+      const user = new User(users[4]);
+      expect(user.getMatchingResult(users[0])).toBe(getMatchScore(users[0].hobbies, users[4].hobbies));
+      done();
+    });
+
+    it('should return 0 - hobbies are not defined for one user (callee)', (done) => {
+      const user = new User(users[0]);
+      expect(user.getMatchingResult(users[4])).toBe(getMatchScore(users[0].hobbies, users[1].hobbies));
+      done();
+    });
+
+    it('should return 1 - single match', (done) => {
+      const user = new User(users[2]);
+      expect(user.getMatchingResult(users[3])).toBe(getMatchScore(users[2].hobbies, users[3].hobbies));
+      done();
+    });
+
+    it('should return 2 - multiple match', (done) => {
+      const user = new User(users[1]);
+      expect(user.getMatchingResult(users[3])).toBe(getMatchScore(users[3].hobbies, users[1].hobbies));
+      done();
+    });
+  });
+  describe('#getBestMatchingUsers', () => {
+    it('should return users in order: 2,3,1 - different score for each user', (done) => {
+      const user = new User(users[3]);
+      user.getBestMatchingUsers([users[0]._id, users[1]._id, users[2]._id])
+        .then((res) => {
+          expect(res.length).toBe(3);
+          expect(res[0].email).toBe(users[1].email);
+          expect(res[1].email).toBe(users[2].email);
+          expect(res[2].email).toBe(users[0].email);
+          done();
+        }).catch(done);
+    });
+
+    it('should return no users - no one is interested', (done) => {
+      const user = new User(users[3]);
+      user.getBestMatchingUsers([])
+        .then((res) => {
+          expect(res.length).toBe(0);
+          done();
+        }).catch(done);
+    });
+  });
 });

@@ -4,7 +4,7 @@ const { User } = require('../models/user');
 const { XAUTH } = require('../constants');
 
 const authenticate = (req, res, next) => {
-  var token = req.header(XAUTH);
+  const token = req.header(XAUTH);
   User.findByToken(token)
     .then((user) => {
       if (!user) {
@@ -12,7 +12,7 @@ const authenticate = (req, res, next) => {
       }
       req.user = user;
       req.token = token;
-      next();
+      return next();
     })
     .catch((err) => res.status(UNAUTHORIZED).send(err));
 };

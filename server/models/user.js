@@ -3,8 +3,9 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
-const {isSupportedHobbieId} = require('./hobbie');
-const {getMatchScore} = require('../logic/matcher');
+const { isSupportedHobbieId } = require('./hobbie');
+const { getMatchScore } = require('../logic/matcher');
+const arrayFunctions = require('../helpers/arrayFunctions');
 
 const _ = require('lodash');
 
@@ -25,7 +26,7 @@ const UserSchema = new mongoose.Schema({
   birthdate: {
     type: Date,
     min: new Date('1900-01-01'),
-    max: +new Date() - 15 * 365 * 24 * 60 * 60 * 1000,
+    max: +new Date() - (15 * 365 * 24 * 60 * 60 * 1000),
     required: true
   },
   gender: {
@@ -58,9 +59,9 @@ const UserSchema = new mongoose.Schema({
   },
   hobbies: [{
     type: Number,
-          validate: {
-            validator: (value) => isSupportedHobbieId(value),
-            message: '{VALUE} is not a supported hobbie'
+    validate: {
+      validator: (value) => isSupportedHobbieId(value),
+      message: '{VALUE} is not a supported hobbie'
     }
   }],
   _publishedApartments: [{
@@ -83,7 +84,7 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     minlength: 6,
-    require: true
+    required: true
   },
   tokens: [{
     access: {
@@ -98,11 +99,11 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', function (next) {
-  let user = this;
+  const user = this;
 
   if (user.isModified('password')) {
     bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(user.password, salt, (err, hash) => {
+      bcrypt.hash(user.password, salt, (errr, hash) => {
         user.password = hash;
         next();
       });
@@ -133,8 +134,8 @@ UserSchema.statics.findByCredentials = function (email, password) {
 };
 
 UserSchema.statics.findByToken = function (token) {
-  var User = this;
-  var decoded;
+  const User = this;
+  let decoded;
 
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -143,15 +144,15 @@ UserSchema.statics.findByToken = function (token) {
   }
 
   return User.findOne({
-    '_id': decoded._id,
+    _id: decoded._id,
     'tokens.token': token,
     'tokens.access': XAUTH
   });
 };
 
 UserSchema.statics.toJSON = function (user) {
-  return _.pick(user, ['email', 'firstName', 'lastName', 'birthdate', 'gender'])
-}
+  return _.pick(user, ['email', 'firstName', 'lastName', 'birthdate', 'gender']);
+};
 
 UserSchema.methods.toJSON = function () {
   const user = this;
@@ -177,13 +178,23 @@ UserSchema.methods.register = function () {
   const user = this;
 
   return user.save()
-    .then((user) => user.generateAuthenticationToken());
+    .then(() => user.generateAuthenticationToken());
 };
 
 UserSchema.methods.getMatchingResult = function (userToGetMatchingWith) {
-    const currentUser = this;
-    
-    return getMatchScore(currentUser.hobbies, userToGetMatchingWith.hobbies);
+  const user = this;
+
+  return getMatchScore(user.hobbies, userToGetMatchingWith.hobbies);
+};
+
+UserSchema.methods.getBestMatchingUsers = function (userIds) {
+  const user = this;
+
+  return User.find({
+    _id: { $in: userIds }
+  }).then((users) =>
+    arrayFunctions.sortArrayASC(users, (curUser) => -1 * user.getMatchingResult(curUser))
+  );
 };
 
 const User = mongoose.model('User', UserSchema);

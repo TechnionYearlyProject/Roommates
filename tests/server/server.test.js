@@ -1,18 +1,27 @@
 const expect = require('expect');
 const request = require('supertest');
-const { OK, BAD_REQUEST, UNAUTHORIZED, NOT_FOUND } = require('http-status');
 const { ObjectID } = require('mongodb');
 const _ = require('lodash');
 const sleep = require('system-sleep');
+const {
+  OK,
+  BAD_REQUEST,
+  UNAUTHORIZED,
+  NOT_FOUND
+} = require('http-status');
 
 const { app } = require('../../server/server');
 const { XAUTH } = require('../../server/constants');
 const { User } = require('../../server/models/user');
 const { Apartment } = require('../../server/models/apartment');
-const { apartments, users, populateApartments, populateUsers } = require('../seed/seed');
+const {
+  apartments,
+  users,
+  populateApartments,
+  populateUsers
+} = require('../seed/seed');
 
 describe('Server Tests', () => {
-
   beforeEach(populateUsers);
   beforeEach(populateApartments);
   beforeEach((done) => {
@@ -57,29 +66,30 @@ describe('Server Tests', () => {
           expect(res.body.apartment.totalFloors).toBe(apartment.totalFloors);
           expect(res.body.apartment.area).toBe(apartment.area);
         })
-        .end((err, res) => {
+        .end((err) => {
           if (err) {
             return done(err);
           }
-          Apartment.find({ description: apartment.description }).then((a) => {
-            expect(a[0]._createdBy).toEqual(users[1]._id);
-            expect(a[0].createdAt).toBeTruthy();
-            expect(a[0].price).toBe(apartment.price);
-            expect(a[0].enteranceDate).toEqual(new Date(apartment.enteranceDate));
-            expect(a[0].description).toBe(apartment.description);
-            expect(a[0].requiredNumberOfRoommates).toBe(apartment.requiredNumberOfRoommates);
-            expect(a[0].currentlyNumberOfRoomates).toBe(apartment.currentlyNumberOfRoomates);
-            expect(a[0].numberOfRooms).toBe(apartment.numberOfRooms);
-            expect(a[0].floor).toBe(apartment.floor);
-            expect(a[0].totalFloors).toBe(apartment.totalFloors);
-            expect(a[0].area).toBe(apartment.area);
-            expect(a[0].location.address).toMatchObject(apartment.address);
-            expect(a[0].location.geolocation).not.toEqual([0, 0]);
-            expect(a[0].comments.length).toBe(0);
-            expect(a[0].tags.length).toEqual(0);
-            expect(a[0]._interested.length).toEqual(0);
-            done();
-          }).catch((e) => done(e));
+          return Apartment.find({ description: apartment.description })
+            .then((a) => {
+              expect(a[0]._createdBy).toEqual(users[1]._id);
+              expect(a[0].createdAt).toBeTruthy();
+              expect(a[0].price).toBe(apartment.price);
+              expect(a[0].enteranceDate).toEqual(new Date(apartment.enteranceDate));
+              expect(a[0].description).toBe(apartment.description);
+              expect(a[0].requiredNumberOfRoommates).toBe(apartment.requiredNumberOfRoommates);
+              expect(a[0].currentlyNumberOfRoomates).toBe(apartment.currentlyNumberOfRoomates);
+              expect(a[0].numberOfRooms).toBe(apartment.numberOfRooms);
+              expect(a[0].floor).toBe(apartment.floor);
+              expect(a[0].totalFloors).toBe(apartment.totalFloors);
+              expect(a[0].area).toBe(apartment.area);
+              expect(a[0].location.address).toMatchObject(apartment.address);
+              expect(a[0].location.geolocation).not.toEqual([0, 0]);
+              expect(a[0].comments.length).toBe(0);
+              expect(a[0].tags.length).toEqual(0);
+              expect(a[0]._interested.length).toEqual(0);
+              done();
+            }).catch((e) => done(e));
         });
     });
 
@@ -101,21 +111,21 @@ describe('Server Tests', () => {
         .set(XAUTH, users[1].tokens[0].token)
         .send({})
         .expect(BAD_REQUEST)
-        .end((err, res) => {
+        .end((err) => {
           if (err) {
             return done(err);
           }
 
-          Apartment.find({ description: apartment.description }).then((apartments) => {
-            expect(apartments.length).toBe(0);
-            done();
-          }).catch((e) => done(e));
-        })
+          return Apartment.find({ description: apartment.description })
+            .then((result) => {
+              expect(result.length).toBe(0);
+              done();
+            }).catch((e) => done(e));
+        });
     });
   });
 
   describe('#GET /apartments', () => {
-
     it('should find apartment by id', (done) => {
       const id = apartments[0]._id.toHexString();
 
@@ -262,7 +272,7 @@ describe('Server Tests', () => {
     });
 
     it('should not find apartment by invalid address', (done) => {
-      const address = 'antartica'
+      const address = 'antartica';
 
       request(app)
         .get('/apartments')
@@ -275,7 +285,7 @@ describe('Server Tests', () => {
     });
 
     it('should find apartments in radius', (done) => {
-      const address = 'Technion israel'
+      const address = 'Technion israel';
       const radius = 3;
       request(app)
         .get('/apartments')
@@ -314,10 +324,9 @@ describe('Server Tests', () => {
         })
         .end(done);
     });
-  })
+  });
 
   describe('#POST /users', () => {
-
     it('should register a new user', (done) => {
       const user = {
         email: 'alon@gmail.com',
@@ -334,7 +343,6 @@ describe('Server Tests', () => {
         .send(user)
         .expect(OK)
         .expect((res) => {
-
           expect(res.headers[XAUTH]).toBeTruthy();
           expect(res.body.user).toMatchObject(expectedRes);
           expect(res.body.user.birthdate).toBe(new Date(user.birthdate).toJSON());
@@ -344,13 +352,13 @@ describe('Server Tests', () => {
             return done(err);
           }
 
-          User.findOne({ email: user.email }).then((savedUser) => {
+          return User.findOne({ email: user.email }).then((savedUser) => {
             expect(savedUser).toBeTruthy();
             expect(savedUser._id).toBeTruthy();
             expect(savedUser.toObject()).toMatchObject(expectedRes);
             expect(savedUser.birthdate).toMatchObject(new Date(user.birthdate));
             done();
-          }).catch((err) => done(err));
+          }).catch((errr) => done(errr));
         });
     });
 
@@ -370,7 +378,6 @@ describe('Server Tests', () => {
         .send(user)
         .expect(OK)
         .expect((res) => {
-
           expect(res.headers[XAUTH]).toBeTruthy();
           expect(res.body.user).toMatchObject(expectedRes);
           expect(res.body.user.birthdate).toBe(new Date(user.birthdate).toJSON());
@@ -380,13 +387,13 @@ describe('Server Tests', () => {
             return done(err);
           }
 
-          User.findOne({ email: user.email }).then((savedUser) => {
+          return User.findOne({ email: user.email }).then((savedUser) => {
             expect(savedUser).toBeTruthy();
             expect(savedUser._id).toBeTruthy();
             expect(savedUser.toObject()).toMatchObject(expectedRes);
             expect(savedUser.birthdate).toMatchObject(new Date(user.birthdate));
             done();
-          }).catch((err) => done(err));
+          }).catch((errr) => done(errr));
         });
     });
 
@@ -413,7 +420,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -432,7 +439,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -452,7 +459,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -471,7 +478,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -491,7 +498,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -510,7 +517,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -530,7 +537,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -549,7 +556,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -569,7 +576,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -588,7 +595,7 @@ describe('Server Tests', () => {
 
       request(app)
         .post('/users')
-        .send(users[0])
+        .send(user)
         .expect(BAD_REQUEST)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeFalsy();
@@ -615,14 +622,14 @@ describe('Server Tests', () => {
             return done(err);
           }
 
-          User.findOne({ email: user.email }).then((savedUser) => {
-            expect(savedUser.password).toBeTruthy();
-            expect(savedUser.password).not.toBe(user.password);
-            done();
-          }).catch((err) => done(err));
+          return User.findOne({ email: user.email })
+            .then((savedUser) => {
+              expect(savedUser.password).toBeTruthy();
+              expect(savedUser.password).not.toBe(user.password);
+              done();
+            }).catch((errr) => done(errr));
         });
     });
-
   });
 
   describe('#POST /users/login', () => {
@@ -639,13 +646,14 @@ describe('Server Tests', () => {
           if (err) {
             return done(err);
           }
-          User.findOne({ email: users[0].email }).then((user) => {
-            expect(user.toObject().tokens[0]).toMatchObject({
-              access: XAUTH,
-              token: res.headers[XAUTH]
-            });
-            done();
-          }).catch((err) => done(err));
+          return User.findOne({ email: users[0].email })
+            .then((user) => {
+              expect(user.toObject().tokens[0]).toMatchObject({
+                access: XAUTH,
+                token: res.headers[XAUTH]
+              });
+              done();
+            }).catch((errr) => done(errr));
         });
     });
 
@@ -666,25 +674,23 @@ describe('Server Tests', () => {
         .post('/users/login')
         .send({
           email: users[0].email,
-          password: users[0].password + '2'
+          password: `${users[0].password}2`
         })
         .expect(BAD_REQUEST)
         .expect((res) => expect(res.headers[XAUTH]).toBeFalsy())
-        .end((err, res) => {
+        .end((err) => {
           if (err) {
             return done(err);
           }
-          User.findOne({ email: users[0].email }).then((user) => {
+          return User.findOne({ email: users[0].email }).then((user) => {
             expect(user.tokens.length).toBe(0);
             done();
-          }).catch((err) => done(err));;
+          }).catch((errr) => done(errr));
         });
     });
-
   });
 
   describe('#GET /users/:id', () => {
-
     it('should find existing user by id', (done) => {
       const id = users[1]._id.toHexString();
 
@@ -714,7 +720,5 @@ describe('Server Tests', () => {
         .expect(NOT_FOUND)
         .end(done);
     });
-
   });
-
 });

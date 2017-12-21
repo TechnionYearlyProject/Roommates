@@ -5,14 +5,14 @@ const serverConfig = require('./server-config.json');
 const env = process.env.NODE_ENV || 'development';
 
 const setEnvironmentVariables = () => {
-	var envConfig = serverConfig[env];
-	Object.keys(envConfig).forEach((key) => {
-        process.env[key] = envConfig[key];
-    });
-}
+  const envConfig = serverConfig[env];
+  Object.keys(envConfig).forEach((key) => {
+    process.env[key] = envConfig[key];
+  });
+};
 
-if(env === 'development' || env === 'test') {
-	setEnvironmentVariables();
+if (env === 'development' || env === 'test') {
+  setEnvironmentVariables();
 }
 
 console.log(`Enviroment: 			${colors.green(env)}`);

@@ -21,6 +21,9 @@
   },
   "devDependencies": {
     "codecov": "^3.0.0",
+    "eslint": "^4.13.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
     "expect": "^21.2.1",
     "istanbul": "^0.4.5",
     "mocha": "^4.0.1",
@@ -29,9 +32,9 @@
   },
   "scripts": {
     "test": "export NODE_ENV=test || SET \"NODE_ENV=test\" && nyc --reporter=html --reporter=text _mocha --recursive tests/ --exit",
-    "start": "npm run build && node server/server.js",
+    "start": "node server/server.js",
     "coverage": "nyc report --reporter=lcov > coverage.lcov",
-    "build": "node views/build/build.js"
+    "view": "node views/build/build.js && node server/server.js"
   },
   "repository": {
     "type": "git",
@@ -39,7 +42,7 @@
   },
   "keywords": [
     "roommates",
-    "appartments",
+    "apartments",
     "find"
   ],
   "author": "Alon, Or, Daniel, Omri, Idan, Chanan",

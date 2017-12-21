@@ -1,14 +1,11 @@
 const mongoose = require('mongoose');
-const _ = require('lodash');
 const validator = require('validator');
 
 const { EARTH_RADIUS_IN_KM } = require('../constants');
-const geoLocation = require('../services/geoLocation/geoLocation')
-const { User } = require('./user');
-const array_functions = require('../helpers/array_functions');
+const geoLocation = require('../services/geoLocation/geoLocation');
 const { removeFalsyProps } = require('../helpers/removeFalsyProps');
 
-const apartmentSchema = new mongoose.Schema({
+const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
@@ -151,7 +148,7 @@ const getGeoWithinObj = (coords, radius) => {
   };
 };
 
-apartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
+ApartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
   const Apartment = this;
 
   return Apartment.find({
@@ -160,54 +157,49 @@ apartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
 };
 
 //TODO: add the rest of properties
-apartmentSchema.statics.findByProperties = async function (_id, _createdBy, fromPrice, toPrice, enterancedate, address, radius, currentlyNumberOfRoomates) {
+//_id, _createdBy, fromPrice, toPrice, enteranceDate, address, radius, currentlyNumberOfRoomates
+ApartmentSchema.statics.findByProperties = async function (p) {
   const Apartment = this;
 
-  var price = undefined;
-  if(fromPrice || toPrice) {
-    price = removeFalsyProps({ $gte: fromPrice, $lte: toPrice });
+  let price;
+  if (p.fromPrice || p.toPrice) {
+    price = removeFalsyProps({ $gte: p.fromPrice, $lte: p.toPrice });
   }
 
-  var enteranceDate = undefined;
-  if(enterancedate && validator.toDate(enterancedate)) {
-    enteranceDate = { $lte: enterancedate };
+  let enteranceDate;
+  if (p.enteranceDate && validator.toDate(p.enteranceDate)) {
+    enteranceDate = { $lte: p.enteranceDate };
   }
-  var geolocation = undefined;
-  if (address) {
-    geolocation = await geoLocation.getGeoLocationCoords(address);
-    if(!geolocation) {
-      return new Promise((resolve, reject) => resolve([]));
+
+  let geolocation;
+  if (p.address) {
+    geolocation = await geoLocation.getGeoLocationCoords(p.address);
+    if (!geolocation) {
+      return new Promise((resolve) => resolve([]));
     }
-    geolocation = radius ? getGeoWithinObj(geolocation, radius) : geolocation;
+    geolocation = p.radius ? getGeoWithinObj(geolocation, p.radius) : geolocation;
   }
 
-  const properties = removeFalsyProps({_id, 
-    _createdBy, 
-    price, 
+  const properties = removeFalsyProps({
+    _id: p._id,
+    _createdBy: p._createdBy,
+    price,
     enteranceDate,
-    'location.geolocation': geolocation, 
-    currentlyNumberOfRoomates
+    'location.geolocation': geolocation,
+    currentlyNumberOfRoomates: p.currentlyNumberOfRoomates
   });
+
   return Apartment.find(properties);
 };
 
-apartmentSchema.methods.getAddressString = function () {
-  const address = this.location.address;
-  return address.number + " " + address.street + " " + address.city + " " + address.state;
+ApartmentSchema.methods.getAddressString = function () {
+  const apartment = this;
+
+  const { address } = apartment.location;
+  return `${address.number} ${address.street} ${address.city} ${address.state}`;
 };
 
-apartmentSchema.methods.getInterestedUsersSortedByMatching = function (user) {
-    const currentApartment = this;
-    return User.find({
-    '_id': { $in: currentApartment._interested}
-    }).then( (users) => {
-        return array_functions.sortArrayASC(users, function(currentUser) {
-            return -1 * user.getMatchingResult(currentUser);
-        });
-    });
-};
-
-const Apartment = mongoose.model('Apartment', apartmentSchema);
+const Apartment = mongoose.model('Apartment', ApartmentSchema);
 
 module.exports = {
   Apartment

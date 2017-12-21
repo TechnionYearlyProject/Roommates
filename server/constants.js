@@ -3,6 +3,6 @@ const XAUTH = 'x-auth';
 
 
 module.exports = {
-    XAUTH,
-    EARTH_RADIUS_IN_KM
+  XAUTH,
+  EARTH_RADIUS_IN_KM
 };
