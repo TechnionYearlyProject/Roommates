@@ -297,7 +297,7 @@ describe('Server Tests', () => {
           expect(res.body.results[0].location.address).toEqual(apartments[0].location.address);
         })
         .end(done);
-    });
+    }).timeout(5000);
 
     it('should find apartment by total number of roommates', (done) => {
       const roommatesNumber = apartments[1].currentlyNumberOfRoomates;
