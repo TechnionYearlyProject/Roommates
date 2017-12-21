@@ -103,6 +103,10 @@ app.post('/users/login', async (req, res) => {
   }
 });
 
+app.get('/users/self', authenticate, (req, res) => {
+  res.send({ self: req.user });
+});
+
 app.get('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;

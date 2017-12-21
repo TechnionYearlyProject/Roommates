@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const _ = require('lodash');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
@@ -6,9 +7,6 @@ const bcrypt = require('bcrypt');
 const { isSupportedHobbieId } = require('./hobbie');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
-
-const _ = require('lodash');
-
 const { XAUTH } = require('../constants');
 
 const UserSchema = new mongoose.Schema({
