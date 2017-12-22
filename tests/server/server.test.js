@@ -690,6 +690,34 @@ describe('Server Tests', () => {
     });
   });
 
+  describe('#GET /users/self', () => {
+    it('should return the connected user', (done) => {
+      request(app)
+        .get('/users/self')
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.self).toEqual(User.toJSON(users[1]));
+        })
+        .end(done);
+    });
+
+    it('should not return user when not connected', (done) => {
+      request(app)
+        .get('/users/self')
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should not return user when wrong x-auth', (done) => {
+      request(app)
+        .get('/users/self')
+        .set(XAUTH, 'C0FFEE')
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+  });
+
   describe('#GET /users/:id', () => {
     it('should find existing user by id', (done) => {
       const id = users[1]._id.toHexString();
