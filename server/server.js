@@ -127,6 +127,17 @@ app.get('/users/:id', async (req, res) => {
   }
 });
 
+app.patch('/users/self', authenticate, async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['firstName', 'lastName', 'birthdate', 'gender', 'mobilePhone', 'image', 'hobbies']);
+
+    const user = await User.findByIdAndUpdate(req.user._id, { $set: body }, { new: true, runValidators: true });
+    res.send({ user });
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
+
 app.listen(process.env.PORT, () => {
   console.log(`Server is up on port ${process.env.PORT}.`);
 });

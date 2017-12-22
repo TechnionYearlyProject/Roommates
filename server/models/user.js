@@ -149,7 +149,17 @@ UserSchema.statics.findByToken = function (token) {
 };
 
 UserSchema.statics.toJSON = function (user) {
-  return _.pick(user, ['email', 'firstName', 'lastName', 'birthdate', 'gender']);
+  return _.pick(user,
+    [
+      'email',
+      'firstName',
+      'lastName',
+      'birthdate',
+      'gender',
+      'mobilePhone',
+      'image',
+      'hobbies'
+    ]);
 };
 
 UserSchema.methods.toJSON = function () {
@@ -192,7 +202,7 @@ UserSchema.methods.getBestMatchingUsers = function (userIds) {
     _id: { $in: userIds }
   }).then((users) =>
     arrayFunctions.sortArrayASC(users, (curUser) => -1 * user.getMatchingResult(curUser))
-  );
+    );
 };
 
 const User = mongoose.model('User', UserSchema);
