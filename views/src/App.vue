@@ -20,6 +20,7 @@
     body {
         background-color: #f3f3f3;
         font-family: 'Segoe UI';
+        color: #505050;
     }
 
     .grid {

@@ -1,14 +1,6 @@
 <template>
     <div class="grid">
-        <div id="search">
-            <button type="button" class="btn btn-default btn-sm">
-                <i class="fa fa-filter" aria-hidden="true"></i>
-            </button>
-            <input type="text" id="search-box" placeholder="Enter Location..."/>
-            <button type="button" class="btn btn-default btn-sm">
-                <i class="fa fa-search" aria-hidden="true"></i>
-            </button>
-        </div>
+        <search-box></search-box>
 
         <div id="search-results">
             <ul>
@@ -120,45 +112,17 @@
 </template>
 
 <script>
+    import SearchBox from "./SearchBox";
+
     export default {
-        name: "main-page"
+        name: "main-page",
+        components: {
+            SearchBox
+        }
     }
 </script>
 
 <style scoped>
-    #search {
-        width: 360px;
-        margin: 0 auto;
-        font-size: 0;
-    }
-
-    #search-box {
-        width: 300px;
-        padding: 4px 5px;
-        border: solid 1px #c72d2d;
-        border-right-width: 0;
-        font-size: 16px;
-    }
-
-    #search button {
-        display: inline-block;
-        background: #c72d2d;
-        margin: -14px 0 0;
-        color: #fff;
-        border-radius: 0;
-        width: 30px;
-        height: 34px;
-        border: none;
-        outline: none;
-    }
-
-    #search button:last-child {
-        background: #fff;
-        color: #c72d2d;
-        border: solid 1px #c72d2d;
-        border-left-width: 0;
-    }
-
     #search-results {
         margin-top: 50px;
     }
@@ -169,17 +133,17 @@
     }
 
     #search-results > ul > li {
-        margin: 0;
+        margin: 10px 0 0;
         padding: 0;
         display: flex;
+        box-shadow: #c72d2d 0 0 1px;
+        border-radius: 3px;
         border: solid 1px #c72d2d;
         height: 162px;
-        color: #505050;
+        overflow: hidden;
     }
 
     #search-results > ul > li {
-        box-shadow: #c72d2d 0px 0px 1px;
-        margin-top: 10px;
     }
 
     #search-results li .apartment-details {
