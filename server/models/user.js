@@ -22,9 +22,9 @@ const UserSchema = new mongoose.Schema({
     default: ''
   },
   birthdate: {
-    type: Date,
-    min: new Date('1900-01-01'),
-    max: +new Date() - (15 * 365 * 24 * 60 * 60 * 1000),
+    type: Number,
+    min: new Date('1900-01-01').getTime(),
+    max: Date.now() - (15 * 365 * 24 * 60 * 60 * 1000),
     required: true
   },
   gender: {
@@ -158,6 +158,7 @@ UserSchema.statics.toJSON = function (user) {
       'gender',
       'mobilePhone',
       'image',
+      'about',
       'hobbies'
     ]);
 };
