@@ -13,6 +13,8 @@ const { app } = require('../../server/server');
 const { XAUTH } = require('../../server/constants');
 const { User } = require('../../server/models/user');
 const { Apartment } = require('../../server/models/apartment');
+const { getSupportedTags } = require('../../server/models/tag');
+
 const {
   apartments,
   users,
@@ -115,6 +117,53 @@ describe('Server Tests', () => {
               done();
             }).catch((e) => done(e));
         });
+    });
+
+    it('should not create apartment with invalid tag ', (done) => {
+      var apartment = JSON.parse(JSON.stringify(notPublishedApartment));
+      apartment.tags = [0];
+      request(app)
+        .post('/apartments')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send(apartment)
+        .expect(BAD_REQUEST)
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+
+          return Apartment.find({ description: apartment._id })
+            .then((result) => {
+              expect(result.length).toBe(0);
+              done();
+            }).catch((e) => done(e));
+        });
+    });
+
+    it('should create apartment with valid tag ', (done) => {
+      const validTagId = getSupportedTags()[0]._id;
+      var apartment = JSON.parse(JSON.stringify(notPublishedApartment));
+      apartment.tags = [validTagId];
+      request(app)
+        .post('/apartments')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send(apartment)
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+         try {
+            const user = await User.findById(users[1]._id);
+            const apartment = await Apartment.findOne({ description: notPublishedApartment.description });
+            expect(user._publishedApartments[0]).toEqual(apartments[0]._id);
+            expect(user._publishedApartments[1]).toEqual(apartment._id);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });         
     });
   });
 

@@ -2,7 +2,7 @@
   "name": "roommatesapp",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "omrih <omrihull@gmail.com>",
+  "author": "Idan Yadgar, Omri Huller, Or Rabinovich, Alon Talmor, Chanan Ben Tal",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "bootstrap": "^4.0.0-beta.2",
-    "bootstrap-vue": "^1.3.0",
+    "bootstrap-vue": "^1.4.0",
     "startbootstrap-shop-homepage": "^4.0.0-beta",
-    "vue": "^2.5.2",
+    "vue": "2.5.2",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
@@ -47,7 +47,7 @@
     "url-loader": "^0.5.8",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
-    "vue-template-compiler": "^2.5.2",
+    "vue-template-compiler": "2.5.2",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",

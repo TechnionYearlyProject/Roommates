@@ -4,6 +4,7 @@ const _ = require('lodash');
 const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
 const { removeFalsyProps } = require('../helpers/removeFalsyProps');
+const { isSupportedTagId } = require('./tag');
 
 const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -100,10 +101,11 @@ const ApartmentSchema = new mongoose.Schema({
     default: ''
   },
   tags: [{
-    type: String,
-    trim: true,
-    uppercase: true,
-    // TODO: add enum list of all TAGS, maybe in a different file?
+  	type: Number,
+    validate: {
+      validator: (value) => isSupportedTagId(value),
+      message: '{VALUE} is not a supported tag'
+    }
   }],
   requiredNumberOfRoommates: {
     type: Number,
