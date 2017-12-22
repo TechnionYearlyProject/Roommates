@@ -4,93 +4,41 @@
 
         <div id="search-results">
             <ul>
-                <li>
+                <li v-for="(apartment, apartmentIndex) in apartments">
                     <div class="apartment-details">
                         <h3 class="apartment-address">
-                            <router-link :to="{ name: 'apartment-page', params: { id: 1 } }">Somewhere over the Rainbow</router-link>
+                            <router-link :to="{ name: 'apartment-page', params: { id: apartment.id } }">{{ apartment.address }}</router-link>
                         </h3>
                         <p class="apartment-description">
-                            Lorem ipsum dolor sit amet, habemus vivendo mei te, et eam ullum gloriatur.
-                            Vix quidam possim temporibus ne. Ex nam albucius vituperatoribus. Ad probo
-                            putant assentior mea, eos ei ferri volutpat gloriatur. No vix appetere
-                            legendos, ne per omnes offendit.
+                            {{ apartment.description }}
                         </p>
 
                         <div class="apartment-price">
-                            1200 <span class="currency">₪</span>
+                            {{ apartment.price }} <span class="currency">₪</span>
                         </div>
                     </div>
 
                     <div class="apartment-img-container">
-                        <div id="carousel-1" class="carousel slide" data-ride="carousel">
+                        <div :id="'carousel-' + apartmentIndex" class="carousel slide" data-ride="carousel">
                             <ul class="carousel-indicators">
-                                <li data-target="#carousel-1" data-slide-to="0" class="active"></li>
-                                <li data-target="#carousel-1" data-slide-to="1"></li>
-                                <li data-target="#carousel-1" data-slide-to="2"></li>
+                                <li v-for="(_, imageIndex) in apartment.images"
+                                    :data-target="'#carousel-' + apartmentIndex"
+                                    :data-slide-to="imageIndex"
+                                    :class="{ active: imageIndex === 0 }"
+                                ></li>
                             </ul>
 
                             <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <img src="static/images/Apartment-01.jpg" alt=""/>
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="static/images/Apartment-02.jpg" alt=""/>
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="static/images/Apartment-01.jpg" alt=""/>
+                                <div v-for="(imageSrc, imageIndex) in apartment.images"
+                                     :class="{ active: imageIndex === 0, 'carousel-item': true }">
+                                    <img :src="'static/images/' + imageSrc" alt="" />
                                 </div>
                             </div>
 
-                            <a class="carousel-control-prev" href="#carousel-1" data-slide="prev">
+                            <a class="carousel-control-prev" :href="'#carousel-' + apartmentIndex" data-slide="prev">
                                 <span class="carousel-control-prev-icon"></span>
                             </a>
-                            <a class="carousel-control-next" href="#carousel-1" data-slide="next">
-                                <span class="carousel-control-next-icon"></span>
-                            </a>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="apartment-details">
-                        <h3 class="apartment-address">
-                            <router-link :to="{ name: 'apartment-page', params: { id: 2 } }">Somewhere in Nesher</router-link>
-                        </h3>
-                        <p class="apartment-description">
-                            Lorem ipsum dolor sit amet, habemus vivendo mei te, et eam ullum gloriatur.
-                            Vix quidam possim temporibus ne. Ex nam albucius vituperatoribus. Ad probo
-                            putant assentior mea, eos ei ferri volutpat gloriatur. No vix appetere
-                            legendos, ne per omnes offendit.
-                        </p>
-
-                        <div class="apartment-price">
-                            1300 <span class="currency">₪</span>
-                        </div>
-                    </div>
-
-                    <div class="apartment-img-container">
-                        <div id="carousel-2" class="carousel slide" data-ride="carousel">
-                            <ul class="carousel-indicators">
-                                <li data-target="#carousel-2" data-slide-to="0" class="active"></li>
-                                <li data-target="#carousel-2" data-slide-to="1"></li>
-                                <li data-target="#carousel-2" data-slide-to="2"></li>
-                            </ul>
-
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <img src="static/images/Apartment-02.jpg" alt=""/>
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="static/images/Apartment-01.jpg" alt=""/>
-                                </div>
-                                <div class="carousel-item">
-                                    <img src="static/images/Apartment-02.jpg" alt=""/>
-                                </div>
-                            </div>
-
-                            <a class="carousel-control-prev" href="#carousel-2" data-slide="prev">
-                                <span class="carousel-control-prev-icon"></span>
-                            </a>
-                            <a class="carousel-control-next" href="#carousel-2" data-slide="next">
+                            <a class="carousel-control-next" :href="'#carousel-' + apartmentIndex" data-slide="next">
                                 <span class="carousel-control-next-icon"></span>
                             </a>
                         </div>
@@ -118,6 +66,40 @@
         name: "main-page",
         components: {
             SearchBox
+        },
+        data() {
+            return {
+                apartments: [
+                    {
+                        id: 1,
+                        address: 'Somewhere over the Rainbow',
+                        description: 'Lorem ipsum dolor sit amet, habemus vivendo mei te, et eam ullum gloriatur.\n' +
+                        'Vix quidam possim temporibus ne. Ex nam albucius vituperatoribus. Ad probo\n' +
+                        'putant assentior mea, eos ei ferri volutpat gloriatur. No vix appetere\n' +
+                        'legendos, ne per omnes offendit.',
+                        price: 1200,
+                        images: [
+                            'Apartment-01.jpg',
+                            'Apartment-02.jpg',
+                            'Apartment-01.jpg'
+                        ]
+                    },
+                    {
+                        id: 2,
+                        address: 'Somewhere in Nesher',
+                        description: 'Lorem ipsum dolor sit amet, habemus vivendo mei te, et eam ullum gloriatur.\n' +
+                        'Vix quidam possim temporibus ne. Ex nam albucius vituperatoribus. Ad probo\n' +
+                        'putant assentior mea, eos ei ferri volutpat gloriatur. No vix appetere\n' +
+                        'legendos, ne per omnes offendit.',
+                        price: 1300,
+                        images: [
+                            'Apartment-02.jpg',
+                            'Apartment-01.jpg',
+                            'Apartment-02.jpg'
+                        ]
+                    }
+                ]
+            }
         }
     }
 </script>
