@@ -28,22 +28,23 @@ app.post('/apartments', authenticate, async (req, res) => {
       return res.status(BAD_REQUEST).send();
     }
 
-    const apartmentData = _.pick(req.body, [
-      'price',
-      'address',
-      'enteranceDate',
-      'images',
-      'description',
-      'tags',
-      'requiredNumberOfRoommates',
-      'currentlyNumberOfRoomates',
-      'numberOfRooms',
-      'floor',
-      'totalFloors',
-      'area'
-    ]);
+    const apartmentData = _.pick(req.body,
+      [
+        'price',
+        'address',
+        'enteranceDate',
+        'images',
+        'description',
+        'tags',
+        'requiredNumberOfRoommates',
+        'currentlyNumberOfRoomates',
+        'numberOfRooms',
+        'floor',
+        'totalFloors',
+        'area'
+      ]);
     apartmentData._createdBy = req.user._id;
-    apartmentData.createdAt = new Date();
+    apartmentData.createdAt = Date.now();
     apartmentData.location = location;
 
     const apartment = await new Apartment(apartmentData).save();
@@ -60,7 +61,18 @@ app.post('/apartments', authenticate, async (req, res) => {
 
 app.get('/apartments', async (req, res) => {
   try {
-    const body = _.pick(req.query, ['id', 'createdBy', 'fromPrice', 'toPrice', 'untilEnteranceDate', 'address', 'radius', 'roommatesNumber', 'tags']);
+    const body = _.pick(req.query,
+      [
+        'id',
+        'createdBy',
+        'fromPrice',
+        'toPrice',
+        'untilEnteranceDate',
+        'address',
+        'radius',
+        'roommatesNumber',
+        'tags'
+      ]);
 
     const results = await Apartment.findByProperties({
       _id: body.id,
@@ -80,14 +92,15 @@ app.get('/apartments', async (req, res) => {
 
 app.post('/users', async (req, res) => {
   try {
-    const body = _.pick(req.body, [
-      'email',
-      'password',
-      'firstName',
-      'lastName',
-      'birthdate',
-      'gender'
-    ]);
+    const body = _.pick(req.body,
+      [
+        'email',
+        'password',
+        'firstName',
+        'lastName',
+        'birthdate',
+        'gender'
+      ]);
 
     const user = new User(body);
     const token = await user.register();
@@ -129,7 +142,17 @@ app.get('/users/:id', async (req, res) => {
 
 app.patch('/users/self', authenticate, async (req, res) => {
   try {
-    const body = _.pick(req.body, ['firstName', 'lastName', 'birthdate', 'gender', 'mobilePhone', 'image', 'hobbies']);
+    const body = _.pick(req.body,
+      [
+        'firstName',
+        'lastName',
+        'birthdate',
+        'gender',
+        'mobilePhone',
+        'about',
+        'image',
+        'hobbies'
+      ]);
 
     const user = await User.findByIdAndUpdate(req.user._id, { $set: body }, { new: true, runValidators: true });
     res.send({ user });

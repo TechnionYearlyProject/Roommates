@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const _ = require('lodash');
 
 const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
@@ -11,7 +11,7 @@ const ApartmentSchema = new mongoose.Schema({
     required: true
   },
   createdAt: {
-    type: Date,
+    type: Number,
     required: true
   },
   price: {
@@ -24,8 +24,7 @@ const ApartmentSchema = new mongoose.Schema({
     ref: 'User'
   }],
   enteranceDate: {
-    type: Date,
-    min: Date('2017-01-01'),
+    type: Number,
     required: true
   },
   location: {
@@ -123,8 +122,7 @@ const ApartmentSchema = new mongoose.Schema({
       required: true
     },
     createdAt: {
-      type: Date,
-      min: Date('2017-01-01'),
+      type: Number,
       required: true
     },
     text: {
@@ -167,7 +165,7 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   }
 
   let enteranceDate;
-  if (p.enteranceDate && validator.toDate(p.enteranceDate)) {
+  if (p.enteranceDate) {
     enteranceDate = { $lte: p.enteranceDate };
   }
 

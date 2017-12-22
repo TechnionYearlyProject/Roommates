@@ -1,8 +1,7 @@
 const expect = require('expect');
 const request = require('supertest');
 const { ObjectID } = require('mongodb');
-const _ = require('lodash');
-const sleep = require('system-sleep');
+// const sleep = require('system-sleep');
 const {
   OK,
   BAD_REQUEST,
@@ -19,35 +18,32 @@ const {
   users,
   populateApartments,
   populateUsers,
-  notPublishedApartment
+  notPublishedApartment,
+  notRegisteredUser
 } = require('../seed/seed');
 
 describe('Server Tests', () => {
   beforeEach(populateUsers);
   beforeEach(populateApartments);
-  beforeEach((done) => {
-    sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
-    done();
-  });
+  // beforeEach((done) => {
+  //   sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
+  //   done();
+  // });
 
   describe('POST /apartments', () => {
     it('should create a new apartment', (done) => {
+      const apartment = Object.assign({}, notPublishedApartment);
+
       request(app)
         .post('/apartments')
         .set(XAUTH, users[1].tokens[0].token)
         .send(notPublishedApartment)
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartment.location.address).toMatchObject(notPublishedApartment.address);
-          expect(res.body.apartment.price).toBe(notPublishedApartment.price);
-          expect(res.body.apartment.enteranceDate).toBe(new Date(notPublishedApartment.enteranceDate).toJSON());
-          expect(res.body.apartment.description).toBe(notPublishedApartment.description);
-          expect(res.body.apartment.requiredNumberOfRoommates).toBe(notPublishedApartment.requiredNumberOfRoommates);
-          expect(res.body.apartment.currentlyNumberOfRoomates).toBe(notPublishedApartment.currentlyNumberOfRoomates);
-          expect(res.body.apartment.numberOfRooms).toBe(notPublishedApartment.numberOfRooms);
-          expect(res.body.apartment.floor).toBe(notPublishedApartment.floor);
-          expect(res.body.apartment.totalFloors).toBe(notPublishedApartment.totalFloors);
-          expect(res.body.apartment.area).toBe(notPublishedApartment.area);
+          apartment.location = { address: apartment.address };
+          delete apartment.address;
+
+          expect(res.body.apartment).toMatchObject(apartment);
         })
         .end((err) => {
           if (err) {
@@ -57,16 +53,7 @@ describe('Server Tests', () => {
             .then(($) => {
               expect($[0]._createdBy).toEqual(users[1]._id);
               expect($[0].createdAt).toBeTruthy();
-              expect($[0].price).toBe(notPublishedApartment.price);
-              expect($[0].enteranceDate).toEqual(new Date(notPublishedApartment.enteranceDate));
-              expect($[0].description).toBe(notPublishedApartment.description);
-              expect($[0].requiredNumberOfRoommates).toBe(notPublishedApartment.requiredNumberOfRoommates);
-              expect($[0].currentlyNumberOfRoomates).toBe(notPublishedApartment.currentlyNumberOfRoomates);
-              expect($[0].numberOfRooms).toBe(notPublishedApartment.numberOfRooms);
-              expect($[0].floor).toBe(notPublishedApartment.floor);
-              expect($[0].totalFloors).toBe(notPublishedApartment.totalFloors);
-              expect($[0].area).toBe(notPublishedApartment.area);
-              expect($[0].location.address).toMatchObject(notPublishedApartment.address);
+              expect($[0].toObject()).toMatchObject(apartment);
               expect($[0].location.geolocation).not.toEqual([0, 0]);
               expect($[0].comments.length).toBe(0);
               expect($[0].tags.length).toEqual(0);
@@ -74,7 +61,7 @@ describe('Server Tests', () => {
               done();
             }).catch((e) => done(e));
         });
-    });
+    }).timeout(5000);
 
     it('should add apartment Id to user\'s published apartments', (done) => {
       request(app)
@@ -236,21 +223,20 @@ describe('Server Tests', () => {
     });
 
     it('should find apartment due enterance date', (done) => {
-      const untilEnteranceDate = apartments[0].enteranceDate.toJSON();
-
+      const untilEnteranceDate = apartments[0].enteranceDate;
       request(app)
         .get('/apartments')
         .query({ untilEnteranceDate })
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(1);
-          expect(new Date(res.body.results[0].enteranceDate).getTime()).toBeLessThanOrEqual(apartments[0].enteranceDate.getTime());
+          expect(res.body.results[0].enteranceDate).toBeLessThanOrEqual(apartments[0].enteranceDate);
         })
         .end(done);
     });
 
     it('should not find apartment due invalid enterance date', (done) => {
-      const untilEnteranceDate = '1-1-2017';
+      const untilEnteranceDate = new Date('1-1-2017').getTime();
 
       request(app)
         .get('/apartments')
@@ -334,50 +320,33 @@ describe('Server Tests', () => {
 
   describe('#POST /users', () => {
     it('should register a new user', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
-      const expectedRes = _.pick(user, ['email', 'firstName', 'lastName', 'gender']);
-
       request(app)
         .post('/users')
-        .send(user)
+        .send(notRegisteredUser)
         .expect(OK)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeTruthy();
-          expect(res.body.user).toMatchObject(expectedRes);
-          expect(res.body.user.birthdate).toBe(new Date(user.birthdate).toJSON());
+          expect(res.body.user).toMatchObject(User.toJSON(notRegisteredUser));
         })
         .end((err) => {
           if (err) {
             return done(err);
           }
 
-          return User.findOne({ email: user.email }).then((savedUser) => {
-            expect(savedUser).toBeTruthy();
-            expect(savedUser._id).toBeTruthy();
-            expect(savedUser.toObject()).toMatchObject(expectedRes);
-            expect(savedUser.birthdate).toMatchObject(new Date(user.birthdate));
-            done();
-          }).catch((errr) => done(errr));
+          return User.findOne({ email: notRegisteredUser.email })
+            .then($ => {
+              expect($).toBeTruthy();
+              expect($._id).toBeTruthy();
+              expect($.toObject()).toMatchObject(User.toJSON(notRegisteredUser));
+              done();
+            }).catch((errr) => done(errr));
         });
     });
 
 
     it('should register a new user without last name', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
-      const expectedRes = _.pick(user, ['email', 'firstName', 'gender']);
+      const user = Object.assign({}, notRegisteredUser);
+      delete user.lastName;
 
       request(app)
         .post('/users')
@@ -385,21 +354,20 @@ describe('Server Tests', () => {
         .expect(OK)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeTruthy();
-          expect(res.body.user).toMatchObject(expectedRes);
-          expect(res.body.user.birthdate).toBe(new Date(user.birthdate).toJSON());
+          expect(res.body.user).toMatchObject(User.toJSON(user));
         })
         .end((err) => {
           if (err) {
             return done(err);
           }
 
-          return User.findOne({ email: user.email }).then((savedUser) => {
-            expect(savedUser).toBeTruthy();
-            expect(savedUser._id).toBeTruthy();
-            expect(savedUser.toObject()).toMatchObject(expectedRes);
-            expect(savedUser.birthdate).toMatchObject(new Date(user.birthdate));
-            done();
-          }).catch((errr) => done(errr));
+          return User.findOne({ email: user.email })
+            .then($ => {
+              expect($).toBeTruthy();
+              expect($._id).toBeTruthy();
+              expect($.toObject()).toMatchObject(User.toJSON(user));
+              done();
+            }).catch((errr) => done(errr));
         });
     });
 
@@ -415,14 +383,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user with invalid email', (done) => {
-      const user = {
-        email: 'alongmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      user.email = 'alongmail.com';
 
       request(app)
         .post('/users')
@@ -435,13 +397,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user without email', (done) => {
-      const user = {
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      delete user.email;
 
       request(app)
         .post('/users')
@@ -454,14 +411,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user with invalid password', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '12345', //password is too short
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      user.password = '12345'; //password is too short
 
       request(app)
         .post('/users')
@@ -474,13 +425,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user without password', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      delete user.password;
 
       request(app)
         .post('/users')
@@ -493,14 +439,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user with invalid firstName', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'A', //first name is too short
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      user.firstName = 'A'; //first name is too short
 
       request(app)
         .post('/users')
@@ -513,13 +453,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user without firstName', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      delete user.firstName;
 
       request(app)
         .post('/users')
@@ -532,14 +467,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user with invalid birthdate', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-00',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      user.birthdate = -2208988800001; //'1900-01-01' -1 mili
 
       request(app)
         .post('/users')
@@ -552,13 +481,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user without birthdate', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        gender: 'male'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      delete user.birthdate;
 
       request(app)
         .post('/users')
@@ -571,14 +495,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user with invalid gender', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-00',
-        gender: 'notReal'
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      user.gender = 'notReal';
 
       request(app)
         .post('/users')
@@ -591,13 +509,8 @@ describe('Server Tests', () => {
     });
 
     it('should not register a user without gender', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-00',
-      };
+      const user = Object.assign({}, notRegisteredUser);
+      delete user.gender;
 
       request(app)
         .post('/users')
@@ -610,28 +523,19 @@ describe('Server Tests', () => {
     });
 
     it('should encrypt password', (done) => {
-      const user = {
-        email: 'alon@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: '1992-06-24',
-        gender: 'male'
-      };
-
       request(app)
         .post('/users')
-        .send(user)
+        .send(notRegisteredUser)
         .expect(OK)
         .end((err) => {
           if (err) {
             return done(err);
           }
 
-          return User.findOne({ email: user.email })
+          return User.findOne({ email: notRegisteredUser.email })
             .then((savedUser) => {
               expect(savedUser.password).toBeTruthy();
-              expect(savedUser.password).not.toBe(user.password);
+              expect(savedUser.password).not.toBe(notRegisteredUser.password);
               done();
             }).catch((errr) => done(errr));
         });
@@ -708,14 +612,14 @@ describe('Server Tests', () => {
         .end(done);
     });
 
-    it('should not return user when not connected', (done) => {
+    it('should not return user when not authorized', (done) => {
       request(app)
         .get('/users/self')
         .expect(UNAUTHORIZED)
         .end(done);
     });
 
-    it('should not return user when wrong x-auth', (done) => {
+    it('should not return user when not authorized', (done) => {
       request(app)
         .get('/users/self')
         .set(XAUTH, 'C0FFEE')
@@ -752,6 +656,99 @@ describe('Server Tests', () => {
       request(app)
         .get(`/users/${id}`)
         .expect(NOT_FOUND)
+        .end(done);
+    });
+  });
+
+  describe('PATCH /users/self', () => {
+    it('should update user', (done) => {
+      const user = Object.assign({}, users[3]);
+      user.email = users[1].email;
+
+      request(app)
+        .patch('/users/self')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send(users[3])
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.user).toEqual(User.toJSON(user));
+        })
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+          return User.findById(users[1]._id.toHexString())
+            .then($ => {
+              expect($.toObject()).toMatchObject(User.toJSON(user));
+              done();
+            })
+            .catch(done);
+        });
+    });
+
+    it('should not update email', (done) => {
+      request(app)
+        .patch('/users/self')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ email: 'user2@yahoo.com' })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.user).toEqual(User.toJSON(users[1]));
+        })
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+          return User.findById(users[1]._id.toHexString())
+            .then((user) => {
+              expect(user.email).toBe(users[1].email);
+              done();
+            })
+            .catch(done);
+        });
+    });
+
+    it('should not update to invalid first name', (done) => {
+      request(app)
+        .patch('/users/self')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ firstName: 'A' })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should not update to invalid birthdate', (done) => {
+      request(app)
+        .patch('/users/self')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ birthdate: -2208988800001 })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should not update to invalid mobile phone number', (done) => {
+      request(app)
+        .patch('/users/self')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ mobilePhone: -123 })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should not update to invalid gender', (done) => {
+      request(app)
+        .patch('/users/self')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ gender: 'FakeGender' })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should not update user when not authorized', (done) => {
+      request(app)
+        .patch('/users/self')
+        .send(users[3])
+        .expect(UNAUTHORIZED)
         .end(done);
     });
   });

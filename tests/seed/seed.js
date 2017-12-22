@@ -16,14 +16,13 @@ const user6Id = new ObjectID();
 const apartment1Id = new ObjectID();
 const apartment2Id = new ObjectID();
 
-const notPublishedApartmentId = new ObjectID();
 const apartment1 = new Apartment({
   _id: apartment1Id,
   _createdBy: new ObjectID(),
-  createdAt: new Date(),
+  createdAt: Date.now(),
   price: 2000,
   _interested: [user1Id, user2Id, user3Id],
-  enteranceDate: new Date('1-1-2018'),
+  enteranceDate: new Date('1-1-2018').getTime(),
   location: {
     address: {
       state: 'israel',
@@ -49,10 +48,10 @@ const apartment1 = new Apartment({
 const apartment2 = new Apartment({
   _id: apartment2Id,
   _createdBy: new ObjectID(),
-  createdAt: new Date(),
+  createdAt: Date.now(),
   price: 1000,
   //_interested:
-  enteranceDate: new Date('12-29-2019'),
+  enteranceDate: new Date('12-29-2019').getTime(),
   location: {
     address: {
       state: 'israel',
@@ -76,7 +75,6 @@ const apartment2 = new Apartment({
 });
 
 const notPublishedApartment = {
-  _id: notPublishedApartmentId,
   address: {
     state: 'israel',
     city: 'haifa',
@@ -84,7 +82,7 @@ const notPublishedApartment = {
     number: 1
   },
   price: 2000,
-  enteranceDate: '1-1-2018',
+  enteranceDate: new Date('1-1-2018').getTime(),
   description: 'notPublishedApartment',
   requiredNumberOfRoommates: 1,
   currentlyNumberOfRoomates: 0,
@@ -100,8 +98,11 @@ const user1 = {
   password: '123456',
   firstName: 'user1_firstName',
   lastName: 'user1_lastName',
-  birthdate: '1992-06-24T00:00:00.000Z',
+  birthdate: new Date('1992-06-24').getTime(),
   gender: 'male',
+  mobilePhone: '',
+  image: '',
+  about: '',
   hobbies: [1, 2, 3]
 };
 
@@ -111,8 +112,11 @@ const user2 = {
   password: '654321',
   firstName: 'user2_firstName',
   lastName: 'user2_lastName',
-  birthdate: '1995-04-17T00:00:00.000Z',
+  birthdate: new Date('1995-04-17').getTime(),
   gender: 'male',
+  mobilePhone: '',
+  image: '',
+  about: '',
   hobbies: [4, 5, 6],
   _publishedApartments: [apartment1._id],
   tokens: [{
@@ -127,8 +131,11 @@ const user3 = {
   password: '123456',
   firstName: 'user3_firstName',
   lastName: 'user3_lastName',
-  birthdate: '1992-06-24T00:00:00.000Z',
+  birthdate: new Date('1992-06-24').getTime(),
   gender: 'male',
+  mobilePhone: '',
+  image: '',
+  about: '',
   hobbies: [7, 8, 9]
 };
 
@@ -138,8 +145,11 @@ const user4 = {
   password: '123456',
   firstName: 'user4_firstName',
   lastName: 'user4_lastName',
-  birthdate: '1992-06-24T00:00:00.000Z',
+  birthdate: new Date('1992-06-24').getTime(),
   gender: 'male',
+  mobilePhone: '0541234567',
+  about: 'I\'m user number 4',
+  image: '',
   hobbies: [4, 5, 7]
 };
 
@@ -149,7 +159,10 @@ const user5 = {
   password: '123456',
   firstName: 'user5_firstName',
   lastName: 'user5_lastName',
-  birthdate: '1992-06-24T00:00:00.000Z',
+  birthdate: new Date('1992-06-24').getTime(),
+  mobilePhone: '',
+  image: '',
+  about: '',
   gender: 'female'
 };
 
@@ -159,7 +172,19 @@ const user6 = {
   password: '123456',
   firstName: 'user6_firstName',
   lastName: 'user6_lastName',
-  birthdate: '1992-06-24T00:00:00.000Z',
+  birthdate: new Date('1992-06-24').getTime(),
+  mobilePhone: '',
+  image: '',
+  about: '',
+  gender: 'male'
+};
+
+const notRegisteredUser = {
+  email: 'alon@gmail.com',
+  password: '123456',
+  firstName: 'Alon',
+  lastName: 'Talmor',
+  birthdate: new Date('1992-06-24').getTime(),
   gender: 'male'
 };
 
@@ -211,5 +236,6 @@ module.exports = {
   coords,
   populateApartments,
   populateUsers,
-  notPublishedApartment
+  notPublishedApartment,
+  notRegisteredUser
 };
