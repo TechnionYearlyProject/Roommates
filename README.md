@@ -19,19 +19,19 @@ To run the tests type:
 **site url:** [https://powerful-tundra-42649.herokuapp.com/](https://powerful-tundra-42649.herokuapp.com/)
 
 ### Heroku deployment instructions:
-1. download heroku cli.
+Download heroku cli.
 
-2. login to heroku from project directory using:  
+Login to heroku from project directory using:  
 `heroku login`  
 **username:** roommatesyearlyproject@gmail.com  
 **password:** ***********  
 
-3. add remote to local reposiroty:  
+Add remote to local reposiroty:  
 `heroku git:remote -a powerful-tundra-42649`  
 
-4. commit changes:  
+Commit changes:  
 `git add .`  
 `git commit -m "..."`
 
-5. push to heroku:  
+Push to heroku:  
 `git push heroku master`  
