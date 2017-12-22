@@ -4,10 +4,12 @@
 
         <div id="search-results">
             <ul>
-                <ApartmentSearchItem v-for="(apartment, index) in apartments"
+                <apartment-search-item
+                    v-for="(apartment, index) in apartments"
                     :apartment="apartment"
                     :index="index"
-                ></ApartmentSearchItem>
+                    :key="index"
+                ></apartment-search-item>
             </ul>
         </div>
 
