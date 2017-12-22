@@ -15,6 +15,8 @@ const user6Id = new ObjectID();
 
 const apartment1Id = new ObjectID();
 const apartment2Id = new ObjectID();
+
+const notPublishedApartmentId = new ObjectID();
 const apartment1 = new Apartment({
   _id: apartment1Id,
   _createdBy: new ObjectID(),
@@ -73,6 +75,25 @@ const apartment2 = new Apartment({
   //comments
 });
 
+const notPublishedApartment = {
+  _id: notPublishedApartmentId,
+  address: {
+    state: 'israel',
+    city: 'haifa',
+    street: 'ben zvi',
+    number: 1
+  },
+  price: 2000,
+  enteranceDate: '1-1-2018',
+  description: 'notPublishedApartment',
+  requiredNumberOfRoommates: 1,
+  currentlyNumberOfRoomates: 0,
+  numberOfRooms: 2,
+  floor: 2,
+  totalFloors: 3,
+  area: 100,
+};
+
 const user1 = {
   _id: user1Id,
   email: 'user1@gmail.com',
@@ -93,6 +114,7 @@ const user2 = {
   birthdate: '1995-04-17T00:00:00.000Z',
   gender: 'male',
   hobbies: [4, 5, 6],
+  _publishedApartments: [apartment1._id],
   tokens: [{
     access: XAUTH,
     token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString()
@@ -188,5 +210,6 @@ module.exports = {
   users,
   coords,
   populateApartments,
-  populateUsers
+  populateUsers,
+  notPublishedApartment
 };

@@ -12,7 +12,6 @@ const { User } = require('./models/user');
 const { XAUTH } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 
-
 const app = express();
 
 app.use(bodyParser.json());
@@ -20,16 +19,18 @@ useVue(app);
 
 app.post('/apartments', authenticate, async (req, res) => {
   try {
-    const { address } = _.pick(req.body, 'address');
-    const locations = await geoLocation.getGeoLocation(`${address.street} ${address.number} ${address.city} ${address.state}`);
-    if (locations.length === 0) {
+    const address = _.pick(req.body.address, ['state', 'city', 'street', 'number']);
+    const location = {
+      address,
+      geolocation: await geoLocation.getGeoLocationCoords(`${address.street} ${address.number} ${address.city} ${address.state}`)
+    };
+    if (!location.geolocation) {
       return res.status(BAD_REQUEST).send();
     }
-    const geolocation = [locations[0].longitude, locations[0].latitude];
-    const location = { address, geolocation };
 
     const apartmentData = _.pick(req.body, [
       'price',
+      'address',
       'enteranceDate',
       'images',
       'description',
@@ -44,8 +45,13 @@ app.post('/apartments', authenticate, async (req, res) => {
     apartmentData._createdBy = req.user._id;
     apartmentData.createdAt = new Date();
     apartmentData.location = location;
-    const apartment = new Apartment(apartmentData);
-    await apartment.save();
+
+    const apartment = await new Apartment(apartmentData).save();
+    await User.findByIdAndUpdate(req.user._id, { $push: { _publishedApartments: apartment._id } })
+      .catch((err) => {
+        Apartment.findByIdAndRemove(apartment._id);
+        throw err;
+      });
     return res.send({ apartment });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);

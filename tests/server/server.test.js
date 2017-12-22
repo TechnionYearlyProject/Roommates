@@ -18,7 +18,8 @@ const {
   apartments,
   users,
   populateApartments,
-  populateUsers
+  populateUsers,
+  notPublishedApartment
 } = require('../seed/seed');
 
 describe('Server Tests', () => {
@@ -31,65 +32,70 @@ describe('Server Tests', () => {
 
   describe('POST /apartments', () => {
     it('should create a new apartment', (done) => {
-      const apartment = {
-        address: {
-          state: 'israel',
-          city: 'haifa',
-          street: 'ben zvi',
-          number: 1
-        },
-        price: 2000,
-        enteranceDate: '1-1-2018',
-        description: 'This is a great price. only for this test !!',
-        requiredNumberOfRoommates: 1,
-        currentlyNumberOfRoomates: 0,
-        numberOfRooms: 2,
-        floor: 2,
-        totalFloors: 3,
-        area: 100,
-      };
-
       request(app)
         .post('/apartments')
         .set(XAUTH, users[1].tokens[0].token)
-        .send(apartment)
+        .send(notPublishedApartment)
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartment.location.address).toMatchObject(apartment.address);
-          expect(res.body.apartment.price).toBe(apartment.price);
-          expect(res.body.apartment.enteranceDate).toBe(new Date(apartment.enteranceDate).toJSON());
-          expect(res.body.apartment.description).toBe(apartment.description);
-          expect(res.body.apartment.requiredNumberOfRoommates).toBe(apartment.requiredNumberOfRoommates);
-          expect(res.body.apartment.currentlyNumberOfRoomates).toBe(apartment.currentlyNumberOfRoomates);
-          expect(res.body.apartment.numberOfRooms).toBe(apartment.numberOfRooms);
-          expect(res.body.apartment.floor).toBe(apartment.floor);
-          expect(res.body.apartment.totalFloors).toBe(apartment.totalFloors);
-          expect(res.body.apartment.area).toBe(apartment.area);
+          expect(res.body.apartment.location.address).toMatchObject(notPublishedApartment.address);
+          expect(res.body.apartment.price).toBe(notPublishedApartment.price);
+          expect(res.body.apartment.enteranceDate).toBe(new Date(notPublishedApartment.enteranceDate).toJSON());
+          expect(res.body.apartment.description).toBe(notPublishedApartment.description);
+          expect(res.body.apartment.requiredNumberOfRoommates).toBe(notPublishedApartment.requiredNumberOfRoommates);
+          expect(res.body.apartment.currentlyNumberOfRoomates).toBe(notPublishedApartment.currentlyNumberOfRoomates);
+          expect(res.body.apartment.numberOfRooms).toBe(notPublishedApartment.numberOfRooms);
+          expect(res.body.apartment.floor).toBe(notPublishedApartment.floor);
+          expect(res.body.apartment.totalFloors).toBe(notPublishedApartment.totalFloors);
+          expect(res.body.apartment.area).toBe(notPublishedApartment.area);
         })
         .end((err) => {
           if (err) {
             return done(err);
           }
-          return Apartment.find({ description: apartment.description })
-            .then((a) => {
-              expect(a[0]._createdBy).toEqual(users[1]._id);
-              expect(a[0].createdAt).toBeTruthy();
-              expect(a[0].price).toBe(apartment.price);
-              expect(a[0].enteranceDate).toEqual(new Date(apartment.enteranceDate));
-              expect(a[0].description).toBe(apartment.description);
-              expect(a[0].requiredNumberOfRoommates).toBe(apartment.requiredNumberOfRoommates);
-              expect(a[0].currentlyNumberOfRoomates).toBe(apartment.currentlyNumberOfRoomates);
-              expect(a[0].numberOfRooms).toBe(apartment.numberOfRooms);
-              expect(a[0].floor).toBe(apartment.floor);
-              expect(a[0].totalFloors).toBe(apartment.totalFloors);
-              expect(a[0].area).toBe(apartment.area);
-              expect(a[0].location.address).toMatchObject(apartment.address);
-              expect(a[0].location.geolocation).not.toEqual([0, 0]);
-              expect(a[0].comments.length).toBe(0);
-              expect(a[0].tags.length).toEqual(0);
-              expect(a[0]._interested.length).toEqual(0);
+          return Apartment.find({ description: notPublishedApartment.description })
+            .then(($) => {
+              expect($[0]._createdBy).toEqual(users[1]._id);
+              expect($[0].createdAt).toBeTruthy();
+              expect($[0].price).toBe(notPublishedApartment.price);
+              expect($[0].enteranceDate).toEqual(new Date(notPublishedApartment.enteranceDate));
+              expect($[0].description).toBe(notPublishedApartment.description);
+              expect($[0].requiredNumberOfRoommates).toBe(notPublishedApartment.requiredNumberOfRoommates);
+              expect($[0].currentlyNumberOfRoomates).toBe(notPublishedApartment.currentlyNumberOfRoomates);
+              expect($[0].numberOfRooms).toBe(notPublishedApartment.numberOfRooms);
+              expect($[0].floor).toBe(notPublishedApartment.floor);
+              expect($[0].totalFloors).toBe(notPublishedApartment.totalFloors);
+              expect($[0].area).toBe(notPublishedApartment.area);
+              expect($[0].location.address).toMatchObject(notPublishedApartment.address);
+              expect($[0].location.geolocation).not.toEqual([0, 0]);
+              expect($[0].comments.length).toBe(0);
+              expect($[0].tags.length).toEqual(0);
+              expect($[0]._interested.length).toEqual(0);
               done();
             }).catch((e) => done(e));
+        });
+    });
+
+    it('should add apartment Id to user\'s published apartments', (done) => {
+      request(app)
+        .post('/apartments')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send(notPublishedApartment)
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const user = await User.findById(users[1]._id);
+            const apartment = await Apartment.findOne({ description: notPublishedApartment.description });
+            expect(user._publishedApartments[0]).toEqual(apartments[0]._id);
+            expect(user._publishedApartments[1]).toEqual(apartment._id);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
         });
     });
 
