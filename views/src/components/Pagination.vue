@@ -1,10 +1,10 @@
 <template>
     <ul class="pagination">
-        <li class="page-item" v-if="current != start"><a class="page-link" href="#">Prev</a></li>
+        <li class="page-item"><a class="page-link" href="#">First</a></li>
         <li v-for="p in (end - start + 1)"
             :class="{ 'page-item': true, active: current == p - 1 + start }"
         ><a class="page-link" href="#">{{ p - 1 + start }}</a></li>
-        <li class="page-item" v-if="current != end"><a class="page-link" href="#">Next</a></li>
+        <li class="page-item"><a class="page-link" href="#">Last</a></li>
     </ul>
 </template>
 
@@ -21,7 +21,7 @@
     }
 
     a {
-        color: #c72d2d;
+        color: #c72d2d !important;
     }
 
     .active a {
