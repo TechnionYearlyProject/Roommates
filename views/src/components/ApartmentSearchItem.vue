@@ -58,6 +58,7 @@
         border: solid 1px #c72d2d;
         height: 162px;
         overflow: hidden;
+        background-color: #fff;
     }
 
     .apartment-details {
