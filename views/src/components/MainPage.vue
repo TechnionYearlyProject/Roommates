@@ -14,13 +14,11 @@
         </div>
 
         <div id="search-results-pagination">
-            <ul class="pagination">
-                <li class="page-item"><a class="page-link" href="#">Prev</a></li>
-                <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item"><a class="page-link" href="#">Next</a></li>
-            </ul>
+            <pagination
+                :start="1"
+                :end="5"
+                :current="2"
+            ></pagination>
         </div>
     </div>
 </template>
@@ -28,12 +26,14 @@
 <script>
     import SearchBox from './SearchBox';
     import ApartmentSearchItem from './ApartmentSearchItem'
+    import Pagination from "./Pagination";
 
     export default {
         name: "main-page",
         components: {
             SearchBox,
-            ApartmentSearchItem
+            ApartmentSearchItem,
+            Pagination
         },
         data() {
             return {
@@ -77,7 +77,7 @@
         margin-top: 50px;
     }
 
-    #search-results > ul {
+    #search-results ul {
         margin: 0;
         padding: 0;
     }
@@ -85,19 +85,5 @@
     #search-results-pagination {
         margin-top: 20px;
         text-align: center;
-    }
-
-    #search-results-pagination .pagination {
-        display: inline-flex;
-    }
-
-    #search-results-pagination a {
-        color: #c72d2d;
-    }
-
-    #search-results-pagination .active a {
-        background-color: #c72d2d;
-        color: #fff;
-        border: 1px solid #ddd;
     }
 </style>

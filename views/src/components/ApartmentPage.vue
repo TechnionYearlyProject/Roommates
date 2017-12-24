@@ -13,7 +13,7 @@
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item">address:
-                                    {{apartment.address.city}},{{apartment.address.street}}, no.
+                                    {{apartment.address.city}}, {{apartment.address.street}},<br> no.
                                     {{apartment.address.houseNumber}}, entrance {{apartment.address.entranceNumber}}
                                 </li>
                             </ul>
