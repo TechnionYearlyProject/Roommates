@@ -1,6 +1,7 @@
 <template>
     <div id="app">
         <header-component></header-component>
+
         <router-view></router-view>
     </div>
 </template>
@@ -17,10 +18,14 @@
 </script>
 
 <style>
+    html {
+        height: 100%;
+    }
+
     body {
-        background-color: #f3f3f3;
         font-family: 'Segoe UI';
         color: #505050;
+        background-color: #fafafa;
     }
 
     .grid {

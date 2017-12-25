@@ -6,8 +6,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import MainPage from '../components/MainPage'
-import RegistrationPage from '../components/RegistrationPage'
-import LoginPage from '../components/LoginPage'
+import SignInPage from '../components/SignInPage'
 import ApartmentPage from '../components/ApartmentPage'
 
 Vue.use(Router)
@@ -21,14 +20,9 @@ export default new Router({
             component: MainPage
         },
         {
-            path: '/register',
-            name: 'registration-page',
-            component: RegistrationPage
-        },
-        {
-            path: '/login',
-            name: 'login-page',
-            component: LoginPage
+            path: '/sign-in',
+            name: 'sign-in-page',
+            component: SignInPage
         },
         {
             path: '/apartment/:id',

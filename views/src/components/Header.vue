@@ -2,8 +2,7 @@
     <header>
         <div id="top-bar">
                     <span id="top-bar-links">
-                        <router-link :to="{ name: 'login-page' }">Login</router-link> |
-                        <router-link :to="{ name: 'registration-page' }">Register</router-link>
+                        <router-link :to="{ name: 'sign-in-page' }">Sign in / Sign up</router-link>
                     </span>
 
             <div id="logo">
@@ -22,11 +21,12 @@
 <style scoped>
     header {
         font-size: 16px;
+        background-color: #f3f3f3;
+        padding-bottom: 5px;
     }
 
     #top-bar {
         padding: 0 15px;
-        margin-bottom: 35px;
         min-width: 800px;
     }
 
@@ -35,7 +35,7 @@
         width: 0;
         white-space: nowrap;
         z-index: 2;
-        margin-top: 22px;
+        margin-top: 25px;
     }
 
     #top-bar-links a {

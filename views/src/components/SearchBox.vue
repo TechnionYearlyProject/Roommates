@@ -19,7 +19,7 @@
 <style scoped>
     #search-box {
         width: 360px;
-        margin: 0 auto;
+        margin: 20px auto 0;
         font-size: 0;
     }
 
