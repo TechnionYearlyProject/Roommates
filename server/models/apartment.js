@@ -208,7 +208,7 @@ ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
     text
   });
 
-  return  apartment.update();
+  return apartment.save();
 };
 
 const Apartment = mongoose.model('Apartment', ApartmentSchema);

@@ -90,6 +90,27 @@ app.get('/apartments', async (req, res) => {
   }
 });
 
+app.put('/apartments/:id/comment', authenticate, async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['text']);
+    const { id } = req.params;
+    
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
+    }
+
+    await apartment.addComment(req.user._id, body.text, Date.now());
+
+    const comments = apartment.comments;
+
+    res.send({ comments });
+
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
+
 app.post('/users', async (req, res) => {
   try {
     const body = _.pick(req.body,
