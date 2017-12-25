@@ -130,7 +130,7 @@
     transition: all 0.2s ease 0s;
     box-shadow: none;
     background-color: #FFF;
-    height: 440px;
+    height: 450px;
   }
 
   div {
