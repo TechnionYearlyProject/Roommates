@@ -14,37 +14,24 @@
         </div>
 
         <div class="apartment-img-container">
-            <div :id="'carousel-' + index" class="carousel slide" data-ride="carousel">
-                <ul class="carousel-indicators">
-                    <li v-for="(_, imageIndex) in apartment.images"
-                        :data-target="'#carousel-' + index"
-                        :data-slide-to="imageIndex"
-                        :class="{ active: imageIndex === 0 }"
-                    ></li>
-                </ul>
-
-                <div class="carousel-inner">
-                    <div v-for="(imageSrc, imageIndex) in apartment.images"
-                         :class="{ active: imageIndex === 0, 'carousel-item': true }">
-                        <img :src="'static/images/' + imageSrc" alt="" />
-                    </div>
-                </div>
-
-                <a class="carousel-control-prev" :href="'#carousel-' + index" data-slide="prev">
-                    <span class="carousel-control-prev-icon"></span>
-                </a>
-                <a class="carousel-control-next" :href="'#carousel-' + index" data-slide="next">
-                    <span class="carousel-control-next-icon"></span>
-                </a>
-            </div>
+            <b-carousel id="carousel1"
+                        controls
+                        indicators>
+                <b-carousel-slide
+                        v-for="image in apartment.images"
+                        :img-src="'static/images/' + image" ></b-carousel-slide>
+            </b-carousel>
         </div>
     </li>
 </template>
 
 <script>
+    import bCarousel from 'bootstrap-vue/es/components/carousel/carousel'
+
     export default {
         name: "apartment-search-item",
-        props: [ 'apartment', 'index' ]
+        props: [ 'apartment', 'index' ],
+        components: { bCarousel }
     }
 </script>
 

@@ -1,24 +1,24 @@
 <template>
     <div class="grid">
-        <search-box></search-box>
+        <search-box />
 
         <div id="search-results">
             <ul>
                 <apartment-search-item
-                    v-for="(apartment, index) in apartments"
-                    :apartment="apartment"
-                    :index="index"
-                    :key="index"
-                ></apartment-search-item>
+                        v-for="(apartment, index) in apartments"
+                        :apartment="apartment"
+                        :index="index"
+                        :key="index"
+                />
             </ul>
         </div>
 
         <div id="search-results-pagination">
             <pagination
-                :start="1"
-                :end="5"
-                :current="2"
-            ></pagination>
+                    :start="1"
+                    :end="5"
+                    :current="2"
+            />
         </div>
     </div>
 </template>
@@ -48,7 +48,7 @@
                         price: 1200,
                         images: [
                             'Apartment-01.jpg',
-                            'Apartment-02.jpg',
+                            'Apartment-01.jpg',
                             'Apartment-01.jpg'
                         ]
                     },
@@ -61,9 +61,9 @@
                         'legendos, ne per omnes offendit.',
                         price: 1300,
                         images: [
-                            'Apartment-02.jpg',
                             'Apartment-01.jpg',
-                            'Apartment-02.jpg'
+                            'Apartment-01.jpg',
+                            'Apartment-01.jpg'
                         ]
                     }
                 ]
