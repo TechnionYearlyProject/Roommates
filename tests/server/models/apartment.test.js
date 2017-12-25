@@ -15,24 +15,6 @@ describe('Apartment Tests', () => {
   beforeEach(populateUsers);
   beforeEach(populateApartments);
 
-  describe('#addComment Tests', () => {
-    it('should add a new comment (only to the relevant one)', (done) => {
-      var apartment = apartments[0];
-      const userID = users[0]._id;
-      const commentText = "Test comment";
-      const creationTime = new Date('1-1-2018').getTime();
-      apartment.addComment(userID, commentText, creationTime)
-      .then((result) => {
-          expect(apartment.comments.length).toBe(1);
-          expect(apartment.comments[0]._createdBy).toBe(userID);
-          expect(apartment.comments[0].createdAt).toBe(creationTime);
-          expect(apartment.comments[0].text).toBe(commentText);
-          expect(apartments[1].comments.length).toBe(0);
-          done();
-      }).catch(done);
-    });
-   });
-
   describe('#findInRange Tests', () => {
     it('should return no apartments', (done) => {
       Apartment.findInRange(coords.andalusiaSpain[0], coords.andalusiaSpain[1], 10)

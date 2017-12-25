@@ -167,6 +167,68 @@ describe('Server Tests', () => {
     });
   });
 
+describe('PUT /apartments/:id/comment', () => {
+    it('should add a new comment', (done) => {
+      const id = apartments[1]._id;
+      const text = "Nice apartment!";
+      request(app)
+        .put(`/apartments/${id}/comment`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({text})
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.comments.length).toBe(1);
+          expect(res.body.comments[0].text).toBe(text);
+        })
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+          return Apartment.findById(id)
+            .then((apartment) => {
+              expect(apartment.comments.length).toBe(1);
+              expect(apartment.comments[0]._createdBy).toEqual(users[1]._id);
+              expect(apartment.comments[0].text).toEqual(text);
+              done();
+            }).catch((e) => done(e));
+        });
+    }).timeout(5000);
+
+    it('should not add comment with invalid text', (done) => {
+      const id = apartments[1]._id;
+      const text = "";
+      request(app)
+        .put(`/apartments/${id}/comment`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({text})
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should not add comment - unregistered user', (done) => {
+      const id = apartments[1]._id;
+      const text = "Wow! Great apartment!";
+      request(app)
+        .put(`/apartments/${id}/comment`)
+        .send({text})
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should not add comment for invalid apartment', (done) => {
+      const id = new ObjectID();
+      const text = "Wow! Great apartment!";
+      request(app)
+        .put(`/apartments/${id}/comment`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({text})
+        .expect(NOT_FOUND)
+        .end(done);
+    });
+
+
+  });
+
   describe('#GET /apartments', () => {
     it('should find apartment by id', (done) => {
       const id = apartments[0]._id.toHexString();
