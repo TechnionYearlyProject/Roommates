@@ -130,7 +130,7 @@
     transition: all 0.2s ease 0s;
     box-shadow: none;
     background-color: #FFF;
-    height: 430px;
+    height: 440px;
   }
 
   div {
@@ -141,7 +141,7 @@
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto;
-    height: 487px;
+    height: 500px;
   }
 
 
@@ -210,6 +210,36 @@
     margin-right: auto;
     margin-left: auto;
   }
+
+
+
+
+  .login-social {
+    display: inline-table;
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: #7A7878;
+    color: rgb(255, 255, 255);
+  }
+
+  style
+  a {
+    color: #d27e04;
+    outline: 0;
+    font-weight: bold;
+    -webkit-transition: all .8s ease;
+    transition: all .8s ease;
+  }
+
+  a {
+    color: #337ab7;
+    text-decoration: none;
+    background-color: transparent;
+
+
+  }
+
+
 
 
   .container {
