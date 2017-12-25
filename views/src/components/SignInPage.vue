@@ -18,6 +18,10 @@
                                 <label for="sign-up-password">Password</label>
                                 <input type="password" class="form-control" id="sign-up-password">
                             </div>
+                            <div class="form-group">
+                                <label for="sign-up-password-again">Password Again</label>
+                                <input type="password" class="form-control" id="sign-up-password-again">
+                            </div>
                             <div class="text-center">
                                 <button type="submit" class="btn btn-default">Sign Up</button>
                             </div>
@@ -45,11 +49,10 @@
                         </form>
                         <br>
 
-                        <h2>Social login : </h2>
-
+                        <h2 id="social-sign-in">Social Sign In : </h2>
                         <p>
                             <a class="login-social" href="#"><i class="fa fa-facebook"></i>&nbsp;Facebook</a>
-                            <a class="login-social" href="#"><i class="fa fa-google-plus"></i>&nbsp;Gmail</a>
+                            <a class="login-social" href="#"><i class="fa fa-google-plus"></i>&nbsp;Google</a>
                             <a class="login-social" href="#"><i class="fa fa-twitter"></i>&nbsp;Twitter</a>
                         </p>
                     </div>
@@ -105,7 +108,11 @@
         transition: all 0.2s ease 0s;
         box-shadow: none;
         background-color: #FFF;
-        height: 450px;
+        height: 500px;
+    }
+
+    .col-md-6:last-of-type .box-for {
+        height: 430px;
     }
 
     div {
@@ -143,6 +150,10 @@
         padding: 10px 15px;
         background-color: #7a7878;
         color: #fff;
+    }
+
+    #social-sign-in {
+        margin-top: 0;
     }
 
     a {
