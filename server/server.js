@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
-const { BAD_REQUEST, NOT_FOUND } = require('http-status');
+const { BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK } = require('http-status');
 
 require('./server-config');
 require('./db/mongoose');
@@ -105,6 +105,25 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
     const comments = apartment.comments;
 
     res.send({ comments });
+
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
+
+app.delete('/apartments/:id', authenticate, async (req, res)  => {
+  try {
+
+    const { id } = req.params;
+
+    if(!(req.user.isOwner(id))){
+      return res.status(UNAUTHORIZED).send();
+    }
+
+    await req.user.removeApartment(id);
+    await Apartment.findByIdAndRemove(id);
+
+    res.status(OK).send();
 
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
