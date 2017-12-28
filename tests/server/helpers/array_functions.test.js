@@ -63,6 +63,22 @@ describe('Array Functions Tests', () => {
   });
 
 
+   describe('#getIndexOfValue', () => {
+    const array = [1,2,3];
+
+    it('should return 0', (done) => {
+      const res = arrayFunctions.getIndexOfValue(array, 1);
+      expect(res).toBe(0);
+      done();
+    });
+
+    it('should return -1', (done) => {
+      const res = arrayFunctions.getIndexOfValue(array, 10);
+      expect(res).toBe(-1);
+      done();
+    });
+  });
+
   describe('#containsElementWithProperty', () => {
     const array = [
       {

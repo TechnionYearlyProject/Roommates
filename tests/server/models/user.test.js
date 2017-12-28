@@ -1,6 +1,6 @@
 const expect = require('expect');
 
-const { populateUsers, users } = require('../../seed/seed');
+const { populateUsers, users, apartments } = require('../../seed/seed');
 const { User } = require('../../../server/models/user');
 const { getMatchScore } = require('../../../server/logic/matcher');
 
@@ -43,6 +43,7 @@ describe('User Tests', () => {
       done();
     });
   });
+
   describe('#getBestMatchingUsers', () => {
     it('should return users in order: 2,3,1 - different score for each user', (done) => {
       const user = new User(users[3]);
@@ -63,6 +64,20 @@ describe('User Tests', () => {
           expect(res.length).toBe(0);
           done();
         }).catch(done);
+    });
+  });
+
+  describe('#isOwner', () => {
+    it('should return true', (done) => {
+      const user = new User(users[1]);
+      expect(user.isOwner(apartments[0]._id)).toBe(true);
+      done();
+    });
+
+    it('should return false', (done) => {
+      const user = new User(users[3]);
+      expect(user.isOwner(apartments[0]._id)).toBe(false);
+      done();
     });
   });
 });

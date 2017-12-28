@@ -229,6 +229,55 @@ describe('PUT /apartments/:id/comment', () => {
 
   });
 
+  describe('DELETE /apartments', () => {
+    it('should not delete aprtment - apartment doesnt exist', (done) => {
+
+      const id = new ObjectID().toHexString();
+
+      request(app)
+        .delete(`/apartments/${id}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(UNAUTHORIZED)
+        .end(done);
+    }).timeout(5000);
+
+    it('should not delete aprtment - user does not own the apartment', (done) => {
+      const id = apartments[1]._id.toHexString();;
+
+      request(app)
+        .delete(`/apartments/${id}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(UNAUTHORIZED)
+        .end(done);
+    }).timeout(5000);
+
+    it('should delete aprtment from user and DB', (done) => {
+      const id = apartments[0]._id.toHexString();;
+
+      request(app)
+        .delete(`/apartments/${id}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const counter = await Apartment.count({_id: id});
+            const user = await User.findById(users[1]._id);
+            expect(counter).toBe(0);
+            expect(user.isOwner(id)).toBe(false);
+            
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+
+        });
+    }).timeout(5000);
+  });
+
   describe('#GET /apartments', () => {
     it('should find apartment by id', (done) => {
       const id = apartments[0]._id.toHexString();
