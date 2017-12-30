@@ -10,15 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-<<<<<<< HEAD:views/roommates-web-view/package.json
     "vue": "^2.5.2",
-=======
-    "bootstrap": "^4.0.0-beta.2",
-    "bootstrap-vue": "^1.4.0",
-    "jquery": "^3.2.1",
-    "startbootstrap-shop-homepage": "^4.0.0-beta",
-    "vue": "2.5.2",
->>>>>>> refs/remotes/origin/master:views/package.json
     "vue-router": "^3.0.1"
   },
   "devDependencies": {

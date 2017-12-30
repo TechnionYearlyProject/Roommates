@@ -8,7 +8,6 @@ Vue.use(Router);
 const routes = [
   { path: '/', name: 'home', component: Home },
   { path: '/apartment/:id', name: 'apartment-page', component: ApartmentPage }
-}
 ];
 
 export default new Router({
