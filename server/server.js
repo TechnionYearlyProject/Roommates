@@ -11,6 +11,7 @@ const { Apartment } = require('./models/apartment');
 const { User } = require('./models/user');
 const { XAUTH } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
+const {getSupportedHobbies} = require('./models/hobbie');
 
 const app = express();
 
@@ -166,6 +167,15 @@ app.get('/users/self', authenticate, (req, res) => {
   res.send({ self: req.user });
 });
 
+
+app.get('/users/tags', async (req, res) => {
+  try{
+    res.send({tags:getSupportedHobbies()});
+  }catch(err){
+    res.status(BAD_REQUEST).send(err);
+  }
+});
+
 app.get('/users/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -200,6 +210,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
     res.status(BAD_REQUEST).send(err);
   }
 });
+
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is up on port ${process.env.PORT}.`);
