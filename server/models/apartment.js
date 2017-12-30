@@ -101,7 +101,7 @@ const ApartmentSchema = new mongoose.Schema({
     default: ''
   },
   tags: [{
-  	type: Number,
+    type: Number,
     validate: {
       validator: (value) => isSupportedTagId(value),
       message: '{VALUE} is not a supported tag'
