@@ -1,11 +1,14 @@
 const expect = require('expect');
 const geolib = require('geolib');
+const { ObjectID } = require('mongodb');
 
 const { Apartment } = require('../../../server/models/apartment');
 const {
   coords,
   populateApartments,
-  populateUsers
+  populateUsers,
+  apartments,
+  users
 } = require('../../seed/seed');
 
 describe('Apartment Tests', () => {
@@ -48,6 +51,7 @@ describe('Apartment Tests', () => {
           done();
         }).catch(done);
     });
+
   });
 });
 

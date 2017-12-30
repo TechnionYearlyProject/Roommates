@@ -199,6 +199,18 @@ ApartmentSchema.methods.getAddressString = function () {
   return `${address.number} ${address.street} ${address.city} ${address.state}`;
 };
 
+ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
+  const apartment = this;
+
+  apartment.comments.push({
+    _createdBy,
+    createdAt,
+    text
+  });
+
+  return apartment.save();
+};
+
 const Apartment = mongoose.model('Apartment', ApartmentSchema);
 
 module.exports = {

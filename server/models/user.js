@@ -206,6 +206,24 @@ UserSchema.methods.getBestMatchingUsers = function (userIds) {
     );
 };
 
+UserSchema.methods.isOwner = function (apartmentId) {
+  const user = this;
+
+  return arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId) > -1;
+
+};
+
+UserSchema.methods.removeApartment = function (apartmentId) {
+  const user = this;
+
+  const indexOfVal = arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId);
+  if(indexOfVal > -1){
+    user._publishedApartments.splice(indexOfVal, 1);
+  }
+
+  return user.save();
+};
+
 const User = mongoose.model('User', UserSchema);
 
 module.exports = {
