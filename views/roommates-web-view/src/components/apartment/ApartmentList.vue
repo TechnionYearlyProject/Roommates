@@ -2,6 +2,7 @@
 <div class="container s-apartments-container">
   <ul>
     <li class="r-apartment-li" v-for="apartment in apartments">
+      <transition appear enter-active-class="animated fadeInDown">
         <div class="row r-apartment-box">
         <div class="col-md-8 pl-0 pr-0">
           <div class="row" style="margin:20px;">
@@ -17,7 +18,7 @@
           <app-image-carusel :apartment="apartment"></app-image-carusel>
         </div>
       </div>
-      
+      </transition>
     </li>
   </ul>
 </div>
