@@ -1,5 +1,5 @@
 <template>
-<div class="r-apartment-price">
+<div class="s-apartment-price">
    &#8362; {{ apartment.price }}
 </div>
 </template>
@@ -13,10 +13,10 @@ export default {
 </script>
 
 <style>
-  .r-apartment-price {
+  .s-apartment-price {
   background-color: #f1c40f;
-  padding: 5px 2px;
-  width: 40%;
+  padding: 5px 5px;
+
   overflow: hidden;
   font-size: 120%;
   text-align: center;
@@ -25,4 +25,13 @@ export default {
   border-bottom-left-radius: 10px;
   letter-spacing: 1px;
 }
+
+@media only screen and (max-width: 768px) {
+    .s-apartment-price { 
+
+      width: 100%;
+      border-radius: 0;
+      font-size: 130%;
+  }
+} 
 </style>

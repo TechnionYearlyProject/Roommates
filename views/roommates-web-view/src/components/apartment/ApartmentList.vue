@@ -1,26 +1,31 @@
 <template>
-<div class="container">
+<div class="container s-apartments-container">
   <ul>
     <li class="r-apartment-li" v-for="apartment in apartments">
-      <div class="row mb-5 r-apartment-box r-apartment-details">
-        <div class="col-sm-8">
+        <div class="row r-apartment-box">
+        <div class="col-md-8 pl-0 pr-0">
+          <div class="row" style="margin:20px;">
             <h5>
               {{ apartment.address }}
             </h5>
-            <app-apartment-price :apartment="apartment"></app-apartment-price>
           </div>
-        <div class="col-sm-4 pr-0 pl-10 r-apartment-image">
+          <div class="row r-apartment-price">
+                <app-apartment-price :apartment="apartment"></app-apartment-price>
+          </div>         
+          </div>
+        <div class="col-md-4 pr-0 r-apartment-image">
           <app-image-carusel :apartment="apartment"></app-image-carusel>
         </div>
       </div>
+      
     </li>
   </ul>
 </div>
 </template>
 
 <script>
-import ImageCarusel from './ImageCarusel.vue'
-import ApartmentPrice from './ApartmentPrice.vue'
+import ImageCarusel from '../gallery/image-carusel/ImageCarusel.vue'
+import ApartmentPrice from './PriceTicket.vue'
 
 export default {
   data: function() {
@@ -73,13 +78,11 @@ export default {
   border-radius: 10px;
   overflow: hidden;
   cursor: pointer;
-}
-
-.r-apartment-details {
   position: relative;
+  border: 1px solid #eee;
 }
 
-.r-apartment-details .r-apartment-price {
+.r-apartment-price {
   position: absolute;
   bottom:0;
   left:0;
@@ -87,4 +90,22 @@ export default {
   margin-bottom: 3px;
 }
 
+.s-apartments-container {
+  width: 50%;
+}
+
+@media only screen and (max-width: 768px) {
+    .s-apartments-container { 
+      width: 100%;
+  }
+
+  .r-apartment-price {
+          position: relative;
+          margin: 0;
+  }
+
+  .r-apartment-image {
+    padding: 0;
+  }
+} 
 </style>

@@ -54,4 +54,6 @@ export default {
 .r-apartment-img img:hover {
   transform: scale(1.20);
 }
+
+
 </style>

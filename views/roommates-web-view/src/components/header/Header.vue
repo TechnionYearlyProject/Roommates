@@ -2,7 +2,7 @@
   <header>
     <div class="container-fluid row">
 
-        <div class="col-3">
+        <div class="col-4 col-sm-1 col-md-3">
           <router-link :to="{ name: 'home'}" class="navbar-brand">
             <img src="../../assets/imgs/logo.png" 
               class="r-nav-logo" 
@@ -11,7 +11,11 @@
           </router-link>
         </div>
 
-      <div class="col-9">
+        <div class="col-7 col-sm-7 col-md-6 s-main-search-box-1">
+          <app-main-search-box></app-main-search-box>
+        </div>
+
+      <div class="col-8 col-sm-4 col-md-3">
         <ul class="r-nav-links">
           <li>
               <a
@@ -37,7 +41,12 @@
                   <app-login-form></app-login-form>
                 </form>
           </li>
-        </ul>   
+        </ul>
+        </div>
+
+        <div class="container-fluid s-main-search-box-2">
+          <app-main-search-box></app-main-search-box>
+        </div>
       </div>
 
     </div>
@@ -47,11 +56,12 @@
 <script>
 import LoginForm from "@/components/identification/LoginForm.vue";
 import RegisterForm from "@/components/identification/RegisterForm.vue";
-
+import MainSearchBox from "@/components/search-box/mainSearchBox.vue";
 export default {
   components: {
     appLoginForm: LoginForm,
-    appRegisterForm: RegisterForm
+    appRegisterForm: RegisterForm,
+    appMainSearchBox: MainSearchBox
   }
 };
 </script>
@@ -59,8 +69,9 @@ export default {
 <style>
 header {
   background-color: #333;
-  padding: 20px 20px;
+  padding: 40px 20px;
   font-size: 100%;
+  margin-bottom: 90px;
 }
 
 .r-nav-logo {
@@ -82,6 +93,11 @@ header {
 .r-nav-title:hover,
 .r-nav-title:active {
   color: #eee;
+}
+
+.s-main-search-box-2 {
+  display:none;
+  margin-top:20px;
 }
 
 .r-nav-links {
@@ -119,5 +135,25 @@ header {
 .r-register-form {
   margin-top: 1%;
   margin-right: 50px;
+}
+
+@media only screen and (max-width: 768px) {
+          .r-nav-title {
+          display: none;
+          }
+        }
+
+@media only screen and (max-width: 576px) {
+  header {
+    margin-bottom: 50px;
+  }
+
+  .s-main-search-box-1 {
+    display: none;
+  }
+      
+  .s-main-search-box-2 {
+    display: inline-block;
+  }
 }
 </style>

@@ -1,0 +1,16 @@
+.s-btn-sun:link,
+.s-btn-sun:visited {
+  cursor: pointer;
+  border-radius: 10px;
+  text-decoration: none;
+  background-color: #333;
+  color: #f1c40f;
+  border: 2px solid #f1c40f;
+  transition: background-color .5s, border .5s, color .5s;
+}
+
+.s-btn-sun:hover,
+.s-btn-sun:active {
+  background-color: #f1c40f;
+  color: #333;
+}
