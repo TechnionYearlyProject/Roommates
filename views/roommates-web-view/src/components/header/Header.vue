@@ -19,12 +19,11 @@
         <ul class="r-nav-links">
           <li>
               <a
-                href="#" role="button" 
+                href="#" role="button"
                 id="dropdownRegister" 
                 data-toggle="dropdown"
                 aria-haspopup="true"
-                aria-expanded="false">Register</a>
-
+                aria-expanded="false">Register</a>                
                 <form class="dropdown-menu px-4 r-register-form" aria-labelledby="dropdownRegister" style="overflow:hidden;">
                   <app-register-form></app-register-form>
                 </form>
@@ -58,6 +57,11 @@ import LoginForm from "@/components/identification/LoginForm.vue";
 import RegisterForm from "@/components/identification/RegisterForm.vue";
 import MainSearchBox from "@/components/search-box/mainSearchBox.vue";
 export default {
+  date() {
+    return {
+      showRegisterForm: false
+    }
+  },
   components: {
     appLoginForm: LoginForm,
     appRegisterForm: RegisterForm,

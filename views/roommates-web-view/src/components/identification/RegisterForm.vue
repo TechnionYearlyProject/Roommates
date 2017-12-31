@@ -1,21 +1,51 @@
 <template>
 <form>
   <div class="form-row">
-    <label for="inputEmail">Email</label>
-    <input type="email" class="form-control" id="inputEmail" placeholder="">
+    <input type="email"
+     class="form-control"
+     id="inputEmail"
+     placeholder="email"
+     v-model.lazy="email">
   </div>
   <div class="form-row">
-    <label for="inputPassword">Password</label>
-    <input type="password" class="form-control" id="inputPassword" placeholder="">
+    <input type="password"
+     class="form-control"
+     id="inputPassword"
+     placeholder="Password"
+     v-model.lazy="password">
   </div>
   <div class="form-row">
-    <div class="form-group col-md-6">
-        <label for="inputFirstName">First Name</label>
-        <input type="text" class="form-control" id="inputFirstName" placeholder="">
+        <input type="text"
+         class="form-control"
+         id="inputFirstName"
+         placeholder="First Name"
+         v-model.lazy="firstName">
     </div>
-    <div class="form-group col-md-6">
-      <label for="inputLastName">Last Name</label>
-      <input type="text" class="form-control" id="inputLastName" placeholder="">
+      <div class="form-row">
+      <input type="text"
+       class="form-control"
+       id="inputLastName"
+       placeholder="Last Name"
+       v-model.lazy="lastName">
+    </div>
+  <div class="form-row">
+    <div class="form-group col-md-4" style="padding-left:0;">
+      <input class="form-control" 
+       id="birthday-day-select" 
+       placeholder="day"
+       v-model.lazy="birthDateDay">
+    </div>
+      <div class="form-group col-md-4" style="padding-left:0;">
+        <input class="form-control" 
+         id="birthday-month-select" 
+         placeholder="Month"
+         v-model.lazy="birthDateMonth">
+      </div>
+    <div class="form-group col-md-4" style="padding-right:0;padding-left:0;">
+      <input class="form-control" 
+         id="birthday-year-select" 
+         placeholder="Year"
+         v-model.lazy="birthDateYear">
     </div>
   </div>
   <div class="form-row">
@@ -25,24 +55,44 @@
         type="radio" 
         name="inlineRadioOptions"
         id="genderMale" 
-        value="male">
+        value="male"
+        v-model.lazy="gender">
         <span class=" pb-1">male</span>
       <input class="form-check-input ml-3"
         type="radio"
         name="inlineRadioOptions"
         id="genderFemale"
-        value="female">
+        value="female"
+        v-model.lazy="gender">
         <span class=" pb-1">female</span>
     </div>
   </div>
-  <button type="submit" class="btn btn-warning">Register</button>
+    {{ email }}
+  <button type="submit" class="btn btn-warning">Register !</button>
+
 </form>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      gender: '',
+      birthDateDay: '',
+      birthDateMonth: '',
+      birthDateYear: ''
+    };
+  }
+};
 </script>
 
-<style>
-
+<style scroped>
+.form-row,
+.form-group {
+  margin: 4px 0 4px 0;
+}
 </style>
