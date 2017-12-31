@@ -12,6 +12,7 @@ const { User } = require('./models/user');
 const { XAUTH } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const {getSupportedHobbies} = require('./models/hobbie');
+const {getSupportedTags} = require('./models/tag');
 
 const app = express();
 
@@ -57,6 +58,14 @@ app.post('/apartments', authenticate, async (req, res) => {
     return res.send({ apartment });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
+  }
+});
+
+app.get('/apartments/tags', async (req, res) => {
+  try{
+    res.send({tags:getSupportedTags()});
+  }catch(err){
+    res.status(BAD_REQUEST).send(err);
   }
 });
 
