@@ -1,6 +1,6 @@
 <template>
 <div class="card" style="width: 20rem;">
-  <img :img=card_details.img class="card-img-top" alt="img">
+  <img :src=card_details.img class="card-img-top" alt="img">
   <div class="card-block">
     <h4 class="card-title">{{card_details.title}}</h4>
     <p class="card-text">{{card_details.text}}</p>
