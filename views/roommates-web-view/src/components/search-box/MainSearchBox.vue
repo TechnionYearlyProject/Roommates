@@ -33,7 +33,12 @@
 
             <div class="search-row">
 
-              Filter by price interval: <b>₪ 0</b>
+
+              Maximum Price: <div class="price" v-show="sliderValue!==0">{{sliderValue}} </div>
+
+
+              <br />
+              <b>₪ 0</b>
               <range-slider
                 class="slider"
                 min="0"
@@ -60,7 +65,7 @@ import 'vue-range-slider/dist/vue-range-slider.css'
 export default {
   data () {
     return {
-      sliderValue: 50
+      sliderValue: 0
     }
   },
   components: {
@@ -103,9 +108,12 @@ export default {
     /* overwrite slider styles */
     width: 200px;
 
+
   }
   .range-slider-fill {
     background-color: #f1c40f;
   }
-
+  .price{
+    display: inline-block;
+  }
 </style>
