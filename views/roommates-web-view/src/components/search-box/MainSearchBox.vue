@@ -4,8 +4,8 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-lg-9 r-main-search-box">
-        <input class="form-control form-control-lg" 
-          type="search" 
+        <input class="form-control form-control-lg"
+          type="search"
           placeholder="Find your next roommates now!"
           >
       </div>
@@ -17,33 +17,55 @@
 
           <a
             class="btn s-btn-ghost s-btn-filter"
-            data-toggle="collapse" 
+            data-toggle="collapse"
             href="#collapse-filter"
             aria-expanded="false"
             aria-controls="collapse-filter">
               <i class="ion-android-funnel"></i>
-          </a> 
+          </a>
       </div>
     </div>
 
     <div class="row">
-      <div class="offset-md-2 col-md-6 col-sm-10">
+      <div class="offset-md-0 col-md-8 col-sm-10">
         <div class="collapse navbar-collapse r-main-search-filter-extend" id="collapse-filter">
           <div class="card card-body">
-            filters here
+
+            <div class="search-row">
+
+              Filter by price interval: <b>₪ 0</b>
+              <range-slider
+                class="slider"
+                min="0"
+                max="5000"
+                step="100"
+                v-model="sliderValue">
+              </range-slider>
+              <b>₪ 5000+</b>
+
+            </div>
           </div>
         </div>
       </div>
     </div>
-    
+
   </div>
 
 </div>
 </template>
 
 <script>
+import RangeSlider from 'vue-range-slider'
+import 'vue-range-slider/dist/vue-range-slider.css'
 export default {
-  
+  data () {
+    return {
+      sliderValue: 50
+    }
+  },
+  components: {
+    RangeSlider
+  }
 }
 </script>
 
@@ -63,14 +85,27 @@ export default {
   .s-btn-search {
       margin-right: 5px;
   }
-  
+
   .r-main-search-filter-extend {
     margin-top: 10px;
-    color: #f1c40f;
+    color: #eee;
   }
-  
+
 .r-main-search-filter-extend .card-body {
     background-color: #333;
     border-radius: 0;
 }
+  .search-row {
+    display: block;
+    text-align: center;
+  }
+  .slider {
+    /* overwrite slider styles */
+    width: 200px;
+
+  }
+  .range-slider-fill {
+    background-color: #f1c40f;
+  }
+
 </style>
