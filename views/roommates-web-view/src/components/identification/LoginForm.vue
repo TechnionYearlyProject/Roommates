@@ -1,24 +1,40 @@
 <template>
-<form>
-  <div class="form-group">
-    <label for="formGroupExampleInput">Email</label>
-    <input type="text" class="form-control" id="formGroupExampleInput" placeholder="">
-  </div>
-  <div class="form-group">
-    <label for="formGroupExampleInput2">Password</label>
-    <input type="text" class="form-control" id="formGroupExampleInput2" placeholder="">
-  </div>
-  <button type="submit" class="btn btn-warning">Login</button>
-</form>
+  <form>
+    <div class="form-group">
+      <label for="inputEmail">Email</label>
+      <input type="text"
+             class="form-control"
+             id="inputEmail"
+             placeholder="email"
+             v-model.lazy="email">
+    </div>
+    <div class="form-group">
+      <label for="inputPassword">Password</label>
+      <input type="password"
+             class="form-control"
+             id="inputPassword"
+             placeholder="Password"
+             v-model.lazy="password"
+      >
+    </div>
+    <button type="submit" class="btn btn-warning">Login</button>
+  </form>
 
 </template>
 
 <script>
-export default {
-  
-}
+  export default {
+    data() {
+      return {
+        email: '',
+        password: ''
+      };
+    }
+  };
 </script>
 
 <style>
-
+  .form-group {
+    margin: 4px 0 4px 0;
+  }
 </style>

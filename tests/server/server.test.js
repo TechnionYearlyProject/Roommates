@@ -14,6 +14,7 @@ const { XAUTH } = require('../../server/constants');
 const { User } = require('../../server/models/user');
 const { Apartment } = require('../../server/models/apartment');
 const { getSupportedTags } = require('../../server/models/tag');
+const { getSupportedHobbies } = require('../../server/models/hobbie');
 
 const {
   apartments,
@@ -276,6 +277,18 @@ describe('PUT /apartments/:id/comment', () => {
 
         });
     }).timeout(5000);
+  });
+
+  describe('GET /apartments/tags', () => {
+     it('should get all apartment tags', (done) => {
+      request(app)
+        .get('/apartments/tags')
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.tags).toEqual(getSupportedTags());
+        })
+        .end(done);
+    });
   });
 
   describe('#GET /apartments', () => {
@@ -760,6 +773,18 @@ describe('PUT /apartments/:id/comment', () => {
     });
   });
 
+  describe('GET /users/tags', () => {
+     it('should get all user tags', (done) => {
+      request(app)
+        .get('/users/tags')
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.tags).toEqual(getSupportedHobbies());
+        })
+        .end(done);
+    });
+  });
+
   describe('#GET /users/self', () => {
     it('should return the connected user', (done) => {
       request(app)
@@ -912,4 +937,6 @@ describe('PUT /apartments/:id/comment', () => {
         .end(done);
     });
   });
+
+
 });
