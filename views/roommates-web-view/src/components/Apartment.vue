@@ -22,6 +22,33 @@
                     </div>
                 </div>
                 <div class="col-sm">
+                    <div class="col-md-4 pr-0 r-apartment-image">
+                       <app-image-carusel :apartment="apartment"></app-image-carusel>
+                    </div>
+
+                <!-- <div>
+                    <b-carousel id="carousel1"
+                                style="text-shadow: 1px 1px 2px #333;"
+                                controls
+                                indicators
+                                background="#ababab"
+                                :interval="4000"
+                                img-width="1024"
+                                img-height="480"
+                                v-model="slide"
+                                @sliding-start="onSlideStart"
+                                @sliding-end="onSlideEnd"
+                    >
+                        <div v-for="img in apartment.images">
+                            <b-carousel-slide
+                                img-src="img"
+                            ></b-carousel-slide>
+                        </div>
+                    </b-carousel>
+                </div> -->
+
+
+
                     <div class="card" style="width: 20rem;">
                         <div class="card-header">
                             publisher
@@ -72,23 +99,38 @@
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="comment in apartment.comments">
+                        <li class="list-group-item" v-for="comment in calCom">
                             {{comment.comment}} at: {{comment.writenAt}}
                         </li>
                     </ul>
                     <p class="card-text"></p>
                 </div>
             </div>
+
+            <ul class="pagination">
+                <li class="page-item"><button v-on:click="changeCommentPage(1)">first</button></li>
+                <li v-for="p in (Math.ceil(apartment.comments.length/5))"
+                    :class="{ 'page-item': true, active:commentPage }"
+                ><button v-on:click="changeCommentPage(p)">{{p}}</button>{{commentPage}}</li>
+                <li class="page-item"><button v-on:click="lastCommentPage()">last</button></li>
+            </ul>
+
+
+
+
         </div>
     </div>
 </template>
 
 <script>
+import ImageCarusel from "./gallery/image-carusel/ImageCarusel.vue";
     export default {
         name: 'apartment-page',
 
         data() {
             return {
+                calCom: [],
+                commentPage: 1,
                 title: 'hi there',
                 auther: {
                     firstName: 'chanan',
@@ -143,22 +185,56 @@
                     ],
                     comments: [
                         {
-                            commentBy: '4',
-                            writenAt: "2017-01-01",
-                            comment: " i had a look around and i realy like the place"
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
                         },
                         {
-                            commentBy: '2',
-                            writenAt: "2017-01-01",
-                            comment: " i lived here for a year, realy recommend"
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
                         },
                         {
-                            commentBy: '3',
-                            writenAt: "2017-01-01",
-                            comment: " the landlord is very nice"
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
+                        },
+                        {
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
+                        },
+                        {
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
+                        },
+                        {
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
+                        },
+                        {
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
+                        },
+                        {
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
+                        },
+                        {
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
+                        },
+                        {
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
+                        },
+                        {
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
+                        },
+                        {
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
                         },
                     ]
                 }
+            }
+        },
+        methods:{
+            changeCommentPage(newPage) {
+                this.commentPage = newPage;
+            },
+            lastCommentPage(){
+                this.commentPage = (Math.ceil(apartment.comments.length/5));
+            }
+        },
+        computed:{
+            calCom(){
+                return this.apartment.images.slice(5*(this.commentPage)-4,5*(this.commentPage)+1);
             }
         }
     }
