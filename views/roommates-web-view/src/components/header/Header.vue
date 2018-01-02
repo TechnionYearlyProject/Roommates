@@ -57,7 +57,7 @@ import LoginForm from "@/components/identification/LoginForm.vue";
 import RegisterForm from "@/components/identification/RegisterForm.vue";
 import MainSearchBox from "@/components/search-box/mainSearchBox.vue";
 export default {
-  date() {
+  data() {
     return {
       showRegisterForm: false
     }
