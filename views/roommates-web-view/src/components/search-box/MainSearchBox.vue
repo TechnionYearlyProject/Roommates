@@ -27,7 +27,7 @@
     </div>
 
     <div class="row">
-      <div class="offset-md-0 col-md-8 col-sm-10">
+      <div class="offset-md-1 col-md-8 col-sm-10">
         <div class="collapse navbar-collapse r-main-search-filter-extend" id="collapse-filter">
           <div class="card card-body">
 
@@ -40,7 +40,7 @@
               <br />
               <b>₪ 0</b>
               <range-slider
-                class="slider"
+                class="slider col-ms-12"
                 min="0"
                 max="5000"
                 step="100"
@@ -53,7 +53,7 @@
 
               <div class="form-check form-check-inline col">
                 <label class="form-check-label">
-                  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Kosher"> Kosher Kitchen
+                  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Kosher Kitchen"> Kosher Kitchen
                 </label>
               </div>
               <div class="form-check form-check-inline col">
@@ -145,9 +145,12 @@ export default {
   .row{
     text-align: center;
   }
-  .slider {
-    width: 200px;
+  .col{
+    position: absolute;
+    text-align: left;
+    margin-left: 15px;
   }
+
   .range-slider-fill {
     background-color: #f1c40f;
   }
@@ -162,7 +165,31 @@ export default {
     position: relative;
     box-sizing: border-box;
   }
+  input[type=checkbox] {
+    padding-left:5px;
+    padding-right:5px;
 
+    -webkit-appearance:button;
+
+    border: double 2px #FFF;
+
+    background-color:#FFF;
+    color:#FFF;
+    white-space: nowrap;
+    overflow:hidden;
+
+    width:15px;
+    height:15px;
+  }
+  input[type=checkbox]:checked {
+    background-color:#f1c40f;
+    border-left-color:#FFF;
+    border-right-color:#FFF;
+  }
+
+  input[type=checkbox]:hover {
+    box-shadow:0px 0px 10px #f1c40f;
+  }
 
 
 
