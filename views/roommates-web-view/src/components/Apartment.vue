@@ -108,11 +108,11 @@
             </div>
 
             <ul class="pagination">
-                <li class="page-item"><button onclick="changePage(1)">first</button></li>
-                <li v-for="p in Math.ceil(apartment.images.length/5)"
+                <li class="page-item"><button v-on:click="changeCommentPage(1)">first</button></li>
+                <li v-for="p in (Math.ceil(apartment.comments.length/5))"
                     :class="{ 'page-item': true, active:commentPage }"
-                ><button onclick="changePage(p)">{{p}}</button></li>
-                <li class="page-item"><button onclick="changePage(1)">last</button></li>
+                ><button v-on:click="changeCommentPage(p)">{{p}}</button>{{commentPage}}</li>
+                <li class="page-item"><button v-on:click="lastCommentPage()">last</button></li>
             </ul>
 
 
@@ -185,32 +185,56 @@ import ImageCarusel from "./gallery/image-carusel/ImageCarusel.vue";
                     ],
                     comments: [
                         {
-                            commentBy: '4',
-                            writenAt: "2017-01-01",
-                            comment: " i had a look around and i realy like the place"
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
                         },
                         {
-                            commentBy: '2',
-                            writenAt: "2017-01-01",
-                            comment: " i lived here for a year, realy recommend"
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
                         },
                         {
-                            commentBy: '3',
-                            writenAt: "2017-01-01",
-                            comment: " the landlord is very nice"
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
+                        },
+                        {
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
+                        },
+                        {
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
+                        },
+                        {
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
+                        },
+                        {
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
+                        },
+                        {
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
+                        },
+                        {
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
+                        },
+                        {
+                            commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
+                        },
+                        {
+                            commentBy: '2', writenAt: "2017-01-01",comment: " i lived here for a year, realy recommend"
+                        },
+                        {
+                            commentBy: '3', writenAt: "2017-01-01", comment: " the landlord is very nice"
                         },
                     ]
                 }
             }
         },
-        method:{
-            changeCommentPage: function(newPage) {
-                this.commentPage = newPage
+        methods:{
+            changeCommentPage(newPage) {
+                this.commentPage = newPage;
+            },
+            lastCommentPage(){
+                this.commentPage = (Math.ceil(apartment.comments.length/5));
             }
         },
         computed:{
             calCom(){
-                return this.apartment.images.slice(5*this.commentPage-4,5*this.commentPage+1);
+                return this.apartment.images.slice(5*(this.commentPage)-4,5*(this.commentPage)+1);
             }
         }
     }
