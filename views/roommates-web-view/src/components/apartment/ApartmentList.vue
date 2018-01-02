@@ -4,22 +4,23 @@
     <li class="r-apartment-li" v-for="apartment in apartments">
       <transition appear enter-active-class="animated fadeInDown">
         <div class="row r-apartment-box">
-        <div class="col-md-8 pl-0 pr-0">
-          <div class="row" style="margin:20px;">
-            <h5>
-              {{ apartment.address }}
-            </h5>
-                      <router-link to="/apartment/:id"><br>view ad</router-link>
-
-          </div>
+          <div class="col-md-8 pl-0 pr-0">
+        <router-link to="/apartment/:id">
+            <div class="row" style="margin:20px;">
+              <h5>
+                {{ apartment.address }}
+              </h5>
+            </div>
+        </router-link>
           <div class="row r-apartment-price">
-                <app-apartment-price :apartment="apartment"></app-apartment-price>
-          </div>         
+                  <app-apartment-price :apartment="apartment"></app-apartment-price>
+            </div>         
           </div>
-        <div class="col-md-4 pr-0 r-apartment-image">
-          <app-image-carusel :apartment="apartment"></app-image-carusel>
+          <div class="col-md-4 pr-0 r-apartment-image">
+            <app-image-carusel :apartment="apartment"></app-image-carusel>
+          </div>
         </div>
-      </div>
+
       </transition>
     </li>
   </ul>
