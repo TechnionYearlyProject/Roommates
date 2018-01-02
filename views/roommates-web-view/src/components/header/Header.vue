@@ -4,8 +4,8 @@
 
         <div class="col-4 col-sm-1 col-md-3">
           <router-link :to="{ name: 'home'}" class="navbar-brand">
-            <img src="../../assets/imgs/logo.png" 
-              class="r-nav-logo" 
+            <img src="../../assets/imgs/logo.png"
+              class="r-nav-logo"
               alt="Roommates-logo">
             <div class="r-nav-title" role="button">Roommates</div>
           </router-link>
@@ -20,18 +20,18 @@
           <li>
               <a
                 href="#" role="button"
-                id="dropdownRegister" 
+                id="dropdownRegister"
                 data-toggle="dropdown"
                 aria-haspopup="true"
-                aria-expanded="false">Register</a>                
+                aria-expanded="false">Register</a>
                 <form class="dropdown-menu px-4 r-register-form" aria-labelledby="dropdownRegister" style="overflow:hidden;">
                   <app-register-form></app-register-form>
                 </form>
           </li>
           <li>
               <a
-                href="#" role="button" 
-                id="dropdownLogin" 
+                href="#" role="button"
+                id="dropdownLogin"
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false">Login</a>
@@ -155,9 +155,12 @@ header {
   .s-main-search-box-1 {
     display: none;
   }
-      
+
   .s-main-search-box-2 {
     display: inline-block;
   }
+}
+.navbar-brand{
+  float: left;
 }
 </style>
