@@ -31,11 +31,11 @@
         <div class="collapse navbar-collapse r-main-search-filter-extend" id="collapse-filter">
           <div class="card card-body">
 
-            <div class="search-row">
+            <div class="filter-row">
 
-
-              Maximum Price: <div class="price" v-show="sliderValue!==0">{{sliderValue}} </div>
-
+              <div class="text" style="display: inline">
+                Maximum Price: <div style="display: inline" class="price" v-show="sliderValue!==0">{{sliderValue}} </div>
+              </div>
 
               <br />
               <b>₪ 0</b>
@@ -49,6 +49,44 @@
               <b>₪ 5000+</b>
 
             </div>
+            <div class="row">
+
+              <div class="form-check form-check-inline col">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Kosher"> Kosher Kitchen
+                </label>
+              </div>
+              <div class="form-check form-check-inline col">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="Elevator"> Elevator
+                </label>
+              </div>
+              <div class="form-check form-check-inline col">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="Air Conditioning"> Air Conditioning
+                </label>
+              </div>
+            </div>
+            <div class="row">
+
+              <div class="form-check form-check-inline col">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" id="inlineCheckbox4" value="Laundry Room"> Laundry Room
+                </label>
+              </div>
+              <div class="form-check form-check-inline col">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" id="inlineCheckbox5" value="Furnished"> Furnished
+                </label>
+              </div>
+              <div class="form-check form-check-inline col">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" id="inlineCheckbox6" value="Balcony"> Balcony
+                </label>
+              </div>
+            </div>
+
+
           </div>
         </div>
       </div>
@@ -100,20 +138,32 @@ export default {
     background-color: #333;
     border-radius: 0;
 }
-  .search-row {
+  .filter-row {
     display: block;
     text-align: center;
   }
+  .row{
+    text-align: center;
+  }
   .slider {
-    /* overwrite slider styles */
     width: 200px;
-
-
   }
   .range-slider-fill {
     background-color: #f1c40f;
   }
-  .price{
+  .text.price{
     display: inline-block;
   }
+  .form-check{
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    vertical-align: middle;
+    position: relative;
+    box-sizing: border-box;
+  }
+
+
+
+
 </style>
