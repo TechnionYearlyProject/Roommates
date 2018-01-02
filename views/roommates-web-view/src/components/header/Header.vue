@@ -4,7 +4,7 @@
 
         <div class="col-4 col-sm-1 col-md-3">
           <router-link :to="{ name: 'home'}" class="navbar-brand">
-            <img src="../../assets/imgs/logo.png"
+            <img :src="roommatesLogo"
               class="r-nav-logo"
               alt="Roommates-logo">
             <div class="r-nav-title" role="button">Roommates</div>
@@ -56,10 +56,12 @@
 import LoginForm from "@/components/identification/LoginForm.vue";
 import RegisterForm from "@/components/identification/RegisterForm.vue";
 import MainSearchBox from "@/components/search-box/mainSearchBox.vue";
+
 export default {
   data() {
     return {
-      showRegisterForm: false
+      showRegisterForm: false,
+      roommatesLogo: "src/assets/resources/imgs/logo.png"
     }
   },
   components: {

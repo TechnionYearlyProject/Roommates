@@ -39,14 +39,14 @@ export default {
           address: "Gilboa 35 a",
           price: 11111,
           images: [
-            "src/assets/imgs/apartments/1.jpg",
-            "src/assets/imgs/apartments/2.jpg"
+            "src/assets/vendors/imgs/apartments/1.jpg",
+            "src/assets/vendors/imgs/apartments/2.jpg"
           ]
         },
         {
           address: "Shderot Hahistadrut 5",
           price: 2,
-          images: ["src/assets/imgs/apartments/1.jpg"]
+          images: ["src/assets/vendors/imgs/apartments/1.jpg"]
         },
         {
           address: "Hamelachim 3",

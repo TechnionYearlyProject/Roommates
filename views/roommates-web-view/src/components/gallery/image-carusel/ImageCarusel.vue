@@ -19,7 +19,7 @@
                 </div>
               </div>
               <div v-else>
-                <img class="d-block w-100" src="src/assets/imgs/apartments/no-photo-grey.png">
+                <img class="d-block w-100" :src="noImage">
               </div>
             </div>
 
@@ -40,6 +40,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      noImage: 'src/assets/vendors/imgs/apartments/no-photo-grey.png'
+    }
+  },
   props: [
     'apartment'
   ]

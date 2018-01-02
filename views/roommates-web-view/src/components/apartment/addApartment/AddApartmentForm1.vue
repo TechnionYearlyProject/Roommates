@@ -2,7 +2,8 @@
   <div class="container">
     <div class="row">
       <div class="col-sm-4 offset-sm-1">
-        <!-- <app-upload-image></app-upload-image> -->
+        <h2 class="s-h2 mt-3 mb-2">Upload images of your apartment</h2>
+        <app-image-upload></app-image-upload>
       </div>
       <div class="col-sm-6">
         <div class="form-group">
@@ -66,12 +67,12 @@
 </template>
 
 <script>
-import UploadImage from "@/components/apartment/addApartment/UploadImage.vue";
+import ImageUpload from "@/components/image-upload/ImageUpload.vue";
 
 export default {
   props: ['info', 'isReadOnly'],
   components: {
-    appUploadImage: UploadImage
+    appImageUpload: ImageUpload
   }
 }
 </script>
