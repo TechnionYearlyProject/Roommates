@@ -136,10 +136,10 @@
                     totalFloors: 4,
                     description: "a very nice place",
                     price: 1200,
-                    images: [
-                        "chrome://theme/IDR_PRODUCT_LOGO",
-                        "chrome://theme/IDR_PRODUCT_LOGO",
-                        "chrome://theme/IDR_PRODUCT_LOGO"
+                    images : [ 
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4qUg397lGFM0dJpE9rA1DHzttbtfQiYXQULgqKRreYTUnQuCq", 
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUIzpQEzg9pExt10YWgJU4_6XGoXiD1FeUCkuV7ZEPG8wGi8SXHg", 
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPhqE9OKHQApVJLMlRBtg4Bb8fDCNjQIXce3DgJgHpGAJrru2EDg"
                     ],
                     comments: [
                         {

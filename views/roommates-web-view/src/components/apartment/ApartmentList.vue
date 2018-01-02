@@ -9,6 +9,8 @@
             <h5>
               {{ apartment.address }}
             </h5>
+                      <router-link to="/apartment/:id"><br>view ad</router-link>
+
           </div>
           <div class="row r-apartment-price">
                 <app-apartment-price :apartment="apartment"></app-apartment-price>
