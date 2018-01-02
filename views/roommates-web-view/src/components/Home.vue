@@ -2,6 +2,7 @@
 <div>
   <section>
     <app-apartment-list></app-apartment-list>
+    <router-link to="/apartment/:id">view ad</router-link>
     <app-apartment-adder></app-apartment-adder>
   </section>
 </div>
