@@ -25,21 +25,13 @@
                   </div>
                     <p><br></p>
                     <div class="single-property-header">                                          
-                                <h1>{{apartment.address.city}}, {{apartment.address.street}},
-                                    {{apartment.address.houseNumber}}/{{apartment.address.entranceNumber}}</h1>
+                                <h1>{{apartment.location.address.city}}, {{apartment.location.address.street}},
+                                    {{apartment.location.address.houseNumber}}/{{apartment.location.address.entranceNumber}}</h1>
                     </div>
                     <div >
                         <div class="row">
                             <div class="col-sm">
-                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
-                                    <span class="property-info-icon icon-tag">                                        
-                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/sale-orange.png">
-                                    </span>
-                                    <span class="property-info-entry">
-                                        <span class="property-info-label">Status</span>
-                                        <span class="property-info-value">For Sale</span>
-                                    </span>
-                                </div>
+                                
                             </div>
                             <div class="col-sm">
                                 <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
@@ -48,7 +40,7 @@
                                     </span>
                                     <span class="property-info-entry">
                                         <span class="property-info-label">Area</span>
-                                        <span class="property-info-value">3500<b class="property-info-unit">Sq Ft</b></span>
+                                        <span class="property-info-value">{{apartment.}}<b class="property-info-unit">Sq Ft</b></span>
                                     </span>
                                 </div>
                             </div>
@@ -208,6 +200,14 @@
                 <li class="page-item"><button v-on:click="lastCommentPage()">last</button></li>
             </ul>
 
+            <ul class="pagination">
+                <li class="page-item"><button v-on:click="changeCommentPage(1)">first</button></li>
+                <li v-for="p in (Math.ceil(apartment.comments.length/5))"
+                    :class="{ 'page-item': true, active:commentPage }"
+                ><button v-on:click="changeCommentPage(p)">{{p}}</button>{{commentPage}}</li>
+                <li class="page-item"><button v-on:click="lastCommentPage()">last</button></li>
+            </ul>
+
 
 
 
@@ -261,17 +261,26 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
                 apartment: {
                     _id: '1',
                     createdBy: '1',
-                    address: {
-                        state: 'Israel',
-                        city: 'chaifa',
-                        street: 'shalom alychem',
-                        houseNumber: 18,
-                        entranceNumber: 1,
+                    location : {
+                        address: {
+                            state: 'Israel',
+                            city: 'chaifa',
+                            street: 'shalom alychem',
+                            houseNumber: 18,
+                            entranceNumber: 1,
+                        },
+                        geolocation : [0,0]
                     },
+
                     floor: 1,
                     totalFloors: 4,
+                    numOfRooms:5,
+                    area: 100,
                     description: "a very nice place",
                     price: 1200,
+                    requiredNumberOfRoommates : 4,
+                    currentlyNumberOfRoomates : 1,
+                    enteranceDate : "1/1/18",
                     images : [
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4qUg397lGFM0dJpE9rA1DHzttbtfQiYXQULgqKRreYTUnQuCq",
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUIzpQEzg9pExt10YWgJU4_6XGoXiD1FeUCkuV7ZEPG8wGi8SXHg",
@@ -340,3 +349,8 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
 <style scoped>
 
 </style>
+
+
+
+{
+}
