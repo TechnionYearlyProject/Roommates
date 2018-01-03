@@ -16,33 +16,123 @@
                                 @sliding-start="onSlideStart"
                                 @sliding-end="onSlideEnd"
                     >
-                      <div v-for="img in apartment.images">
+                      <!-- <div v-for="img in apartment.images">
                         <b-carousel-slide
                           img-src="img"
                         ></b-carousel-slide>
-                      </div>
+                      </div> -->
                     </b-carousel>
                   </div>
                     <p><br></p>
-                    <div class="card" style="width: 20rem;">
-                        <div class="card-header">
-                            apartment information:
+                    <div class="single-property-header">                                          
+                                <h1>{{apartment.address.city}}, {{apartment.address.street}},
+                                    {{apartment.address.houseNumber}}/{{apartment.address.entranceNumber}}</h1>
+                    </div>
+                    <div >
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
+                                    <span class="property-info-icon icon-tag">                                        
+                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/sale-orange.png">
+                                    </span>
+                                    <span class="property-info-entry">
+                                        <span class="property-info-label">Status</span>
+                                        <span class="property-info-value">For Sale</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
+                                    <span class="property-info icon-area">
+                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/room-orange.png">
+                                    </span>
+                                    <span class="property-info-entry">
+                                        <span class="property-info-label">Area</span>
+                                        <span class="property-info-value">3500<b class="property-info-unit">Sq Ft</b></span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">address:
-                                    {{apartment.address.city}}, {{apartment.address.street}},<br> no.
-                                    {{apartment.address.houseNumber}}, entrance {{apartment.address.entranceNumber}}
-                                </li>
-                            </ul>
-                            <p class="card-text"></p>
+                         <div class="row">
+                            <div class="col-sm">
+                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
+                                    <span class="property-info-icon icon-bed">
+                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/bed-orange.png">
+                                    </span>
+                                    <span class="property-info-entry">
+                                        <span class="property-info-label">Bedrooms</span>
+                                        <span class="property-info-value">3</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
+                                    <span class="property-info-icon icon-bed">
+                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/cars-orange.png">
+                                    </span>
+                                    <span class="property-info-entry">
+                                        <span class="property-info-label">Car garages</span>
+                                        <span class="property-info-value">1</span>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
+                         <div class="row">
+                            <div class="col-sm">
+                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
+                                    <span class="property-info-icon icon-bath">
+                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/os-orange.png">
+                                    </span>
+                                    <span class="property-info-entry">
+                                        <span class="property-info-label">Bathrooms</span>
+                                        <span class="property-info-value">{{apartment.numberO}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
+                                    <span class="property-info-icon icon-garage">
+                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/room-orange.png">
+                                    </span>
+                                    <span class="property-info-entry">
+                                        <span class="property-info-label">Garages</span>
+                                        <span class="property-info-value">2</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+
+
+
+                                <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
+                                    <span class="property-info-icon icon-garage">
+                                        <img src="https://technext.github.io/garo-estate/assets/img/icon/shawer-orange.png">
+                                    </span>
+                                    <span class="property-info-entry">
+                                        <span class="property-info-label">Garages</span>
+                                        <span class="property-info-value">2</span>
+                                    </span>
+                                </div>
+
+                        </div>   
+                        <div class="col-sm">
+
+
+
+
+
+                        </div>
+
+                    </div>
+                    <div class="section">
+                                <h4 class="s-property-title">Description</h4>
+                                <div class="s-property-content">
+                                    <p>{{apartment.description}}</p>
+                                </div>
                     </div>
                 </div>
                 <div class="col-sm">
-                    <div class="col-md-4 pr-0 r-apartment-image">
-
-                    </div>
 
 
 
@@ -53,11 +143,12 @@
                             publisher
                         </div>
                         <img class="card-img-top"
-                             src="https://images.pexels.com/photos/428339/pexels-photo-428339.jpeg?w=1260&h=750&auto=compress&cs=tinysrgb"
-                             alt="Card image cap">
+                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRzrsvYREQF2spJT1b4hc_SQmbnGEtPDGeoYlcdZDTf0FIpnNzHg"
+                             alt="Card image cap" style="width:128px;height:128px">
                         <div class="card-body">
                             <h4 class="card-title">publisher info:</h4>
                             <ul class="list-group list-group-flush">
+                                <i class="pe-7s-map-marker strong"> </i>
                                 <li class="list-group-item">{{auther.firstName}} {{auther.lastName}}</li>
                                 <li class="list-group-item">contact info:<br>
                                     cell number: {{auther.contactInfo.cellNumber}}<br>
