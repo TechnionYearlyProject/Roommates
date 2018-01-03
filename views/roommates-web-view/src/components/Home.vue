@@ -2,7 +2,6 @@
 <div>
   <section>
     <app-apartment-list></app-apartment-list>
-    <app-apartment-adder></app-apartment-adder>
   </section>
 </div>
 </template>
