@@ -1,7 +1,14 @@
 <template>
   <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
-        <div class="dropbox">
-          <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length" accept="image/*" class="input-file">
+        <div :class="{ dropbox: true, 'dropbox-active': !isReadOnly }">
+          <input type="file" 
+          :multiple="isMultiple"
+          :name="uploadFieldName" 
+          :disabled="isSaving || isReadOnly" 
+          @change="filesChange($event.target.name, $event.target.files); 
+          fileCount = $event.target.files.length" 
+          accept="image/*" 
+          class="input-file">
             <p v-if="isInitial">
               Drag your photos here<br>or click to browse
             </p>
@@ -28,6 +35,7 @@ export default {
       uploadFieldName: "photos"
     };
   },
+  props: ['isMultiple', 'isReadOnly'],
   computed: {
     isInitial() {
       return this.currentStatus === STATUS_INITIAL;
@@ -96,6 +104,10 @@ export default {
   width: auto;
   position: relative;
   cursor: pointer;
+  
+}
+
+.dropbox-active {
   transition: background-color 0.5s;
 }
 
@@ -109,7 +121,11 @@ export default {
   cursor: pointer;
 }
 
-.dropbox:hover {
+.input-file:disabled {
+  cursor: default;
+}
+
+.dropbox-active:hover {
   background: #eee; /* when mouse over to the drop zone, change color */
 }
 

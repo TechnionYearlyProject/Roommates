@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-sm-4 offset-sm-1">
         <h2 class="s-h2 mt-3 mb-2">Upload images of your apartment</h2>
-        <app-image-upload></app-image-upload>
+        <app-image-upload :isMultiple="true" :isReadOnly="isReadOnly"></app-image-upload>
       </div>
       <div class="col-sm-6">
         <div class="form-group">
