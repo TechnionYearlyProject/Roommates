@@ -25,8 +25,8 @@
                   </div>
                     <p><br></p>
                     <div class="single-property-header">                                          
-                                <h1>{{apartment.location.address.city}}, {{apartment.location.address.street}},
-                                    {{apartment.location.address.houseNumber}}/{{apartment.location.address.entranceNumber}}</h1>
+                                <h1>{{apartment.address.city}}, {{apartment.address.street}},
+                                    {{apartment.address.houseNumber}}/{{apartment.address.entranceNumber}}</h1>
                     </div>
                     <div >
                         <div class="row">
@@ -40,7 +40,7 @@
                                     </span>
                                     <span class="property-info-entry">
                                         <span class="property-info-label">Area</span>
-                                        <span class="property-info-value">{{apartment.}}<b class="property-info-unit">Sq Ft</b></span>
+                                        <span class="property-info-value">3500<b class="property-info-unit">Sq Ft</b></span>
                                     </span>
                                 </div>
                             </div>
@@ -261,26 +261,17 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
                 apartment: {
                     _id: '1',
                     createdBy: '1',
-                    location : {
-                        address: {
-                            state: 'Israel',
-                            city: 'chaifa',
-                            street: 'shalom alychem',
-                            houseNumber: 18,
-                            entranceNumber: 1,
-                        },
-                        geolocation : [0,0]
+                    address: {
+                        state: 'Israel',
+                        city: 'chaifa',
+                        street: 'shalom alychem',
+                        houseNumber: 18,
+                        entranceNumber: 1,
                     },
-
                     floor: 1,
                     totalFloors: 4,
-                    numOfRooms:5,
-                    area: 100,
                     description: "a very nice place",
                     price: 1200,
-                    requiredNumberOfRoommates : 4,
-                    currentlyNumberOfRoomates : 1,
-                    enteranceDate : "1/1/18",
                     images : [
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4qUg397lGFM0dJpE9rA1DHzttbtfQiYXQULgqKRreYTUnQuCq",
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUIzpQEzg9pExt10YWgJU4_6XGoXiD1FeUCkuV7ZEPG8wGi8SXHg",
@@ -349,8 +340,3 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
 <style scoped>
 
 </style>
-
-
-
-{
-}
