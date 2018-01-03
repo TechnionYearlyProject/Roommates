@@ -205,7 +205,7 @@
                 <p>{{calCom}}</p>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="comment in calCom">
+                        <li class="list-group-item" v-for="comment in apartment.comments.slice(1,4)">
                             {{comment.comment}} at: {{comment.writenAt}}
                         </li>
                     </ul>
@@ -220,7 +220,10 @@
                 ><button v-on:click="changeCommentPage(p)">{{p}}</button>{{commentPage}}</li>
                 <li class="page-item"><button v-on:click="lastCommentPage()">last</button></li>
             </ul>
-
+            <div>
+                <p>{{test}}</p>
+                <button v-on:click="incrementComPage()">test</button>
+            </div>
             <ul class="pagination">
                 <li class="page-item"><button v-on:click="changeCommentPage(1)">first</button></li>
                 <li v-for="p in (Math.ceil(apartment.comments.length/5))"
@@ -244,6 +247,7 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
         data() {
             return {
                 calCom: [],
+                test:0,
                 imgNum: 1,
                 commentPage: 1,
                 title: 'hi there',
@@ -356,7 +360,9 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
                 this.commentPage = newPage;
             },
             lastCommentPage(){
-                this.commentPage = (Math.ceil(apartment.comments.length/5));
+                this.commentPage = Math.ceil(apartment.comments.length/5);
+                
+            // (Math.ceil((apartment.comments.length)/5));
             },
             incrementComPage(){
                 if(commentPage!=(Math.ceil(apartment.comments.length/5))){
@@ -377,11 +383,17 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
                 if(imgNum!=1){
                     this.commentPage--;
                 }
+            },
+            increment(){
+                this.test++;
             }
         },
         computed:{
             calCom(){
                 return this.apartment.images.slice(5*(this.commentPage)-4,5*(this.commentPage)+1);
+            },
+            test(){
+                return this.test;
             }
         }
     }
