@@ -3,8 +3,26 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm">
-                    <img src="https://37b3a77d7df28c23c767-53afc51582ca456b5a70c93dcc61a759.ssl.cf3.rackcdn.com/1024x768/54850_3971_001.jpg"
-                         width="500" height="auto"/>
+                  <div>
+                    <b-carousel id="carousel1"
+                                style="text-shadow: 1px 1px 2px #333;"
+                                controls
+                                indicators
+                                background="#ababab"
+                                :interval="4000"
+                                img-width="1024"
+                                img-height="480"
+                                v-model="slide"
+                                @sliding-start="onSlideStart"
+                                @sliding-end="onSlideEnd"
+                    >
+                      <div v-for="img in apartment.images">
+                        <b-carousel-slide
+                          img-src="img"
+                        ></b-carousel-slide>
+                      </div>
+                    </b-carousel>
+                  </div>
                     <p><br></p>
                     <div class="card" style="width: 20rem;">
                         <div class="card-header">
@@ -23,29 +41,10 @@
                 </div>
                 <div class="col-sm">
                     <div class="col-md-4 pr-0 r-apartment-image">
-                       <app-image-carusel :apartment="apartment"></app-image-carusel>
+
                     </div>
 
-                <!-- <div>
-                    <b-carousel id="carousel1"
-                                style="text-shadow: 1px 1px 2px #333;"
-                                controls
-                                indicators
-                                background="#ababab"
-                                :interval="4000"
-                                img-width="1024"
-                                img-height="480"
-                                v-model="slide"
-                                @sliding-start="onSlideStart"
-                                @sliding-end="onSlideEnd"
-                    >
-                        <div v-for="img in apartment.images">
-                            <b-carousel-slide
-                                img-src="img"
-                            ></b-carousel-slide>
-                        </div>
-                    </b-carousel>
-                </div> -->
+
 
 
 
@@ -123,7 +122,8 @@
 </template>
 
 <script>
-import ImageCarusel from "./gallery/image-carusel/ImageCarusel.vue";
+import bCarousel from "./gallery/image-carousel/ImageCarousel.vue";
+import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide';
     export default {
         name: 'apartment-page',
 
@@ -178,9 +178,9 @@ import ImageCarusel from "./gallery/image-carusel/ImageCarusel.vue";
                     totalFloors: 4,
                     description: "a very nice place",
                     price: 1200,
-                    images : [ 
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4qUg397lGFM0dJpE9rA1DHzttbtfQiYXQULgqKRreYTUnQuCq", 
-                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUIzpQEzg9pExt10YWgJU4_6XGoXiD1FeUCkuV7ZEPG8wGi8SXHg", 
+                    images : [
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4qUg397lGFM0dJpE9rA1DHzttbtfQiYXQULgqKRreYTUnQuCq",
+                        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUIzpQEzg9pExt10YWgJU4_6XGoXiD1FeUCkuV7ZEPG8wGi8SXHg",
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPhqE9OKHQApVJLMlRBtg4Bb8fDCNjQIXce3DgJgHpGAJrru2EDg"
                     ],
                     comments: [
@@ -223,6 +223,9 @@ import ImageCarusel from "./gallery/image-carusel/ImageCarusel.vue";
                     ]
                 }
             }
+        },
+        components:{
+          bCarousel, bCarouselSlide
         },
         methods:{
             changeCommentPage(newPage) {
