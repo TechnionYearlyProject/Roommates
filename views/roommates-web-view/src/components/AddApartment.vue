@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="container" style="margin-bottom:200px">
   <div class="container mb-5">
     <div class="row">
       <div class="col-md-12">
@@ -44,7 +44,7 @@
     </transition>
   </div>
 
-  <div class="container" style="margin-bottom:100px;margin-top:60px;">
+  <div class="container clearfix" style="margin-bottom:100px;margin-top:60px;">
         <button type="button" 
          class="btn btn-info s-btn-switch"
          @click="goPreviousPage"

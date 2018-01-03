@@ -1,7 +1,7 @@
 <template>
 <div>
   
-  <div class="row">
+  <div class="row ml-2" style="text-align:left">
     <div class="col-sm-3">
       <div class="form-group">
         <div class="form-check">
@@ -104,8 +104,8 @@ export default {
 </script>
 
 <style scoped>
-input {
- vertical-align: middle;
+label {
+  margin-left: 20px;
 }
 
 .s-icon {
@@ -115,10 +115,22 @@ input {
   color: #777;
   font-size: 300%;
   margin-right: 10px;
-
+  
   /* secrets to align text and icons */
   line-height: 120%;
   vertical-align: middle;
   margin-top: -5px;
 }
+
+.form-check {
+  width: 75%;
+}
+
+.form-check-input {
+   vertical-align: middle;
+    width: 20px;
+  height: 20px;
+  float: left;
+}
+
 </style>
