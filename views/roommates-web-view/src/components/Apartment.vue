@@ -28,6 +28,14 @@
                                 <h1>{{apartment.location.address.city}}, {{apartment.location.address.street}},
                                     {{apartment.location.address.houseNumber}}/{{apartment.location.address.entranceNumber}}</h1>
                     </div>
+                    <div class="row">
+                        <div class="col-sm">
+                           <h2>{{apartment.price}} per month</h2>
+                        </div>
+                        <div class="col-sm">
+                            <p>{{apartment.price}} utilty bi-monthly</p>
+                        </div>
+                    </div>
                     <div >
                         <div class="row">
                             <div class="col-sm">
@@ -119,20 +127,20 @@
                                         style="width:30px;height:30px">
                                 </span>
                                 <span class="property-info-entry">
-                                    <span class="property-info-label">Garages</span>
-                                    <span class="property-info-value">2</span>
+                                    <span class="property-info-label">hot_water</span>
+                                    <span class="property-info-value"><img src="waterHeaterMethod" alt=""></span>
                                 </span>
                             </div>
                         </div>
                         <div class="col-sm">
                             <div class="col-xs-6 col-sm-3 col-md-3 p-b-15">
                                 <span class="property-info-icon icon-garage">
-                                    <img src="data:image/jpeg;base64,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"
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFoAAABaCAMAAAAPdrEwAAAAY1BMVEX///8AAAD4+Pjw8PCPj4+/v78QEBCnp6eampp9fX3g4OB2dnY2NjZhYWEfHx+KioomJiZGRkZQUFChoaHNzc3o6OjW1tbHx8doaGhtbW25ubkXFxevr69cXFyDg4NBQUEtLS3NngzLAAAC8UlEQVRYhe2ZDbOqIBCGXU1T85jmV6lp//9XHhRIVMwFunPv3PGdOePWxhNngWUhy/pbyttyy+WeXRNyCgA/Uk/REFfjaJPvMOghc/Wj66ZL7oDqtHYVzBXqkVvgqle+kHk2R+Kjcpi0IhihC4EM3nK8TNB2LKLhtYHWifUN5lpMQQP0BZbqvoTOVmSA9itoV0IGqL6ADqVkgMIY7XisXcCMgL2ObeK1TdBX1uzBp7bzw4zMKp5xmi/Q1e31QOaplLbq3+0d68W6b3Med5EYVcOzsVHoCwdO7Vn/MzpzEltwOdSQpDCJKKecdW1MKDH/1qfwD0XUuOMiUt4gGmZaKQTUjeDuWGf2js+HweZry8eh+TQQ0ez9iA8ofcQ+e53gYj31foXmkV2p2KZg0bMsPilXJEvRwt4zqd0i7KLn+b5bka/K5A209VyQ5dXEZ+VytJXMyJHi5Jihl4M02zZBq8zZQn/e7M3Q71UJoFn3SScfFZ8m6PW9FC0YepmL7vgXXTLtdiJdxPaQ1Z/aZAJo/c1gVpny8v7zsh2sFLl+1HhINdFJYT3KS5wPQs/uSpU8r6w+RUOdTDZJFPq8D1rrjEIvS2uUIhS60UEDCs2LyMrF6MTQqGB7KtF7T9QDbY6u6qmRKyxobuujh0nOcxsp4D1GGE6siRl6rKNZWT7uwhm1xxXbGqHHLYydRivha/z3J/QDMpxiCsHBguO8aQbD6ArDWM9s5tdDn4PLJQiCLiD7iM9tUnqcBFsPLZTSDyHT+kIZ7Gui/QkRC/ZVyLqdOTo50Af6P0d3X0CX6XBCJH9NWucpSf4eKVHitHL74Uk+lqS5duYjfY0zdp69khLphx1fApK4U5rIDdHPA32gD/Q/jg7M0TyH9Pfv9bpIoA7ZDVHogVuxuyZSZZY1NKEmml45khY2b2Xze1zRrjTQikKhk33OWh6GbAX7oLVwt5/lPmgt5I3IQ52M/iW2VyUn+Auo6z5NlNJNouP6J6T8eqPLv5CIMUQ8Bv7PAAAAAElFTkSuQmCC"
                                     style="width:30px;height:30px">                   
                                 </span>
                                 <span class="property-info-entry">
-                                    <span class="property-info-label">Garages</span>
-                                    <span class="property-info-value">2</span>
+                                    <span class="property-info-label">elevator</span>
+                                    <span class="property-info-value">{{apartment.elevator}}</span>
                                 </span>
                             </div>
                         </div> 
@@ -180,11 +188,21 @@
                         <img class="card-img-top"/>
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
-                                <li class="list-group-item" v-for="user in users">{{user.firstName}} {{user.lastName}}
+                                <li class="list-group-item" v-for="user in calUsers">{{user.firstName}} {{user.lastName}}
                                     <a href="#" class="btn btn-secondry btn-sm">user info</a>
+                                </li>
+                                <li class="list-group-item" v-for="p in (5-calUsers.length)">
+                                    <br>
                                 </li>
                             </ul>
                         </div>
+                        <ul class="pagination">
+                            <li class="page-item"><button @click="changeUsersPage(1)">first</button></li>
+                            <li v-for="p in (Math.ceil(apartment.interstedUsers.length/5))"
+                                :class="{ 'page-item': true, active:commentPage }"
+                            ><button v-on:click="changeUsersPage(p)">{{p}}</button></li>
+                            <li class="page-item"><button @click="lastCommentPage">last</button></li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -202,37 +220,26 @@
                 <div class="card-header">
                     users comment:
                 </div>
-                <p>{{calCom}}</p>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="comment in apartment.comments.slice(1,4)">
+                        <li class="list-group-item" v-for="comment in calCom">
                             {{comment.comment}} at: {{comment.writenAt}}
                         </li>
+                                <li class="list-group-item" v-for="p in (5-calCom.length)">
+                                    <br>
+                                </li>
                     </ul>
                     <p class="card-text"></p>
                 </div>
             </div>
 
             <ul class="pagination">
-                <li class="page-item"><button v-on:click="changeCommentPage(1)">first</button></li>
+                <li class="page-item"><button @click="changeCommentPage(1)">first</button></li>
                 <li v-for="p in (Math.ceil(apartment.comments.length/5))"
                     :class="{ 'page-item': true, active:commentPage }"
-                ><button v-on:click="changeCommentPage(p)">{{p}}</button>{{commentPage}}</li>
-                <li class="page-item"><button v-on:click="lastCommentPage()">last</button></li>
+                ><button v-on:click="changeCommentPage(p)">{{p}}</button></li>
+                <li class="page-item"><button @click="lastCommentPage">last</button></li>
             </ul>
-            <div>
-                <p>{{test}}</p>
-                <button v-on:click="incrementComPage()">test</button>
-            </div>
-            <ul class="pagination">
-                <li class="page-item"><button v-on:click="changeCommentPage(1)">first</button></li>
-                <li v-for="p in (Math.ceil(apartment.comments.length/5))"
-                    :class="{ 'page-item': true, active:commentPage }"
-                ><button v-on:click="changeCommentPage(p)">{{p}}</button>{{commentPage}}</li>
-                <li class="page-item"><button v-on:click="lastCommentPage()">last</button></li>
-            </ul>
-
-
 
         </div>
     </div>
@@ -246,11 +253,9 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
 
         data() {
             return {
-                calCom: [],
-                test:0,
                 imgNum: 1,
                 commentPage: 1,
-                title: 'hi there',
+                usersPage:1,
                 auther: {
                     firstName: 'chanan',
                     lastName: 'ben tal',
@@ -261,28 +266,6 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
                         eMail: 'chananbental@gmail.com'
                     }
                 },
-                users: [
-                    {
-                        firstName: 'chanan',
-                        lastName: 'ben tal',
-                        _id: '1'
-                    },
-                    {
-                        firstName: 'hanan',
-                        lastName: 'ben-tal',
-                        _id: '2'
-                    },
-                    {
-                        firstName: 'khanan',
-                        lastName: 'ben tal',
-                        _id: '3'
-                    },
-                    {
-                        firstName: 'gabi',
-                        lastName: 'ben-tal',
-                        _id: '4'
-                    },
-                ],
                 apartment: {
                     _id: '1',
                     createdBy: '1',
@@ -306,11 +289,57 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
                     showers:2,
                     roomatesNeeded: 3,
                     roomatesCurrently: 1,
+                    electricWaterHeater: true,
+                    solarWaterHeater: false,
+                    elevator: "yes",
                     images : [
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4qUg397lGFM0dJpE9rA1DHzttbtfQiYXQULgqKRreYTUnQuCq",
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUIzpQEzg9pExt10YWgJU4_6XGoXiD1FeUCkuV7ZEPG8wGi8SXHg",
                         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPhqE9OKHQApVJLMlRBtg4Bb8fDCNjQIXce3DgJgHpGAJrru2EDg"
                     ],
+                    interstedUsers: [
+                        {
+                            firstName: 'chanan',
+                            lastName: 'ben tal',
+                            _id: '1'
+                        },
+                        {
+                            firstName: 'hanan',
+                            lastName: 'ben-tal',
+                            _id: '2'
+                        },
+                        {
+                            firstName: 'khanan',
+                            lastName: 'ben tal',
+                            _id: '3'
+                        },
+                        {
+                            firstName: 'gabi',
+                            lastName: 'ben-tal',
+                            _id: '4'
+                        },
+                        {
+                            firstName: 'chseanan',
+                            lastName: 'ben tal',
+                            _id: '5'
+                        },
+                        {
+                            firstName: 'hangran',
+                            lastName: 'ben-tal',
+                            _id: '66'
+                        },
+                        {
+                            firstName: 'khadfgnan',
+                            lastName: 'ben tal',
+                            _id: '7'
+                        },
+                        {
+                            firstName: 'gaby',
+                            lastName: 'ben-tal',
+                            _id: '8'
+                        },
+                    ],
+
                     comments: [
                         {
                             commentBy: '4', writenAt: "2017-01-01", comment: " i had a look around and i realy like the place"
@@ -384,16 +413,25 @@ import bCarouselSlide from 	'bootstrap-vue/es/components/carousel/carousel-slide
                     this.commentPage--;
                 }
             },
-            increment(){
-                this.test++;
+            changeUsersPage(newPage){
+                this.usersPage=newPage;
             }
         },
         computed:{
             calCom(){
-                return this.apartment.images.slice(5*(this.commentPage)-4,5*(this.commentPage)+1);
+                return this.apartment.comments.slice(5*(this.commentPage)-4,5*(this.commentPage)+1);
             },
-            test(){
-                return this.test;
+            calUsers(){
+                return this.apartment.interstedUsers.slice(5*(this.usersPage)-4,5*(this.usersPage)+1);
+            },
+            waterHeaterMethod(){
+                if(this.apartment.electricWaterHeater){
+                    if(this.apartment.solarWaterHeater){
+                        return "pic of sun and elctricty";
+                    }
+                    return "pic of electricty";
+                }
+                return "pic of sun";
             }
         }
     }
