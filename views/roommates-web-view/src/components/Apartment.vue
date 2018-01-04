@@ -17,7 +17,6 @@
                         @sliding-start="onSlideStart"
                         @sliding-end="onSlideEnd"
                         v-model="apartment.images">
-
                     </b-carousel>
 
                   </div>
