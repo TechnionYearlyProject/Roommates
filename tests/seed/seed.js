@@ -18,6 +18,7 @@ const apartment2Id = new ObjectID();
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
+  title: 'Apartment 1',
   _createdBy: new ObjectID(),
   createdAt: Date.now(),
   price: 2000,
@@ -41,12 +42,13 @@ const apartment1 = new Apartment({
   //description:
   //tags:
   requiredNumberOfRoommates: 2,
-  currentlyNumberOfRoomates: 1
+  currentlyNumberOfRoommates: 1
   //comments
 });
 
 const apartment2 = new Apartment({
   _id: apartment2Id,
+  title: 'Apartment 2',
   _createdBy: new ObjectID(),
   createdAt: Date.now(),
   price: 1000,
@@ -70,11 +72,12 @@ const apartment2 = new Apartment({
   //description:
   //tags:
   requiredNumberOfRoommates: 1,
-  currentlyNumberOfRoomates: 2
+  currentlyNumberOfRoommates: 2
   //comments
 });
 
 const notPublishedApartment = {
+  title: 'Not published Apartment',
   address: {
     state: 'israel',
     city: 'haifa',
@@ -85,7 +88,7 @@ const notPublishedApartment = {
   enteranceDate: new Date('1-1-2018').getTime(),
   description: 'notPublishedApartment',
   requiredNumberOfRoommates: 1,
-  currentlyNumberOfRoomates: 0,
+  currentlyNumberOfRoommates: 0,
   numberOfRooms: 2,
   floor: 2,
   totalFloors: 3,

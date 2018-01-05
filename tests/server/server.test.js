@@ -155,7 +155,7 @@ describe('Server Tests', () => {
             return done(err);
           }
 
-         try {
+          try {
             const user = await User.findById(users[1]._id);
             const apartment = await Apartment.findOne({ description: notPublishedApartment.description });
             expect(user._publishedApartments[0]).toEqual(apartments[0]._id);
@@ -164,18 +164,18 @@ describe('Server Tests', () => {
           } catch (e) {
             return done(e);
           }
-        });         
+        });
     });
   });
 
-describe('PUT /apartments/:id/comment', () => {
+  describe('PUT /apartments/:id/comment', () => {
     it('should add a new comment', (done) => {
       const id = apartments[1]._id;
-      const text = "Nice apartment!";
+      const text = 'Nice apartment!';
       request(app)
         .put(`/apartments/${id}/comment`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({text})
+        .send({ text })
         .expect(OK)
         .expect((res) => {
           expect(res.body.comments.length).toBe(1);
@@ -197,21 +197,21 @@ describe('PUT /apartments/:id/comment', () => {
 
     it('should not add comment with invalid text', (done) => {
       const id = apartments[1]._id;
-      const text = "";
+      const text = '';
       request(app)
         .put(`/apartments/${id}/comment`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({text})
+        .send({ text })
         .expect(BAD_REQUEST)
         .end(done);
     });
 
     it('should not add comment - unregistered user', (done) => {
       const id = apartments[1]._id;
-      const text = "Wow! Great apartment!";
+      const text = 'Wow! Great apartment!';
       request(app)
         .put(`/apartments/${id}/comment`)
-        .send({text})
+        .send({ text })
         .expect(UNAUTHORIZED)
         .end(done);
     });
@@ -222,7 +222,7 @@ describe('PUT /apartments/:id/comment', () => {
       request(app)
         .put(`/apartments/${id}/comment`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({text})
+        .send({ text })
         .expect(NOT_FOUND)
         .end(done);
     });
@@ -265,11 +265,11 @@ describe('PUT /apartments/:id/comment', () => {
           }
 
           try {
-            const counter = await Apartment.count({_id: id});
+            const counter = await Apartment.count({ _id: id });
             const user = await User.findById(users[1]._id);
             expect(counter).toBe(0);
             expect(user.isOwner(id)).toBe(false);
-            
+
             return done();
           } catch (e) {
             return done(e);
@@ -280,7 +280,7 @@ describe('PUT /apartments/:id/comment', () => {
   });
 
   describe('GET /apartments/tags', () => {
-     it('should get all apartment tags', (done) => {
+    it('should get all apartment tags', (done) => {
       request(app)
         .get('/apartments/tags')
         .expect(OK)
@@ -465,7 +465,7 @@ describe('PUT /apartments/:id/comment', () => {
     }).timeout(5000);
 
     it('should find apartment by total number of roommates', (done) => {
-      const roommatesNumber = apartments[1].currentlyNumberOfRoomates;
+      const roommatesNumber = apartments[1].currentlyNumberOfRoommates;
 
       request(app)
         .get('/apartments')
@@ -473,7 +473,7 @@ describe('PUT /apartments/:id/comment', () => {
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0].currentlyNumberOfRoomates).toBe(roommatesNumber);
+          expect(res.body.results[0].currentlyNumberOfRoommates).toBe(roommatesNumber);
         })
         .end(done);
     });
@@ -774,7 +774,7 @@ describe('PUT /apartments/:id/comment', () => {
   });
 
   describe('GET /users/tags', () => {
-     it('should get all user tags', (done) => {
+    it('should get all user tags', (done) => {
       request(app)
         .get('/users/tags')
         .expect(OK)
@@ -937,6 +937,4 @@ describe('PUT /apartments/:id/comment', () => {
         .end(done);
     });
   });
-
-
 });

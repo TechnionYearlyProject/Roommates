@@ -34,6 +34,7 @@ app.post('/apartments', authenticate, async (req, res) => {
 
     const apartmentData = _.pick(req.body,
       [
+        'title',
         'price',
         'address',
         'enteranceDate',
@@ -41,7 +42,7 @@ app.post('/apartments', authenticate, async (req, res) => {
         'description',
         'tags',
         'requiredNumberOfRoommates',
-        'currentlyNumberOfRoomates',
+        'currentlyNumberOfRoommates',
         'numberOfRooms',
         'floor',
         'totalFloors',
@@ -94,7 +95,7 @@ app.get('/apartments', async (req, res) => {
       enteranceDate: body.untilEnteranceDate,
       address: body.address,
       radius: body.radius,
-      currentlyNumberOfRoomates: body.roommatesNumber
+      currentlyNumberOfRoommates: body.roommatesNumber
     });
     res.send({ results });
   } catch (err) {

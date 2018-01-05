@@ -7,6 +7,12 @@ const { removeFalsyProps } = require('../helpers/removeFalsyProps');
 const { isSupportedTagId } = require('./tag');
 
 const ApartmentSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    min: 4,
+    max: 35,
+    required: true
+  },
   _createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
@@ -113,7 +119,7 @@ const ApartmentSchema = new mongoose.Schema({
     max: 10,
     required: true
   },
-  currentlyNumberOfRoomates: {
+  currentlyNumberOfRoommates: {
     type: Number,
     min: 0,
     max: 10
@@ -157,7 +163,7 @@ ApartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
 };
 
 //TODO: add the rest of properties
-//_id, _createdBy, fromPrice, toPrice, enteranceDate, address, radius, currentlyNumberOfRoomates
+//_id, _createdBy, fromPrice, toPrice, enteranceDate, address, radius, currentlyNumberOfRoommates
 ApartmentSchema.statics.findByProperties = async function (p) {
   const Apartment = this;
 
@@ -186,7 +192,7 @@ ApartmentSchema.statics.findByProperties = async function (p) {
     price,
     enteranceDate,
     'location.geolocation': geolocation,
-    currentlyNumberOfRoomates: p.currentlyNumberOfRoomates
+    currentlyNumberOfRoommates: p.currentlyNumberOfRoommates
   });
 
   return Apartment.find(properties);
