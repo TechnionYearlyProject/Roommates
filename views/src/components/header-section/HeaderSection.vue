@@ -5,7 +5,8 @@
 
             <div class="pull-right">
                 <b-button size="lg" variant="primary">Login</b-button>
-                <b-button size="lg" variant="primary" v-b-popover.hover.bottom="'Add Apartment'">
+                <b-button size="lg" variant="primary" :to="{ name: 'add-apartment-page' }"
+                          v-b-popover.hover.bottom="'Add Apartment'">
                     <icon name="plus" />
                 </b-button>
             </div>
