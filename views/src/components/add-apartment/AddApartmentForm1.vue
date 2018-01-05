@@ -53,7 +53,7 @@
             <div class="col-md-4">
                 <b-form-input
                 type="number"
-                placeholder="Street number"
+                placeholder="Number"
                 aria-labelledby='lblLocation'
                 v-model.number.lazy="info.address.number"
                 v-bind:readonly="isReadOnly"
