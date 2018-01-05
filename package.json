@@ -8,6 +8,7 @@
     "body-parser": "^1.18.2",
     "codecov.io": "^0.1.6",
     "colors": "^1.1.2",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "geolib": "^2.0.24",
     "http-status": "^1.0.1",

@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
 const { BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK } = require('http-status');
+const cors = require('cors');
 
 require('./server-config');
 require('./db/mongoose');
@@ -11,12 +12,13 @@ const { Apartment } = require('./models/apartment');
 const { User } = require('./models/user');
 const { XAUTH } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
-const {getSupportedHobbies} = require('./models/hobbie');
-const {getSupportedTags} = require('./models/tag');
+const { getSupportedHobbies } = require('./models/hobbie');
+const { getSupportedTags } = require('./models/tag');
 
 const app = express();
 
 app.use(bodyParser.json());
+app.use(cors(process.env.CORS));
 useVue(app);
 
 app.post('/apartments', authenticate, async (req, res) => {
@@ -62,9 +64,9 @@ app.post('/apartments', authenticate, async (req, res) => {
 });
 
 app.get('/apartments/tags', async (req, res) => {
-  try{
-    res.send({tags:getSupportedTags()});
-  }catch(err){
+  try {
+    res.send({ tags: getSupportedTags() });
+  } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
 });
@@ -104,7 +106,7 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['text']);
     const { id } = req.params;
-    
+
     const apartment = await Apartment.findById(id);
     if (!apartment) {
       return res.status(NOT_FOUND).send();
@@ -121,12 +123,12 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
   }
 });
 
-app.delete('/apartments/:id', authenticate, async (req, res)  => {
+app.delete('/apartments/:id', authenticate, async (req, res) => {
   try {
 
     const { id } = req.params;
 
-    if(!(req.user.isOwner(id))){
+    if (!(req.user.isOwner(id))) {
       return res.status(UNAUTHORIZED).send();
     }
 
@@ -178,9 +180,9 @@ app.get('/users/self', authenticate, (req, res) => {
 
 
 app.get('/users/tags', async (req, res) => {
-  try{
-    res.send({tags:getSupportedHobbies()});
-  }catch(err){
+  try {
+    res.send({ tags: getSupportedHobbies() });
+  } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
 });
