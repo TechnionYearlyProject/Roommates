@@ -5,17 +5,22 @@
     <div class="card-block">
       <h4 class="card-title">{{card_details.title}}</h4>
       <p class="card-text">{{card_details.text}}</p>
-      <a :href=card_details.link class="btn btn-primary">{{card_details.linkText}}</a>
+      <b-button size="lg" variant="primary" :to=card_details.link>{{card_details.linkText}}</b-button>
     </div>
   </div>
 </div>
 </template>
 
 <script>
+import bButton from 'bootstrap-vue/es/components/button/button';
+
 export default {
   props: [
     'card_details'
-  ]
+  ],
+  components: {
+            bButton
+  }
 };
 </script>
 
