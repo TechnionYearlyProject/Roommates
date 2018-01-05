@@ -1,5 +1,5 @@
 {
-    "name": "",
+    "name": "Roommates",
     "icons": [
         {
             "src": "static/favicon/android-chrome-192x192.png",
@@ -12,7 +12,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
+    "theme_color": "#ebebeb",
+    "background_color": "#ebebeb",
     "display": "standalone"
 }

@@ -24,7 +24,7 @@
                     <b-container class="social">
                         <b-row no-gutters>
                             <b-link v-for="(media, name) in socialMedia" :key="name"
-                                    :href="media.href" v-b-tooltip.hover.bottom="media.name">
+                                    :href="media.href" v-b-tooltip.hover.top="media.name">
                                 <b-col>
                                     <icon :name="name" :scale="1.7 * media.scale" />
                                 </b-col>
