@@ -1,6 +1,8 @@
-body {
+html, body {
     color: #7d7d7d;
     background-color: #f8f8f8;
+    margin: 0;
+    padding: 0;
 }
 
 .box {
