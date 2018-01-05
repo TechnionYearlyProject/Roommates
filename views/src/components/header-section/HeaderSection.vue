@@ -30,6 +30,7 @@
 
 <style scoped>
     #header {
+        border: none;
         border-bottom: #ddd solid 1px;
         padding: 10px 0;
         margin-bottom: 15px;
