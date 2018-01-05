@@ -135,7 +135,7 @@
 <script>
     import bCarousel from 'bootstrap-vue/es/components/carousel/carousel';
     import bPagination from 'bootstrap-vue/es/components/pagination/pagination';
-    import apartmentTags from '../single-apartment/tags-grid';
+    import ApartmentTags from '@/components/single-apartment/TagsGrid';
 
     export default {
         name: 'apartment-page',
@@ -284,7 +284,7 @@
             }
         },
         components: {
-            bCarousel, bPagination, apartmentTags
+            bCarousel, bPagination, apartmentTags: ApartmentTags
         },
         methods: {
             changeCommentPage(newPage) {
