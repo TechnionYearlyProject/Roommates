@@ -77,7 +77,7 @@
                 </div>
             </div>
             <div class="col-sm-3">
-                <div class="form-group">
+                <div class="form-group custom-checkbox">
                     <div class="form-check">
                         <input class="form-check-input mt-3"
                                type="checkbox"

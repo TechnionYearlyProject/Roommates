@@ -79,21 +79,21 @@
             return {
                 progression: 1,
                 form1Info: {
-                    title: "",
-                    price: "",
-                    city: "",
-                    street: "",
-                    streetNumber: ""
+                    title: '',
+                    price: '',
+                    city: '',
+                    street: '',
+                    streetNumber: ''
                 },
                 form2Info: {
-                    description: "",
-                    apartmentNumber: "",
-                    floor: "",
-                    totalFloors: "",
-                    numberOfRooms: "",
-                    area: "",
-                    requiredRoommates: "",
-                    totalRoommtes: ""
+                    description: '',
+                    apartmentNumber: '',
+                    floor: '',
+                    totalFloors: '',
+                    numberOfRooms: '',
+                    area: '',
+                    requiredRoommates: '',
+                    totalRoommtes: ''
                 },
                 form3Info: {
                     tags: []
@@ -114,6 +114,9 @@
                 this.progression--;
             },
             submitApartment() {
+                this.$http.get('users/tags')
+                .then((res) =>
+                console.log(JSON.stringify(res.body)));
             }
         },
         components: {
@@ -166,6 +169,7 @@
     .s-btn-done {
         text-transform: uppercase;
         width: 120px;
+        cursor: pointer;
     }
 
     .s-btn-done {
