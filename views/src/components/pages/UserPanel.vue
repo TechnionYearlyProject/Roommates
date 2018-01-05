@@ -39,7 +39,8 @@
                         title: "New Apartment",
                         text: "Expose your asset to our community",
                         img: "@/../static/images/user_panel/actions_menu/add.png",
-                        linkText: "Add Apartment"
+                        linkText: "Add Apartment",
+                        link: { name: 'add-apartment-page' }
                     },
                     {
                         title: "My apartments",
