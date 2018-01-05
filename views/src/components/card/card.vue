@@ -34,10 +34,12 @@ export default {
 .card-block{
   padding: 5px;
 }
+
 img {
     height: 3rem;
     width: 3rem;
 }
+
 .s-btn-sun {
   padding: 8px 80px;
   font-size: 150%;
