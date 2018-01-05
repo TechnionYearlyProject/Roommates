@@ -7,7 +7,8 @@
                            :price="1250"
                            :bedrooms="4"
                            :floor="5"
-                           :bathrooms="2" />
+                           :bathrooms="2"
+                           :images="3" />
         </ul>
     </div>
 </template>

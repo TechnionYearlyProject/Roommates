@@ -1,9 +1,9 @@
 <template>
     <b-media tag="li" class="box">
         <b-carousel slot="aside" indicators controls>
-            <b-carousel-slide img-src="https://technext.github.io/garo-estate/assets/img/demo/property-1.jpg" />
-            <b-carousel-slide img-src="https://technext.github.io/garo-estate/assets/img/demo/property-2.jpg" />
-            <b-carousel-slide img-src="https://technext.github.io/garo-estate/assets/img/demo/property-3.jpg" />
+            <b-carousel-slide
+                    v-for="i in images" :key="i"
+                    :img-src="`static/images/apartments/123/${i}.jpg`" />
         </b-carousel>
 
         <b-container class="result-details h-100">
@@ -65,7 +65,8 @@
             price: Number,
             bedrooms: Number,
             floor: Number,
-            bathrooms: Number
+            bathrooms: Number,
+            images: Number
         },
         components: {
             Icon,
