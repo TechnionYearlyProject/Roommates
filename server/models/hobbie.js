@@ -65,6 +65,11 @@ const supportedHobbies = [
     _id: 13,
     name: 'INTERESTED IN ARTS',
     score: 1
+  },
+  {
+    _id: 14,
+    name: 'KOSHER KEEPER',
+    score: 1
   }
 ];
 
