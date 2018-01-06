@@ -8,6 +8,21 @@
                             {{apartment.location.address.houseNumber}}/{{apartment.location.address.entranceNumber}}</h1>
                     </div>
                     <hr>
+                    <b-carousel id="carousel1"
+                                style="text-shadow: 1px 1px 2px #333;"
+                                controls
+                                indicators
+                                background="#ababab"
+                                :interval="4000"
+                                img-width="1024"
+                                img-height="480"
+                                v-model="slide"
+                                @sliding-start="onSlideStart"
+                                @sliding-end="onSlideEnd">
+                        <b-carousel-slide v-for="img in apartment.images" :img-src="img">
+
+                        </b-carousel-slide>
+                    </b-carousel>
                     <b-row>
                         <b-col cols="7">
                             <h2>{{apartment.price}} per month</h2>
@@ -134,13 +149,14 @@
 
 <script>
     import bCarousel from 'bootstrap-vue/es/components/carousel/carousel';
+    import bCarouselSlide from 'bootstrap-vue/es/components/carousel/carousel-slide';
     import bPagination from 'bootstrap-vue/es/components/pagination/pagination';
     import ApartmentTags from '@/components/single-apartment/TagsGrid';
-
     export default {
         name: 'apartment-page',
         data() {
             return {
+                slide:0,
                 sliding: null,
                 imgNum: 1,
                 commentPage: 1,
@@ -284,7 +300,7 @@
             }
         },
         components: {
-            bCarousel, bPagination, apartmentTags: ApartmentTags
+            bCarousel, bCarouselSlide, bPagination, apartmentTags: ApartmentTags
         },
         methods: {
             changeCommentPage(newPage) {
