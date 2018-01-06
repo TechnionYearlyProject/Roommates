@@ -149,15 +149,15 @@
     }
 
     .location-col {
-        padding: 0 20%;
+        padding: 0 25%;
     }
 
     .ranges-row {
-        margin-top: 25px;
+        margin-top: 45px;
     }
 
     .more-options {
-        margin: 20px 0;
+        margin: 40px 0 20px;
         text-align: center;
     }
 
@@ -165,7 +165,7 @@
         display: inline-block;
         padding: 0 15px;
         background-color: #fff;
-        font-size: 25px;
+        font-size: 22px;
         color: #bbb;
         text-transform: uppercase;
     }
@@ -176,7 +176,7 @@
         width: 100%;
         border-bottom: #ccc dashed 1px;
         position: relative;
-        bottom: -21px;
+        bottom: -18px;
     }
 
     .search-button-col {

@@ -1,8 +1,8 @@
 <template>
-    <span class="price-tag">
+    <div class="price-tag">
         <icon name="tag" scale="5.5" />
         <span>{{ value.toLocaleString() }} ₪</span>
-    </span>
+    </div>
 </template>
 
 <script>

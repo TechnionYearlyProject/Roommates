@@ -3,7 +3,7 @@
         <ul>
             <single-result id="123"
                            address="address super duper shmuper"
-                           description="Great place, we love it"
+                           description="Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his."
                            :price="1250"
                            :bedrooms="4"
                            :floor="5"
@@ -31,7 +31,7 @@
     }
 
     li:not(:first-child) {
-        margin-top: 20px;
+        margin-top: 30px;
     }
 
     #search-results {

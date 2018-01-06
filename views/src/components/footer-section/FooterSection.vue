@@ -6,7 +6,7 @@
                     <h3>About Us</h3>
                     <roommates-logo class="logo" />
                     <p>
-                        We are a young team....
+                        We are a young team that seeks for the best way to get a high grade.
                     </p>
                 </b-col>
                 <b-col>
@@ -20,7 +20,7 @@
                 </b-col>
                 <b-col class="contact-us">
                     <h3>Contact Us</h3>
-                    You can contact us via social media:
+                    Contact us via social media:
                     <b-container class="social">
                         <b-row no-gutters>
                             <b-link v-for="(media, name) in socialMedia" :key="name"

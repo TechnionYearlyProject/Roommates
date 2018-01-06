@@ -1,16 +1,19 @@
 <template>
-    <b-input-group>
+    <div class="search-box">
         <b-form-input :value="value"
                       placeholder="Enter Location"
                       @input="updateValue"
                       type="text" />
-        <b-input-group-addon @click="mapsClick" class="pointer" v-b-popover.hover.right="'Find in the map'">
-            <icon label="No Photos">
+        <span>OR</span>
+        <b-button @click="mapsClick" variant="primary" v-b-popover.hover.right="'Find in the map'">
+            <icon label="Find in the map">
                 <icon name="map-o" scale="1.74" />
-                <icon name="map-pin" scale="0.8" />
+                <g transform="translate(0, -5)">
+                    <icon name="map-marker" scale="1" />
+                </g>
             </icon>
-        </b-input-group-addon>
-    </b-input-group>
+        </b-button>
+    </div>
 </template>
 
 <script>
@@ -18,7 +21,7 @@
     import bInputGroup from 'bootstrap-vue/es/components/input-group/input-group'
     import bInputGroupAddon from 'bootstrap-vue/es/components/input-group/input-group-addon'
     import bButton from 'bootstrap-vue/es/components/button/button'
-    import Icon from "vue-awesome/components/Icon";
+    import Icon from "vue-awesome/components/Icon"
 
     export default {
         name: "search-box",
@@ -44,16 +47,28 @@
 </script>
 
 <style scoped>
-    .pointer {
-        cursor: pointer;
-        background-color: #fdc600;
+    .search-box {
+        display: flex;
+        height: 40px;
     }
 
-    .form-control:focus + .pointer {
-        border-color: #fdc600;
+    .search-box > * {
+        vertical-align: middle;
     }
 
     input {
         border-radius: 0;
+    }
+
+    span {
+        display: inline-block;
+        margin: 0 20px;
+        padding-top: 9px;
+        font-size: 15px;
+    }
+
+    button {
+        cursor: pointer;
+        background-color: #fdc600;
     }
 </style>

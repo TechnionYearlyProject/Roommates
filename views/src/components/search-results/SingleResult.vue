@@ -10,7 +10,9 @@
             <b-row no-gutters class="result-title">
                 <b-col>
                     <b-link :to="{ name: 'apartment-page', params: { id: id }}">{{ address }}</b-link>
-                    <price-tag v-model="price" class="result-price" />
+                    <div class="result-price">
+                        <price-tag v-model="price" />
+                    </div>
                 </b-col>
             </b-row>
             <b-row no-gutters>
@@ -34,8 +36,8 @@
                     </b-badge>
                 </b-col>
                 <b-col cols="12" md="auto">
-                    <b-button size="sm" variant="primary" :to="{ name: 'apartment-page', params: { id: id }}">More
-                        Info
+                    <b-button size="sm" variant="primary" :to="{ name: 'apartment-page', params: { id: id }}">
+                        More Info
                     </b-button>
                 </b-col>
             </b-row>
@@ -102,6 +104,7 @@
         position: absolute;
         top: -36px;
         right: -25px;
+        transform: scale(1.2);
     }
 
     .result-title {
@@ -111,7 +114,7 @@
 
     .result-description {
         margin-top: 10px;
-        height: 152px;
+        height: 140px;
     }
 
     .result-bottom-row {
@@ -122,10 +125,16 @@
         font-size: 22px;
         vertical-align: middle;
         color: #fff;
+        margin-top: 10px;
+        padding: 5px 10px;
+    }
+
+    .badge svg {
+        margin-right: 5px;
     }
 
     .result-bottom-row a {
         color: #fff;
-        float: right;
+        padding: 10px;
     }
 </style>
