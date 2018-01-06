@@ -1,16 +1,16 @@
 <template>
-    <div>
+    <div class="container">
         <div class="row ml-2" style="text-align:left">
             <div class="col-sm-3">
                 <div class="form-group">
                     <div class="form-check">
                         <input class="form-check-input mt-3"
                                type="checkbox"
-                               id="gridCheck1"
-                               value="Air Condition"
+                               id="acGridCheck"
+                               value="1"
                                v-model="info.tags"
                                :disabled="isReadOnly">
-                        <label class="form-check-label" for="gridCheck1">
+                        <label class="form-check-label" for="acGridCheck">
                             <i class="ion-ios-snowy s-icon mr-3"></i>Air Condition
                         </label>
                     </div>
@@ -21,11 +21,11 @@
                     <div class="form-check">
                         <input class="form-check-input mt-3"
                                type="checkbox"
-                               id="gridCheck2"
-                               value="Pets"
+                               id="petsGridCheck"
+                               value="2"
                                v-model="info.tags"
                                :disabled="isReadOnly">
-                        <label class="form-check-label" for="gridCheck2">
+                        <label class="form-check-label" for="petsGridCheck">
                             <i class="ion-ios-paw s-icon mr-3"></i>Pets
                         </label>
                     </div>
@@ -36,11 +36,11 @@
                     <div class="form-check">
                         <input class="form-check-input mt-3"
                                type="checkbox"
-                               id="gridCheck3"
-                               value="Elevetor"
+                               id="elevatorGridCheck"
+                               value="3"
                                v-model="info.tags"
                                :disabled="isReadOnly">
-                        <label class="form-check-label" for="gridCheck3">
+                        <label class="form-check-label" for="elevatorGridCheck">
                             <i class="ion-arrow-up-a s-icon mr-3"></i>Elevetor
                         </label>
                     </div>
@@ -51,11 +51,11 @@
                     <div class="form-check">
                         <input class="form-check-input mt-3"
                                type="checkbox"
-                               id="gridCheck4"
-                               value="Terrace"
+                               id="terraceGridCheck"
+                               value="4"
                                v-model="info.tags"
                                :disabled="isReadOnly">
-                        <label class="form-check-label" for="gridCheck4">
+                        <label class="form-check-label" for="terraceGridCheck">
                             <i class="ion-ios-flame s-icon mr-3"></i>Terrace
                         </label>
                     </div>
@@ -66,11 +66,11 @@
                     <div class="form-check">
                         <input class="form-check-input mt-3"
                                type="checkbox"
-                               id="gridCheck5"
-                               value="Parking"
+                               id="parkingGridCheck"
+                               value="5"
                                v-model="info.tags"
                                :disabled="isReadOnly">
-                        <label class="form-check-label" for="gridCheck5">
+                        <label class="form-check-label" for="parkingGridCheck">
                             <i class="ion-android-car s-icon mr-2"></i>Parking
                         </label>
                     </div>
@@ -81,11 +81,11 @@
                     <div class="form-check">
                         <input class="form-check-input mt-3"
                                type="checkbox"
-                               id="gridCheck6"
-                               value="Storage"
+                               id="storageGridCheck"
+                               value="6"
                                v-model="info.tags"
                                :disabled="isReadOnly">
-                        <label class="form-check-label" for="gridCheck6">
+                        <label class="form-check-label" for="storageGridCheck">
                             <i class="ion-key s-icon mr-2"></i>Storage
                         </label>
                     </div>

@@ -17,7 +17,7 @@ const { getSupportedTags } = require('./models/tag');
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 app.use(cors(process.env.CORS));
 useVue(app);
 
@@ -29,7 +29,7 @@ app.post('/apartments', authenticate, async (req, res) => {
       geolocation: await geoLocation.getGeoLocationCoords(`${address.street} ${address.number} ${address.city} ${address.state}`)
     };
     if (!location.geolocation) {
-      return res.status(BAD_REQUEST).send();
+      return res.status(BAD_REQUEST).send('couldn\'t find location!');
     }
 
     const apartmentData = _.pick(req.body,

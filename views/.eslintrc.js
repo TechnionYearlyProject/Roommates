@@ -6,6 +6,5 @@ module.exports = {
         "import/no-unresolved": 0,
         "comma-dangle": 0,
         "linebreak-style": 0,
-        "quotes": 'single'
     }
 };
