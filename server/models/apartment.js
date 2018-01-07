@@ -26,16 +26,6 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     required: true
   },
-  arnona: {
-    type: Number,
-    min: 0,
-    required: true
-  },
-  vaasBayit: {
-    type: Number,
-    min: 0,
-    required: true
-  },
   _interested: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
