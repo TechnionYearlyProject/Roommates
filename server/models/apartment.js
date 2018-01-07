@@ -96,11 +96,7 @@ const ApartmentSchema = new mongoose.Schema({
   numberOfBedrooms: {
     type: Number,
     min: 1,
-    max: 20,
-    validate: {
-      validator: (value) => {value<=numberOfRooms},
-      message: '{VALUE} is not a supported tag'
-    }  
+    max: 20,  
   },
   numberOfToilets: {
     type: Number,
