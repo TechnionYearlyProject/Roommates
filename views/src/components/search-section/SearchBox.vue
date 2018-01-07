@@ -5,7 +5,8 @@
                       @input="updateValue"
                       type="text" />
         <span>OR</span>
-        <b-button @click="mapsClick" variant="primary" v-b-popover.hover.right="'Find in the map'">
+        <b-button variant="primary" v-b-modal.google-maps-modal
+                  v-b-popover.hover.right="'Find in the map'">
             <icon label="Find in the map">
                 <icon name="map-o" scale="1.74" />
                 <g transform="translate(0, -5)">
@@ -36,9 +37,6 @@
             return {}
         },
         methods: {
-            mapsClick() {
-                alert('This should open google maps');
-            },
             updateValue(val) {
                 this.$emit('input', val);
             }

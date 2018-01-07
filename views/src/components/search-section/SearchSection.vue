@@ -22,8 +22,8 @@
                 <b-row v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
                     <b-col v-for="colIndex in 4" :key="colIndex"
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < binaryProps.length">
-                        <b-form-checkbox :value="binaryProps[index].value" class="bin-prop-checkbox">{{
-                            binaryProps[index].text }}
+                        <b-form-checkbox :value="binaryProps[index].value" class="bin-prop-checkbox">
+                            {{ binaryProps[index].text }}
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
@@ -34,6 +34,11 @@
                 </b-col>
             </b-row>
         </b-container>
+
+        <!-- Google Maps Pop-up -->
+        <b-modal id="google-maps-modal" centered title="Pick a location in the map:">
+            Yay!
+        </b-modal>
     </b-form>
 </template>
 
@@ -44,6 +49,7 @@
     import bForm from 'bootstrap-vue/es/components/form/form'
     import bFormCheckBoxGroup from 'bootstrap-vue/es/components/form-checkbox/form-checkbox-group'
     import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
+    import bModal from 'bootstrap-vue/es/components/modal/modal'
     import SearchBox from './SearchBox'
     import RangeSelector from "./RangeSelector";
     import SearchButton from "@/components/search-section/SearchButton";
@@ -51,10 +57,9 @@
     export default {
         name: "search-section",
         components: {
-            SearchButton,
             bContainer, bRow, bCol,
-            bForm, bFormCheckBoxGroup, bFormCheckbox,
-            SearchBox, RangeSelector
+            bForm, bFormCheckBoxGroup, bFormCheckbox, bModal,
+            SearchBox, RangeSelector, SearchButton
         },
         data() {
             return {

@@ -1,6 +1,6 @@
 <template>
     <footer class="box">
-        <b-container class="grid">
+        <b-container class="grid" fluid>
             <b-row>
                 <b-col cols="5">
                     <h3>About Us</h3>
@@ -23,12 +23,11 @@
                     Contact us via social media:
                     <b-container class="social">
                         <b-row no-gutters>
-                            <b-link v-for="(media, name) in socialMedia" :key="name"
-                                    :href="media.href" v-b-tooltip.hover.top="media.name">
-                                <b-col>
+                            <b-col v-for="(media, name) in socialMedia" :key="name">
+                                <b-link :href="media.href" v-b-tooltip.hover.top="media.name">
                                     <icon :name="name" :scale="1.7 * media.scale" />
-                                </b-col>
-                            </b-link>
+                                </b-link>
+                            </b-col>
                         </b-row>
                     </b-container>
                 </b-col>
@@ -135,6 +134,11 @@
         width: 85%;
         margin-top: 35px;
         text-align: center;
+    }
+
+    .social .row {
+        max-width: 230px;
+        margin: 0 auto;
     }
 
     .social a {
