@@ -1,6 +1,8 @@
 <template>
 <div class="card-text">
-      <icon name="mobile"/> {{user_details.mobilephone}} | <icon name="envelope"/> {{user_details.email}} | <icon name="birthday-cake"/> {{user_details.birthdate}} |
+      <span v-if="user_details.mobilePhone !== ''"><icon name="mobile"/> {{user_details.mobilePhone}} | </span>
+      <span v-if="user_details.email !== ''"><icon name="envelope"/> {{user_details.email}} | </span>
+      <span v-if="user_details.birthdate !== ''"><icon name="birthday-cake"/> {{user_details.birthdate}} | </span>
       <span v-if="user_details.gender === 'male'" ><icon name="male"/> Male</span>
       <span v-if="user_details.gender === 'female'" ><icon name="female"/> Female</span>
 </div>
