@@ -22,7 +22,7 @@ const apartment1 = new Apartment({
   _createdBy: new ObjectID(),
   createdAt: Date.now(),
   price: 2000,
-  _interested: [user1Id, user2Id, user3Id],
+  _interested: [user1Id.toHexString(), user2Id.toHexString(), user3Id.toHexString()],
   enteranceDate: new Date('1-1-2018').getTime(),
   location: {
     address: {
@@ -121,7 +121,8 @@ const user2 = {
   image: '',
   about: '',
   hobbies: [4, 5, 6],
-  _publishedApartments: [apartment1._id],
+  _publishedApartments: [apartment1Id.toHexString()],
+  _interestedApartments: [],
   tokens: [{
     access: XAUTH,
     token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString()
@@ -152,6 +153,8 @@ const user4 = {
   gender: 'male',
   mobilePhone: '0541234567',
   about: 'I\'m user number 4',
+  _publishedApartments: [],
+  _interestedApartments: [],
   image: '',
   hobbies: [4, 5, 7]
 };
@@ -166,7 +169,9 @@ const user5 = {
   mobilePhone: '',
   image: '',
   about: '',
-  gender: 'female'
+  gender: 'female',
+  _publishedApartments: [],
+  _interestedApartments: []
 };
 
 const user6 = {
@@ -179,7 +184,9 @@ const user6 = {
   mobilePhone: '',
   image: '',
   about: '',
-  gender: 'male'
+  gender: 'male',
+  _publishedApartments: [apartment1Id.toHexString(), apartment2Id.toHexString()],
+  _interestedApartments: [apartment1Id.toHexString()]
 };
 
 const notRegisteredUser = {

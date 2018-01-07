@@ -27,7 +27,7 @@ const ApartmentSchema = new mongoose.Schema({
     required: true
   },
   _interested: [{
-    type: mongoose.Schema.Types.ObjectId,
+    type: String,
     ref: 'User'
   }],
   enteranceDate: {
@@ -160,6 +160,12 @@ ApartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
   return Apartment.find({
     'location.geolocation': getGeoWithinObj([centerLong, centerLat], radius)
   });
+};
+
+ApartmentSchema.statics.findAllByIds = function (listIds) {
+  const Apartment = this;
+
+  return Apartment.find({ _id: { $in: listIds } });
 };
 
 //TODO: add the rest of properties

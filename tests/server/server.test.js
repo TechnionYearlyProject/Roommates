@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const expect = require('expect');
 const request = require('supertest');
 const { ObjectID } = require('mongodb');
@@ -80,8 +81,8 @@ describe('Server Tests', () => {
           try {
             const user = await User.findById(users[1]._id);
             const apartment = await Apartment.findOne({ description: notPublishedApartment.description });
-            expect(user._publishedApartments[0]).toEqual(apartments[0]._id);
-            expect(user._publishedApartments[1]).toEqual(apartment._id);
+            expect(user._publishedApartments[0]).toEqual(apartments[0]._id.toHexString());
+            expect(user._publishedApartments[1]).toEqual(apartment._id.toHexString());
             return done();
           } catch (e) {
             return done(e);
@@ -121,7 +122,7 @@ describe('Server Tests', () => {
     });
 
     it('should not create apartment with invalid tag ', (done) => {
-      var apartment = JSON.parse(JSON.stringify(notPublishedApartment));
+      let apartment = JSON.parse(JSON.stringify(notPublishedApartment));
       apartment.tags = [0];
       request(app)
         .post('/apartments')
@@ -143,7 +144,7 @@ describe('Server Tests', () => {
 
     it('should create apartment with valid tag ', (done) => {
       const validTagId = getSupportedTags()[0]._id;
-      var apartment = JSON.parse(JSON.stringify(notPublishedApartment));
+      let apartment = JSON.parse(JSON.stringify(notPublishedApartment));
       apartment.tags = [validTagId];
       request(app)
         .post('/apartments')
@@ -158,8 +159,8 @@ describe('Server Tests', () => {
           try {
             const user = await User.findById(users[1]._id);
             const apartment = await Apartment.findOne({ description: notPublishedApartment.description });
-            expect(user._publishedApartments[0]).toEqual(apartments[0]._id);
-            expect(user._publishedApartments[1]).toEqual(apartment._id);
+            expect(user._publishedApartments[0]).toEqual(apartments[0]._id.toHexString());
+            expect(user._publishedApartments[1]).toEqual(apartment._id.toHexString());
             return done();
           } catch (e) {
             return done(e);
@@ -218,7 +219,7 @@ describe('Server Tests', () => {
 
     it('should not add comment for invalid apartment', (done) => {
       const id = new ObjectID();
-      const text = "Wow! Great apartment!";
+      const text = 'Wow! Great apartment!';
       request(app)
         .put(`/apartments/${id}/comment`)
         .set(XAUTH, users[1].tokens[0].token)
@@ -226,13 +227,10 @@ describe('Server Tests', () => {
         .expect(NOT_FOUND)
         .end(done);
     });
-
-
   });
 
   describe('DELETE /apartments', () => {
     it('should not delete aprtment - apartment doesnt exist', (done) => {
-
       const id = new ObjectID().toHexString();
 
       request(app)
@@ -243,7 +241,7 @@ describe('Server Tests', () => {
     }).timeout(5000);
 
     it('should not delete aprtment - user does not own the apartment', (done) => {
-      const id = apartments[1]._id.toHexString();;
+      const id = apartments[1]._id.toHexString();
 
       request(app)
         .delete(`/apartments/${id}`)
@@ -253,7 +251,7 @@ describe('Server Tests', () => {
     }).timeout(5000);
 
     it('should delete aprtment from user and DB', (done) => {
-      const id = apartments[0]._id.toHexString();;
+      const id = apartments[0]._id.toHexString();
 
       request(app)
         .delete(`/apartments/${id}`)
@@ -274,7 +272,6 @@ describe('Server Tests', () => {
           } catch (e) {
             return done(e);
           }
-
         });
     }).timeout(5000);
   });
@@ -499,6 +496,7 @@ describe('Server Tests', () => {
         .expect(OK)
         .expect((res) => {
           expect(res.headers[XAUTH]).toBeTruthy();
+          expect(res.body.user._id).toBeTruthy();
           expect(res.body.user).toMatchObject(User.toJSON(notRegisteredUser));
         })
         .end((err) => {
@@ -792,7 +790,9 @@ describe('Server Tests', () => {
         .set(XAUTH, users[1].tokens[0].token)
         .expect(OK)
         .expect((res) => {
-          expect(res.body.self).toEqual(User.toJSON(users[1]));
+          const expected = User.toJSON(users[1]);
+          expected._id = expected._id.toHexString();
+          expect(res.body.self).toMatchObject(expected);
         })
         .end(done);
     });
@@ -821,7 +821,9 @@ describe('Server Tests', () => {
         .get(`/users/${id}`)
         .expect(OK)
         .expect((res) => {
-          expect(res.body.user).toEqual(User.toJSON(users[1]));
+          const expected = User.toJSON(users[1]);
+          expected._id = expected._id.toHexString();
+          expect(res.body.user).toEqual(expected);
         })
         .end(done);
     });
@@ -845,10 +847,84 @@ describe('Server Tests', () => {
     });
   });
 
+  describe('GET /users/:id/interested', () => {
+    it('should return all interested apartments', (done) => {
+      const id = users[5]._id.toHexString();
+      request(app)
+        .get(`/users/${id}/interested`)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.interested.length).toBe(1);
+          expect(res.body.interested[0]._id).toBe(apartments[0]._id.toHexString());
+          expect(res.body.interested[0].title).toBe(apartments[0].title);
+        })
+        .end(done);
+    });
+
+    it('should return empty list when no interests', (done) => {
+      const id = users[4]._id.toHexString();
+
+      request(app)
+        .get(`/users/${id}/interested`)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.interested).toEqual([]);
+        })
+        .end(done);
+    });
+
+    it('should return 404 when invalid id', (done) => {
+      const id = new ObjectID();
+      request(app)
+        .get(`/users/${id}/interested`)
+        .expect(NOT_FOUND)
+        .end(done);
+    });
+  });
+
+  describe('GET /users/:id/published', () => {
+    it('should return all published apartments', (done) => {
+      const id = users[5]._id.toHexString();
+
+      request(app)
+        .get(`/users/${id}/published`)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.published.length).toBe(2);
+          expect(res.body.published[0]._id).toBe(apartments[0]._id.toHexString());
+          expect(res.body.published[1]._id).toBe(apartments[1]._id.toHexString());
+          expect(res.body.published[0].title).toBe(apartments[0].title);
+          expect(res.body.published[1].title).toBe(apartments[1].title);
+        })
+        .end(done);
+    });
+
+    it('should return empty list when no publishes', (done) => {
+      const id = users[4]._id.toHexString();
+
+      request(app)
+        .get(`/users/${id}/published`)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.published).toEqual([]);
+        })
+        .end(done);
+    });
+
+    it('should return 404 when invalid id', (done) => {
+      const id = new ObjectID();
+      request(app)
+        .get(`/users/${id}/published`)
+        .expect(NOT_FOUND)
+        .end(done);
+    });
+  });
+
   describe('PATCH /users/self', () => {
     it('should update user', (done) => {
       const user = Object.assign({}, users[3]);
       user.email = users[1].email;
+      user._id = users[1]._id;
 
       request(app)
         .patch('/users/self')
@@ -856,7 +932,9 @@ describe('Server Tests', () => {
         .send(users[3])
         .expect(OK)
         .expect((res) => {
-          expect(res.body.user).toEqual(User.toJSON(user));
+          const expected = User.toJSON(user);
+          expected._id = expected._id.toHexString();
+          expect(res.body.user).toMatchObject(expected);
         })
         .end((err) => {
           if (err) {
@@ -864,7 +942,8 @@ describe('Server Tests', () => {
           }
           return User.findById(users[1]._id.toHexString())
             .then($ => {
-              expect($.toObject()).toMatchObject(User.toJSON(user));
+              delete user.password; // we don't want to check the password since it's encrypted
+              expect($.toObject()).toMatchObject(user);
               done();
             })
             .catch(done);
@@ -878,7 +957,9 @@ describe('Server Tests', () => {
         .send({ email: 'user2@yahoo.com' })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.user).toEqual(User.toJSON(users[1]));
+          const expected = User.toJSON(users[1]);
+          expected._id = expected._id.toHexString();
+          expect(res.body.user).toMatchObject(expected);
         })
         .end((err) => {
           if (err) {

@@ -63,10 +63,10 @@ const UserSchema = new mongoose.Schema({
     }
   }],
   _publishedApartments: [{
-    type: mongoose.Schema.Types.ObjectId
+    type: String
   }],
   _interestedApartments: [{
-    type: mongoose.Schema.Types.ObjectId
+    type: String
   }],
   email: {
     type: String,
@@ -151,6 +151,7 @@ UserSchema.statics.findByToken = function (token) {
 UserSchema.statics.toJSON = function (user) {
   return _.pick(user,
     [
+      '_id',
       'email',
       'firstName',
       'lastName',
@@ -159,7 +160,9 @@ UserSchema.statics.toJSON = function (user) {
       'mobilePhone',
       'image',
       'about',
-      'hobbies'
+      'hobbies',
+      '_publishedApartments',
+      '_interestedApartments'
     ]);
 };
 
@@ -217,7 +220,7 @@ UserSchema.methods.removeApartment = function (apartmentId) {
   const user = this;
 
   const indexOfVal = arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId);
-  if(indexOfVal > -1){
+  if (indexOfVal > -1) {
     user._publishedApartments.splice(indexOfVal, 1);
   }
 

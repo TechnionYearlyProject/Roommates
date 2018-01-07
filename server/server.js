@@ -1,7 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
-const { BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK } = require('http-status');
+const {
+  BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK
+} = require('http-status');
 const cors = require('cors');
 
 require('./server-config');
@@ -115,10 +117,9 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
 
     await apartment.addComment(req.user._id, body.text, Date.now());
 
-    const comments = apartment.comments;
+    const { comments } = apartment;
 
-    res.send({ comments });
-
+    return res.send({ comments });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -126,7 +127,6 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
 
 app.delete('/apartments/:id', authenticate, async (req, res) => {
   try {
-
     const { id } = req.params;
 
     if (!(req.user.isOwner(id))) {
@@ -136,8 +136,7 @@ app.delete('/apartments/:id', authenticate, async (req, res) => {
     await req.user.removeApartment(id);
     await Apartment.findByIdAndRemove(id);
 
-    res.status(OK).send();
-
+    return res.status(OK).send();
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -202,6 +201,37 @@ app.get('/users/:id', async (req, res) => {
   }
 });
 
+app.get('/users/:id/interested', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(NOT_FOUND).send();
+    }
+    const interested = await Apartment.findAllByIds(user._interestedApartments);
+    return res.send({ interested });
+  } catch (err) {
+    console.log(err);
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
+
+app.get('/users/:id/published', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(NOT_FOUND).send();
+    }
+    const published = await Apartment.findAllByIds(user._publishedApartments);
+    return res.send({ published });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
+
 app.patch('/users/self', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body,
@@ -213,7 +243,9 @@ app.patch('/users/self', authenticate, async (req, res) => {
         'mobilePhone',
         'about',
         'image',
-        'hobbies'
+        'hobbies',
+        '_publishedApartments',
+        '_interestedApartments'
       ]);
 
     const user = await User.findByIdAndUpdate(req.user._id, { $set: body }, { new: true, runValidators: true });
