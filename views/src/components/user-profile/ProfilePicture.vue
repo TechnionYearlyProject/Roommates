@@ -1,6 +1,7 @@
 <template>
 <div>
-      <b-img center rounded="circle" width="150" height="150" :src=img_src alt="img" class="m-1" />  
+      <b-img  v-if="img_src !== ''" center rounded="circle" width="150" height="150" :src=img_src alt="profile picture" class="m-1" /> 
+      <b-img v-if="img_src === ''" center rounded="circle" width="150" height="150" src='@/../static/images/user-profile/avatar-image.png'  class="m-1" /> 
 </div>
 </template>
 
