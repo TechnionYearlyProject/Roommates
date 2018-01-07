@@ -1,6 +1,6 @@
 <template>
     <b-form action="#" @submit="submit">
-        <b-container class="container box">
+        <b-container class="box">
             <b-row>
                 <b-col class="location-col">
                     <search-box v-model="fields.location" />
@@ -146,6 +146,7 @@
     .container {
         background: #fff;
         padding: 20px 0;
+        min-width: 900px;
     }
 
     .row {
