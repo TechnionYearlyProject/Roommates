@@ -33,18 +33,6 @@ const supportedTags = [
     _id: 8,
     name: 'FURNISHED'
   },
-  {
-    _id: 9,
-    name: 'GAS CONNECTION'
-  },
-  {
-    _id: 10,
-    name: 'SOLAR WATER HEATER'
-  },
-  {
-    _id: 11,
-    name: 'ELECTRIC WATER HEATER'
-  }
 ];
 
 const getSupportedTags = () => supportedTags;

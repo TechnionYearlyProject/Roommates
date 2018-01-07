@@ -93,21 +93,6 @@ const ApartmentSchema = new mongoose.Schema({
     min: 1,
     max: 20
   },
-  numberOfBedrooms: {
-    type: Number,
-    min: 1,
-    max: 20,  
-  },
-  numberOfToilets: {
-    type: Number,
-    min: 0,
-    max: 20, 
-  },
-  numberOfShowers: {
-    type: Number,
-    min: 0,
-    max: 20, 
-  },
   floor: {
     type: Number,
     min: -2,
