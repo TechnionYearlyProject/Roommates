@@ -26,6 +26,16 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     required: true
   },
+  arnona: {
+    type: Number,
+    min: 0,
+    required: true
+  },
+  vaasBayit: {
+    type: Number,
+    min: 0,
+    required: true
+  },
   _interested: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -80,8 +90,27 @@ const ApartmentSchema = new mongoose.Schema({
   },
   numberOfRooms: {
     type: Number,
-    min: 0,
+    min: 1,
     max: 20
+  },
+  numberOfBedrooms: {
+    type: Number,
+    min: 1,
+    max: 20,
+    validate: {
+      validator: (value) => {value<=numberOfRooms},
+      message: '{VALUE} is not a supported tag'
+    }  
+  },
+  numberOfToilets: {
+    type: Number,
+    min: 0,
+    max: 20, 
+  },
+  numberOfShowers: {
+    type: Number,
+    min: 0,
+    max: 20, 
   },
   floor: {
     type: Number,

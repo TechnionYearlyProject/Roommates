@@ -7,7 +7,6 @@
                         <h1>{{apartment.location.address.city}}, {{apartment.location.address.street}},
                             {{apartment.location.address.houseNumber}}/{{apartment.location.address.entranceNumber}}</h1>
                     </div>
-                    <hr>
                     <b-carousel id="carousel1"
                                 style="text-shadow: 1px 1px 2px #333;"
                                 controls
@@ -19,38 +18,22 @@
                                 v-model="slide"
                                 @sliding-start="onSlideStart"
                                 @sliding-end="onSlideEnd">
-                        <b-carousel-slide v-for="img in apartment.images" :img-src="img">
+                        <b-carousel-slide v-for="img in apartment.images" :key="img" :img-src="img">
 
                         </b-carousel-slide>
                     </b-carousel>
                     <b-row>
-                        <b-col cols="7">
-                            <h2>{{apartment.price}} per month</h2>
+                        <b-col fluid>
+                            <h2>rent is {{apartment.price}} per month</h2>
+                            <h5>Arnona {{apartment.arnona}} bi-monthly</h5>
+                            <h5>building upkeep {{apartment.vaadBayit}}</h5>
                         </b-col>
-                        <b-col>
-                            <h5>{{apartment.price}} utilty bi-monthly</h5>
-                        </b-col>
+                        <!-- <b-col>
+                        </b-col> -->
                     </b-row>
-                    <apartmentTags  :area="apartment.area"
-                                    :toilets="apartment.toilets"
-                                    :garages="apartment.garages"
-                                    :bedrooms="apartment.bedrooms"
-                                    :parking="apartment.parking"
-                                    :pets="apartment.pets"
-                                    :showers="apartment.showers"
-                                    :waterHeaterMethod="apartment.waterHeaterMethod"
-                                    :elevator="apartment.elevator"
-                                    >
 
-                    </apartmentTags>
                     
 
-                    <div class="section">
-                        <h4 class="s-property-title">Description</h4>
-                        <div class="s-property-content">
-                            <p>{{apartment.description}}</p>
-                        </div>
-                    </div>
                 </b-col>
 
                 <b-col>
@@ -86,8 +69,8 @@
                                         <b-row>
                                             <b-col align-self="start"></b-col>
                                             <b-col align-self="center" cols="5">
-                                                {{user.firstName}} {{user.lastName}} <br>
-                                                <a href="#" class="btn btn-secondry btn-sm">user info</a>
+                                                <b-link :to="{ name: 'user-profile', params: { id: user.id }}">{{user.firstName}} {{user.lastName}}</b-link>
+                                                 <br>
                                             </b-col>
                                             <b-col align-self="end"></b-col>
                                         </b-row>
@@ -107,20 +90,30 @@
                     </div>
                 </b-col>
             </b-row>
-        </b-container>
-        <div class="container">
-            <div class="row">
-                <div class="col-sm">
+            <b-row>
+                <apartmentTags  :area="apartment.area"
+                                :toilets="apartment.toilets"
+                                :garages="apartment.garages"
+                                :bedrooms="apartment.bedrooms"
+                                :parking="apartment.parking"
+                                :pets="apartment.pets"
+                                :showers="apartment.showers"
+                                :waterHeaterMethod="apartment.waterHeaterMethod"
+                                :elevator="apartment.elevator"
+                                :gas="apartment.gas"
+                                >
 
-                </div>
-                <div class="col-sm">
+                </apartmentTags>
 
+                    <div class="section">
+                        <h4 class="s-property-title">Description</h4>
+                        <div class="s-property-content">
+                            <p>{{apartment.description}}</p>
+                        </div>
+                    </div>
 
-
-                </div>
-            </div>
-
-
+            </b-row>
+            <b-row>
             <div class="card" style="width: 60rem;">
                 <div class="card-header">
                     users comment:
@@ -138,10 +131,19 @@
                 </div>
             </div>
 
+            </b-row>
+            <b-row>
+                <b-col></b-col>
+                <b-col>
+                    <b-pagination align="center" :total-rows="apartment.comments.length"
+                        v-model="commentPage" :per-page="5">
+                    </b-pagination>
+                </b-col>
+                <b-col></b-col>
 
-            <b-pagination align="center" :total-rows="apartment.comments.length"
-                          v-model="commentPage" :per-page="5">
-            </b-pagination>
+            </b-row>
+        </b-container>
+        <div class="container">
 
         </div>
     </div>
@@ -152,6 +154,8 @@
     import bCarouselSlide from 'bootstrap-vue/es/components/carousel/carousel-slide';
     import bPagination from 'bootstrap-vue/es/components/pagination/pagination';
     import ApartmentTags from '@/components/single-apartment/TagsGrid';
+    import bLink from 'bootstrap-vue/es/components/link/link'
+
     export default {
         name: 'apartment-page',
         data() {
@@ -189,6 +193,8 @@
                     totalFloors: 4,
                     description: "a very nice place",
                     price: 1200,
+                    vaadBayit: 50,
+                    arnona: 400,
                     area: 100,
                     numRooms: 4,
                     bedrooms:5,
@@ -196,7 +202,8 @@
                     showers: 2,
                     garages: 0 ,
                     parking: 'yes',
-                    pet: 'yes',
+                    pet: "yes",
+                    gas: "yes",
                     roomatesNeeded: 3,
                     roomatesCurrently: 1,
                     electricWaterHeater: true,
@@ -300,7 +307,7 @@
             }
         },
         components: {
-            bCarousel, bCarouselSlide, bPagination, apartmentTags: ApartmentTags
+            bCarousel, bCarouselSlide, bPagination, apartmentTags: ApartmentTags, bLink
         },
         methods: {
             changeCommentPage(newPage) {
@@ -338,6 +345,15 @@
             onSlideEnd(slide) {
                 this.sliding = false
             },
+        },
+        created:{
+            getApartmennt() {
+                  this.$http.get('/apartments/id').then(response => {
+                    this.apartment = response.body;
+                }, response => {
+
+                })
+            }
         },
         computed: {
             calCom() {
