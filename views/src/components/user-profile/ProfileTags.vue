@@ -1,7 +1,9 @@
 <template>
-  <b-button-group>
-    <b-button size="lg" variant="primary" v-for="tag in tags" >{{tag.text}}</b-button>
-  </b-button-group>
+    <b-button-group>
+        <b-button size="lg" variant="primary"
+                  v-for="tag in tags" :key="tag">{{ tag.name }}
+        </b-button>
+    </b-button-group>
 </template>
 
 <script>

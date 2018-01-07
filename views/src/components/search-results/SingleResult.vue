@@ -35,7 +35,7 @@
                         {{ bathrooms }}
                     </b-badge>
                 </b-col>
-                <b-col cols="12" md="auto">
+                <b-col cols="auto">
                     <b-button size="sm" variant="primary" :to="{ name: 'apartment-page', params: { id: id }}">
                         More Info
                     </b-button>

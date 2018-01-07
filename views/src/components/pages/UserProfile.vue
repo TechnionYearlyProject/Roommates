@@ -1,9 +1,9 @@
 <template>
 <div id="user_profile_container" class="centralize_div">
-    <h1> {{user.firstName}} {{user.lastName}} </h1>
-    <p> {{user.about}} </p>
+      <h1> {{user.firstName}} {{user.lastName}} </h1>
+      <p class="about_me"> {{user.about}} </p>
     <div id="user_profile_header" class="centralize_div">
-      <profilePic :img_src=user.image ></profilePic>
+      <profilePic :img_src=user.image></profilePic>
       <profileTags :tags="tags"></profileTags>
       <br>
       <profileGeneralDetails :user_details="user"></profileGeneralDetails>
@@ -19,46 +19,46 @@
 
     export default {
         name: 'user-profile',
+        props: [
+          'id'
+        ],
          data: function() {
             return {
-              user:
-                {
-                  firstName: 'Adi',
-                  lastName: 'Omari',
-                  birthdate: 1435479435,
-                  gender: 'male',
-                  mobilephone: '0542312213',
-                  image: '@/../static/images/user-profile/avatar-image.png',
-                  about: 'I am a mentor',
-                  hobbies: [1,3],
-                  _publishedApartments: [1],
-                  _interestedApartments: [2],
-                  email: 'adi@gmail.com'
-                },
-                tags: [
-                    {
-                       value: 1,
-                       text: "Tag1"
-                    },
-                    {
-                       value: 2,
-                       text: "Tag2"
-                    },
-                    {
-                       value: 3,
-                       text: "Tag3"
-                    },
-                    {
-                       value: 4,
-                       text: "Tag4"
-                    },
-                    
-                ]
+              user: null,
+              tags: []
             };
         },
         components:{
           bImg,profilePic, profileGeneralDetails, profileTags
-        }
+        },
+        async created() {
+          await this.$http
+                          .get("users/tags")
+                          .then(res => this.setTags(res, this))
+                          .catch(e => alert(e.toString()));
+          await this.$http
+                          .get("users/" + this.id)
+                          .then(res => this.setProfile(res, this))
+                          .catch(e => alert(e.toString()));
+        },
+        methods: {
+            setProfile(responseFromServer, pThis){
+              pThis.user = responseFromServer.body.user;
+              pThis.calcUserTags(pThis.user.hobbies, pThis.tags, pThis);
+            },
+            setTags(responseFromServer, pThis){
+              pThis.tags = responseFromServer.body.tags;
+            },
+            calcUserTags(userTags, allTags, pThis){
+              var userVerboseTags = [];
+              allTags.forEach(function(tag) {
+                  if(userTags.indexOf(tag._id) > -1){
+                    userVerboseTags.push(tag);
+                  }
+              });
+              pThis.tags = userVerboseTags;
+            }
+          }
     }
   
 </script>

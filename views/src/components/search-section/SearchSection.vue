@@ -1,6 +1,6 @@
 <template>
     <b-form action="#" @submit="submit">
-        <b-container class="container box">
+        <b-container class="box">
             <b-row>
                 <b-col class="location-col">
                     <search-box v-model="fields.location" />
@@ -22,8 +22,8 @@
                 <b-row v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
                     <b-col v-for="colIndex in 4" :key="colIndex"
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < binaryProps.length">
-                        <b-form-checkbox :value="binaryProps[index].value" class="bin-prop-checkbox">{{
-                            binaryProps[index].text }}
+                        <b-form-checkbox :value="binaryProps[index].value" class="bin-prop-checkbox">
+                            {{ binaryProps[index].text }}
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
@@ -34,6 +34,12 @@
                 </b-col>
             </b-row>
         </b-container>
+
+        <!-- Google Maps Pop-up -->
+        <b-modal id="google-maps-modal" size="lg"
+                 title="Pick a location in the map:">
+            <g-map-picker />
+        </b-modal>
     </b-form>
 </template>
 
@@ -44,17 +50,19 @@
     import bForm from 'bootstrap-vue/es/components/form/form'
     import bFormCheckBoxGroup from 'bootstrap-vue/es/components/form-checkbox/form-checkbox-group'
     import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
+    import bModal from 'bootstrap-vue/es/components/modal/modal'
     import SearchBox from './SearchBox'
-    import RangeSelector from "./RangeSelector";
-    import SearchButton from "@/components/search-section/SearchButton";
+    import RangeSelector from "./RangeSelector"
+    import SearchButton from "@/components/search-section/SearchButton"
+    import GMapPicker from "@/components/gmap-picker/GMapPicker"
 
     export default {
         name: "search-section",
         components: {
-            SearchButton,
             bContainer, bRow, bCol,
-            bForm, bFormCheckBoxGroup, bFormCheckbox,
-            SearchBox, RangeSelector
+            bForm, bFormCheckBoxGroup, bFormCheckbox, bModal,
+            SearchBox, RangeSelector, SearchButton,
+            GMapPicker
         },
         data() {
             return {
@@ -141,6 +149,7 @@
     .container {
         background: #fff;
         padding: 20px 0;
+        min-width: 900px;
     }
 
     .row {
