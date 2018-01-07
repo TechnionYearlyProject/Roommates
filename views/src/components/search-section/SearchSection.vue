@@ -36,8 +36,9 @@
         </b-container>
 
         <!-- Google Maps Pop-up -->
-        <b-modal id="google-maps-modal" centered title="Pick a location in the map:">
-            Yay!
+        <b-modal id="google-maps-modal" size="lg"
+                 title="Pick a location in the map:">
+            <g-map-picker />
         </b-modal>
     </b-form>
 </template>
@@ -51,15 +52,17 @@
     import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
     import bModal from 'bootstrap-vue/es/components/modal/modal'
     import SearchBox from './SearchBox'
-    import RangeSelector from "./RangeSelector";
-    import SearchButton from "@/components/search-section/SearchButton";
+    import RangeSelector from "./RangeSelector"
+    import SearchButton from "@/components/search-section/SearchButton"
+    import GMapPicker from "@/components/gmap-picker/GMapPicker"
 
     export default {
         name: "search-section",
         components: {
             bContainer, bRow, bCol,
             bForm, bFormCheckBoxGroup, bFormCheckbox, bModal,
-            SearchBox, RangeSelector, SearchButton
+            SearchBox, RangeSelector, SearchButton,
+            GMapPicker
         },
         data() {
             return {
