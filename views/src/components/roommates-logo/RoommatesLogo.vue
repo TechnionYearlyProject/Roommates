@@ -39,12 +39,12 @@
 
     .logo::before {
         right: 15px;
-        top: -4px;
+        top: -3px;
     }
 
     .logo::after {
         left: 15px;
-        bottom: -4px;
+        bottom: -3px;
     }
 
     .logo::first-letter {
