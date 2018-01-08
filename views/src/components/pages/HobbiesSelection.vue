@@ -15,8 +15,12 @@
 </template>
 
 <script>
-    import bButton from 'bootstrap-vue/es/components/button/button';
-    import formCheckbox from 'bootstrap-vue/es/components';
+    import bButton from 'bootstrap-vue/es/components/button/button'
+    import bForm from 'bootstrap-vue/es/components/form/form'
+    import bFormGroup from 'bootstrap-vue/es/components/form-group/form-group'
+    import bFormCheckboxGroup from 'bootstrap-vue/es/components/form-checkbox/form-checkbox-group'
+    import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
+
     export default {
         name: 'select-hobbies',
         props: [
@@ -30,7 +34,7 @@
         },
         components:{
             bButton,
-            formCheckbox
+            bForm, bFormGroup, bFormCheckboxGroup, bFormCheckbox
         },
         async created() {
           await this.$http
