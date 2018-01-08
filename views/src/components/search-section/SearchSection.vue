@@ -1,5 +1,5 @@
 <template>
-    <b-form action="#" @submit="submit">
+    <b-form action="#" @submit="onSubmit">
         <b-container class="box">
             <b-row>
                 <b-col class="location-col">
@@ -36,7 +36,7 @@
         </b-container>
 
         <!-- Google Maps Pop-up -->
-        <b-modal id="google-maps-modal" size="lg"
+        <b-modal id="google-maps-modal" size="lg" @shown="onModalShow"
                  title="Pick a location in the map:">
             <g-map-picker />
         </b-modal>
@@ -44,6 +44,7 @@
 </template>
 
 <script>
+    import Vue from 'vue'
     import bContainer from 'bootstrap-vue/es/components/layout/container'
     import bRow from 'bootstrap-vue/es/components/layout/row'
     import bCol from 'bootstrap-vue/es/components/layout/col'
@@ -125,7 +126,7 @@
             }
         },
         methods: {
-            submit(e) {
+            onSubmit(e) {
                 e.preventDefault();
 
                 console.log({
@@ -140,6 +141,9 @@
                     maxFloor: this.fields.ranges.floor.value.max,
                     selected: this.fields.selectedBinaryProps
                 });
+            },
+            onModalShow() {
+                Vue.$gmapDefaultResizeBus.$emit('resize');
             }
         }
     }

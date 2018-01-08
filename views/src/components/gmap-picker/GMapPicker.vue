@@ -1,9 +1,9 @@
 <template>
     <div>
-        <gmap-map :center="{lat: 10.0, lng: 10.0}"
+        <gmap-map ref="'gMap'"
+                  :center="{lat: 10.0, lng: 10.0}"
                   :zoom="7"
-                  class="map">
-        </gmap-map>
+                  class="map" />
     </div>
 </template>
 
