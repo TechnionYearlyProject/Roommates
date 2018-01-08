@@ -24,7 +24,7 @@
                     </b-carousel>
                     <b-row>
                         <b-col fluid>
-                            <h2>rent is {{apartment.price}} per month</h2>
+                            <h2>rent is {{apartment.price}} per month</h2> <hr>
                             <h5>Arnona {{apartment.arnona}} bi-monthly</h5>
                             <h5>building upkeep {{apartment.vaadBayit}}</h5>
                         </b-col>
@@ -39,12 +39,12 @@
                 <b-col>
                     <div class="card" style="width: 30rem;">
                         <div class="card-body">
-                            <b-container>
+                            <b-container fluid>
                                 <b-row>
                                     <b-col cols="4">
                                         <img class="card-img-top rounded-circle"
-                                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRzrsvYREQF2spJT1b4hc_SQmbnGEtPDGeoYlcdZDTf0FIpnNzHg"
-                                             alt="Card image cap" style="width:128px;height:128px">
+                                             :src="auther.img"
+                                             alt="Card image cap" style="width:110px;height:auto">
                                     </b-col>
                                     <b-col cols="7">
                                         <h4>{{auther.firstName}} {{auther.lastName}}</h4>
@@ -59,20 +59,24 @@
                     </div>
                     <div class="card" style="width: 30rem;">
                         <div class="card-header">
-                            interested users:
+                            <b-container fluid>
+                                <b-row>
+                                    <b-col align="center">
+                                        <h4>interested users:</h4>
+                                    </b-col>
+                                </b-row>
+                            </b-container>
                         </div>
                         <img class="card-img-top" />
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item" v-for="user in calUsers">
-                                    <b-container>
+                                    <b-container fluid>
                                         <b-row>
-                                            <b-col align-self="start"></b-col>
-                                            <b-col align-self="center" cols="5">
+                                            <b-col align="center">
                                                 <b-link :to="{ name: 'user-profile', params: { id: user.id }}">{{user.firstName}} {{user.lastName}}</b-link>
                                                  <br>
                                             </b-col>
-                                            <b-col align-self="end"></b-col>
                                         </b-row>
                                     </b-container>
                                 </li>
@@ -90,6 +94,7 @@
                     </div>
                 </b-col>
             </b-row>
+            <hr>
             <b-row>
                 <apartmentTags  :area="apartment.area"
                                 :toilets="apartment.toilets"
@@ -104,24 +109,35 @@
                                 >
 
                 </apartmentTags>
-
-                    <div class="section">
-                        <h4 class="s-property-title">Description</h4>
-                        <div class="s-property-content">
-                            <p>{{apartment.description}}</p>
-                        </div>
-                    </div>
-
+            </b-row>
+            <hr>
+            <b-row>
+                <b-col align="center">
+                    <h4 class="s-property-title">Description:</h4>
+                    <p>{{apartment.description}}</p>
+                </b-col>
             </b-row>
             <b-row>
             <div class="card" style="width: 60rem;">
                 <div class="card-header">
-                    users comment:
+                    <b-container fluid>
+                        <b-row>
+                            <b-col align="center">
+                                <h3>users comments</h3>
+                            </b-col>
+                        </b-row>
+                    </b-container>
                 </div>
                 <div class="card-body">
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" v-for="comment in calCom">
-                            {{comment.comment}} at: {{comment.writenAt}}
+                            <b-container fluid>
+                                <b-row>
+                                    <b-col align="center">
+                                        {{comment.comment}} at: {{comment.writenAt}}
+                                    </b-col> 
+                                </b-row>
+                            </b-container>
                         </li>
                         <li class="list-group-item" v-for="p in (5-calCom.length)">
                             <br>
@@ -170,7 +186,7 @@
                     firstName: 'chanan',
                     lastName: 'ben tal',
                     _id: '1',
-                    img: "https://images.pexels.com/photos/428339/pexels-photo-428339.jpeg?w=1260&h=750&auto=compress&cs=tinysrgb",
+                    img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRzrsvYREQF2spJT1b4hc_SQmbnGEtPDGeoYlcdZDTf0FIpnNzHg",
                     contactInfo: {
                         cellNumber: '054-4204942',
                         eMail: 'chananbental@gmail.com'
