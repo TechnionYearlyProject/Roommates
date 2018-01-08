@@ -1,20 +1,19 @@
 <template>
-    <b-button-group>
-        <b-button size="lg" variant="primary"
-                  v-for="tag in tags" :key="tag">{{ tag.name }}
-        </b-button>
-    </b-button-group>
+  <b-button-group>
+    <b-button size="lg" variant="primary" v-for="tag in tags" >{{tag.name}}</b-button>
+  </b-button-group>
 </template>
 
 <script>
     import bButton from 'bootstrap-vue/es/components/button/button';
+    import bButtonGroup from 'bootstrap-vue/es/components/button-group/button-group';
 
     export default {
          props: [
           'tags'
         ],
         components:{
-          bButton
+          bButton, bButtonGroup
         }
     }
 </script>
