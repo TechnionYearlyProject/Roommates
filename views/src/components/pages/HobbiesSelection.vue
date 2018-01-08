@@ -4,7 +4,7 @@
     <b-form @submit="onSubmit" @reset="onReset">
       <b-form-group label="Choose your hobbies:">
         <br>
-        <b-form-checkbox-group id="hobbiescbs" name="hobbies" stacked v-model="user.hobbies" :options="tags" class="hobbie_item">
+        <b-form-checkbox-group id="hobbiescbs" name="hobbies" v-model="currTags" :options="tags">
         </b-form-checkbox-group>
       </b-form-group>
       <br>
@@ -19,46 +19,29 @@
     import formCheckbox from 'bootstrap-vue/es/components';
     export default {
         name: 'select-hobbies',
-         data: function() {
+        props: [
+          'id'
+        ],
+        data: function() {
             return {
-              user:
-                {
-                  firstName: 'Adi',
-                  lastName: 'Omari',
-                  birthdate: 1435479435,
-                  gender: 'male',
-                  mobilephone: '0542312213',
-                  image: 'src/assets/imgs/apartments/1.jpg',
-                  about: 'I am a mentor',
-                  hobbies: [1,3],
-                  _publishedApartments: [1],
-                  _interestedApartments: [2],
-                  email: 'adi@gmail.com'
-                },
-                tags: [
-                    {
-                       value: 1,
-                       text: "Tag1"
-                    },
-                    {
-                       value: 2,
-                       text: "Tag2"
-                    },
-                    {
-                       value: 3,
-                       text: "Tag3"
-                    },
-                    {
-                       value: 4,
-                       text: "Tag4"
-                    },
-                    
-                ]
+              currTags: [],
+              tags: []
             };
         },
         components:{
             bButton,
             formCheckbox
+        },
+        async created() {
+          await this.$http
+                          .get("users/tags")
+                          .then(res => this.setAvailableTags(res, this))
+                          .catch(e => alert(e.toString()));
+          await this.$http
+                          .get("users/" + this.id)
+                          .then(res => this.setCurTags(res, this))
+                          .catch(e => alert(e.toString()));
+
         },
         methods: {
             onSubmit (evt) {
@@ -67,8 +50,20 @@
             },
             onReset (evt) {
               evt.preventDefault();
-               alert("Canceled");
-            }
+              alert("Canceled");
+            },
+            setAvailableTags(responseFromServer, pThis) {
+              responseFromServer.body.tags.forEach(function(obj) {
+                  var tag = {
+                              value: obj._id,
+                              text: obj.name
+                            };
+                  pThis.tags.push(tag);
+              });
+            },
+            setCurTags(responseFromServer, pThis) {
+              pThis.currTags = responseFromServer.body.user.hobbies;
+            },
           }
     }
   
@@ -83,8 +78,5 @@
   margin: 0 auto;
 }
 
-.hobbie_item{
-    display: inline-block;
-}
 
 </style>
