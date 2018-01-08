@@ -33,18 +33,18 @@
         display: inline-block;
         position: absolute;
         width: 55px;
-        height: 3px;
+        height: 5px;
         background-color: #fff;
     }
 
     .logo::before {
         right: 15px;
-        top: -3px;
+        top: -4px;
     }
 
     .logo::after {
         left: 15px;
-        bottom: -3px;
+        bottom: -4px;
     }
 
     .logo::first-letter {
