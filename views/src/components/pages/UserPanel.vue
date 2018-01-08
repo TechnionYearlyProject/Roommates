@@ -18,30 +18,23 @@
     import card from "@/components/card/card.vue"
     export default {
         name: 'user-panel',
+         props: [
+          'id'
+         ],
          data: function() {
             return {
-              user:
-                {
-                  _id: '5a393e89543a602890f345d8',
-                  firstName: 'Adi',
-                  lastName: 'Omari',
-                  birthdate: 1435479435,
-                  gender: 'male',
-                  mobilephone: '0542312213',
-                  image: 'src/assets/imgs/apartments/1.jpg',
-                  about: 'I am a mentor',
-                  hobbies: [1,2,3],
-                  _publishedApartments: [1],
-                  _interestedApartments: [2],
-                  email: 'adi@gmail.com'
-                },
-                actions: []
+              user: null,
+              actions: []
             };
         },
         components: {
             appCard: card
         },
-        created(){
+        async created(){
+          await this.$http
+                          .get("users/" + this.id)
+                          .then(res => this.setUserData(res, this))
+                          .catch(e => alert(e.toString()));
           this.actions = [
                     {
                         title: "New Apartment",
@@ -82,6 +75,11 @@
                         linkText: "View profile",
                         link: { name: 'user-profile', params: { id: this.user._id } }
                     }]
+        },
+        methods: {
+          setUserData(responseFromServer, pThis){
+            pThis.user = responseFromServer.body.user;
+          }
         }
     }
 </script>
