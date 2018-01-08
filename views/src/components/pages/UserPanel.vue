@@ -22,6 +22,7 @@
             return {
               user:
                 {
+                  _id: '5a393e89543a602890f345d8',
                   firstName: 'Adi',
                   lastName: 'Omari',
                   birthdate: 1435479435,
@@ -34,7 +35,14 @@
                   _interestedApartments: [2],
                   email: 'adi@gmail.com'
                 },
-                actions: [
+                actions: []
+            };
+        },
+        components: {
+            appCard: card
+        },
+        created(){
+          this.actions = [
                     {
                         title: "New Apartment",
                         text: "Expose your asset to our community",
@@ -57,20 +65,23 @@
                     {
                         title: "Hobbies",
                         text: "Improve the matching",
-                         img: "@/../static/images/user_panel/actions_menu/hobbie.png",
-                        linkText: "Select Hobbies"
+                        img: "@/../static/images/user_panel/actions_menu/hobbie.png",
+                        linkText: "Select Hobbies",
+                        link: { name: 'select-hobbies', params: { id: this.user._id } }
                     },
                     {
                         title: "Information",
                         text: "Change your profile information",
                          img: "@/../static/images/user_panel/actions_menu/edit.png",
                         linkText: "Edit information"
-                    }
-                ]
-            };
-        },
-        components: {
-            appCard: card
+                    },
+                    {
+                        title: "Profile",
+                        text: "Your public profile available for all users",
+                         img: "@/../static/images/user_panel/actions_menu/profile.png",
+                        linkText: "View profile",
+                        link: { name: 'user-profile', params: { id: this.user._id } }
+                    }]
         }
     }
 </script>
