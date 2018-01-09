@@ -1,5 +1,6 @@
 <template>
 <bContainer>
+<b-card>
 <div id="user_profile_container" class="centralize_div">
       <h1> {{user.firstName}} {{user.lastName}} </h1>
       <p class="about_me"> {{user.about}} </p>
@@ -10,6 +11,7 @@
       <profileGeneralDetails :user_details="user"></profileGeneralDetails>
     </div>
 </div>
+</b-card>
 </bContainer>
 </template>
 
@@ -19,6 +21,7 @@
     import profileGeneralDetails from "@/components/user-profile/profileGeneralDetails.vue"
     import profileTags from "@/components/user-profile/ProfileTags.vue"
     import bContainer from 'bootstrap-vue/es/components/layout/container';
+    import bCard from 'bootstrap-vue/es/components/card/card';
 
     export default {
         name: 'user-profile',
@@ -32,7 +35,7 @@
             };
         },
         components:{
-          bImg,profilePic, profileGeneralDetails, profileTags, bContainer
+          bImg,profilePic, profileGeneralDetails, profileTags, bContainer, bCard
         },
         async created() {
           await this.$http
