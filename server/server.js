@@ -105,6 +105,29 @@ app.get('/apartments', async (req, res) => {
   }
 });
 
+app.put('/apartments/:id/interested', authenticate, async (req, res) => {
+    try {
+    const { id } = req.params;
+    
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
+    }
+
+    if(apartment.isUserInterested(req.user._id)){
+        await apartment.removeInterestedUser(req.user._id);
+        await req.user.removeInterestInApartment(id);
+    }else{
+        await apartment.addInterestedUser(req.user._id);
+        await req.user.addInterestInApartment(id);
+    }
+
+     res.status(OK).send();
+
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
 app.put('/apartments/:id/comment', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['text']);
