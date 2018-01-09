@@ -1,4 +1,6 @@
 <template>
+<bContainer>
+<b-card>
 <div id="hobbies_selection_container" class="centralize_div">
     <h1> Help us improve the results! </h1>
     <b-form @submit="onSubmit" @reset="onReset">
@@ -12,6 +14,8 @@
       <b-button type="reset" variant="primary">CANCEL</b-button>
     </b-form>
 </div>
+</b-card>
+</bContainer>
 </template>
 
 <script>
@@ -20,6 +24,8 @@
     import bFormGroup from 'bootstrap-vue/es/components/form-group/form-group'
     import bFormCheckboxGroup from 'bootstrap-vue/es/components/form-checkbox/form-checkbox-group'
     import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
+    import bCard from 'bootstrap-vue/es/components/card/card';
+    import bContainer from 'bootstrap-vue/es/components/layout/container';
 
     export default {
         name: 'select-hobbies',
@@ -34,7 +40,7 @@
         },
         components:{
             bButton,
-            bForm, bFormGroup, bFormCheckboxGroup, bFormCheckbox
+            bForm, bFormGroup, bFormCheckboxGroup, bFormCheckbox, bCard, bContainer
         },
         async created() {
           await this.$http
