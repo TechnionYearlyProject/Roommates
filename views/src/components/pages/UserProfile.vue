@@ -1,4 +1,5 @@
 <template>
+<bContainer>
 <div id="user_profile_container" class="centralize_div">
       <h1> {{user.firstName}} {{user.lastName}} </h1>
       <p class="about_me"> {{user.about}} </p>
@@ -9,6 +10,7 @@
       <profileGeneralDetails :user_details="user"></profileGeneralDetails>
     </div>
 </div>
+</bContainer>
 </template>
 
 <script>
@@ -16,6 +18,7 @@
     import profilePic from "@/components/user-profile/ProfilePicture.vue"
     import profileGeneralDetails from "@/components/user-profile/profileGeneralDetails.vue"
     import profileTags from "@/components/user-profile/ProfileTags.vue"
+    import bContainer from 'bootstrap-vue/es/components/layout/container';
 
     export default {
         name: 'user-profile',
@@ -29,7 +32,7 @@
             };
         },
         components:{
-          bImg,profilePic, profileGeneralDetails, profileTags
+          bImg,profilePic, profileGeneralDetails, profileTags, bContainer
         },
         async created() {
           await this.$http
@@ -64,6 +67,9 @@
 </script>
 
 <style scoped>
+bContianer{
+  width: 80%;
+}
 .centralize_div{
   vertical-align:middle; 
   text-align:center;
