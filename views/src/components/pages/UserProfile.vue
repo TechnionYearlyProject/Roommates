@@ -38,11 +38,11 @@
           await this.$http
                           .get("users/tags")
                           .then(res => this.setTags(res, this))
-                          .catch(e => alert(e.toString()));
+                          .catch(e => console.log(e));
           await this.$http
                           .get("users/" + this.id)
                           .then(res => this.setProfile(res, this))
-                          .catch(e => alert(e.toString()));
+                          .catch(e => console.log(e));
         },
         methods: {
             setProfile(responseFromServer, pThis){
