@@ -227,6 +227,34 @@ UserSchema.methods.removeApartment = function (apartmentId) {
   return user.save();
 };
 
+UserSchema.methods.addInterestInApartment = function (_apartmentID) {
+  const user = this;
+
+  user._interestedApartments.push(_apartmentID);
+
+  return user.save();
+};
+
+UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
+  const user = this;
+
+  const interestedIDIndex = arrayFunctions.getIndexOfValue(user._interestedApartments, _apartmentID);
+  return (interestedIDIndex > -1);
+
+};
+
+
+UserSchema.methods.removeInterestInApartment = function (_apartmentID) {
+  const user = this;
+
+  const interestedIDIndex = arrayFunctions.getIndexOfValue(user._interestedApartments, _apartmentID);
+  if(interestedIDIndex > -1){
+     user._interestedApartments.splice(interestedIDIndex, 1);
+  }
+ 
+  return user.save();
+};
+
 const User = mongoose.model('User', UserSchema);
 
 module.exports = {
