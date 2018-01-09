@@ -5,6 +5,7 @@ const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
 const { removeFalsyProps } = require('../helpers/removeFalsyProps');
 const { isSupportedTagId } = require('./tag');
+const { getIndexOfValue } = require('../helpers/arrayFunctions');
 
 const ApartmentSchema = new mongoose.Schema({
   title: {
@@ -221,6 +222,33 @@ ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
   });
 
   return apartment.save();
+};
+
+ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
+  const apartment = this;
+
+  apartment._interested.push(_interestedID);
+
+  return apartment.save();
+};
+
+ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
+  const apartment = this;
+
+  const interestedIDIndex = getIndexOfValue(apartment._interested, _interestedID);
+  if(interestedIDIndex > -1){
+     apartment._interested.splice(interestedIDIndex, 1);
+  }
+ 
+  return apartment.save();
+};
+
+ApartmentSchema.methods.isUserInterested = function (_interestedID) {
+  const apartment = this;
+
+  const interestedIDIndex = getIndexOfValue(apartment._interested, _interestedID);
+
+  return (interestedIDIndex > -1);
 };
 
 const Apartment = mongoose.model('Apartment', ApartmentSchema);
