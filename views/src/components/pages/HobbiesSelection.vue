@@ -40,21 +40,25 @@
           await this.$http
                           .get("users/tags")
                           .then(res => this.setAvailableTags(res, this))
-                          .catch(e => alert(e.toString()));
+                          .catch(e => console.log(e));
           await this.$http
                           .get("users/" + this.id)
                           .then(res => this.setCurTags(res, this))
-                          .catch(e => alert(e.toString()));
+                          .catch(e => console.log(e));
 
         },
         methods: {
             onSubmit (evt) {
               evt.preventDefault();
-              alert(JSON.stringify(this.user.hobbies));
+              this.$http.patch("/users/self", {
+                              hobbies: this.currTags
+                           })
+                          .then(res => console.log(JSON.stringify(res.body)))
+                          .catch(e => console.log(e));
             },
             onReset (evt) {
               evt.preventDefault();
-              alert("Canceled");
+              this.$router.push({ name: 'user-panel', params: { id: this.id } })         
             },
             setAvailableTags(responseFromServer, pThis) {
               responseFromServer.body.tags.forEach(function(obj) {
