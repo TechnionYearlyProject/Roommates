@@ -14,7 +14,7 @@ const routes = [
     { path: '/apartments/:id', name: 'apartment-page', component: ApartmentPage },
     { path: '/users/:id', name: 'user-profile', component: UserProfilePage },
     { path: '/add', name: 'add-apartment-page', component: AddApartmentPage },
-    { path: '/self/interested-apartments', name: 'interested-apartments', component: InterestedApartments }
+    { path: '/users/:id/interested', name: 'interested-apartments', component: InterestedApartments }
 ];
 
 export default new Router({

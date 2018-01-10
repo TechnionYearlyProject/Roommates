@@ -7,6 +7,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueResource from 'vue-resource';
 
 import '@/../static/css/style.css';
+require ('../static/js/string-utils.js');
 import App from './App.vue';
 import router from './router';
 

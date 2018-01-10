@@ -1,11 +1,17 @@
 <template>
     <div>
         <div class="container">
+            <br>
             <add-apartment-form1 :info="info1" :isReadOnly="true" />
+            <br>
             <hr>
+            <br>
             <add-apartment-form2 :info="info2" :isReadOnly="true" />
+            <br>
             <hr>
+            <br>
             <add-apartment-form3 :info="info3" :isReadOnly="true" />
+            <br>
         </div>
     </div>
 </template>

@@ -1,9 +1,9 @@
 <template>
-  <div class="container" style="margin-bottom:200px">
+  <div class="container" style="margin-bottom:200px;margin-top:5%">
     <div class="container mb-5">
       <div class="row">
         <div class="col-md-12">
-          <h1 class="s-h1">
+          <h1>
             <strong>publish</strong> your apartment
           </h1>
         </div>
@@ -167,16 +167,6 @@
     box-shadow: none;
   }
 
-  .s-h1 {
-    text-transform: uppercase;
-    font-size: 180%;
-    word-spacing: 2px;
-    text-align: center;
-    margin-bottom: 30px;
-    letter-spacing: 1px;
-    color: #777;
-  }
-
   .s-h2 {
     font-size: 110%;
     margin-bottom: 10px;
@@ -210,7 +200,8 @@
   .s-apartment-add-container {
     z-index: 3;
     padding: 10px 0;
-    border: 1px solid #eee;
+    border: 1px solid #e6e6e6;
+    background-color: #fff;
     overflow-x: hidden;
   }
 
