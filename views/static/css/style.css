@@ -91,3 +91,7 @@ h1 {
     background-color: #FD9F25 !important;;
     border-color: #FD9F25 !important;;
 }
+
+.pac-container {
+    z-index: 10000;
+}

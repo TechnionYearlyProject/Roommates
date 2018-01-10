@@ -1,9 +1,8 @@
 <template>
     <div class="search-box">
-        <b-form-input :value="value"
-                      placeholder="Enter Location"
-                      @input="updateValue"
-                      type="text" />
+        <gmap-auto-complete :value="value.name" class="form-control"
+                            placeholder="Enter Location"
+                            @place_changed="onPlaceChange" />
         <span>OR</span>
         <b-button variant="primary" v-b-modal.google-maps-modal
                   v-b-popover.hover.right="'Find in the map'">
@@ -22,7 +21,8 @@
     import bInputGroup from 'bootstrap-vue/es/components/input-group/input-group'
     import bInputGroupAddon from 'bootstrap-vue/es/components/input-group/input-group-addon'
     import bButton from 'bootstrap-vue/es/components/button/button'
-    import Icon from "vue-awesome/components/Icon"
+    import Icon from 'vue-awesome/components/Icon'
+    import GmapAutoComplete from 'vue2-google-maps/src/components/autocomplete'
 
     export default {
         name: "search-box",
@@ -30,15 +30,19 @@
             Icon,
             bFormInput,
             bInputGroup, bInputGroupAddon,
-            bButton
+            bButton, GmapAutoComplete
         },
         props: ['value'],
         data() {
             return {}
         },
         methods: {
-            updateValue(val) {
-                this.$emit('input', val);
+            onPlaceChange(place) {
+                this.$emit('input', {
+                    name: place.name,
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                });
             }
         }
     }

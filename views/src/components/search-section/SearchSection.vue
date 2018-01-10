@@ -1,5 +1,5 @@
 <template>
-    <b-form action="#" @submit="submit">
+    <b-form action="#" @submit="onSubmit">
         <b-container class="box">
             <b-row>
                 <b-col class="location-col">
@@ -36,14 +36,15 @@
         </b-container>
 
         <!-- Google Maps Pop-up -->
-        <b-modal id="google-maps-modal" size="lg"
-                 title="Pick a location in the map:">
-            <g-map-picker />
+        <b-modal id="google-maps-modal" size="lg" @shown="onModalShow"
+                 title="Pick a location in the map:" @ok="onModalOK">
+            <g-map-picker v-model="pickerLocation" />
         </b-modal>
     </b-form>
 </template>
 
 <script>
+    import Vue from 'vue'
     import bContainer from 'bootstrap-vue/es/components/layout/container'
     import bRow from 'bootstrap-vue/es/components/layout/row'
     import bCol from 'bootstrap-vue/es/components/layout/col'
@@ -56,6 +57,12 @@
     import SearchButton from "@/components/search-section/SearchButton"
     import GMapPicker from "@/components/gmap-picker/GMapPicker"
 
+    const defaultLocation = {
+        name: 'Technion - Israel Institute of Technology, Haifa, Israel',
+        lat: 32.7767783,
+        lng: 35.02312710000001
+    };
+
     export default {
         name: "search-section",
         components: {
@@ -67,7 +74,7 @@
         data() {
             return {
                 fields: {
-                    location: '',
+                    location: defaultLocation,
                     ranges: {
                         price: {
                             label: 'Price',
@@ -112,6 +119,7 @@
                     },
                     selectedBinaryProps: []
                 },
+                pickerLocation: defaultLocation,
                 binaryProps: [
                     { text: 'Kosher Kitchen', value: 'kosher' },
                     { text: 'Elevator', value: 'elevator' },
@@ -125,11 +133,14 @@
             }
         },
         methods: {
-            submit(e) {
+            onSubmit(e) {
                 e.preventDefault();
 
                 console.log({
-                    location: this.fields.location,
+                    location: {
+                        lat: this.fields.location.lat,
+                        lng: this.fields.location.lng
+                    },
                     minPrice: this.fields.ranges.price.value.min,
                     maxPrice: this.fields.ranges.price.value.max,
                     minBathrooms: this.fields.ranges.bathrooms.value.min,
@@ -140,6 +151,12 @@
                     maxFloor: this.fields.ranges.floor.value.max,
                     selected: this.fields.selectedBinaryProps
                 });
+            },
+            onModalShow() {
+                Vue.$gmapDefaultResizeBus.$emit('resize');
+            },
+            onModalOK() {
+                this.fields.location = this.pickerLocation;
             }
         }
     }

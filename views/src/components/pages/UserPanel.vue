@@ -18,23 +18,24 @@
     import card from "@/components/card/card.vue"
     export default {
         name: 'user-panel',
+         props: [
+          'id'
+         ],
          data: function() {
             return {
-              user:
-                {
-                  firstName: 'Adi',
-                  lastName: 'Omari',
-                  birthdate: 1435479435,
-                  gender: 'male',
-                  mobilephone: '0542312213',
-                  image: 'src/assets/imgs/apartments/1.jpg',
-                  about: 'I am a mentor',
-                  hobbies: [1,2,3],
-                  _publishedApartments: [1],
-                  _interestedApartments: [2],
-                  email: 'adi@gmail.com'
-                },
-                actions: [
+              user: null,
+              actions: []
+            };
+        },
+        components: {
+            appCard: card
+        },
+        async created(){
+          await this.$http
+                          .get("users/" + this.id)
+                          .then(res => this.setUserData(res, this))
+                          .catch(e => alert(e.toString()));
+          this.actions = [
                     {
                         title: "New Apartment",
                         text: "Expose your asset to our community",
@@ -57,20 +58,28 @@
                     {
                         title: "Hobbies",
                         text: "Improve the matching",
-                         img: "@/../static/images/user_panel/actions_menu/hobbie.png",
-                        linkText: "Select Hobbies"
+                        img: "@/../static/images/user_panel/actions_menu/hobbie.png",
+                        linkText: "Select Hobbies",
+                        link: { name: 'select-hobbies', params: { id: this.user._id } }
                     },
                     {
                         title: "Information",
                         text: "Change your profile information",
                          img: "@/../static/images/user_panel/actions_menu/edit.png",
                         linkText: "Edit information"
-                    }
-                ]
-            };
+                    },
+                    {
+                        title: "Profile",
+                        text: "Your public profile available for all users",
+                         img: "@/../static/images/user_panel/actions_menu/profile.png",
+                        linkText: "View profile",
+                        link: { name: 'user-profile', params: { id: this.user._id } }
+                    }]
         },
-        components: {
-            appCard: card
+        methods: {
+          setUserData(responseFromServer, pThis){
+            pThis.user = responseFromServer.body.user;
+          }
         }
     }
 </script>

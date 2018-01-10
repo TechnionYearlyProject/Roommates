@@ -25,10 +25,14 @@ export default {
 </script>
 
 <style scoped>
+.card{
+	margin: 3px;
+}
 .centralize_div{
   display:table-cell; 
   vertical-align:middle; 
-  text-align:center
+  text-align:center;
+  padding: 7px;
 }
 
 .card-block{

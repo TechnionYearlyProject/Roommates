@@ -2,8 +2,7 @@
     <div>
         <b-form-group :label="`${label}:`"
                       label-for="input-range">
-            <vue-slider ref="slider"
-                        v-model="computedVal"
+            <vue-slider v-model="computedVal"
                         :min="min" :max="max"
                         :interval="interval"
                         :process-style="processStyle"

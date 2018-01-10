@@ -1,10 +1,12 @@
 <template>
+<bContainer>
+<b-card>
 <div id="hobbies_selection_container" class="centralize_div">
     <h1> Help us improve the results! </h1>
     <b-form @submit="onSubmit" @reset="onReset">
       <b-form-group label="Choose your hobbies:">
         <br>
-        <b-form-checkbox-group id="hobbiescbs" name="hobbies" stacked v-model="user.hobbies" :options="tags" class="hobbie_item">
+        <b-form-checkbox-group id="hobbiescbs" name="hobbies" v-model="currTags" :options="tags">
         </b-form-checkbox-group>
       </b-form-group>
       <br>
@@ -12,63 +14,70 @@
       <b-button type="reset" variant="primary">CANCEL</b-button>
     </b-form>
 </div>
+</b-card>
+</bContainer>
 </template>
 
 <script>
-    import bButton from 'bootstrap-vue/es/components/button/button';
-    import formCheckbox from 'bootstrap-vue/es/components';
+    import bButton from 'bootstrap-vue/es/components/button/button'
+    import bForm from 'bootstrap-vue/es/components/form/form'
+    import bFormGroup from 'bootstrap-vue/es/components/form-group/form-group'
+    import bFormCheckboxGroup from 'bootstrap-vue/es/components/form-checkbox/form-checkbox-group'
+    import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
+    import bCard from 'bootstrap-vue/es/components/card/card';
+    import bContainer from 'bootstrap-vue/es/components/layout/container';
+
     export default {
         name: 'select-hobbies',
-         data: function() {
+        props: [
+          'id'
+        ],
+        data: function() {
             return {
-              user:
-                {
-                  firstName: 'Adi',
-                  lastName: 'Omari',
-                  birthdate: 1435479435,
-                  gender: 'male',
-                  mobilephone: '0542312213',
-                  image: 'src/assets/imgs/apartments/1.jpg',
-                  about: 'I am a mentor',
-                  hobbies: [1,3],
-                  _publishedApartments: [1],
-                  _interestedApartments: [2],
-                  email: 'adi@gmail.com'
-                },
-                tags: [
-                    {
-                       value: 1,
-                       text: "Tag1"
-                    },
-                    {
-                       value: 2,
-                       text: "Tag2"
-                    },
-                    {
-                       value: 3,
-                       text: "Tag3"
-                    },
-                    {
-                       value: 4,
-                       text: "Tag4"
-                    },
-                    
-                ]
+              currTags: [],
+              tags: []
             };
         },
         components:{
             bButton,
-            formCheckbox
+            bForm, bFormGroup, bFormCheckboxGroup, bFormCheckbox, bCard, bContainer
+        },
+        async created() {
+          await this.$http
+                          .get("users/tags")
+                          .then(res => this.setAvailableTags(res, this))
+                          .catch(e => console.log(e));
+          await this.$http
+                          .get("users/" + this.id)
+                          .then(res => this.setCurTags(res, this))
+                          .catch(e => console.log(e));
+
         },
         methods: {
             onSubmit (evt) {
               evt.preventDefault();
-              alert(JSON.stringify(this.user.hobbies));
+              this.$http.patch("/users/self", {
+                              hobbies: this.currTags
+                           })
+                          .then(res => console.log(JSON.stringify(res.body)))
+                          .catch(e => console.log(e));
             },
             onReset (evt) {
               evt.preventDefault();
-               alert("Canceled");
-            }
+              this.$router.push({ name: 'user-panel', params: { id: this.id } })         
+            },
+            setAvailableTags(responseFromServer, pThis) {
+              responseFromServer.body.tags.forEach(function(obj) {
+                  var tag = {
+                              value: obj._id,
+                              text: obj.name
+                            };
+                  pThis.tags.push(tag);
+              });
+            },
+            setCurTags(responseFromServer, pThis) {
+              pThis.currTags = responseFromServer.body.user.hobbies;
+            },
           }
     }
   
@@ -83,8 +92,5 @@
   margin: 0 auto;
 }
 
-.hobbie_item{
-    display: inline-block;
-}
 
 </style>
