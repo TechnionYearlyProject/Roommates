@@ -5,7 +5,7 @@ import MainPage from '@/components/pages/Main'
 import ApartmentPage from '@/components/pages/Apartment'
 import UserProfilePage from '@/components/pages/UserProfile'
 import AddApartmentPage from '@/components/pages/AddApartment'
-/*import InterestedApartments from '@/components/pages/InterestedApartments'*/
+import InterestedApartments from '@/components/pages/InterestedApartments'
 import UserPanel from '@/components/pages/UserPanel'
 import HobbiesSelection from '@/components/pages/HobbiesSelection'
 

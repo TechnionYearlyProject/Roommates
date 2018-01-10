@@ -199,7 +199,7 @@
 
   .s-apartment-add-container {
     z-index: 3;
-    padding: 10px 0;
+    padding: 20px 0 50px 0;
     border: 1px solid #e6e6e6;
     background-color: #fff;
     overflow-x: hidden;
