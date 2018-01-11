@@ -4,11 +4,11 @@ const _ = require('lodash');
 const {
   BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK
 } = require('http-status');
-const cors = require('cors');
 
 require('./server-config');
 require('./db/mongoose');
 const { useVue } = require('./middleware/vuejs');
+const { useCors } = require('./middleware/cors');
 const geoLocation = require('./services/geoLocation/geoLocation');
 const { Apartment } = require('./models/apartment');
 const { User } = require('./models/user');
@@ -20,7 +20,7 @@ const { getSupportedTags } = require('./models/tag');
 const app = express();
 
 app.use(bodyParser.json({ limit: '5mb' }));
-app.use(cors(process.env.CORS));
+useCors(app);
 useVue(app);
 
 app.post('/apartments', authenticate, async (req, res) => {

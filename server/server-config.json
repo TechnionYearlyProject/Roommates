@@ -3,7 +3,7 @@
         "PORT": 3000,
         "MONGODB_URI": "mongodb://localhost:27017/RoommatesApp",
         "JWT_SECRET": "developmentjwtsecret-hdjgmk3d0932mcm3x",
-        "CORS": "localhost:8080"
+        "CORS": "'http://localhost:8080"
     },
     "test": {
         "PORT": 3000,
