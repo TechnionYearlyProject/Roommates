@@ -72,7 +72,7 @@ const apartment2 = new Apartment({
   //description:
   //tags:
   requiredNumberOfRoommates: 1,
-  currentlyNumberOfRoommates: 2
+  currentlyNumberOfRoommates: 2,
   //comments
 });
 
@@ -122,7 +122,7 @@ const user2 = {
   about: '',
   hobbies: [4, 5, 6],
   _publishedApartments: [apartment1Id.toHexString()],
-  _interestedApartments: [],
+  _interestedApartments: [apartment2Id.toHexString()],
   tokens: [{
     access: XAUTH,
     token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString()
