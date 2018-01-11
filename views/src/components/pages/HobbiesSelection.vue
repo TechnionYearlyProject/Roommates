@@ -1,5 +1,5 @@
 <template>
-<bContainer>
+<b-Container>
 <b-card>
 <div id="hobbies_selection_container" class="centralize_div">
     <h1> Help us improve the results! </h1>
@@ -15,7 +15,7 @@
     </b-form>
 </div>
 </b-card>
-</bContainer>
+</b-Container>
 </template>
 
 <script>

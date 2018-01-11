@@ -20,8 +20,6 @@ Vue.use(VueResource);
 Vue.http.options.root = process.env.SERVER_URI;
 Vue.http.headers.common['x-auth'] = 'x-auth';
 Vue.http.interceptors.push((request, next) => {
-  // TODO: change the token to a getToken method.
-  request.headers.set('x-auth', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1YTUwMTQwYjEzNTg3ODJhNmM2YjU5YjMiLCJhY2Nlc3MiOiJ4LWF1dGgiLCJpYXQiOjE1MTUxOTc0NTF9.F2rMwRz2q0aQeRGFBJVHqgp0siiaZyLn19kUUYP7ueM');
   next();
 });
 

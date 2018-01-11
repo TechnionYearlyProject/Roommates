@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import MainPage from '@/components/pages/Main'
+import Identification from '@/components/pages/Identification'
 import ApartmentPage from '@/components/pages/Apartment'
 import UserProfilePage from '@/components/pages/UserProfile'
 import AddApartmentPage from '@/components/pages/AddApartment'
@@ -13,6 +14,7 @@ Vue.use(Router);
 
 const routes = [
     { path: '/', name: 'main-page', component: MainPage },
+    { path: '/identification', name: 'identification', component: Identification },
     { path: '/apartments/:id', name: 'apartment-page', component: ApartmentPage },
     { path: '/add', name: 'add-apartment-page', component: AddApartmentPage },
     { path: '/users/:id/interested', name: 'interested-apartments', component: InterestedApartments },
