@@ -19,7 +19,7 @@
                 </b-col>
             </b-row>
             <b-form-check-box-group v-model="fields.selectedBinaryProps" class="binary-properties">
-                <b-row v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
+                <b-row no-gutters v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
                     <b-col v-for="colIndex in 4" :key="colIndex"
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < binaryProps.length">
                         <b-form-checkbox style="vertical-align: middle" :value="binaryProps[index].key"
