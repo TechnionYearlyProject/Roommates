@@ -4,6 +4,11 @@
       <h1 slot="header" class="mb-0">Login</h1>
       <b-row>
         <b-col cols="12">
+          <b-alert show variant="danger" v-if="error">
+           {{ error }}
+          </b-alert>
+        </b-col>
+        <b-col cols="12">
           <b-form-group horizontal breakpoint="md" class="mb-1" label-class="text-sm-left" label="Email:" label-for="loginEmail">
             <b-form-input id="loginEmail" type="email" v-model="email"></b-form-input>
           </b-form-group>
@@ -24,11 +29,14 @@
 </template>
 
 <script>
+import EventBus from "@/event-bus/EventBus";
+
   export default {
     data() {
       return {
         email: "",
-        password: ""
+        password: "",
+        error: ""
       };
     },
     methods: {
@@ -39,10 +47,14 @@
             password: this.password
           })
           .then(res => {
-            console.log(res.headers.get('x-auth'));
+            const token = res.headers.get('x-auth');
+            const expiration = res.headers.get('x-expiration');
+            this.$auth.setToken(token, expiration);
+            this.$router.push({ name: 'main-page' });
+            EventBus.emitLogin();
           })
           .catch(e => {
-            console.log(e);
+            this.error =  'Invalid cradentials';
           });
       }
     }

@@ -13,16 +13,76 @@ import HobbiesSelection from '@/components/pages/HobbiesSelection'
 Vue.use(Router);
 
 const routes = [
-    { path: '/', name: 'main-page', component: MainPage },
-    { path: '/identification', name: 'identification', component: Identification },
-    { path: '/apartments/:id', name: 'apartment-page', component: ApartmentPage },
-    { path: '/add', name: 'add-apartment-page', component: AddApartmentPage },
-    { path: '/users/:id/interested', name: 'interested-apartments', component: InterestedApartments },
-    { path: '/users/:id/hobbies', name: 'select-hobbies', component: HobbiesSelection, props: true },
-    { path: '/users/:id/profile', name: 'user-profile', component: UserProfilePage, props: true },
-    { path: '/users/:id/control-panel', name: 'user-panel', component: UserPanel, props: true }
+    {
+        path: '/',
+        name: 'main-page',
+        component: MainPage
+    },
+    {
+        path: '/identification',
+        name: 'identification',
+        component: Identification,
+        meta: { forVisitors: true }
+    },
+    {
+        path: '/apartments/:id',
+        name: 'apartment-page',
+        component: ApartmentPage
+    },
+    {
+        path: '/add',
+        name: 'add-apartment-page',
+        component: AddApartmentPage,
+        meta: { forAuth: true }
+    },
+    {
+        path: '/users/:id/interested',
+        name: 'interested-apartments',
+        component: InterestedApartments
+    },
+    {
+        path: '/users/:id/hobbies',
+        name: 'select-hobbies',
+        component: HobbiesSelection,
+        props: true
+    },
+    {
+        path: '/users/:id/profile',
+        name: 'user-profile',
+        component: UserProfilePage,
+        props: true
+    },
+    {
+        path: '/users/:id/control-panel',
+        name: 'user-panel',
+        component: UserPanel,
+        props: true,
+        meta: { forAuth: true }
+    },
+
 ];
 
+const beforeEach = (to, from, next) => {
+    if (to.matched.some(record => record.meta.forVisitors)) {
+        if (Vue.auth.isAuthenticated()) {
+            console.log('authenticated')
+            next({ name: 'main-page' });
+        } else {
+            next();
+        }
+    } else if (to.matched.some(record => record.meta.forAuth)) {
+        if (!Vue.auth.isAuthenticated()) {
+            console.log('not authenticated')
+            next({ name: 'identification' });
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+};
+
 export default new Router({
-    routes
+    routes,
+    beforeEach
 });
