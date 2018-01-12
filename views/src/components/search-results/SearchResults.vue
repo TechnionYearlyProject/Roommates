@@ -1,15 +1,12 @@
 <template>
     <div id="search-results">
-        <ul>
-            <single-result id="123"
-                           address="address super duper shmuper"
-                           description="Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his."
-                           :price="1250"
-                           :bedrooms="4"
-                           :floor="5"
-                           :bathrooms="2"
-                           :images="3" />
-        </ul>
+        <transition name="slide-fade" mode="out-in">
+            <h1 v-if="value instanceof Array && value.length === 0">No Results</h1>
+            <transition-group v-else-if="value instanceof Array" name="results-list" tag="ul">
+                <single-result v-for="(apartment, index) in value" :key="index"
+                               :apartment="apartment" />
+            </transition-group>
+        </transition>
     </div>
 </template>
 
@@ -18,6 +15,7 @@
 
     export default {
         name: "search-results",
+        props: ['value'],
         components: {
             SingleResult
         }
@@ -25,6 +23,16 @@
 </script>
 
 <style scoped>
+    h1 {
+        text-align: center;
+        text-transform: uppercase;
+        color: #7d7d7d;
+        padding-top: 20px;
+        padding-left: 15px;
+        letter-spacing: 8px;
+        font-size: 35px;
+    }
+    
     ul {
         margin: 0;
         padding: 0;
@@ -36,5 +44,23 @@
 
     #search-results {
         margin-top: 75px;
+    }
+
+    .slide-fade-enter-active {
+        transition: all 1s ease;
+    }
+
+    .slide-fade-leave-active {
+        transition: all 1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+
+    .slide-fade-enter, .slide-fade-leave-to {
+        transform: translateY(-50px);
+        opacity: 0;
+        height: 0;
+    }
+
+    .results-list-move {
+        transition: transform 1s;
     }
 </style>
