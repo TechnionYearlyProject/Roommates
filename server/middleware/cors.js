@@ -1,11 +1,11 @@
 const cors = require('cors');
 
-const { XAUTH } = require('../constants');
+const { XAUTH, XEXPIRATION } = require('../constants');
 
 const corsOptions = {
   origin: '*',
-  allowedHeaders: ['Content-Type', XAUTH],
-  exposedHeaders: ['Content-Type', XAUTH],
+  allowedHeaders: ['Content-Type', XAUTH, XEXPIRATION],
+  exposedHeaders: ['Content-Type', XAUTH, XEXPIRATION],
   optionsSuccessStatus: 200
 };
 const useCors = (app) =>

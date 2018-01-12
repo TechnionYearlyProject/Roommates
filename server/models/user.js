@@ -8,6 +8,7 @@ const { isSupportedHobbieId } = require('./hobbie');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH } = require('../constants');
+const ticket = require('./ticket');
 
 const UserSchema = new mongoose.Schema({
   firstName: {
@@ -92,6 +93,10 @@ const UserSchema = new mongoose.Schema({
     token: {
       type: String,
       required: true
+    },
+    expiration: {
+      type: Number,
+      required: true
     }
   }]
 });
@@ -166,6 +171,28 @@ UserSchema.statics.toJSON = function (user) {
     ]);
 };
 
+UserSchema.methods.getToken = function (token) {
+  const user = this;
+
+  return user.tokens.find(t => t.token === token);
+};
+
+UserSchema.methods.removeExpiredTokens = function () {
+  const user = this;
+
+  const tokens = user.tokens.filter(t => Date.now() < t.expiration);
+  user.tokens = tokens;
+  return user.save();
+};
+
+UserSchema.methods.updateTokenTime = function (token) {
+  const user = this;
+
+  const newExpiration = ticket.generateNewExpiration();
+  user.getToken(token).expiration = newExpiration;
+  return user.save().then(() => newExpiration);
+};
+
 UserSchema.methods.toJSON = function () {
   const user = this;
 
@@ -179,11 +206,11 @@ UserSchema.methods.generateAuthenticationToken = function () {
 
   const access = XAUTH;
   const token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.JWT_SECRET).toString();
-
-  user.tokens.push({ access, token });
+  const t = ticket.create(access, token);
+  user.tokens.push(t);
 
   return user.save()
-    .then(() => token);
+    .then(() => t);
 };
 
 UserSchema.methods.register = function () {
@@ -206,14 +233,13 @@ UserSchema.methods.getBestMatchingUsers = function (userIds) {
     _id: { $in: userIds }
   }).then((users) =>
     arrayFunctions.sortArrayASC(users, (curUser) => -1 * user.getMatchingResult(curUser))
-    );
+  );
 };
 
 UserSchema.methods.isOwner = function (apartmentId) {
   const user = this;
 
   return arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId) > -1;
-
 };
 
 UserSchema.methods.removeApartment = function (apartmentId) {
@@ -240,7 +266,6 @@ UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
 
   const interestedIDIndex = arrayFunctions.getIndexOfValue(user._interestedApartments, _apartmentID);
   return (interestedIDIndex > -1);
-
 };
 
 
@@ -248,10 +273,10 @@ UserSchema.methods.removeInterestInApartment = function (_apartmentID) {
   const user = this;
 
   const interestedIDIndex = arrayFunctions.getIndexOfValue(user._interestedApartments, _apartmentID);
-  if(interestedIDIndex > -1){
-     user._interestedApartments.splice(interestedIDIndex, 1);
+  if (interestedIDIndex > -1) {
+    user._interestedApartments.splice(interestedIDIndex, 1);
   }
- 
+
   return user.save();
 };
 

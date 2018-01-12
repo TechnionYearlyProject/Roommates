@@ -12,7 +12,7 @@ const { useCors } = require('./middleware/cors');
 const geoLocation = require('./services/geoLocation/geoLocation');
 const { Apartment } = require('./models/apartment');
 const { User } = require('./models/user');
-const { XAUTH } = require('./constants');
+const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
@@ -106,23 +106,23 @@ app.get('/apartments', async (req, res) => {
 });
 
 app.put('/apartments/:id/interested', authenticate, async (req, res) => {
-    try {
+  try {
     const { id } = req.params;
-    
+
     const apartment = await Apartment.findById(id);
     if (!apartment) {
       return res.status(NOT_FOUND).send();
     }
 
-    if(apartment.isUserInterested(req.user._id)){
-        await apartment.removeInterestedUser(req.user._id);
-        await req.user.removeInterestInApartment(id);
-    }else{
-        await apartment.addInterestedUser(req.user._id);
-        await req.user.addInterestInApartment(id);
+    if (apartment.isUserInterested(req.user._id)) {
+      await apartment.removeInterestedUser(req.user._id);
+      await req.user.removeInterestInApartment(id);
+    } else {
+      await apartment.addInterestedUser(req.user._id);
+      await req.user.addInterestInApartment(id);
     }
 
-     res.status(OK).send();
+    res.status(OK).send();
 
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
@@ -178,8 +178,9 @@ app.post('/users', async (req, res) => {
       ]);
 
     const user = new User(body);
-    const token = await user.register();
-    res.header(XAUTH, token).send({ user });
+    const ticket = await user.register();
+    res.header(XAUTH, ticket.token);
+    res.header(XEXPIRATION, ticket.expiration).send({ user });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -190,8 +191,10 @@ app.post('/users/login', async (req, res) => {
     const body = _.pick(req.body, ['email', 'password']);
 
     const user = await User.findByCredentials(body.email, body.password);
-    const token = await user.generateAuthenticationToken();
-    res.header(XAUTH, token).send({ user });
+    user.removeExpiredTokens();
+    const ticket = await user.generateAuthenticationToken();
+    res.header(XAUTH, ticket.token);
+    res.header(XEXPIRATION, ticket.expiration).send({ user });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
