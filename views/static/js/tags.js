@@ -12,12 +12,12 @@ export default [
   {
     key: 'ELEVATOR',
     name: 'Elevator',
-    vicon: 'angle-double-up'
+      vicon: 'elevator'
   },
   {
     key: 'TERRACE',
     name: 'Balcony',
-    vicon: 'tree'
+      vicon: 'balcony'
   },
   {
     key: 'PARK',

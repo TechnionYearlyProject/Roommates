@@ -24,7 +24,7 @@
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < binaryProps.length">
                         <b-form-checkbox style="vertical-align: middle" :value="binaryProps[index].key"
                                          class="bin-prop-checkbox">
-                            <icon :name="binaryProps[index].vicon" scale="1.4" />
+                            <icon :name="binaryProps[index].vicon" scale="1.6" />
                             <span class="binary-property-text">{{ binaryProps[index].name }}</span>
                         </b-form-checkbox>
                     </b-col>
@@ -242,7 +242,5 @@
 
     .binary-property-text {
         vertical-align: super;
-        display: inline-block;
-        margin-left: 3px;
     }
 </style>
