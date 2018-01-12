@@ -22,8 +22,10 @@
                 <b-row v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
                     <b-col v-for="colIndex in 4" :key="colIndex"
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < binaryProps.length">
-                        <b-form-checkbox :value="binaryProps[index].key" class="bin-prop-checkbox">
-                            {{ binaryProps[index].name }}
+                        <b-form-checkbox style="vertical-align: middle" :value="binaryProps[index].key"
+                                         class="bin-prop-checkbox">
+                            <icon :name="binaryProps[index].vicon" scale="1.4" />
+                            <span class="binary-property-text">{{ binaryProps[index].name }}</span>
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
@@ -56,6 +58,8 @@
     import RangeSelector from "./RangeSelector"
     import SearchButton from "@/components/search-section/SearchButton"
     import GMapPicker from "@/components/gmap-picker/GMapPicker"
+    import Icon from 'vue-awesome/components/Icon'
+
     import Tags from '@/../static/js/tags'
 
     const defaultLocation = {
@@ -70,7 +74,7 @@
             bContainer, bRow, bCol,
             bForm, bFormCheckBoxGroup, bFormCheckbox, bModal,
             SearchBox, RangeSelector, SearchButton,
-            GMapPicker
+            GMapPicker, Icon
         },
         data() {
             return {
@@ -232,5 +236,11 @@
 
     .binary-properties {
         margin-top: 10px;
+    }
+
+    .binary-property-text {
+        vertical-align: super;
+        display: inline-block;
+        margin-left: 3px;
     }
 </style>

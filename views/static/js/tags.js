@@ -32,7 +32,7 @@ export default [
   {
     key: 'KOSHER',
     name: 'Kosher Kitchen',
-    vicon: 'sign-language'
+      vicon: 'cutlery'
   },
   {
     key: 'FURNISHED',
