@@ -22,8 +22,8 @@
                 <b-row v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
                     <b-col v-for="colIndex in 4" :key="colIndex"
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < binaryProps.length">
-                        <b-form-checkbox :value="binaryProps[index].value" class="bin-prop-checkbox">
-                            {{ binaryProps[index].text }}
+                        <b-form-checkbox :value="binaryProps[index].key" class="bin-prop-checkbox">
+                            {{ binaryProps[index].name }}
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
@@ -56,6 +56,7 @@
     import RangeSelector from "./RangeSelector"
     import SearchButton from "@/components/search-section/SearchButton"
     import GMapPicker from "@/components/gmap-picker/GMapPicker"
+    import Tags from '@/../static/js/tags'
 
     const defaultLocation = {
         name: 'Technion - Israel Institute of Technology, Haifa, Israel',
@@ -120,16 +121,7 @@
                     selectedBinaryProps: []
                 },
                 pickerLocation: defaultLocation,
-                binaryProps: [
-                    { text: 'Kosher Kitchen', value: 'kosher' },
-                    { text: 'Elevator', value: 'elevator' },
-                    { text: 'Air Conditioning', value: 'air-conditioning' },
-                    { text: 'Laundry Room', value: 'laundry' },
-                    { text: 'TV', value: 'tv' },
-                    { text: 'Furnished', value: 'furnished' },
-                    { text: 'Balcony', value: 'balcony' },
-                    { text: 'High Ceiling', value: 'high-ceiling' }
-                ]
+                binaryProps: Tags
             }
         },
         methods: {

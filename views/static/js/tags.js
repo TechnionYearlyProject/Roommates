@@ -1,4 +1,4 @@
-const tags = [
+export default [
   {
     key: 'AC',
     name: 'Air Conditioner',
@@ -40,7 +40,3 @@ const tags = [
     vicon: 'truck'
   }
 ];
-
-module.exports = {
-  tags
-}
