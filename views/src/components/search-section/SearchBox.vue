@@ -1,7 +1,8 @@
 <template>
     <div class="search-box">
-        <gmap-auto-complete :value="value.name" class="form-control"
+        <gmap-auto-complete class="form-control"
                             placeholder="Enter Location"
+                            v-model="value.name"
                             @place_changed="onPlaceChange" />
         <span>OR</span>
         <b-button variant="primary" v-b-modal.google-maps-modal
@@ -34,7 +35,7 @@
         },
         props: ['value'],
         data() {
-            return {}
+            return {};
         },
         methods: {
             onPlaceChange(place) {

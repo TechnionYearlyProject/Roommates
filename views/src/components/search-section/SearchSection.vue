@@ -174,6 +174,8 @@
             },
             onModalShow() {
                 Vue.$gmapDefaultResizeBus.$emit('resize');
+
+                this.pickerLocation = this.fields.location;
             },
             onModalOK() {
                 this.fields.location = this.pickerLocation;
