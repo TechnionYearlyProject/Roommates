@@ -151,7 +151,7 @@
                 //this.$emit('newResults', []);
                 this.$emit('newResults', [
                     {
-                        id: 123,
+                        id: '123',
                         address: 'Super Duper Address',
                         description: 'Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his.',
                         price: 1100,
@@ -161,7 +161,7 @@
                         images: 3
                     },
                     {
-                        id: 123,
+                        id: '123',
                         address: 'Super Duper Address',
                         description: 'Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his.',
                         price: 1100,

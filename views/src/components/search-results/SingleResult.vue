@@ -65,18 +65,20 @@
             apartment: {
                 validator(val) {
                     const props = {
-                        id: String,
-                        address: String,
-                        description: String,
-                        price: Number,
-                        bedrooms: Number,
-                        floor: Number,
-                        bathrooms: Number,
-                        images: Number
+                        id: 'string',
+                        address: 'string',
+                        description: 'string',
+                        price: 'number',
+                        bedrooms: 'number',
+                        floor: 'number',
+                        bathrooms: 'number',
+                        images: 'number'
                     };
 
                     for (let prop in props) {
-                        if (!val.hasOwnProperty(prop) || !(val[prop] instanceof props[prop])) {
+                        if (!val.hasOwnProperty(prop) || (typeof val[prop]) !== props[prop]) {
+                            console.error(`Wrong apartment structure: property '${prop}' should be type of ${props[prop]} but is ${typeof val[prop]}`);
+
                             return false;
                         }
                     }
