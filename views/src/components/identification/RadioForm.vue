@@ -1,6 +1,6 @@
 <template>
   <b-form-group horizontal class="mb-3" :label="label">
-    <b-form-radio-group v-model="selected" :options="options" name="radioInline">
+    <b-form-radio-group v-model="selected" :options="options" name="radioInline" style="padding-top:8px">
     </b-form-radio-group>
   </b-form-group>
 </template>
@@ -15,7 +15,6 @@
     },
     watch: {
       selected() {
-        console.log(this.selected);
         this.$emit("changed", this.selected);
       }
     }

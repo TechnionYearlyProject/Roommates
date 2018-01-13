@@ -63,7 +63,6 @@
     },
     methods: {
       inputUpdated(val) {
-        console.log(val);
         this.$emit("updated", val);
       }
     }

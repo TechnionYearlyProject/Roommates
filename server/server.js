@@ -126,8 +126,7 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
       await req.user.addInterestInApartment(id);
     }
 
-    res.status(OK).send();
-
+    return res.status(OK).send();
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -183,6 +182,7 @@ app.post('/users', async (req, res) => {
 
     const user = new User(body);
     const ticket = await user.register();
+
     res.header(XAUTH, ticket.token);
     res.header(XEXPIRATION, ticket.expiration).send({ user });
   } catch (err) {
@@ -242,7 +242,6 @@ app.get('/users/:id/interested', async (req, res) => {
     const interested = await Apartment.findAllByIds(user._interestedApartments);
     return res.send({ interested });
   } catch (err) {
-    console.log(err);
     return res.status(BAD_REQUEST).send(err);
   }
 });

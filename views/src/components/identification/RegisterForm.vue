@@ -17,13 +17,18 @@
           <checked-form @updated="updateLastName" label="Last Name:" labelFor="lastName" :state="lastNameState" placeholder="Optional"></checked-form>
         </b-col>
         <b-col cols="12">
-          <calendar-form id='birthday' :initialDate="date" label="Birthday:" @selected="updateDate"></calendar-form>
+          <calendar-form id='birthday' :initialDate="date" :disabledDates="disabledDates" label="Birthday:" @selected="updateDate"></calendar-form>
         </b-col>
         <b-col cols="12">
           <radio-form label="Gender:" :options="genderOptions" @changed="updateGender"></radio-form>
         </b-col>
+        <b-col cols="12">
+          <b-alert show variant="danger" v-if="error">
+           {{ error }}
+          </b-alert>
+        </b-col>
         <b-col cols="12" class="mt-4">
-          <b-button size="lg" variant="primary" class="center-button" click="#">
+          <b-button size="lg" variant="primary" class="center-button" @click="register">
             Register
           </b-button>
         </b-col>
@@ -37,8 +42,10 @@
   import CheckedForm from "@/components/identification/CheckedForm.vue";
   import CalendarForm from "@/components/identification/CalendarForm.vue";
   import RadioForm from "@/components/identification/RadioForm.vue";
+  import EventBus from "@/event-bus/EventBus";
   const validator = require("email-validator");
 
+  const maxDate = Date.now() - (15 * 365 * 24 * 60 * 60 * 1000);
   export default {
     data() {
       return {
@@ -47,7 +54,8 @@
         firstName: "",
         lastName: "",
         gender: "",
-        date: new Date(),
+        date: new Date(maxDate),
+        error: "",
 
         genderOptions: [
           {
@@ -58,7 +66,10 @@
             text: "Female",
             value: "female"
           }
-        ]
+        ],
+        disabledDates: {
+          from: new Date(maxDate + 1)
+        }
       };
     },
     methods: {
@@ -79,6 +90,30 @@
       },
       updateGender(newGender) {
         this.gender = newGender;
+      },
+      register() {
+        if (!this.emailState || !this.passwordState || !this.firstNameState || !this.genderState || !this.date) {
+          this.error = "Please fill all the required fields.";
+        } else {
+          this.error = "";
+          this.$http
+          .post("users", {
+            email: this.email,
+            password: this.password,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            gender: this.gender,
+            birthdate: this.date.getTime()
+          }).then(res => {
+            console.log(res);
+            EventBus.emitLogin(res.headers);
+            this.$router.push({ name: 'main-page' });
+          })
+          .catch(e => {
+            this.error = e.body.message;
+            console.log(e);
+          });
+        }
       }
     },
     computed: {
@@ -111,6 +146,9 @@
       },
       lastNameState() {
         return this.lastName.length > 0 ? true : null;
+      },
+      genderState() {
+        return this.genderOptions.find(go=>go.value === this.gender)? true : false;
       }
     },
     components: {

@@ -1,10 +1,10 @@
 <template>
   <b-row class="mb-4">
     <label :for="id" class="col-md-3 col-form-label text-sm-left">{{ label }}</label>
-    <datepicker :id="id" :value="date" :format="customFormatter" bootstrapStyling @selected="dateSelected">
+    <datepicker :id="id" :value="date" :disabled="disabledDates" :format="customFormatter" bootstrapStyling @selected="dateSelected" ref="programaticOpen">
     </datepicker>
     <b-input-group-button>
-      <b-button variant="warning">
+      <b-button variant="warning" @click="openPicker">
         <icon name="calendar" />
       </b-button>
     </b-input-group-button>
@@ -17,7 +17,7 @@
   const dateFormat = require("dateformat");
 
   export default {
-    props: ["id", "label", "initialDate"],
+    props: ["id", "label", "initialDate", "disabledDates"],
     data() {
       return {
         date: this.initialDate
@@ -30,6 +30,9 @@
       dateSelected(date) {
         this.date = date;
         this.$emit("selected", date);
+      },
+      openPicker() {
+        this.$refs.programaticOpen.showCalendar();
       }
     },
     components: {

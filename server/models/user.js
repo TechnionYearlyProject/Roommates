@@ -9,6 +9,8 @@ const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH } = require('../constants');
 const ticket = require('./ticket');
+const { invalidCradentials, emailInUse } = require('../errors');
+
 
 const UserSchema = new mongoose.Schema({
   firstName: {
@@ -25,7 +27,10 @@ const UserSchema = new mongoose.Schema({
   birthdate: {
     type: Number,
     min: new Date('1900-01-01').getTime(),
-    max: Date.now() - (15 * 365 * 24 * 60 * 60 * 1000),
+    validate: {
+      validator: (value) => value <= Date.now() - (15 * 365 * 24 * 60 * 60 * 1000),
+      message: 'birthdate: {VALUE} is more than maximum allowed value'
+    },
     required: true
   },
   gender: {
@@ -121,7 +126,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
 
   return User.findOne({ email }).then((user) => {
     if (!user) {
-      return Promise.reject();
+      return Promise.reject(invalidCradentials);
     }
 
     return new Promise((resolve, reject) => {
@@ -129,7 +134,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
         if (res) {
           resolve(user);
         } else {
-          reject();
+          reject(invalidCradentials);
         }
       });
     });
@@ -217,7 +222,8 @@ UserSchema.methods.register = function () {
   const user = this;
 
   return user.save()
-    .then(() => user.generateAuthenticationToken());
+    .then(() => user.generateAuthenticationToken())
+    .catch(() => { throw emailInUse; });
 };
 
 UserSchema.methods.getMatchingResult = function (userToGetMatchingWith) {
