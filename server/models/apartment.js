@@ -170,7 +170,7 @@ ApartmentSchema.statics.findAllByIds = function (listIds) {
 };
 
 //TODO: add the rest of properties
-//_id, _createdBy, fromPrice, toPrice, enteranceDate, address, radius, currentlyNumberOfRoommates
+//_id, _createdBy, fromPrice, toPrice, enteranceDate, address, latitude, longitude, radius, currentlyNumberOfRoommates
 ApartmentSchema.statics.findByProperties = async function (p) {
   const Apartment = this;
 
@@ -185,7 +185,10 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   }
 
   let geolocation;
-  if (p.address) {
+  if (p.latitude && p.longitude) {
+    const coords = [p.longitude, p.latitude];
+    geolocation = p.radius ? getGeoWithinObj(coords, p.radius) : coords;
+  } else if (p.address) {
     geolocation = await geoLocation.getGeoLocationCoords(p.address);
     if (!geolocation) {
       return new Promise((resolve) => resolve([]));
@@ -236,10 +239,10 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   const apartment = this;
 
   const interestedIDIndex = getIndexOfValue(apartment._interested, _interestedID);
-  if(interestedIDIndex > -1){
-     apartment._interested.splice(interestedIDIndex, 1);
+  if (interestedIDIndex > -1) {
+    apartment._interested.splice(interestedIDIndex, 1);
   }
- 
+
   return apartment.save();
 };
 

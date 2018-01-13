@@ -122,7 +122,7 @@ describe('Server Tests', () => {
     });
 
     it('should not create apartment with invalid tag ', (done) => {
-      let apartment = JSON.parse(JSON.stringify(notPublishedApartment));
+      const apartment = JSON.parse(JSON.stringify(notPublishedApartment));
       apartment.tags = [0];
       request(app)
         .post('/apartments')
@@ -144,7 +144,7 @@ describe('Server Tests', () => {
 
     it('should create apartment with valid tag ', (done) => {
       const validTagId = getSupportedTags()[0]._id;
-      let apartment = JSON.parse(JSON.stringify(notPublishedApartment));
+      const apartment = JSON.parse(JSON.stringify(notPublishedApartment));
       apartment.tags = [validTagId];
       request(app)
         .post('/apartments')
@@ -230,9 +230,7 @@ describe('Server Tests', () => {
   });
 
 
-
   describe('PUT /apartments/:id/interested', () => {
-    
     it('should return 404 when invalid id', (done) => {
       const id = new ObjectID();
       request(app)
@@ -273,7 +271,7 @@ describe('Server Tests', () => {
         });
     }).timeout(5000);
 
-     it('should toggle to interested', (done) => {
+    it('should toggle to interested', (done) => {
       const id = apartments[1]._id;
       request(app)
         .put(`/apartments/${id}/interested`)
@@ -513,6 +511,53 @@ describe('Server Tests', () => {
         })
         .end(done);
     });
+
+    it('should find apartment by coords', (done) => {
+      const latitude = 32.7831797;
+      const longitude = 35.0164783;
+
+      request(app)
+        .get('/apartments')
+        .query({ latitude, longitude })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1);
+          expect(res.body.results[0].location.geolocation[0]).toBe(apartments[0].location.geolocation[0]);
+          expect(res.body.results[0].location.geolocation[1]).toBe(apartments[0].location.geolocation[1]);
+        })
+        .end(done);
+    });
+
+    it('should find apartments by coords and radius', (done) => {
+      const latitude = 32.7831797;
+      const longitude = 35.0164783;
+      const radius = 100;
+
+      request(app)
+        .get('/apartments')
+        .query({ latitude, longitude, radius })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(2); //should find haifa and tel aviv
+        })
+        .end(done);
+    });
+
+    it('should not find apartment not in radius', (done) => {
+      const latitude = 32.7831797;
+      const longitude = 35.0164783;
+      const radius = 50;
+
+      request(app)
+        .get('/apartments')
+        .query({ latitude, longitude, radius })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.results.length).toBe(1); //should find only haifa
+        })
+        .end(done);
+    });
+
 
     it('should find apartments in radius', (done) => {
       const address = 'Technion israel';

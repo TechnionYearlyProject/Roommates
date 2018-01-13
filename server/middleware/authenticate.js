@@ -19,7 +19,6 @@ const authenticate = (req, res, next) => {
         .then((expiration) => {
           req.user = user;
           req.token = token;
-          console.log(expiration);
           res.header(XEXPIRATION, expiration);
           return next();
         });

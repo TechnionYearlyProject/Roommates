@@ -86,7 +86,9 @@ app.get('/apartments', async (req, res) => {
         'address',
         'radius',
         'roommatesNumber',
-        'tags'
+        'tags',
+        'latitude',
+        'longitude'
       ]);
 
     const results = await Apartment.findByProperties({
@@ -97,7 +99,9 @@ app.get('/apartments', async (req, res) => {
       enteranceDate: body.untilEnteranceDate,
       address: body.address,
       radius: body.radius,
-      currentlyNumberOfRoommates: body.roommatesNumber
+      currentlyNumberOfRoommates: body.roommatesNumber,
+      latitude: body.latitude,
+      longitude: body.longitude
     });
     res.send({ results });
   } catch (err) {

@@ -125,7 +125,8 @@ const user2 = {
   _interestedApartments: [apartment2Id.toHexString()],
   tokens: [{
     access: XAUTH,
-    token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString()
+    token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString(),
+    expiration: Date.now() + 1000000
   }]
 };
 
