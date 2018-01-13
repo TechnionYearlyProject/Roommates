@@ -1,4 +1,4 @@
-const tags = [
+export default [
   {
     key: 'AC',
     name: 'Air Conditioner',
@@ -12,12 +12,12 @@ const tags = [
   {
     key: 'ELEVATOR',
     name: 'Elevator',
-    vicon: 'angle-double-up'
+      vicon: 'elevator'
   },
   {
     key: 'TERRACE',
     name: 'Balcony',
-    vicon: 'tree'
+      vicon: 'balcony'
   },
   {
     key: 'PARK',
@@ -32,7 +32,7 @@ const tags = [
   {
     key: 'KOSHER',
     name: 'Kosher Kitchen',
-    vicon: 'sign-language'
+      vicon: 'cutlery'
   },
   {
     key: 'FURNISHED',
@@ -40,7 +40,3 @@ const tags = [
     vicon: 'truck'
   }
 ];
-
-module.exports = {
-  tags
-}

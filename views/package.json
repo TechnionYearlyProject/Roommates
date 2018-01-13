@@ -16,6 +16,8 @@
         "bootstrap-vue": "^1.4.0",
         "dateformat": "^3.0.2",
         "email-validator": "^1.1.1",
+        "jquery": "^3.2.1",
+        "popper.js": "^1.12.9",
         "vue": "^2.5.2",
         "vue-awesome": "^2.3.4",
         "vue-range-slider": "^0.2.4",

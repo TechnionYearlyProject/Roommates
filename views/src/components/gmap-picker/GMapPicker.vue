@@ -1,6 +1,6 @@
 <template>
     <b-form @submit.prevent>
-        <gmap-map ref="map"
+        <gmap-map ref="map" @click="onMapClick"
                   :center="location"
                   :zoom="15"
                   class="map">
@@ -9,6 +9,7 @@
                                    class="form-control box" :value="value.name"
                                    placeholder="Enter Location..."
                                    @place_changed="onPlaceChange"
+                                   v-model="value.text"
                 />
             </div>
 
@@ -46,6 +47,9 @@
                 }
             }
         },
+        mounted() {
+            this.geoCoder = this.$refs.map.geoCoder
+        },
         computed: {
             location() {
                 if (!this.place) {
@@ -63,13 +67,27 @@
             }
         },
         methods: {
-            onPlaceChange(place) {
+            setPlace(place) {
                 this.place = place;
 
                 this.$emit('input', {
                     name: place.name,
                     lat: place.geometry.location.lat(),
                     lng: place.geometry.location.lng()
+                });
+            },
+            onPlaceChange(place) {
+                this.setPlace(place);
+            },
+            onMapClick(event) {
+                let that = this;
+
+                let geoCoder = new google.maps.Geocoder();
+                geoCoder.geocode({ 'location': event.latLng }, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        results[0].name = results[0].formatted_address;
+                        that.setPlace(results[0]);
+                    }
                 });
             }
         }

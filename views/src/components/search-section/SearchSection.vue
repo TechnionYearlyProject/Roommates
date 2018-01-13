@@ -19,11 +19,13 @@
                 </b-col>
             </b-row>
             <b-form-check-box-group v-model="fields.selectedBinaryProps" class="binary-properties">
-                <b-row v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
+                <b-row no-gutters v-for="rowIndex in Math.ceil(binaryProps.length / 4)" :key="rowIndex">
                     <b-col v-for="colIndex in 4" :key="colIndex"
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < binaryProps.length">
-                        <b-form-checkbox :value="binaryProps[index].value" class="bin-prop-checkbox">
-                            {{ binaryProps[index].text }}
+                        <b-form-checkbox style="vertical-align: middle" :value="binaryProps[index].key"
+                                         class="bin-prop-checkbox">
+                            <icon :name="binaryProps[index].vicon" scale="1.6" />
+                            <span class="binary-property-text">{{ binaryProps[index].name }}</span>
                         </b-form-checkbox>
                     </b-col>
                 </b-row>
@@ -56,6 +58,9 @@
     import RangeSelector from "./RangeSelector"
     import SearchButton from "@/components/search-section/SearchButton"
     import GMapPicker from "@/components/gmap-picker/GMapPicker"
+    import Icon from 'vue-awesome/components/Icon'
+
+    import Tags from '@/../static/js/tags'
 
     const defaultLocation = {
         name: 'Technion - Israel Institute of Technology, Haifa, Israel',
@@ -69,7 +74,7 @@
             bContainer, bRow, bCol,
             bForm, bFormCheckBoxGroup, bFormCheckbox, bModal,
             SearchBox, RangeSelector, SearchButton,
-            GMapPicker
+            GMapPicker, Icon
         },
         data() {
             return {
@@ -120,16 +125,7 @@
                     selectedBinaryProps: []
                 },
                 pickerLocation: defaultLocation,
-                binaryProps: [
-                    { text: 'Kosher Kitchen', value: 'kosher' },
-                    { text: 'Elevator', value: 'elevator' },
-                    { text: 'Air Conditioning', value: 'air-conditioning' },
-                    { text: 'Laundry Room', value: 'laundry' },
-                    { text: 'TV', value: 'tv' },
-                    { text: 'Furnished', value: 'furnished' },
-                    { text: 'Balcony', value: 'balcony' },
-                    { text: 'High Ceiling', value: 'high-ceiling' }
-                ]
+                binaryProps: Tags
             }
         },
         methods: {
@@ -151,9 +147,35 @@
                     maxFloor: this.fields.ranges.floor.value.max,
                     selected: this.fields.selectedBinaryProps
                 });
+
+                //this.$emit('newResults', []);
+                this.$emit('newResults', [
+                    {
+                        id: '123',
+                        address: 'Super Duper Address',
+                        description: 'Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his.',
+                        price: 1100,
+                        bedrooms: 3,
+                        floor: 2,
+                        bathrooms: 1,
+                        images: 3
+                    },
+                    {
+                        id: '123',
+                        address: 'Super Duper Address',
+                        description: 'Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his.',
+                        price: 1100,
+                        bedrooms: 3,
+                        floor: 2,
+                        bathrooms: 1,
+                        images: 3
+                    }
+                ]);
             },
             onModalShow() {
                 Vue.$gmapDefaultResizeBus.$emit('resize');
+
+                this.pickerLocation = this.fields.location;
             },
             onModalOK() {
                 this.fields.location = this.pickerLocation;
@@ -216,5 +238,9 @@
 
     .binary-properties {
         margin-top: 10px;
+    }
+
+    .binary-property-text {
+        vertical-align: super;
     }
 </style>

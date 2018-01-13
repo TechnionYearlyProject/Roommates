@@ -2,41 +2,42 @@
     <b-media tag="li" class="box">
         <b-carousel slot="aside" indicators controls>
             <b-carousel-slide
-                    v-for="i in images" :key="i"
+                    v-for="i in apartment.images" :key="i"
                     :img-src="`static/images/apartments/123/${i}.jpg`" />
         </b-carousel>
 
         <b-container class="result-details h-100">
             <b-row no-gutters class="result-title">
                 <b-col>
-                    <b-link :to="{ name: 'apartment-page', params: { id: id }}">{{ address }}</b-link>
+                    <b-link :to="{ name: 'apartment-page', params: { id: apartment.id }}">{{ apartment.address }}
+                    </b-link>
                     <div class="result-price">
-                        <price-tag v-model="price" />
+                        <price-tag v-model="apartment.price" />
                     </div>
                 </b-col>
             </b-row>
             <b-row no-gutters>
                 <b-col class="result-description">
-                    {{ description }}
+                    {{ apartment.description }}
                 </b-col>
             </b-row>
             <b-row no-gutters class="result-bottom-row">
                 <b-col>
                     <b-badge variant="warning" v-b-popover.hover.top="'Bedrooms'">
                         <icon name="bed" scale="1.3" />
-                        {{ bedrooms }}
+                        {{ apartment.bedrooms }}
                     </b-badge>
                     <b-badge variant="warning" v-b-popover.hover.top="'Floor'">
                         <icon name="building" scale="1.1" />
-                        {{ floor }}
+                        {{ apartment.floor }}
                     </b-badge>
                     <b-badge variant="warning" v-b-popover.hover.top="'Bathrooms'">
                         <icon name="bath" scale="1.1" />
-                        {{ bathrooms }}
+                        {{ apartment.bathrooms }}
                     </b-badge>
                 </b-col>
                 <b-col cols="auto">
-                    <b-button size="sm" variant="primary" :to="{ name: 'apartment-page', params: { id: id }}">
+                    <b-button size="sm" variant="primary" :to="{ name: 'apartment-page', params: { id: apartment.id }}">
                         More Info
                     </b-button>
                 </b-col>
@@ -61,14 +62,30 @@
     export default {
         name: "single-result",
         props: {
-            id: String,
-            address: String,
-            description: String,
-            price: Number,
-            bedrooms: Number,
-            floor: Number,
-            bathrooms: Number,
-            images: Number
+            apartment: {
+                validator(val) {
+                    const props = {
+                        id: 'string',
+                        address: 'string',
+                        description: 'string',
+                        price: 'number',
+                        bedrooms: 'number',
+                        floor: 'number',
+                        bathrooms: 'number',
+                        images: 'number'
+                    };
+
+                    for (let prop in props) {
+                        if (!val.hasOwnProperty(prop) || (typeof val[prop]) !== props[prop]) {
+                            console.error(`Wrong apartment structure: property '${prop}' should be type of ${props[prop]} but is ${typeof val[prop]}`);
+
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+            }
         },
         components: {
             Icon,
