@@ -53,7 +53,8 @@
                         title: "Interested",
                         text: "Track all your saved ads",
                         img: "@/../static/images/user_panel/actions_menu/interested.png",
-                        linkText: "My Interests"
+                        linkText: "My Interests",
+                        link: { name: 'interested-apartments', params: { id: this.user._id } }
                     },
                     {
                         title: "Hobbies",
