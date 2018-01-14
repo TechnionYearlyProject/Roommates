@@ -17,25 +17,25 @@
 
         <div class="container mb-4">
             <transition name="slide-fade" mode="out-in">
-                <div class="container s-apartment-add-container" v-if="progression === 1" key="1">
+                <div class="container s-apartment-add-container" v-if="progression === 1">
                     <h3 class="s-h3">
                         Let's start with some basic information.
                     </h3>
                     <add-apartment-form1 :info="form1Info" :isReadOnly="false" />
                 </div>
-                <div class="container s-apartment-add-container" v-if="progression === 2" key="2">
+                <div class="container s-apartment-add-container" v-if="progression === 2">
                     <h3 class="s-h3">
                         Describe your apartmet a little.
                     </h3>
                     <add-apartment-form2 :info="form2Info" :isReadOnly="false" />
                 </div>
-                <div class="container s-apartment-add-container" v-if="progression === 3" key="3">
+                <div class="container s-apartment-add-container" v-if="progression === 3">
                     <h3 class="s-h3">
                         Which properties does your apartment include?
                     </h3>
                     <add-apartment-form3 :info="form3Info" :isReadOnly="false" />
                 </div>
-                <div class="container s-apartment-add-container" v-if="progression === 4" key="4">
+                <div class="container s-apartment-add-container" v-if="progression === 4">
                     <h3 class="s-h3">
                         You're almost there. Check you're information before submiting.
                     </h3>
@@ -102,10 +102,16 @@
         },
         methods: {
             goNextPage() {
-                if (this.progression >= 5 || !this.isValidInput) {
-                    this.validMessage = "Please fill up the fields!";
+                if (this.progression >= 5) {
                     return;
                 }
+
+                if (!this.isValidInput) {
+                    this.validMessage = "Please fill up the fields!";
+
+                    return;
+                }
+
                 this.validMessage = "";
                 this.progression++;
             },
