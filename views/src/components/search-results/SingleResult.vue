@@ -1,15 +1,17 @@
 <template>
     <b-media tag="li" class="box">
-        <b-carousel slot="aside" indicators controls>
-            <b-carousel-slide
-                    v-for="i in apartment.images" :key="i"
-                    :img-src="`static/images/apartments/123/${i}.jpg`" />
+        <b-carousel slot="aside" indicators controls class="search-result-carousel">
+            <b-carousel-slide v-for="img in apartment.images" :key="i"
+                              :img-src="img" />
+
+            <b-carousel-slide v-if="apartment.images.length === 0" class="d-block img-fluid w-100"
+                              img-src="/static/images/apartments/default/default.png" />
         </b-carousel>
 
         <b-container class="result-details h-100">
             <b-row no-gutters class="result-title">
                 <b-col>
-                    <b-link :to="{ name: 'apartment-page', params: { id: apartment.id }}">{{ apartment.address }}
+                    <b-link :to="{ name: 'apartment-page', params: { id: apartment._id }}">{{ address }}
                     </b-link>
                     <div class="result-price">
                         <price-tag v-model="apartment.price" />
@@ -23,21 +25,22 @@
             </b-row>
             <b-row no-gutters class="result-bottom-row">
                 <b-col>
-                    <b-badge variant="warning" v-b-popover.hover.top="'Bedrooms'">
+                    <b-badge variant="warning" v-b-popover.hover.top="'Rooms'">
                         <icon name="bed" scale="1.3" />
-                        {{ apartment.bedrooms }}
+                        {{ apartment.numberOfRooms }}
                     </b-badge>
                     <b-badge variant="warning" v-b-popover.hover.top="'Floor'">
                         <icon name="building" scale="1.1" />
                         {{ apartment.floor }}
                     </b-badge>
-                    <b-badge variant="warning" v-b-popover.hover.top="'Bathrooms'">
-                        <icon name="bath" scale="1.1" />
-                        {{ apartment.bathrooms }}
+                    <b-badge variant="warning" v-b-popover.hover.top="'Area'">
+                        <icon name="home" scale="1.212" />
+                        {{ apartment.area }}
                     </b-badge>
                 </b-col>
                 <b-col cols="auto">
-                    <b-button size="sm" variant="primary" :to="{ name: 'apartment-page', params: { id: apartment.id }}">
+                    <b-button size="sm" variant="primary"
+                              :to="{ name: 'apartment-page', params: { id: apartment._id }}">
                         More Info
                     </b-button>
                 </b-col>
@@ -62,36 +65,18 @@
     export default {
         name: "single-result",
         props: {
-            apartment: {
-                validator(val) {
-                    const props = {
-                        id: 'string',
-                        address: 'string',
-                        description: 'string',
-                        price: 'number',
-                        bedrooms: 'number',
-                        floor: 'number',
-                        bathrooms: 'number',
-                        images: 'number'
-                    };
-
-                    for (let prop in props) {
-                        if (!val.hasOwnProperty(prop) || (typeof val[prop]) !== props[prop]) {
-                            console.error(`Wrong apartment structure: property '${prop}' should be type of ${props[prop]} but is ${typeof val[prop]}`);
-
-                            return false;
-                        }
-                    }
-
-                    return true;
-                }
-            }
+            apartment: Object
         },
         components: {
             Icon,
             bMedia, bCarousel, bCarouselSlide,
             bContainer, bRow, bCol, bLink, bButton, bBadge,
             PriceTag
+        },
+        data() {
+            return {
+                address: `${this.apartment.location.address.street} ${this.apartment.location.address.number}, ${this.apartment.location.address.city}, ${this.apartment.location.address.state}`
+            };
         }
     }
 </script>
@@ -99,6 +84,7 @@
 <style scoped>
     li {
         position: relative;
+        height: 250px;
     }
 
     a {
@@ -153,5 +139,12 @@
     .result-bottom-row a {
         color: #fff;
         padding: 10px;
+    }
+</style>
+
+<style>
+    .search-result-carousel img {
+        height: 250px;
+        width: 300px !important;
     }
 </style>

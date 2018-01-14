@@ -102,11 +102,11 @@
                         price: {
                             label: 'Price (₪)',
                             lowerBound: 0,
-                            upperBound: 1000,
+                            upperBound: 1300,
                             interval: 100,
                             value: {
                                 min: 0,
-                                max: 1000
+                                max: 1300
                             }
                         },
                         radius: {
@@ -147,45 +147,23 @@
             onSubmit(e) {
                 e.preventDefault();
 
-                console.log({
-                    location: {
-                        lat: this.fields.location.lat,
-                        lng: this.fields.location.lng
-                    },
+                let that = this;
+                this.$http.get('apartments', {
+                    params: {
+                        latitude: this.fields.location.lat,
+                        longitude: this.fields.location.lng,
                     minPrice: this.fields.ranges.price.value.min,
                     maxPrice: this.fields.ranges.price.value.max,
-                    radius: this.fields.ranges.radius.value,
+                        radius: this.fields.ranges.radius.value * 1000,
                     minRoommates: this.fields.ranges.roommates.value.min,
                     maxRoommates: this.fields.ranges.roommates.value.max,
                     minFloor: this.fields.ranges.floor.value.min,
                     maxFloor: this.fields.ranges.floor.value.max,
                     latestEntranceDate: this.fields.latestEntranceDate,
-                    selected: this.fields.selectedBinaryProps
-                });
-
-                //this.$emit('newResults', []);
-                this.$emit('newResults', [
-                    {
-                        id: '123',
-                        address: 'Super Duper Address',
-                        description: 'Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his.',
-                        price: 1100,
-                        bedrooms: 3,
-                        floor: 2,
-                        bathrooms: 1,
-                        images: 3
-                    },
-                    {
-                        id: '123',
-                        address: 'Super Duper Address',
-                        description: 'Lorem ipsum dolor sit amet, aliquip civibus repudiare pro et, mel modus efficiantur id, posse altera explicari mei et. No his justo decore disputando, eos debitis molestie assentior in, quaestio antiopam cu nec. Mei nulla munere invenire te, mel falli salutandi euripidis ex. Dolor regione expetenda cu vel. Sed mollis regione atomorum at. Nibh oratio graeco cu mel, in elaboraret comprehensam his.',
-                        price: 1100,
-                        bedrooms: 3,
-                        floor: 2,
-                        bathrooms: 1,
-                        images: 3
+                        tags: this.fields.selectedBinaryProps
                     }
-                ]);
+                }).then(res => that.$emit('newResults', res.body.results))
+                    .catch(e => console.error(e));
             },
             onModalShow() {
                 Vue.$gmapDefaultResizeBus.$emit('resize');
