@@ -430,12 +430,12 @@ describe('Server Tests', () => {
     });
 
     it('should find apartment in price range', (done) => {
-      const fromPrice = apartments[1].price - 10;
-      const toPrice = apartments[1].price + 10;
+        const minPrice = apartments[1].price - 10;
+        const maxPrice = apartments[1].price + 10;
 
       request(app)
         .get('/apartments')
-        .query({ fromPrice, toPrice })
+          .query({ minPrice, maxPrice })
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(1);
@@ -445,12 +445,12 @@ describe('Server Tests', () => {
     });
 
     it('should not find apartment in invalid price range', (done) => {
-      const fromPrice = 100;
-      const toPrice = 200;
+        const minPrice = 100;
+        const maxPrice = 200;
 
       request(app)
         .get('/apartments')
-        .query({ fromPrice, toPrice })
+          .query({ minPrice, maxPrice })
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(0);
@@ -459,10 +459,10 @@ describe('Server Tests', () => {
     });
 
     it('should find apartment due enterance date', (done) => {
-      const untilEnteranceDate = apartments[0].enteranceDate;
+        const latestEntranceDate = apartments[0].enteranceDate;
       request(app)
         .get('/apartments')
-        .query({ untilEnteranceDate })
+          .query({ latestEntranceDate })
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(1);
@@ -472,11 +472,11 @@ describe('Server Tests', () => {
     });
 
     it('should not find apartment due invalid enterance date', (done) => {
-      const untilEnteranceDate = new Date('1-1-2017').getTime();
+        const latestEntranceDate = new Date('1-1-2017').getTime();
 
       request(app)
         .get('/apartments')
-        .query({ untilEnteranceDate })
+          .query({ latestEntranceDate })
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(0);
@@ -575,24 +575,24 @@ describe('Server Tests', () => {
     }).timeout(5000);
 
     it('should find apartment by total number of roommates', (done) => {
-      const roommatesNumber = apartments[1].currentlyNumberOfRoommates;
+        const currentRoommatesNumber = apartments[1].currentlyNumberOfRoommates;
 
       request(app)
         .get('/apartments')
-        .query({ roommatesNumber })
+          .query({ currentRoommatesNumber })
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0].currentlyNumberOfRoommates).toBe(roommatesNumber);
+            expect(res.body.results[0].currentlyNumberOfRoommates).toBe(currentRoommatesNumber);
         })
         .end(done);
     });
     it('should not find apartment with invalid number of roommates', (done) => {
-      const roommatesNumber = 11;
+        const currentRoommatesNumber = 11;
 
       request(app)
         .get('/apartments')
-        .query({ roommatesNumber })
+          .query({ currentRoommatesNumber })
         .expect(OK)
         .expect((res) => {
           expect(res.body.results.length).toBe(0);
