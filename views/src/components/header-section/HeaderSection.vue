@@ -9,6 +9,7 @@
                           v-b-popover.hover.bottom="'Add Apartment'">
                     <icon name="plus" />
                 </b-button>
+                <b-button size="lg" variant="primary" :to="{ name: 'user-panel' }" v-if="isAuth">Control Panel</b-button>
                 <b-button size="lg" class="logout-button" @click="logout" v-if="isAuth">Logout</b-button>
             </div>
             <br class="clear" />
