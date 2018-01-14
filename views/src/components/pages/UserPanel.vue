@@ -1,103 +1,103 @@
 <template>
-  <div id="control_panel_container" class="centralize_div">
-    <div id="user_greeting">
-        <h1> Control Panel </h1>
-        <p>Welcome {{user.firstName}} {{user.lastName}}!</p>
+    <div id="control_panel_container" class="grid">
+        <div id="user_greeting">
+            <h1> Control Panel </h1>
+            <p>Welcome {{ user.firstName }} {{ user.lastName }}!</p>
+        </div>
+        <div class="centralize_div">
+            <ul class="menu_items">
+                <li class="menu_item" v-for="action in actions">
+                    <panel-card :card_details="action" />
+                </li>
+            </ul>
+        </div>
     </div>
-    <div class="centralize_div">
-      <ul class = "menu_items">
-        <li class="menu_item" v-for="action in actions">
-          <app-card :card_details="action"></app-card>
-        </li>
-      </ul>
-    </div>
-  </div>
 </template>
 
 <script>
-    import card from "@/components/card/card.vue"
+    import panelCard from "@/components/panel-card/Card"
+
     export default {
         name: 'user-panel',
-         props: [
-          'id'
-         ],
-         data: function() {
+        props: [
+            'id'
+        ],
+        data: function () {
             return {
-              user: null,
-              actions: []
+                user: null,
+                actions: []
             };
         },
         components: {
-            appCard: card
+            panelCard
         },
-        async created(){
-          await this.$http
-                          .get("users/self", {headers: {'x-auth': this.$auth.getToken() }})
-                          .then(res => this.setUserData(res, this))
-                          .catch(e => console.log(e));
-          this.actions = [
-                    {
-                        title: "New Apartment",
-                        text: "Expose your asset to our community",
-                        img: "@/../static/images/user_panel/actions_menu/add.png",
-                        linkText: "Add Apartment",
-                        link: { name: 'add-apartment-page' }
-                    },
-                    {
-                        title: "My apartments",
-                        text: "Control your ads in the site",
-                        img: "@/../static/images/user_panel/actions_menu/manage.png",
-                        linkText: "Manage Apartments"
-                    },
-                    {
-                        title: "Interested",
-                        text: "Track all your saved ads",
-                        img: "@/../static/images/user_panel/actions_menu/interested.png",
-                        linkText: "My Interests",
-                        link: { name: 'interested-apartments', params: { id: this.user._id } }
-                    },
-                    {
-                        title: "Hobbies",
-                        text: "Improve the matching",
-                        img: "@/../static/images/user_panel/actions_menu/hobbie.png",
-                        linkText: "Select Hobbies",
-                        link: { name: 'select-hobbies', params: { user: this.user } }
-                    },
-                    {
-                        title: "Information",
-                        text: "Change your profile information",
-                         img: "@/../static/images/user_panel/actions_menu/edit.png",
-                        linkText: "Edit information"
-                    },
-                    {
-                        title: "Profile",
-                        text: "Your public profile available for all users",
-                         img: "@/../static/images/user_panel/actions_menu/profile.png",
-                        linkText: "View profile",
-                        link: { name: 'user-profile', params: { id: this.user._id } }
-                    }]
+        async created() {
+            await this.$http
+                .get("users/self", { headers: { 'x-auth': this.$auth.getToken() } })
+                .then(res => this.setUserData(res, this))
+                .catch(e => console.log(e));
+            this.actions = [
+                {
+                    title: "New Apartment",
+                    text: "Expose your asset to our community",
+                    img: "@/../static/images/user_panel/actions_menu/add.png",
+                    linkText: "Add Apartment",
+                    link: { name: 'add-apartment-page' }
+                },
+                {
+                    title: "My apartments",
+                    text: "Control your ads in the site",
+                    img: "@/../static/images/user_panel/actions_menu/manage.png",
+                    linkText: "Manage Apartments"
+                },
+                {
+                    title: "Interested",
+                    text: "Track all your saved ads",
+                    img: "@/../static/images/user_panel/actions_menu/interested.png",
+                    linkText: "My Interests",
+                    link: { name: 'interested-apartments', params: { id: this.user._id } }
+                },
+                {
+                    title: "Hobbies",
+                    text: "Improve the matching",
+                    img: "@/../static/images/user_panel/actions_menu/hobbie.png",
+                    linkText: "Select Hobbies",
+                    link: { name: 'select-hobbies', params: { user: this.user } }
+                },
+                {
+                    title: "Information",
+                    text: "Change your profile information",
+                    img: "@/../static/images/user_panel/actions_menu/edit.png",
+                    linkText: "Edit information"
+                },
+                {
+                    title: "Profile",
+                    text: "Your public profile available for all users",
+                    img: "@/../static/images/user_panel/actions_menu/profile.png",
+                    linkText: "View profile",
+                    link: { name: 'user-profile', params: { id: this.user._id } }
+                }]
         },
         methods: {
-          setUserData(responseFromServer, pThis){
-            pThis.user = responseFromServer.body.self;
-          }
+            setUserData(responseFromServer, pThis) {
+                pThis.user = responseFromServer.body.self;
+            }
         }
     }
 </script>
 
 <style scoped>
-.menu_items {
-    list-style-type: none;
-    padding: 0;
-    overflow: hidden;
-}
-.centralize_div{
-  display:table-cell; 
-  vertical-align:middle; 
-  text-align:center;
-}
+    .menu_items {
+        list-style-type: none;
+        padding: 0;
+        overflow: hidden;
+    }
 
-.menu_item{
-    display: inline-block;
-}
+    .grid {
+        text-align: center;
+    }
+
+    .menu_item {
+        display: inline-block;
+    }
 </style>
