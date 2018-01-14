@@ -74,7 +74,8 @@ h1 {
 
 .btn, .btn:focus, .btn:active {
     border-radius: 1px;
-    box-shadow: none !important;;
+    box-shadow: none !important;
+    text-transform: uppercase;
 }
 
 .btn-primary {

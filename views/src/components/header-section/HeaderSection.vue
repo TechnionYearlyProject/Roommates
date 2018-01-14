@@ -10,7 +10,8 @@
                     <icon name="plus" />
                 </b-button>
                 <b-button size="lg" variant="primary" :to="{ name: 'user-panel' }" v-if="isAuth">Control Panel</b-button>
-                <b-button size="lg" class="logout-button" @click="logout" v-if="isAuth">Logout</b-button>
+                <b-button size="lg" variant="primary" class="logout-button" @click="logout" v-if="isAuth">Logout
+                </b-button>
             </div>
             <br class="clear" />
         </div>
@@ -61,11 +62,7 @@
         margin-bottom: 15px;
     }
 
-    button:first-of-type {
-        text-transform: uppercase;
-    }
-
-    .logout-button {
+    button {
         cursor: pointer;
     }
 </style>
