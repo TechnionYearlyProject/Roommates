@@ -4,8 +4,10 @@
             <b-row>
                 <b-col>
                     <div class="single-property-header">
-                        <h1>{{apartment.location.address.city}}, {{apartment.location.address.street}},
-                            {{apartment.location.address.houseNumber}}/{{apartment.location.address.entranceNumber}}</h1>
+                        <h1>
+                            {{apartment.location.address.city}}, {{apartment.location.address.street}},
+                            {{apartment.location.address.houseNumber}}/{{apartment.location.address.entranceNumber}}
+                        </h1>
                     </div>
                     <b-carousel id="carousel1"
                                 style="text-shadow: 1px 1px 2px #333;"
@@ -18,24 +20,17 @@
                                 v-model="slide"
                                 @sliding-start="onSlideStart"
                                 @sliding-end="onSlideEnd">
-                        <b-carousel-slide v-for="img in apartment.images" :key="img" :img-src="img">
-
-                        </b-carousel-slide>
+                        <b-carousel-slide v-for="img in apartment.images" :key="img" :img-src="img" />
                     </b-carousel>
                     <b-row>
                         <b-col fluid>
-                            <h2>rent is {{apartment.price}} per month</h2> <hr>
+                            <h2>rent is {{apartment.price}} per month</h2>
+                            <hr>
                             <h5>Arnona {{apartment.arnona}} bi-monthly</h5>
                             <h5>building upkeep {{apartment.vaadBayit}}</h5>
                         </b-col>
-                        <!-- <b-col>
-                        </b-col> -->
                     </b-row>
-
-                    
-
                 </b-col>
-
                 <b-col>
                     <div class="card" style="width: 30rem;">
                         <div class="card-body">
@@ -67,48 +62,40 @@
                                 </b-row>
                             </b-container>
                         </div>
-                        <img class="card-img-top" />
+
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item" v-for="user in calUsers">
                                     <b-container fluid>
                                         <b-row>
                                             <b-col align="center">
-                                                <b-link :to="{ name: 'user-profile', params: { id: user.id }}">{{user.firstName}} {{user.lastName}}</b-link>
-                                                 <br>
+                                                <b-link :to="{ name: 'user-profile', params: { id: user.id }}">
+                                                    {{user.firstName}} {{user.lastName}}
+                                                </b-link>
                                             </b-col>
                                         </b-row>
                                     </b-container>
                                 </li>
-                                <li class="list-group-item" v-for="p in (5-calUsers.length)">
-                                    <br>
-                                </li>
                             </ul>
                         </div>
 
-
                         <b-pagination align="center" :total-rows="apartment.interstedUsers.length"
-                                      v-model="usersPage" :per-page="5">
-                        </b-pagination>
-
+                                      v-model="usersPage" :per-page="5" />
                     </div>
                 </b-col>
             </b-row>
             <hr>
             <b-row>
-                <apartmentTags  :area="apartment.area"
-                                :toilets="apartment.toilets"
-                                :garages="apartment.garages"
-                                :bedrooms="apartment.bedrooms"
-                                :parking="apartment.parking"
-                                :pets="apartment.pets"
-                                :showers="apartment.showers"
-                                :waterHeaterMethod="apartment.waterHeaterMethod"
-                                :elevator="apartment.elevator"
-                                :gas="apartment.gas"
-                                >
-
-                </apartmentTags>
+                <apartmentTags :area="apartment.area"
+                               :toilets="apartment.toilets"
+                               :garages="apartment.garages"
+                               :bedrooms="apartment.bedrooms"
+                               :parking="apartment.parking"
+                               :pets="apartment.pets"
+                               :showers="apartment.showers"
+                               :waterHeaterMethod="apartment.waterHeaterMethod"
+                               :elevator="apartment.elevator"
+                               :gas="apartment.gas" />
             </b-row>
             <hr>
             <b-row>
@@ -118,54 +105,49 @@
                 </b-col>
             </b-row>
             <b-row>
-            <div class="card" style="width: 60rem;">
-                <div class="card-header">
-                    <b-container fluid>
-                        <b-row>
-                            <b-col align="center">
-                                <h3>users comments</h3>
-                            </b-col>
-                        </b-row>
-                    </b-container>
+                <div class="card" style="width: 60rem;">
+                    <div class="card-header">
+                        <b-container fluid>
+                            <b-row>
+                                <b-col align="center">
+                                    <h3>users comments</h3>
+                                </b-col>
+                            </b-row>
+                        </b-container>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item" v-for="comment in calCom">
+                                <b-container fluid>
+                                    <b-row>
+                                        <b-col align="center">
+                                            {{comment.comment}} at: {{comment.writenAt}}
+                                        </b-col>
+                                    </b-row>
+                                </b-container>
+                            </li>
+                        </ul>
+                        <p class="card-text"></p>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item" v-for="comment in calCom">
-                            <b-container fluid>
-                                <b-row>
-                                    <b-col align="center">
-                                        {{comment.comment}} at: {{comment.writenAt}}
-                                    </b-col> 
-                                </b-row>
-                            </b-container>
-                        </li>
-                        <li class="list-group-item" v-for="p in (5-calCom.length)">
-                            <br>
-                        </li>
-                    </ul>
-                    <p class="card-text"></p>
-                </div>
-            </div>
-
             </b-row>
             <b-row>
-                <b-col></b-col>
+                <b-col />
                 <b-col>
                     <b-pagination align="center" :total-rows="apartment.comments.length"
-                        v-model="commentPage" :per-page="5">
+                                  v-model="commentPage" :per-page="5">
                     </b-pagination>
                 </b-col>
-                <b-col></b-col>
-
+                <b-col />
             </b-row>
         </b-container>
-        <div class="container">
-
-        </div>
     </div>
 </template>
 
 <script>
+    import bContainer from 'bootstrap-vue/es/components/layout/container'
+    import bRow from 'bootstrap-vue/es/components/layout/row'
+    import bCol from 'bootstrap-vue/es/components/layout/col'
     import bCarousel from 'bootstrap-vue/es/components/carousel/carousel';
     import bCarouselSlide from 'bootstrap-vue/es/components/carousel/carousel-slide';
     import bPagination from 'bootstrap-vue/es/components/pagination/pagination';
@@ -174,9 +156,13 @@
 
     export default {
         name: 'apartment-page',
+        components: {
+            bContainer, bRow, bCol,
+            bCarousel, bCarouselSlide, bPagination, ApartmentTags, bLink
+        },
         data() {
             return {
-                slide:0,
+                slide: 0,
                 sliding: null,
                 imgNum: 1,
                 commentPage: 1,
@@ -213,10 +199,10 @@
                     arnona: 400,
                     area: 100,
                     numRooms: 4,
-                    bedrooms:5,
+                    bedrooms: 5,
                     toilets: 2,
                     showers: 2,
-                    garages: 0 ,
+                    garages: 0,
                     parking: 'yes',
                     pet: "yes",
                     gas: "yes",
@@ -322,9 +308,6 @@
                 }
             }
         },
-        components: {
-            bCarousel, bCarouselSlide, bPagination, apartmentTags: ApartmentTags, bLink
-        },
         methods: {
             changeCommentPage(newPage) {
                 this.commentPage = newPage;
@@ -362,9 +345,9 @@
                 this.sliding = false
             },
         },
-        created:{
+        created: {
             getApartmennt() {
-                  this.$http.get('/apartments/id').then(response => {
+                this.$http.get('/apartments/id').then(response => {
                     this.apartment = response.body;
                 }, response => {
 
