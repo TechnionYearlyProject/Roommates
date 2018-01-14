@@ -2,8 +2,22 @@
     <b-form action="#" @submit="onSubmit">
         <b-container class="box">
             <b-row>
-                <b-col class="location-col">
-                    <search-box v-model="fields.location" />
+                <b-col class="text-input-col">
+                    <span class="input-label">WHERE:</span>
+                    <search-box v-model="fields.location" class="input-box" />
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col class="text-input-col">
+                    <span class="input-label">WHEN:</span>
+                    <div class="input-box">
+                        <date-picker v-model="fields.latestEntranceDate" bootstrapStyling
+                                     format="MMMM dsu yyyy (D)"
+                                     placeholder="Pick Latest Wanted Entrance Date"
+                                     calendarClass="date-calendar"
+                                     inputClass="date-input"
+                        />
+                    </div>
                 </b-col>
             </b-row>
             <b-row class="ranges-row">
@@ -51,9 +65,11 @@
     import bRow from 'bootstrap-vue/es/components/layout/row'
     import bCol from 'bootstrap-vue/es/components/layout/col'
     import bForm from 'bootstrap-vue/es/components/form/form'
+    import bFormInput from 'bootstrap-vue/es/components/form-input/form-input'
     import bFormCheckBoxGroup from 'bootstrap-vue/es/components/form-checkbox/form-checkbox-group'
     import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
     import bModal from 'bootstrap-vue/es/components/modal/modal'
+    import DatePicker from 'vuejs-datepicker'
     import SearchBox from './SearchBox'
     import RangeSelector from "./RangeSelector"
     import SearchButton from "@/components/search-section/SearchButton"
@@ -72,7 +88,8 @@
         name: "search-section",
         components: {
             bContainer, bRow, bCol,
-            bForm, bFormCheckBoxGroup, bFormCheckbox, bModal,
+            bForm, bFormInput, bFormCheckBoxGroup, bFormCheckbox, bModal,
+            DatePicker,
             SearchBox, RangeSelector, SearchButton,
             GMapPicker, Icon
         },
@@ -80,9 +97,10 @@
             return {
                 fields: {
                     location: defaultLocation,
+                    latestEntranceDate: '',
                     ranges: {
                         price: {
-                            label: 'Price',
+                            label: 'Price (₪)',
                             lowerBound: 0,
                             upperBound: 1000,
                             interval: 100,
@@ -141,7 +159,7 @@
                     maxRoommates: this.fields.ranges.roommates.value.max,
                     minFloor: this.fields.ranges.floor.value.min,
                     maxFloor: this.fields.ranges.floor.value.max,
-                    latestEntranceDate: this.fields.ranges.floor.value,
+                    latestEntranceDate: this.fields.latestEntranceDate,
                     selected: this.fields.selectedBinaryProps
                 });
 
@@ -193,16 +211,30 @@
         padding: 0 10px;
     }
 
-    .location-col {
+    .text-input-col {
         padding: 0 25%;
+        display: flex;
+        margin-bottom: 15px;
+    }
+
+    .input-label {
+        width: 55px;
+        padding-top: 8px;
+        text-align: right;
+        color: #bbb;
+    }
+
+    .input-box {
+        margin-left: 10px;
+        flex: 1;
     }
 
     .ranges-row {
-        margin-top: 45px;
+        margin-top: 25px;
     }
 
     .more-options {
-        margin: 40px 0 20px;
+        margin: 30px 0;
         text-align: center;
     }
 
@@ -239,5 +271,18 @@
 
     .binary-property-text {
         vertical-align: super;
+    }
+</style>
+
+<style>
+    .date-input {
+        border-radius: 0;
+        background-color: #fff !important;
+        font-size: 16px;
+        height: 40px;
+    }
+
+    .date-calendar {
+        width: 100% !important;
     }
 </style>

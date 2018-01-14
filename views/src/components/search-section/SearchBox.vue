@@ -18,9 +18,8 @@
 </template>
 
 <script>
+    import bFormGroup from 'bootstrap-vue/es/components/form-group/form-group'
     import bFormInput from 'bootstrap-vue/es/components/form-input/form-input'
-    import bInputGroup from 'bootstrap-vue/es/components/input-group/input-group'
-    import bInputGroupAddon from 'bootstrap-vue/es/components/input-group/input-group-addon'
     import bButton from 'bootstrap-vue/es/components/button/button'
     import Icon from 'vue-awesome/components/Icon'
     import GmapAutoComplete from 'vue2-google-maps/src/components/autocomplete'
@@ -29,8 +28,7 @@
         name: "search-box",
         components: {
             Icon,
-            bFormInput,
-            bInputGroup, bInputGroupAddon,
+            bFormGroup, bFormInput,
             bButton, GmapAutoComplete
         },
         props: ['value'],
