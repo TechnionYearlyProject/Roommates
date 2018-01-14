@@ -67,6 +67,10 @@ Icon.register({
 Vue.http.options.root = process.env.SERVER_URI;
 Vue.http.headers.common['x-auth'] = 'x-auth';
 Vue.http.interceptors.push((request, next) => {
+    if (Vue.auth.isAuthenticated()) {
+        request.headers.set('X-Auth', Vue.auth.getToken());
+    }
+
     next();
 });
 
@@ -74,14 +78,14 @@ router.beforeEach(
     (to, from, next) => {
         if (to.matched.some(record => record.meta.forVisitors)) {
             if (Vue.auth.isAuthenticated()) {
-                console.log('authenticated')
+                console.log('authenticated');
                 next({ name: 'main-page' });
             } else {
                 next();
             }
         } else if (to.matched.some(record => record.meta.forAuth)) {
             if (!Vue.auth.isAuthenticated()) {
-                console.log('not authenticated')
+                console.log('not authenticated');
                 next({ name: 'identification' });
             } else {
                 next();
