@@ -11,7 +11,8 @@
           <checked-form @updated="updatePassword" label="Password:" labelFor="password" inputType="password" :state="passwordState" :invalid-feedback="passwordEmailFeedback"></checked-form>
         </b-col>
         <b-col cols="12">
-          <checked-form @updated="updateFirstName" label="first Name:" labelFor="firstName" :state="firstNameState"></checked-form>
+          <checked-form @updated="updateFirstName" label="First Name:" labelFor="firstName"
+                        :state="firstNameState"></checked-form>
         </b-col>
         <b-col cols="12">
           <checked-form @updated="updateLastName" label="Last Name:" labelFor="lastName" :state="lastNameState" placeholder="Optional"></checked-form>

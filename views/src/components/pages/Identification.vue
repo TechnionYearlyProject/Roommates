@@ -29,7 +29,7 @@
 
 <style scoped>
     .container {
-        margin-top: 5%;
+        margin-top: 25px;
         padding: 0;
     }
 </style>

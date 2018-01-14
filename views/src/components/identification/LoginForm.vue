@@ -3,7 +3,7 @@
         <b-card header-tag="header" bg-variant="light">
             <h1 slot="header" class="mb-0">Login</h1>
             <b-row>
-                <b-col cols="12">
+                <b-col cols="12" style="height: 70px">
                     <b-form-group horizontal breakpoint="md" class="mb-3" label-class="text-sm-left" label="Email:"
                                   label-for="loginEmail">
                         <b-form-input id="loginEmail" type="email" v-model="email" />
