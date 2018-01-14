@@ -5,7 +5,7 @@
                 <div class="form-group">
                     <label for="description">Description:</label>
                     <b-form-text-area name="description" id="description" class="form-control" style="white-space:pre;"
-                                      v-model.trim.lazy="info.description" v-bind:readonly="isReadOnly" />
+                                      v-model.lazy="info.description" v-bind:readonly="isReadOnly" />
                 </div>
             </div>
         </div>
