@@ -70,27 +70,27 @@ Vue.http.interceptors.push((request, next) => {
     next();
 });
 
-// router.beforeEach(
-//   (to, from, next) => {
-//     if (to.matched.some(record => record.meta.forVisitors)) {
-//       if (Vue.auth.isAuthenticated()) {
-//         console.log('authenticated')
-//         next({ name: 'main-page' });
-//       } else {
-//         next();
-//       }
-//     } else if (to.matched.some(record => record.meta.forAuth)) {
-//       if (!Vue.auth.isAuthenticated()) {
-//         console.log('not authenticated')
-//         next({ name: 'identification' });
-//       } else {
-//         next();
-//       }
-//     } else {
-//       next();
-//     }
-//   }
-// );
+router.beforeEach(
+    (to, from, next) => {
+        if (to.matched.some(record => record.meta.forVisitors)) {
+            if (Vue.auth.isAuthenticated()) {
+                console.log('authenticated')
+                next({ name: 'main-page' });
+            } else {
+                next();
+            }
+        } else if (to.matched.some(record => record.meta.forAuth)) {
+            if (!Vue.auth.isAuthenticated()) {
+                console.log('not authenticated')
+                next({ name: 'identification' });
+            } else {
+                next();
+            }
+        } else {
+            next();
+        }
+    }
+);
 
 new Vue({
     el: '#app',
