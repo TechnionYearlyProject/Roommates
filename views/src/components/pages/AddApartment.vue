@@ -125,13 +125,14 @@
                 if (!this.isValidInput) {
                     return;
                 }
+
                 this.$http
                     .post("apartments", {
                         title: this.form1Info.title,
                         address: this.form1Info.address,
                         price: this.form1Info.price,
                         images: this.form1Info.images,
-                        enteranceDate: this.form2Info.enteranceDate,
+                        enteranceDate: Date.parse(this.form2Info.enteranceDate),
                         description: this.form2Info.description,
                         tags: this.form3Info.tags,
                         requiredNumberOfRoommates: this.form2Info.requiredRoommates,
