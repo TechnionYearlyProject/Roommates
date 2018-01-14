@@ -91,18 +91,15 @@
                                 max: 1000
                             }
                         },
-                        bathrooms: {
-                            label: 'Bathrooms',
-                            lowerBound: 1,
+                        radius: {
+                            label: 'Max Distance (km)',
+                            lowerBound: 0,
                             upperBound: 3,
-                            interval: 1,
-                            value: {
-                                min: 1,
-                                max: 3
-                            }
+                            interval: 0.25,
+                            value: 1.5
                         },
-                        bedrooms: {
-                            label: 'Bedrooms',
+                        roommates: {
+                            label: 'Roommates',
                             lowerBound: 1,
                             upperBound: 5,
                             interval: 1,
@@ -139,12 +136,12 @@
                     },
                     minPrice: this.fields.ranges.price.value.min,
                     maxPrice: this.fields.ranges.price.value.max,
-                    minBathrooms: this.fields.ranges.bathrooms.value.min,
-                    maxBathrooms: this.fields.ranges.bathrooms.value.max,
-                    minBedrooms: this.fields.ranges.bedrooms.value.min,
-                    maxBedrooms: this.fields.ranges.bedrooms.value.max,
+                    radius: this.fields.ranges.radius.value,
+                    minRoommates: this.fields.ranges.roommates.value.min,
+                    maxRoommates: this.fields.ranges.roommates.value.max,
                     minFloor: this.fields.ranges.floor.value.min,
                     maxFloor: this.fields.ranges.floor.value.max,
+                    latestEntranceDate: this.fields.ranges.floor.value,
                     selected: this.fields.selectedBinaryProps
                 });
 

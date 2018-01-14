@@ -43,15 +43,28 @@
             }
         },
         computed: {
+            hasTwoSelectors() {
+                return (this.value instanceof Object);
+            },
             computedVal: {
                 get() {
-                    return [this.value.min, this.value.max];
+                    if (this.hasTwoSelectors) {
+                        return [this.value.min, this.value.max];
+                    }
+
+                    return this.value;
                 },
                 set(val) {
-                    this.$emit('input', {
-                        min: Math.min.apply(null, val),
-                        max: Math.max.apply(null, val)
-                    });
+                    if (this.hasTwoSelectors) {
+                        this.$emit('input', {
+                            min: Math.min.apply(null, val),
+                            max: Math.max.apply(null, val)
+                        });
+
+                        return;
+                    }
+
+                    this.$emit('input', this.value);
                 }
             }
         }
