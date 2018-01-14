@@ -2,7 +2,7 @@
 <div class="card-text">
       <span v-if="user_details.mobilePhone !== ''"><icon name="mobile"/> {{user_details.mobilePhone}} | </span>
       <span v-if="user_details.email !== ''"><icon name="envelope"/> {{user_details.email}} | </span>
-      <span v-if="user_details.birthdate !== ''"><icon name="birthday-cake"/> {{user_details.birthdate}} | </span>
+      <span v-if="user_details.birthdate !== ''"><icon name="birthday-cake"/> {{birthdate}} | </span>
       <span v-if="user_details.gender === 'male'" ><icon name="male"/> Male</span>
       <span v-if="user_details.gender === 'female'" ><icon name="female"/> Female</span>
 </div>
@@ -12,10 +12,20 @@
     import Icon from 'vue-awesome/components/Icon';
     export default {
          props: [
-          'user_details'
+          'user_details',
+          'birthdate'
         ],
         components:{
           Icon
+        },
+        created() {
+          this.birthdate = this.unixTsToReadableDate(this.user_details.birthdate);
+        },
+        methods: {
+            unixTsToReadableDate(udate) {
+              var d = new Date(udate);
+              return (d.getMonth()+1) + "/" + d.getDate() + "/" + d.getFullYear();
+            }
         }
     }
 </script>
