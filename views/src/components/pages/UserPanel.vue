@@ -32,9 +32,9 @@
         },
         async created(){
           await this.$http
-                          .get("users/" + this.id)
+                          .get("users/self", {headers: {'x-auth': this.$auth.getToken() }})
                           .then(res => this.setUserData(res, this))
-                          .catch(e => alert(e.toString()));
+                          .catch(e => console.log(e));
           this.actions = [
                     {
                         title: "New Apartment",
@@ -61,7 +61,7 @@
                         text: "Improve the matching",
                         img: "@/../static/images/user_panel/actions_menu/hobbie.png",
                         linkText: "Select Hobbies",
-                        link: { name: 'select-hobbies', params: { id: this.user._id } }
+                        link: { name: 'select-hobbies', params: { user: this.user } }
                     },
                     {
                         title: "Information",
@@ -79,7 +79,7 @@
         },
         methods: {
           setUserData(responseFromServer, pThis){
-            pThis.user = responseFromServer.body.user;
+            pThis.user = responseFromServer.body.self;
           }
         }
     }

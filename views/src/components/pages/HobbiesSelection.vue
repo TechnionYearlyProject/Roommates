@@ -4,6 +4,8 @@
 <div id="hobbies_selection_container" class="centralize_div">
     <h1> Help us improve the results! </h1>
     <b-form @submit="onSubmit" @reset="onReset">
+      <b-alert variant="secondary" :show="appliedSuccesfully">Saved</b-alert>
+      <b-alert variant="danger" :show="errors">An error occured, could not save changes</b-alert>
       <b-form-group label="Choose your hobbies:">
         <br>
         <b-form-checkbox-group id="hobbiescbs" name="hobbies" v-model="currTags" :options="tags">
@@ -26,16 +28,19 @@
     import bFormCheckbox from 'bootstrap-vue/es/components/form-checkbox/form-checkbox'
     import bCard from 'bootstrap-vue/es/components/card/card';
     import bContainer from 'bootstrap-vue/es/components/layout/container';
+    import bAlert from 'bootstrap-vue/es/components/alert/alert';
 
     export default {
         name: 'select-hobbies',
         props: [
-          'id'
+          'user'
         ],
         data: function() {
             return {
               currTags: [],
-              tags: []
+              tags: [],
+              appliedSuccesfully: false,
+              errors: false
             };
         },
         components:{
@@ -47,20 +52,17 @@
                           .get("users/tags")
                           .then(res => this.setAvailableTags(res, this))
                           .catch(e => console.log(e));
-          await this.$http
-                          .get("users/" + this.id)
-                          .then(res => this.setCurTags(res, this))
-                          .catch(e => console.log(e));
 
+          this.currTags = this.user.hobbies;
         },
         methods: {
             onSubmit (evt) {
               evt.preventDefault();
-              this.$http.patch("/users/self", {
-                              hobbies: this.currTags
-                           })
-                          .then(res => console.log(JSON.stringify(res.body)))
-                          .catch(e => console.log(e));
+              this.appliedSuccesfully = false;
+              this.errors = false;
+              this.$http.patch("users/self",  {hobbies: this.currTags}, {headers: {'x-auth': this.$auth.getToken() }})
+                          .then(res => this.appliedSuccesfully = true )
+                          .catch(e => {console.log(e); this.errors = true; });
             },
             onReset (evt) {
               evt.preventDefault();

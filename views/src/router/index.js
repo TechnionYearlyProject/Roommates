@@ -41,7 +41,7 @@ const routes = [
         component: InterestedApartments
     },
     {
-        path: '/users/:id/hobbies',
+        path: '/users/hobbies',
         name: 'select-hobbies',
         component: HobbiesSelection,
         props: true
@@ -53,10 +53,9 @@ const routes = [
         props: true
     },
     {
-        path: '/users/:id/control-panel',
+        path: '/users/control-panel',
         name: 'user-panel',
         component: UserPanel,
-        props: true,
         meta: { forAuth: true }
     },
 
