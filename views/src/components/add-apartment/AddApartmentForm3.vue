@@ -1,11 +1,11 @@
 <template>
   <b-container>
-    <b-row class="ml-2" style="text-align:left">
+    <b-row class="ml-2 mt-5" style="text-align:left">
       <ul>
         <li v-for="(tag, i) in tags" :key="tag.key">
           <b-col sm="12">
             <b-form-checkbox :id="tag.key+'CB'" v-model="info.tags" :value="i" :disabled="isReadOnly">
-              <icon :name="tag.vicon" scale="1.5" class="icon mr-3" />
+              <icon :name="tag.vicon" scale="1.7" class="icon mr-3" />
               </i>
               <span>{{ tag.name }}</span>
             </b-form-checkbox>
@@ -18,11 +18,12 @@
 
 <script>
   import Icon from "vue-awesome/components/Icon";
+  import Tags from '@/../static/js/tags'
 
   export default {
     data() {
       return {
-        tags: require("@/../static/js/tags").tags
+        tags: Tags
       };
     },
     props: ["info", "isReadOnly"],
