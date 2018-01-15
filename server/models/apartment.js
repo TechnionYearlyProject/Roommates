@@ -212,7 +212,7 @@ ApartmentSchema.statics.findByProperties = async function (p) {
         price: price,
         enteranceDate: entranceDate,
         'location.geolocation': geolocation,
-        numberOfRooms: roommates,
+        requiredNumberOfRoommates: roommates,
         currentlyNumberOfRoommates: p.currentRoommatesNumber,
         floor: floor
     });
