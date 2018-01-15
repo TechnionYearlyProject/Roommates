@@ -152,14 +152,14 @@
                     params: {
                         latitude: this.fields.location.lat,
                         longitude: this.fields.location.lng,
-                    minPrice: this.fields.ranges.price.value.min,
-                    maxPrice: this.fields.ranges.price.value.max,
-                        radius: this.fields.ranges.radius.value * 1000,
-                    minRoommates: this.fields.ranges.roommates.value.min,
-                    maxRoommates: this.fields.ranges.roommates.value.max,
-                    minFloor: this.fields.ranges.floor.value.min,
-                    maxFloor: this.fields.ranges.floor.value.max,
-                    latestEntranceDate: this.fields.latestEntranceDate,
+                        minPrice: this.fields.ranges.price.value.min,
+                        maxPrice: this.fields.ranges.price.value.max,
+                        radius: this.fields.ranges.radius.value,
+                        minRoommates: this.fields.ranges.roommates.value.min,
+                        maxRoommates: this.fields.ranges.roommates.value.max,
+                        minFloor: this.fields.ranges.floor.value.min,
+                        maxFloor: this.fields.ranges.floor.value.max,
+                        latestEntranceDate: this.fields.latestEntranceDate,
                         tags: this.fields.selectedBinaryProps
                     }
                 }).then(res => that.$emit('newResults', res.body.results))
