@@ -64,24 +64,34 @@
                         </div>
 
                         <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item" v-for="user in calUsers">
-                                    <b-container fluid>
-                                        <b-row>
-                                            <b-col align="center">
-                                                <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
-                                                    {{user.firstName}} {{user.lastName}}
-                                                </b-link>
-                                            </b-col>
-                                        </b-row>
-                                    </b-container>
-                                </li>
-                                <li class="list-group-item" v-for="p in (5-calUsers.length)"><br></li>
-                            </ul>
+                            <b-container>
+                                <b-row>
+                                    <b-col align="center">
+                                        <b-collapse id="collapse1" class="mt-2">
+                                            <b-card>
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item" v-for="user in calUsers">
+                                                        <b-container fluid>
+                                                            <b-row>
+                                                                <b-col align="center">
+                                                                    <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
+                                                                        {{user.firstName}} {{user.lastName}}
+                                                                    </b-link>
+                                                                </b-col>
+                                                            </b-row>
+                                                        </b-container>
+                                                    </li>
+                                                    <li class="list-group-item" v-for="p in (5-calUsers.length)"><br></li>
+                                                </ul>
+                                                <b-pagination align="center" :total-rows="apartment.interstedUsers.length"
+                                                            v-model="usersPage" :per-page="5" />                                    
+                                            </b-card>
+                                        </b-collapse>
+                                    </b-col>
+                                </b-row>
+                            </b-container>
                         </div>
 
-                        <b-pagination align="center" :total-rows="apartment.interstedUsers.length"
-                                      v-model="usersPage" :per-page="5" />
                     </div>
                 </b-col>
             </b-row>
