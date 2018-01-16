@@ -9,6 +9,7 @@ import AddApartmentPage from '@/components/pages/AddApartment'
 import InterestedApartments from '@/components/pages/InterestedApartments'
 import UserPanel from '@/components/pages/UserPanel'
 import HobbiesSelection from '@/components/pages/HobbiesSelection'
+import PublishedApartments from '@/components/pages/PublishedApartments'
 
 Vue.use(Router);
 
@@ -39,6 +40,11 @@ const routes = [
         path: '/users/:id/interested',
         name: 'interested-apartments',
         component: InterestedApartments
+    },
+    {
+        path: '/users/:id/published',
+        name: 'published-apartments',
+        component: PublishedApartments
     },
     {
         path: '/users/hobbies',
