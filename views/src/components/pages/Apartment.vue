@@ -69,7 +69,7 @@
                                     <b-container fluid>
                                         <b-row>
                                             <b-col align="center">
-                                                <b-link :to="{ name: 'user-profile', params: { id: user.id }}">
+                                                <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
                                                     {{user.firstName}} {{user.lastName}}
                                                 </b-link>
                                             </b-col>
