@@ -76,6 +76,7 @@
                                         </b-row>
                                     </b-container>
                                 </li>
+                                <li class="list-group-item" v-for="p in (5-calUsers.length)"><br></li>
                             </ul>
                         </div>
 
@@ -105,6 +106,7 @@
                 </b-col>
             </b-row>
             <b-row>
+              <b-col align="center">
                 <div class="card" style="width: 60rem;">
                     <div class="card-header">
                         <b-container fluid>
@@ -126,10 +128,12 @@
                                     </b-row>
                                 </b-container>
                             </li>
+                            <li class="list-group-item" v-for="p in (5-calCom.length)"><br></li>
                         </ul>
                         <p class="card-text"></p>
                     </div>
-                </div>
+                  </div>
+                </b-col>
             </b-row>
             <b-row>
                 <b-col />
