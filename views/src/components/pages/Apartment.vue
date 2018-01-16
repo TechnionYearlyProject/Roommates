@@ -164,10 +164,8 @@
             return {
                 slide: 0,
                 sliding: null,
-                imgNum: 1,
                 commentPage: 1,
                 usersPage: 1,
-                currImg: 1,
                 auther: {
                     firstName: 'chanan',
                     lastName: 'ben tal',
@@ -309,35 +307,6 @@
             }
         },
         methods: {
-            changeCommentPage(newPage) {
-                this.commentPage = newPage;
-            },
-            lastCommentPage() {
-                this.commentPage = Math.ceil(apartment.comments.length / 5);
-
-                // (Math.ceil((apartment.comments.length)/5));
-            },
-            incrementComPage() {
-                if (commentPage != (Math.ceil(apartment.comments.length / 5))) {
-                    this.commentPage++;
-                }
-            },
-            decrementComPage() {
-                if (commentPage != 1) {
-                    this.commentPage--;
-                }
-            },
-            changeImg(newImg) {
-                this.currImg = newImg;
-            },
-            decrementImg() {
-                if (imgNum != 1) {
-                    this.commentPage--;
-                }
-            },
-            changeUsersPage(newPage) {
-                this.usersPage = newPage;
-            },
             onSlideStart(slide) {
                 this.sliding = true
             },
@@ -369,9 +338,6 @@
                     return "pic of electricty";
                 }
                 return "pic of sun";
-            },
-            calImg() {
-                return this.apartment.images[currImg];
             }
         }
     }
