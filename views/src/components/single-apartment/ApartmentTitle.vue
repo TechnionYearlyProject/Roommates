@@ -1,6 +1,6 @@
 <template>
 
-    <div class="w-100 p-3" style="background-color: #eee;">
+    <div class="w-100 p-2" style="background-color: #eee;">
         <b-card border-variant="warning">
             <h1>
                 {{city}}, {{street}},

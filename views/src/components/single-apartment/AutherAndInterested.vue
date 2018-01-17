@@ -1,10 +1,10 @@
 
 <template>
 
-<div class="w-100 p-3" style="background-color: #eee;">
-    <b-card border-variant="warning">
+<div class="w-100" style="background-color: #eee;">
+    <b-card border-variant="warning" >
         <b-container>
-            <b-row>
+            <!-- <b-row>
                 <b-col align="center" cols="4">
                     <b-img :src="auther.img" rounded="circle" width="100" height="100" fluid alt="Responsive image" />
                 </b-col>
@@ -15,39 +15,40 @@
                     <b-img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPQAAADPCAMAAAD1TAyiAAAAb1BMVEX///8AAABvb29cXFxUVFRsbGySkpIwMDD4+Pjr6+uBgYHv7+9+fn719fViYmJ4eHjk5OSHh4eenp7IyMgcHBzb29siIiINDQ2rq6u7u7tnZ2fS0tLBwcEUFBQ2NjYnJyeamppJSUk9PT2np6dHR0cL2y+QAAAEfUlEQVR4nO3da1viMBCG4XAQK1AQz+IJ1P//G1fQVWZyaEKTzLj7Ph8F295XSgtpRWMQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEELon2syHqlrfFcYvR4obFIYfSINdAU00EADDTTQQHvQw+WwbsuxPHpUeI1WZ0/y6MG48CpZ5xp278pqh1nmQFZR7TILHb2rqc+cqxc6ZVVSO8dZ7jxdRe0xV0SP6OmywpnLvW9XRS/Ma101M09+Vl9xpE1dNTOvzKkMmqkXJVdsmcXQ5plsybrcepl5agTRTF1srB1mQXRTZaxdZkG0aU7J9pyUWKnTLIk2zQvZomH+dbrNomg+1tnVM7dZFs3Hepl3jbNbsvT59wOyaNPclFP7xlkcbVqqnnt/PTlmPlyyNNq0dN5q6vv11Lz7tlGANi3dukzqkFkBushYB80a0HwLV/3XFTarQPNjTm/1jO471tFRBTqzmo2zfR7UgbbmNvqsqO0YZzVoPtY9NoaZXe93tKCzjXXbtW8bRehM6ohx1oTOom6vIsya0BnUUeOsC82vQ2xSVxFp1oXuqY7bt402dC91tFkbmqsv4pcfu28bfWhzfaS6TZiDUYc+Us3M4TlGfWiufotZeENfzx3zqgrRXB1x933SOOtEJ6ubNLNOtHlIUqft20YrOkmdfnVIKZqr7/3PZOaY64Ba0dHq1NfzLrVo8x6lZuN8FbVotejtgOVUM3PkHQ1a0dad2U4127d3xdzRoBQ9ss2DwSN/ljXOu37t0dtpttTsmn68WiV64TYztXOcd3Ve5daIDvyJy4HaM867uq5yK0QPCYDeePWjZndk0TqufOpDM7N5pJ6vzbyk8yRrdhwPXw1Th14yszH3bBhH09WcnarW1gxZUKMNPSeb/tLsfsbVVvtzM7ueE+IoQ0/Jht80nz/tUH+9C2NXaDf+tehCr6i5/fvzoPr7PRhT+2fXVKGp+an9eSSgPni3za4LeWfXNKEnZJNv28PH7iLM1qy5b+5BEZqZZ/RRz1iz95xxaj3oC7q9M/44m1X4zHrdRqnVoJn5zH5GQ0/hHz1f289iM6nOT+Fa0G+d5o/OyRltcel8UoRaCZodp869S3nYLLevz+/DzWXrewpTW5/CtaCjzVGxV7+tVoFmR2bHKzUtprZeBhrQuc2dagXo/OaPT550mQ/0UXn0Y3D7ji2oFkeXMYeXK40O74d9CrxqhNFdx9k+MfXBeVAWXdIcOPuLojvfRfTMp5ZEx3w26JfnHb0gurzZp5ZD1zB7PrGKoSNndnq3oevZz01IoWuZnWohNDNH3RV4bHTu7aqVQrO52oR7fY+JzaY3IuhFW9VsqQ++eKMeekuvpm8Kr9jwq0XvEiNNK73efdZEqiy6iplf9RZGZ/i74bjcahF0tm8D6M75peoS6Izf+9Cd654lAXRVs1NdH11x3/7M3sMFvhZ3XDsFaAUBDTTQQAMNNND7/sv/onRxUvl/MUS0LjTbjhBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQpL9AYUZSAL+6WzgAAAAAElFTkSuQmCC"
                             style="width:30px;height:auto"/><br> {{auther.contactInfo.eMail}}<br>                 
                 </b-col>
-            </b-row>
-            <hr>
+            </b-row> -->
+            <b-card-header>
+                <h5>{{interstedUsers.length}} other people like this apartment</h5>
+            </b-card-header>
             <b-row>
                 <b-col align="center">
                     <b-card>
-                        <b-card-header>
                             <b-container fluid>
                                 <b-row>
                                     <b-col align="center">
-                                        <b-btn v-b-toggle.collapse1 variant="primary" align="center">show me interested users</b-btn>
+                                        <b-btn v-b-toggle.collapse1 variant="primary" align="center" @click="hideAndShow">{{interestedText}}</b-btn>
                                     </b-col>
                                 </b-row>
                             </b-container>
-                        </b-card-header>
                         <b-collapse id="collapse1" class="mt-2">
                             <b-card-body>
                                 <b-list-group>
-                                    <b-list-group-item v-for="user in interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1)">
+                                    <b-list-group-item v-for="user in interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1)" :key="user">
                                             <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
                                                 {{user.firstName}} {{user.lastName}}
                                             </b-link>
                                     </b-list-group-item>
-                                    <b-list-group-item v-for="p in (5-interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1).length)"><br></b-list-group-item>
+                                    <b-list-group-item v-for="p in (5-interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1).length)" :key="p"><br></b-list-group-item>
                                 </b-list-group>
                             </b-card-body>
-                            <b-card-footer>
                             <b-pagination align="center" :total-rows="interstedUsers.length"
-                                        v-model="usersPage" :per-page="5" />
-                            </b-card-footer>
+                                        v-model="usersPage" :per-page="5" limit='3' />
                         </b-collapse>
                     </b-card>
                 </b-col>
             </b-row>
+            <b-card-footer>
+                <b-button>like it too</b-button>
+            </b-card-footer>
         </b-container>
     </b-card>
 </div>
@@ -73,7 +74,20 @@ export default {
         ],
         data(){
             return{
+                show: true,
+                interestedText: 'show me interested users',
                 usersPage : 1
+            }
+        },
+        methods:{
+            hideAndShow(){
+                if(show){
+                    interestedText = 'hide interested users';
+                    show = false;
+                }else{
+                    interestedText = 'show me interested users';
+                    show = true;
+                }
             }
         }
 }

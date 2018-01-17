@@ -1,9 +1,9 @@
 
 <template>
 
-<div class="w-100 p-3" style="background-color: #eee;">
+<div class="w-100" style="background-color: #eee;">
 
-    <b-card border-variant="warning">
+    <b-card border-variant="warning" >
     <b-carousel id="carousel1"
                 style="text-shadow: 1px 1px 2px #333;"
                 controls
@@ -12,7 +12,6 @@
                 :interval="4000"
                 img-width="1024"
                 img-height="480"
-                v-model="slide"
                 @sliding-start="onSlideStart"
                 @sliding-end="onSlideEnd">
         <b-carousel-slide v-for="img in images" :key="img" :img-src="img" />
@@ -22,7 +21,7 @@
             <h2>rent is {{rent}} per month</h2>
             <hr>
             <h5>Arnona {{arnona}} bi-monthly</h5>
-            <h5>building upkeep {{houseCommity}}</h5>
+            <h5>building upkeep {{buildingCommity}}</h5>
         </b-col>
     </b-row>
     </b-card>

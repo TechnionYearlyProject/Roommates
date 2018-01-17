@@ -1,8 +1,8 @@
 
 <template>
 
-<div class="w-100 p-3" style="background-color: #eee;">
-    <b-card border-variant="warning">
+<div class="w-100" style="background-color: #eee;">
+    <b-card border-variant="warning"  >
         <b-container>
             <b-row>
                 <b-col align="center">
@@ -16,10 +16,10 @@
                         </b-card-header>
                         <b-card-body>
                             <b-list-group>
-                                <b-list-group-item v-for="comment in comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1)">
+                                <b-list-group-item v-for="comment in comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1)" :key="comment">
                                     {{comment.comment}} at: {{comment.writenAt}}
                                 </b-list-group-item>
-                                <b-list-group-item v-for="p in (5-comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1).length)"><br></b-list-group-item>
+                                <b-list-group-item v-for="p in (5-comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1).length)" :key="p"><br></b-list-group-item>
                             </b-list-group>
                         </b-card-body>
                         <b-card-body>
@@ -72,9 +72,17 @@ export default {
             }
         },
         methods:{
-      updateComment(newComment) {
-        this.newComment = newComment;
-      },        }
+            updateComment(newComment) {
+                this.newComment = newComment;
+            },
+            addNewComment(){
+                this.$http
+                    .post()
+                    .then()
+                    .catch();
+                
+            }
+        }
 }
 </script>
 

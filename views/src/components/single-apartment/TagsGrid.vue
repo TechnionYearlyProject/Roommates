@@ -1,8 +1,8 @@
 <template>
-    <div class="w-100 p-3" style="background-color: #eee;">
-        <b-card border-variant="warning" fluid>
+    <div class="w-100">
+        <b-card border-variant="warning" fluid >
             <b-container>
-                <b-row>
+                <!-- <b-row>
                     <b-col>
                         <b-img src="https://technext.github.io/garo-estate/assets/img/icon/room-orange.png"
                             ></b-img>
@@ -37,9 +37,7 @@
                         <span class="property-info-value">{{bedrooms}}</span>
                     </b-col>
                     <b-col>
-                        <b-img src="https://technext.github.io/garo-estate/assets/img/icon/os-orange.png"
-                            ></b-img>
-                        <span class="property-info-label"><br>parking places<br></span>
+                        <icon :name="symbals[4].vicon" scale="1.6" />
                         <span class="property-info-value">{{parking}}</span>
                     </b-col>
                     <b-col>
@@ -71,6 +69,15 @@
                         <span class="property-info-value">{{elevator}}</span>
                     </b-col>
                     <b-col></b-col>
+                </b-row> -->
+
+                <b-row no-gutters v-for="rowIndex in Math.ceil(symbals.length / 4)" :key="rowIndex">
+                    <b-col v-for="colIndex in 4" :key="colIndex"
+                           v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < symbals.length">
+                        <icon :name="symbals[index].vicon" scale="1.6"/>
+                        <span>{{symbals[index].name}}</span>
+                    </b-col>
+                    <br><br><br>
                 </b-row>
             </b-container>
         </b-card>
@@ -93,6 +100,11 @@
         props: ['area','toilets','garages','bedrooms','parking','pets','showers','waterHeaterMethod','elevator','gas'],
         components: {
             bContainer, bRow, bCol, bImg, Icon, bCard
+        },
+        data(){
+            return{
+                symbals: Tags
+            }
         }
     }
 </script>
