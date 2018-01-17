@@ -1,6 +1,17 @@
 <template>
     <div class="apartPage grid">
         <b-container fluid>
+            <b-row>
+                <b-col>
+                    <apartment-title
+                        :city="apartment.location.address.city"
+                        :street="apartment.location.address.street"
+                        :buildingNum="apartment.location.address.houseNumber"
+                        :entranceNum="apartment.location.address.entranceNumber"
+                    />
+                </b-col>
+            </b-row>
+            <br>
             <b-row align="center">
                 <b-col cols="7">
                     <PicsAndPrice
@@ -11,7 +22,7 @@
                         :images="apartment.images"
                         :rent="apartment.rent"
                         :arnona="apartment.arnona"
-                        :buildingCommity="apartment.houseCommity"
+                        :buildingCommity="apartment.buildingCommity"
                         />
                 </b-col>
                 <b-col cols="5">
@@ -21,7 +32,7 @@
                             />
                 </b-col>
             </b-row>
-            <hr>
+            <br>
             <b-row>
                 <apartmentTags :area="apartment.area"
                                :toilets="apartment.toilets"
@@ -34,54 +45,18 @@
                                :elevator="apartment.elevator"
                                :gas="apartment.gas" />
             </b-row>
-            <hr>
             <b-row>
                 <b-col align="center">
                     <h4 class="s-property-title">Description:</h4>
                     <p>{{apartment.description}}</p>
                 </b-col>
             </b-row>
-            <b-row >
-                <b-col align="center">
-                    <div class="card" style="width: 60rem;">
-                        <div class="card-header">
-                            <b-container fluid>
-                                <b-row>
-                                    <b-col align="center">
-                                        <h3>users comments</h3>
-                                    </b-col>
-                                </b-row>
-                            </b-container>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item" v-for="comment in calCom">
-                                    <b-container fluid>
-                                        <b-row>
-                                            <b-col align="center">
-                                                {{comment.comment}} at: {{comment.writenAt}}
-                                            </b-col>
-                                        </b-row>
-                                    </b-container>
-                                </li>
-                                <li class="list-group-item" v-for="p in (5-calCom.length)">
-                                    <br>
-                                </li>
-                            </ul>
-                            <p class="card-text"></p>
-                        </div>
-                    </div>
-                </b-col>
-                
-            </b-row>
             <b-row>
-                <b-col />
                 <b-col>
-                    <b-pagination align="center" :total-rows="apartment.comments.length"
-                                  v-model="commentPage" :per-page="5">
-                    </b-pagination>
+                    <comment-section
+                        :comments="apartment.comments"
+                        />
                 </b-col>
-                <b-col />
             </b-row>
         </b-container>
     </div>
@@ -97,13 +72,17 @@
     import ApartmentTags from '@/components/single-apartment/TagsGrid';
     import PicsAndPrice from '@/components/single-apartment/PicsAndPrice';
     import AutherAndInterestedUsers from '@/components/single-apartment/AutherAndInterested';
+    import ApartmentTitle from '@/components/single-apartment/ApartmentTitle';
+    import CommentSection from '@/components/single-apartment/CommentSection';
     import bLink from 'bootstrap-vue/es/components/link/link'
 
     export default {
         name: 'apartment-page',
         components: {
             bContainer, bRow, bCol,
-            bCarousel, bCarouselSlide, bPagination, ApartmentTags, bLink, PicsAndPrice, AutherAndInterestedUsers
+            bCarousel, bCarouselSlide, bPagination,
+            ApartmentTags, bLink, PicsAndPrice, AutherAndInterestedUsers,
+            ApartmentTitle, CommentSection
         },
         props:[
             'id'
@@ -141,7 +120,7 @@
                     totalFloors: 4,
                     description: "a very nice place",
                     rent: 1200,
-                    houseCommity: 50,
+                    buildingCommity: 50,
                     arnona: 400,
                     area: 100,
                     numRooms: 4,
