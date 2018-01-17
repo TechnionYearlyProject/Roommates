@@ -4,13 +4,6 @@
 <div class="w-100 p-3" style="background-color: #eee;">
 
     <b-card border-variant="warning">
-
-    <div class="single-property-header">
-        <h1>
-            {{city}}, {{street}},
-            {{buildingNum}}/{{entranceNum}}
-        </h1>
-    </div>
     <b-carousel id="carousel1"
                 style="text-shadow: 1px 1px 2px #333;"
                 controls

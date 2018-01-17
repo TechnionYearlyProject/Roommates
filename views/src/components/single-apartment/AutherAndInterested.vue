@@ -19,8 +19,8 @@
             <hr>
             <b-row>
                 <b-col align="center">
-                    <div class="card" style="width: 20rem;">
-                        <div class="card-header">
+                    <b-card>
+                        <b-card-header>
                             <b-container fluid>
                                 <b-row>
                                     <b-col align="center">
@@ -28,79 +28,27 @@
                                     </b-col>
                                 </b-row>
                             </b-container>
-                        </div>
-                        <div class="card-body">
-                            <b-container>
-                                <b-row>
-                                    <b-col align="center">
-                                        <b-collapse id="collapse1" class="mt-2">
-                                            <ul class="list-group list-group-flush">
-                                                <li class="list-group-item" v-for="user in interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1)" >
-                                                        <b-container fluid>
-                                                            <b-row>
-                                                                <b-col align="center">
-                                                                    <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
-                                                                        {{user.firstName}} {{user.lastName}}
-                                                                    </b-link>
-                                                                </b-col>
-                                                            </b-row>
-                                                        </b-container>                                                </li>
-                                                <li class="list-group-item" v-for="p in (5-interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1).length)"><br></li>
-                                            </ul>
-                                            <b-pagination align="center" :total-rows="interstedUsers.length"
-                                                        v-model="usersPage" :per-page="5" />                                         </b-collapse>
-                                    </b-col>
-                                </b-row>
-                            </b-container>
-                        </div>
-                    </div>
+                        </b-card-header>
+                        <b-collapse id="collapse1" class="mt-2">
+                            <b-card-body>
+                                <b-list-group>
+                                    <b-list-group-item v-for="user in interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1)">
+                                            <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
+                                                {{user.firstName}} {{user.lastName}}
+                                            </b-link>
+                                    </b-list-group-item>
+                                    <b-list-group-item v-for="p in (5-interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1).length)"><br></b-list-group-item>
+                                </b-list-group>
+                            </b-card-body>
+                            <b-card-footer>
+                            <b-pagination align="center" :total-rows="interstedUsers.length"
+                                        v-model="usersPage" :per-page="5" />
+                            </b-card-footer>
+                        </b-collapse>
+                    </b-card>
                 </b-col>
             </b-row>
         </b-container>
-        <!-- <b-container>
-        </b-container>
-
-                    <div class="card" style="width: 30rem;">
-                        <div class="card-header">
-                            <b-container fluid>
-                                <b-row>
-                                    <b-col align="center">
-                                        <b-btn v-b-toggle.collapse1 variant="primary" align="center">show me interested users</b-btn>
-                                    </b-col>
-                                </b-row>
-                            </b-container>
-                        </div>
-
-                        <div class="card-body">
-                            <b-container>
-                                <b-row>
-                                    <b-col align="center">
-                                        <b-collapse id="collapse1" class="mt-2">
-                                            <b-card>
-                                                <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item" v-for="user in calUsers">
-                                                        <b-container fluid>
-                                                            <b-row>
-                                                                <b-col align="center">
-                                                                    <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
-                                                                        {{user.firstName}} {{user.lastName}}
-                                                                    </b-link>
-                                                                </b-col>
-                                                            </b-row>
-                                                        </b-container>
-                                                    </li>
-                                                    <li class="list-group-item" v-for="p in (5-calUsers.length)"><br></li>
-                                                </ul>
-                                                <b-pagination align="center" :total-rows="interstedUsers.length"
-                                                            v-model="usersPage" :per-page="5" />                                    
-                                            </b-card>
-                                        </b-collapse>
-                                    </b-col>
-                                </b-row>
-                            </b-container>
-                        </div>
-
-                    </div> -->
     </b-card>
 </div>
 </template>
@@ -126,11 +74,6 @@ export default {
         data(){
             return{
                 usersPage : 1
-            }
-        },
-        computed: {
-            calUsers() {
-                return interstedUsers.slice(5 * (this.usersPage) - 4, 5 * (this.usersPage) + 1);
             }
         }
 }
