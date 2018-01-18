@@ -28,7 +28,6 @@ var logDebug = (msg) => {
 };
 
 module.exports = {
-	logger,
 	logError,
 	logWarning,
 	logInfo,
