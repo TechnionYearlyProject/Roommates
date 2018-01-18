@@ -17,11 +17,21 @@ const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
-const { logInfo } = require('./services/logger/logger');
+const { logInfo, logError } = require('./services/logger/logger');
 const errors = require('./errors');
 
 
 const app = express();
+
+app.use(httpRequestLogger('combined', {
+    immediate: true,
+    skip: function (req, res) { return res.statusCode < BAD_REQUEST },
+    stream: {
+    	write: (str) => {
+        	logError(str);
+    	}
+    }
+}));
 
 app.use(bodyParser.json({ limit: '5mb' }));
 useCors(app);
