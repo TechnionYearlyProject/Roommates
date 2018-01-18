@@ -26,10 +26,6 @@ const {logger, logInfo} = require('./services/logger/logger');
 
 const app = express();
 
-app.use(httpRequestLogger("common", { stream: logger.stream }, {
-  skip: function (req, res) { return res.statusCode < BAD_REQUEST; }
-}));
-
 app.use(bodyParser.json({ limit: '5mb' }));
 useCors(app);
 useVue(app);
