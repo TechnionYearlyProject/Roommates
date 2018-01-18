@@ -17,12 +17,9 @@ const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
-<<<<<<< HEAD
+const { logInfo } = require('./services/logger/logger');
 const errors = require('./errors');
-=======
-const {logger, logInfo} = require('./services/logger/logger');
 
->>>>>>> refs/remotes/origin/master
 
 const app = express();
 
