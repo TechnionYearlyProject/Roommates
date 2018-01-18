@@ -4,7 +4,7 @@
       <ul>
         <li v-for="(tag, i) in tags" :key="tag.key">
           <b-col sm="12">
-            <b-form-checkbox :id="tag.key+'CB'" v-model="info.tags" :value="i" :disabled="isReadOnly">
+            <b-form-checkbox :id="tag.key+'CB'" v-model="info.tags" :value="i+1" :disabled="isReadOnly">
               <icon :name="tag.vicon" scale="1.7" class="icon mr-3" />
               </i>
               <span>{{ tag.name }}</span>

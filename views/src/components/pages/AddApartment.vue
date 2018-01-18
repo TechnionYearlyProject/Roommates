@@ -1,6 +1,6 @@
 <template>
     <div class="container" style="margin-bottom:200px;margin-top:5%">
-        <div class="container mb-5">
+        <div class="container mb-5" v-if="progression < 5">
             <div class="row">
                 <div class="col-md-12">
                     <h1>
@@ -41,8 +41,17 @@
                     </h3>
                     <add-apartment-form4 :info1="form1Info" :info2="form2Info" :info3="form3Info" />
                 </div>
+                <div class="container s-apartment-add-container" v-if="progression === 5">
+                    <add-apartment-success :apartmentId="uploadedApartmentId" />
+                </div>
             </transition>
         </div>
+
+        <b-container>
+            <b-alert show variant="danger" v-if="error">
+                {{ error }}
+            </b-alert>
+        </b-container>
 
         <div class="container clearfix" style="margin-bottom:100px;margin-top:60px;">
             <b-button v-if="progression > 1" size="lg"
@@ -57,6 +66,8 @@
                       @click="submitApartment">Done!
             </b-button>
         </div>
+
+<loading :show="showLoading" label="Loading..."></loading>
     </div>
 </template>
 
@@ -66,7 +77,9 @@
     import AddApartmentForm2 from "@/components/add-apartment/AddApartmentForm2.vue"
     import AddApartmentForm3 from "@/components/add-apartment/AddApartmentForm3.vue"
     import AddApartmentForm4 from "@/components/add-apartment/AddApartmentForm4.vue"
+    import AddApartmentSuccess from "@/components/add-apartment/AddApartmentSuccess.vue"
     import bButton from 'bootstrap-vue/es/components/button/button'
+    import loading from 'vue-full-loading'
 
     export default {
         name: "add-apartment",
@@ -93,16 +106,20 @@
                     area: "",
                     requiredRoommates: 1,
                     totalRoommates: "",
-                    enteranceDate: Date.now()
+                    enteranceDate: new Date().toISOString().slice(0, 10)
                 },
                 form3Info: {
                     tags: []
-                }
+                },
+
+                showLoading: false,
+                uploadedApartmentId: null,
+                error: ""
             };
         },
         methods: {
             goNextPage() {
-                if (this.progression >= 5) {
+                if (this.progression >= 6) {
                     return;
                 }
 
@@ -125,7 +142,7 @@
                 if (!this.isValidInput) {
                     return;
                 }
-
+                this.showLoading = true;
                 this.$http
                     .post("apartments", {
                         title: this.form1Info.title,
@@ -142,8 +159,17 @@
                         totalFloors: this.form2Info.totalFloors,
                         area: this.form2Info.area
                     })
-                    .then(res => console.log(JSON.stringify(res.body)))
-                    .catch(e => console.log(e));
+                    .then(res => {
+                        console.log(JSON.stringify(res.body));
+                        this.uploadedApartmentId = res.body.apartment._id;
+                        this.showLoading = false;
+                        this.goNextPage();
+                    })
+                    .catch(e => { 
+                        console.log(e);
+                        this.error = e.body.message;
+                        this.showLoading = false;
+                        });
             }
         },
         computed: {
@@ -168,7 +194,9 @@
             AddApartmentForm2,
             AddApartmentForm3,
             AddApartmentForm4,
-            bButton
+            AddApartmentSuccess,
+            bButton,
+            loading
         }
     };
 </script>

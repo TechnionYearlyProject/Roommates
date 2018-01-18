@@ -38,15 +38,15 @@
             </div>
             <div class="col-sm-4">
                 <label for="enteranceDate">Enterance date</label>
-                <b-form-text style="float:right" id="inputTitleHelp">Required.</b-form-text>
                 <b-form-input id="enteranceDate" type="date" class="form-control" placeholder=""
-                              v-model.date.lazy="info.enteranceDate" v-bind:readonly="isReadOnly" />
+                              v-model.date="info.enteranceDate" v-bind:readonly="isReadOnly" />
+                <b-form-text style="float:right" id="inputTitleHelp">Required.</b-form-text>
             </div>
             <div class="col-sm-4">
                 <label for="requiredRoommates">Number of roommates I'm looking for:</label>
-                <b-form-text style="float:right" id="inputTitleHelp">Required.</b-form-text>
                 <b-form-input id="requiredRoommates" type="number" class="form-control" placeholder="How many?"
                               v-model.number.lazy="info.requiredRoommates" v-bind:readonly="isReadOnly" />
+                <b-form-text style="float:right" id="inputTitleHelp">Required.</b-form-text>
             </div>
             <div class="col-sm-4">
                 <label for="totalRoommates">Number of roommates in the apartment:</label>
