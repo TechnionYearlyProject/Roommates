@@ -4,6 +4,7 @@ const _ = require('lodash');
 const {
     BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK
 } = require('http-status');
+const httpRequestLogger = require('morgan');
 
 require('./server-config');
 require('./db/mongoose');
@@ -16,8 +17,14 @@ const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
+const {logger, logInfo} = require('./services/logger/logger');
+
 
 const app = express();
+
+app.use(httpRequestLogger("common", { stream: logger.stream }, {
+  skip: function (req, res) { return res.statusCode < BAD_REQUEST; }
+}));
 
 app.use(bodyParser.json({ limit: '5mb' }));
 useCors(app);
@@ -295,7 +302,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
 
 
 app.listen(process.env.PORT, () => {
-    console.log(`Server is up on port ${process.env.PORT}.`);
+    logInfo(`Server is up on port ${process.env.PORT}.`);
 });
 
 module.exports = {
