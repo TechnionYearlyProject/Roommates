@@ -27,7 +27,14 @@ var logDebug = (msg) => {
 	logger.debug(msg);
 };
 
+logger.stream = {
+    write: function(message, encoding){
+        logError(message);
+    }
+};
+
 module.exports = {
+	logger,
 	logError,
 	logWarning,
 	logInfo,
