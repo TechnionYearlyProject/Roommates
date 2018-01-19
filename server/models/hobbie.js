@@ -73,15 +73,43 @@ const supportedHobbies = [
   }
 ];
 
+/**
+ *
+ * @returns the list of all hobbies.
+ */
 const getSupportedHobbies = () => supportedHobbies;
 
+/**
+ * check if a hobby has a property with the specified value.
+ *
+ * @param {String} key
+ * @param {Number} value
+ * @returns true if hobby found, otherwise false.
+ */
 const isSupportedHobbie = (key, value) =>
   arrayFunctions.containsElementWithProperty(supportedHobbies, key, value);
 
+/**
+ * checks if the id is a valid hobby id.
+ *
+ * @param {Number} hobbieId
+ * @returns true if id is valid, otherwise false.
+ */
 const isSupportedHobbieId = (hobbieId) => isSupportedHobbie('_id', hobbieId);
 
+/**
+ * checks if the name is a valid hobby name.
+ *
+ * @param {String} hobbieName
+ * @returns true if name is valid, otherwise false.
+ */
 const isSupportedHobbieName = (hobbieName) => isSupportedHobbie('name', hobbieName.toUpperCase());
 
+/**
+ *
+ * @param {Number} hobbieId
+ * @returns score of the hobby with the specified id or 0 if id is invalid.
+ */
 const getHobbieScore = (hobbieId) => {
   const hobbie = supportedHobbies.find((h) => h._id === hobbieId);
   if (!hobbie) {
@@ -90,6 +118,11 @@ const getHobbieScore = (hobbieId) => {
   return hobbie.score;
 };
 
+/**
+ *
+ * @param {Array} hobbiesIdArr
+ * @returns sum of the hobbies' score in the array.
+ */
 const getHobbiesScore = (hobbiesIdArr) => {
   let sum = 0;
   hobbiesIdArr.forEach((hobbieId) => {

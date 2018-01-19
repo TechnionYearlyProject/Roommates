@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const _ = require('lodash');
 
 const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
@@ -143,6 +142,15 @@ const ApartmentSchema = new mongoose.Schema({
   }]
 });
 
+/**
+ * the coords array is an array of 2 values:
+ * the first one is the longitude and the second is the latitude.
+ * radius is the max distance from the coords in units of km.
+ *
+ * @param {Array} coords
+ * @param {Number} radius
+ * @returns a mongoose format object for finding apartment in radius
+ */
 const getGeoWithinObj = (coords, radius) => {
   const kmToRadians = radius / EARTH_RADIUS_IN_KM;
   return {
@@ -155,6 +163,15 @@ const getGeoWithinObj = (coords, radius) => {
   };
 };
 
+/**
+ * find all the apartments in the geo-circle, which is defined by
+ * the specified center point and radius.
+ *
+ * @param {Number} centerLong
+ * @param {Number} centerLat
+ * @param {Number} radius
+ * @returns Promise object.
+ */
 ApartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
   const Apartment = this;
 
@@ -163,14 +180,43 @@ ApartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
   });
 };
 
+/**
+ * find all the apartments with the listed ids.
+ *
+ * @param {Array} listIds
+ * @returns Promise object.
+ */
 ApartmentSchema.statics.findAllByIds = function (listIds) {
   const Apartment = this;
 
   return Apartment.find({ _id: { $in: listIds } });
 };
 
-//TODO: add the rest of properties
-//_id, _createdBy, fromPrice, toPrice, entranceDate, address, latitude, longitude, radius, minRoommates, maxRoommates, floor
+/**
+ * TODO: add the rest of properties
+ *
+ * find all the apartments with the specified properties.
+ * properties currently supported:
+ * _id
+ * _createdBy
+ * minPrice
+ * maxPrice
+ * latestEntranceDate
+ * minRoommates
+ * maxRoommates
+ * latitude, logitude
+ * address
+ * minFloor
+ * maxFloor
+ *
+ * properties need to add:
+ * minRoommates
+ * maxRoommates
+ * tags
+ *
+ * @param {Object} p
+ * @returns Promise object.
+ */
 ApartmentSchema.statics.findByProperties = async function (p) {
   const Apartment = this;
 
@@ -209,17 +255,21 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   const properties = removeFalsyProps({
     _id: p._id,
     _createdBy: p._createdBy,
-    price: price,
+    price,
     enteranceDate: entranceDate,
     'location.geolocation': geolocation,
     requiredNumberOfRoommates: roommates,
     currentlyNumberOfRoommates: p.currentRoommatesNumber,
-    floor: floor
+    floor
   });
 
   return Apartment.find(properties);
 };
 
+/**
+ *
+ * @returns the apartment location as a string.
+ */
 ApartmentSchema.methods.getAddressString = function () {
   const apartment = this;
 
@@ -227,6 +277,14 @@ ApartmentSchema.methods.getAddressString = function () {
   return `${address.number} ${address.street} ${address.city} ${address.state}`;
 };
 
+/**
+ * add a new comment to an apartment.
+ *
+ * @param {ObjectId} _createdBy
+ * @param {String} text
+ * @param {Number} createdAt
+ * @returns Promise object.
+ */
 ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
   const apartment = this;
 
@@ -239,6 +297,13 @@ ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
   return apartment.save();
 };
 
+
+/**
+ * add an interested user to the apartment's interested list.
+ *
+ * @param {ObjectId} _interestedID
+ * @returns Promise object.
+ */
 ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
@@ -247,6 +312,13 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   return apartment.save();
 };
 
+
+/**
+ * remove the interested user from the apartment's interested list.
+ *
+ * @param {ObjectId} _interestedID
+ * @returns Promise object.
+ */
 ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   const apartment = this;
 
@@ -258,6 +330,13 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   return apartment.save();
 };
 
+
+/**
+ * check if the user is interested in the apartment.
+ *
+ * @param {any} _interestedID
+ * @returns true if the user is interested, otherwise false.
+ */
 ApartmentSchema.methods.isUserInterested = function (_interestedID) {
   const apartment = this;
 

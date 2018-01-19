@@ -106,6 +106,13 @@ const UserSchema = new mongoose.Schema({
   }]
 });
 
+/**
+ * a middleware function for user.
+ * this function is doing some operations before the save function is called
+ * on user.
+ * before saving a user the function:
+ * encrypts the user password, if it was modified. 
+ */
 UserSchema.pre('save', function (next) {
   const user = this;
 
@@ -121,6 +128,13 @@ UserSchema.pre('save', function (next) {
   }
 });
 
+/**
+ * find a user with the specified credentials.
+ * 
+ * @param {String} email 
+ * @param {String} password 
+ * @returns Promise object.
+ */
 UserSchema.statics.findByCredentials = function (email, password) {
   const User = this;
 
@@ -141,6 +155,12 @@ UserSchema.statics.findByCredentials = function (email, password) {
   });
 };
 
+/**
+ * find a user with the specified auth token string.
+ * 
+ * @param {String} token 
+ * @returns Promise Object.
+ */
 UserSchema.statics.findByToken = function (token) {
   const User = this;
   let decoded;
@@ -158,6 +178,14 @@ UserSchema.statics.findByToken = function (token) {
   });
 };
 
+/**
+ * we don't want all of a user properties to be exposed.
+ * dues we make sure that the toJSON operation returns only some of
+ * its properties.
+ * 
+ * @param {User Object} user 
+ * @returns Object with the public properties of the user
+ */
 UserSchema.statics.toJSON = function (user) {
   return _.pick(user,
     [
@@ -176,28 +204,15 @@ UserSchema.statics.toJSON = function (user) {
     ]);
 };
 
-UserSchema.methods.getToken = function (token) {
-  const user = this;
-
-  return user.tokens.find(t => t.token === token);
-};
-
-UserSchema.methods.removeExpiredTokens = function () {
-  const user = this;
-
-  const tokens = user.tokens.filter(t => Date.now() < t.expiration);
-  user.tokens = tokens;
-  return user.save();
-};
-
-UserSchema.methods.updateTokenTime = function (token) {
-  const user = this;
-
-  const newExpiration = ticket.generateNewExpiration();
-  user.getToken(token).expiration = newExpiration;
-  return user.save().then(() => newExpiration);
-};
-
+/**
+ * express uses this function when sending an object over HTTP requests.
+ * 
+ * we don't want all of a user properties to be exposed.
+ * dues we make sure that the toJSON operation returns only some of
+ * its properties.
+ * 
+ * @returns Object with the public properties of the user
+ */
 UserSchema.methods.toJSON = function () {
   const user = this;
 
@@ -206,6 +221,48 @@ UserSchema.methods.toJSON = function () {
   return User.toJSON(userObject);
 };
 
+/**
+ * 
+ * @param {String} token 
+ * @returns the ticket with the specified token. if not ticket found return null. 
+ */
+UserSchema.methods.getTicket = function (token) {
+  const user = this;
+
+  return user.tokens.find(t => t.token === token);
+};
+
+/**
+ * remove expired tokens from the user's tokens list.
+ * 
+ * @returns Promsie object with the user.
+ */
+UserSchema.methods.removeExpiredTokens = function () {
+  const user = this;
+
+  const tokens = user.tokens.filter(t => Date.now() < t.expiration);
+  user.tokens = tokens;
+  return user.save();
+};
+
+/**
+ * 
+ * @param {String} token 
+ * @returns Promise object with the new expiration time.
+ */
+UserSchema.methods.updateTokenTime = function (token) {
+  const user = this;
+
+  const newExpiration = ticket.generateNewExpiration();
+  user.getTicket(token).expiration = newExpiration;
+  return user.save().then(() => newExpiration);
+};
+
+/**
+ * generate a new auth token to the user.
+ * 
+ * @returns Promise object with the ticket.
+ */
 UserSchema.methods.generateAuthenticationToken = function () {
   const user = this;
 
@@ -218,6 +275,22 @@ UserSchema.methods.generateAuthenticationToken = function () {
     .then(() => t);
 };
 
+/**
+ * register a new user.
+ * the registration includes:
+ * validation to the data provided
+ * encryption of the password
+ * saving the user to the db.
+ * 
+ * the registration will fail if:
+ * the data provided in not a legal user data (see schema for more details)
+ * the email is already in use by other user
+ * the encryption of the password has failed.
+ * 
+ * the function also generates a new auth token to the user.
+ * 
+ * @returns Promise object.
+ */
 UserSchema.methods.register = function () {
   const user = this;
 
@@ -226,12 +299,29 @@ UserSchema.methods.register = function () {
     .catch(() => { throw emailInUse; });
 };
 
+/**
+ * calculate the matching score of the two users.
+ * the matching is based on common hobbies.
+ * each hobbie has a predefined score.
+ * every common hobbie adds up to the total matching score.
+ * 
+ * @param {User Object} userToGetMatchingWith 
+ * @returns matching score of the users.
+ */
 UserSchema.methods.getMatchingResult = function (userToGetMatchingWith) {
   const user = this;
 
   return getMatchScore(user.hobbies, userToGetMatchingWith.hobbies);
 };
 
+/**
+ * sort the users in the array by their matching score comparing to
+ * the current user.
+ * the matching score is the sum of the scores of the common hobbies. 
+ * 
+ * @param {Array} userIds 
+ * @returns sorted list in ascending order of the users.
+ */
 UserSchema.methods.getBestMatchingUsers = function (userIds) {
   const user = this;
 
@@ -242,12 +332,23 @@ UserSchema.methods.getBestMatchingUsers = function (userIds) {
   );
 };
 
+/**
+ * 
+ * @param {any} apartmentId 
+ * @returns true if the user is the owner of the specified apartment, otherwise false.
+ */
 UserSchema.methods.isOwner = function (apartmentId) {
   const user = this;
 
   return arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId) > -1;
 };
 
+/**
+ * remove an apartment from the user's published apartments.
+ * 
+ * @param {String} apartmentId 
+ * @returns Promise object.
+ */
 UserSchema.methods.removeApartment = function (apartmentId) {
   const user = this;
 
@@ -259,6 +360,12 @@ UserSchema.methods.removeApartment = function (apartmentId) {
   return user.save();
 };
 
+/**
+ * add a new apartment to the interested apartments list of the user.
+ * 
+ * @param {String} _apartmentID 
+ * @returns Promise object.
+ */
 UserSchema.methods.addInterestInApartment = function (_apartmentID) {
   const user = this;
 
@@ -267,6 +374,12 @@ UserSchema.methods.addInterestInApartment = function (_apartmentID) {
   return user.save();
 };
 
+/**
+ * check if the apartment is being interested by the user.
+ * 
+ * @param {String} _apartmentID 
+ * @returns true if the user interested, otherwise false.
+ */
 UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
   const user = this;
 
@@ -274,7 +387,12 @@ UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
   return (interestedIDIndex > -1);
 };
 
-
+/**
+ * remove an apartment from the user's interested list.
+ * 
+ * @param {String} _apartmentID 
+ * @returns Promise object.
+ */
 UserSchema.methods.removeInterestInApartment = function (_apartmentID) {
   const user = this;
 
