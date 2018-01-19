@@ -1,5 +1,9 @@
 <template>
-  <b-container style="margin-top:5%">
+<div>
+  <b-container style="margin-top:5%" v-if="appliedSuccesfully === true">
+     <UserPanelGeneralSuccess labelText="Your ad has been removed successfully!"></UserPanelGeneralSuccess>
+  </b-container>
+  <b-container style="margin-top:5%" v-if="appliedSuccesfully === false">
           <h1 class="s-h1">
             You <strong>PUBLISHED</strong> these
           </h1>
@@ -42,17 +46,22 @@
       </b-card>
     </b-container>
   </b-container>
+</div>
 </template>
 
 <script>
   import Icon from "vue-awesome/components/Icon";
+  import UserPanelGeneralSuccess from "@/components/user-panel/UserPanelGeneralSuccess.vue";
+  import loading from "vue-full-loading";
 
   export default {
     name: 'published-apartments',
     data() {
       return {
         apartments: [],
-        errors: false
+        errors: false,
+        showLoading: false,
+        appliedSuccesfully: false
       };
     },
     methods: {
@@ -61,10 +70,12 @@
       },
       deleteApartment (evt, apartmentId) {
         evt.preventDefault();
+        this.showLoading = true;
         this.errors = false;
+        this.appliedSuccesfully = false;
         this.$http.delete(`apartments/${apartmentId}`,  {}, {headers: {'x-auth': this.$auth.getToken() }})
-                          .then(res =>  this.$router.push({ name: 'published-apartments', params: { id: this.$route.params.id } })  )
-                          .catch(e => {console.log(e); this.errors = true; });
+                          .then(res =>  {this.showLoading = false;this.appliedSuccesfully = true; } )
+                          .catch(e => {console.log(e); this.errors = true;this.showLoading = false; });
       },
     },
     mounted() {
@@ -78,7 +89,7 @@
         .catch(err => this.apartments.push(err.status));
     },
     components: {
-      Icon
+      Icon, UserPanelGeneralSuccess
     }
   };
 </script>
