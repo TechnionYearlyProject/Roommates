@@ -79,14 +79,9 @@
             bFormText, bFormInput,
             ImageUpload
         },
-        data() {
-            return {
-                _info: this.info
-            }
-        },
         methods: {
             saveImages(images) {
-                this._info.images = images;
+                this.info.images = images;
             }
         }
     };

@@ -48,7 +48,8 @@
                     title: "My apartments",
                     text: "Control your ads in the site",
                     img: "@/../static/images/user_panel/actions_menu/manage.png",
-                    linkText: "Manage Apartments"
+                    linkText: "Manage Apartments",
+                    link: { name: 'published-apartments', params: { id: this.user._id } }
                 },
                 {
                     title: "Interested",

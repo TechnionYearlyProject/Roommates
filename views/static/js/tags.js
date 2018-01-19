@@ -12,7 +12,7 @@ export default [
   {
     key: 'ELEVATOR',
     name: 'Elevator',
-      vicon: 'elevator'
+    vicon: 'elevator'
   },
   {
     key: 'TERRACE',

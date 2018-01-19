@@ -11,7 +11,7 @@
         <b-container class="result-details h-100">
             <b-row no-gutters class="result-title">
                 <b-col>
-                    <b-link target="_blank" :to="{ name: 'apartment-page', params: { id: apartment._id }}">{{ address }}
+                    <b-link :to="{ name: 'apartment-page', params: { id: apartment._id, apartmentP: apartment }}">{{ address }}
                     </b-link>
                     <div class="result-price">
                         <price-tag v-model="apartment.price" />
@@ -39,7 +39,7 @@
                     </b-badge>
                 </b-col>
                 <b-col cols="auto">
-                    <b-button size="sm" variant="primary" target="_blank"
+                    <b-button size="sm" variant="primary"
                               :to="{ name: 'apartment-page', params: { id: apartment._id }}">
                         More Info
                     </b-button>
