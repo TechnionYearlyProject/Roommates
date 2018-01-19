@@ -17,17 +17,14 @@ const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
-const { logInfo, logger } = require('./services/logger/logger');
+const { logInfo } = require('./services/logger/logger');
+const httpLogger = require('./services/logger/http-logger');
 const errors = require('./errors');
 
 
 const app = express();
 
-app.use(httpRequestLogger('combined', 
-	{stream: logger.stream},
-	{skip: function (req, res) { return res.statusCode < 400 }},
-));
-
+app.use(httpLogger.logResponseBodyOnError);
 app.use(bodyParser.json({ limit: '5mb' }));
 useCors(app);
 useVue(app);
