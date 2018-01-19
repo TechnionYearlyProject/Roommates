@@ -35,7 +35,7 @@
                   <price-banner :price="apartment.price"></price-banner>
                 </b-col>
                 <b-col cols="3" style="padding: 2% 8%;">
-                  <b-link :to="`/apartments/${apartment._id}`" class="btn btn-primary">View Page
+                  <b-link :to="{ name: 'apartment-page', params: { id: apartment._id,apartmentP: apartment }}" class="btn btn-primary">View Page
                     <icon name="arrow-circle-right" class="arrow-icon"></icon>
                   </b-link>
                 </b-col>
