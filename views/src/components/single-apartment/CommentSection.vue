@@ -14,7 +14,12 @@
                                 </b-row>
                             </b-container>
                         </b-card-header>
-                        <b-card-body>
+                        <b-card-body v-if="comments.length==0">
+                            <h1>
+                                no comments yet....
+                            </h1>
+                        </b-card-body>
+                        <b-card-body v-if="comments.length!=0">
                             <b-list-group>
                                 <b-list-group-item v-for="comment in comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1)" :key="comment">
                                     {{comment.comment}} at: {{comment.writenAt}}
@@ -22,16 +27,15 @@
                                 <b-list-group-item v-for="p in (5-comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1).length)" :key="p"><br></b-list-group-item>
                             </b-list-group>
                         </b-card-body>
-                        <b-card-body>
+                        <b-card-body v-if="comments.length!=0">
                             <b-pagination align="center" :total-rows="comments.length"
                                     v-model="comPage" :per-page="5" />
                         </b-card-body>
-                        <b-card-footer>
-
-                            <b-btn v-b-toggle.collapse1 variant="primary" align="center">leave a comment</b-btn>
+                        <b-card-footer v-if="isAuth">
+                            <b-btn v-b-toggle.collapse1 variant="primary" align="center" >leave a comment</b-btn>
                             <b-collapse id="collapse1" class="mt-2">
                                 <checked-form @updated="updateComment" label="Comment:" labelFor="email" inputType="text"></checked-form>
-                                <b-button>submit</b-button>
+                                <b-button @click="addNewComment" v-if="newComment.length!=0">submit</b-button>
                             </b-collapse>
                         </b-card-footer>
                     </b-card>
@@ -63,10 +67,11 @@ export default {
             bForm, bFormInput, CheckedForm
         },
         props:[
-            'comments' 
+            'comments', 'id'
         ],
         data(){
             return{
+                isAuth: null,
                 comPage : 1,
                 newComment:''
             }
@@ -76,11 +81,25 @@ export default {
                 this.newComment = newComment;
             },
             addNewComment(){
-                this.$http
-                    .post()
-                    .then()
-                    .catch();
-                
+                if(this.newComment.lenght!=0){
+                    this.$http
+                        .put(`/apartments/${id}/comment`,)
+                        .then(res => console.log(JSON.stringify(res.body)))
+                        .catch(e => console.log(e));
+                }       
+            }
+        },
+        created() {
+            this.isAuth = this.$auth.isAuthenticated();
+        },
+        mounted() {
+            EventBus.onLogin(() => {
+                this.isAuth = this.$auth.isAuthenticated();
+            });
+        },
+        computed:{
+            calCom(){
+                return comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1);
             }
         }
 }
