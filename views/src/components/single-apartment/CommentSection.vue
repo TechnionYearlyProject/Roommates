@@ -82,14 +82,13 @@ export default {
                 this.newComment = newComment;
             },
             addNewComment(){
-                if(this.newComment.lenght!=0){
-                    this.$http
-                        .put(`/apartments/${id}/comment`,{text: newComment}, {headers: {'x-auth': this.$auth.getToken() }})
-                        .then(res => console.log(res))
-                        .catch(e => console.log(e));
-
-
-                }       
+                var iden = this.id
+                this.$http
+                    .put(`/apartments/${iden}/comment`, {headers: {'x-auth': this.$auth.getToken() }},{text: this.newComment})
+                    .then(res => {
+                        newComment = '';
+                        console.log(res);})
+                    .catch(e => console.log(e));
             }
         },
         created() {
