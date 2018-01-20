@@ -59,14 +59,15 @@ export default {
             bContainer, bRow, bCol, bImg, bCard, bCardImg, bCardFooter, bCardHeader
         },
         props:[
-            'interstedUsers' 
+            'interstedUsers', 'apartmentId' 
         ],
         data(){
             return{
                 isAuth: null,
                 show: true,
                 intress: false,
-                usersPage : 1
+                usersPage : 1,
+                user: [],
             }
         },
         methods:{
@@ -78,15 +79,19 @@ export default {
                 }
             },
             intres(){
+                var id = this.apartmentId;
                 if(this.intress){
                     this.intress = false;
                 }else{
                     this.intress = true;
                 }
                 this.$http
-                    .put(`apartments/${id}/interested`)
+                    .put(`apartments/${id}/interested`, {}, {headers: {'x-auth': this.$auth.getToken() }})
                     .then(res => console.log(res))
                     .catch(e => console.log(e));                
+            },
+            setUserData(responseFromServer, pThis) {
+                pThis.user = responseFromServer.body.self;
             }
         },
         computed:{
@@ -109,11 +114,13 @@ export default {
         created() {
             this.isAuth = this.$auth.isAuthenticated();
         },
-        mounted() {
-            EventBus.onLogin(() => {
-                this.isAuth = this.$auth.isAuthenticated();
-            });
-        },
+        async created() {
+            this.isAuth = this.$auth.isAuthenticated();
+            await this.$http
+                .get("users/self", { headers: { 'x-auth': this.$auth.getToken() } })
+                .then(res => this.setUserData(res, this))
+                .catch(e => console.log(e));
+        }
 }
 </script>
 

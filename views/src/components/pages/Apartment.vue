@@ -46,7 +46,7 @@
                 </b-col>
                 <b-col cols="5">
                         <interested-users
-                            :interstedUsers="apartment._interested"
+                            :interstedUsers="apartment._interested" :apartmentId="apartment._id"
                             />
                 </b-col>
             </b-row>
