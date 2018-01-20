@@ -3,7 +3,7 @@
 
 <div class="w-100" style="background-color: #eee;">
 
-    <b-card border-variant="warning" >
+    <b-card border-variant="light" >
     <b-carousel id="carousel1"
                 style="text-shadow: 1px 1px 2px #333;"
                 controls
@@ -16,12 +16,25 @@
                 @sliding-end="onSlideEnd">
         <b-carousel-slide v-for="img in images" :key="img" :img-src="img" />
     </b-carousel>
+    <br>
     <b-row>
-        <b-col fluid>
-            <h2>rent is {{rent}} per month</h2>
-            <hr>
-            <h5>Arnona {{arnona}} bi-monthly</h5>
-            <h5>building upkeep {{buildingCommity}}</h5>
+        <b-col align="start">
+            <!-- <div class="w-100" style="background-color: #eee;"> -->
+                <!-- <b-card border-variant="light" > -->
+                    <h1>
+                        {{city}}, {{street}},
+                        {{buildingNum}}/{{entranceNum}}
+                    </h1>
+                <!-- </b-card> -->
+            <!-- </div> -->
+        </b-col>
+        <b-col align="center">
+            <h2>{{rent}}</h2>
+            <!-- <hr> -->
+            <!-- <h5>Arnona {{arnona}} bi-monthly</h5> -->
+            <!-- <h5>Arnona 400 bi-monthly</h5> -->
+            <!-- <h5>building upkeep {{buildingCommity}}</h5> -->
+            <!-- <h5>building upkeep 55</h5> -->
         </b-col>
     </b-row>
     </b-card>

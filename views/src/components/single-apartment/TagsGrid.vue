@@ -1,6 +1,6 @@
 <template>
     <div class="w-100">
-        <b-card border-variant="warning" fluid >
+        <b-card border-variant="light" fluid >
             <b-container>
 
                 <b-row no-gutters v-for="rowIndex in Math.ceil(symbals.length / 4)" :key="rowIndex">

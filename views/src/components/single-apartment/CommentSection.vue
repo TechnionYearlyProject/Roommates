@@ -2,7 +2,7 @@
 <template>
 
 <div class="w-100" style="background-color: #eee;">
-    <b-card border-variant="warning"  >
+    <b-card border-variant="light"  >
         <b-container>
             <b-row>
                 <b-col align="center">
@@ -58,6 +58,7 @@
     import bForm from "bootstrap-vue/es/components/form/form";
     import bFormInput from 'bootstrap-vue/es/components/form-input/form-input';
     import CheckedForm from "@/components/identification/CheckedForm.vue";
+    import EventBus from "../../event-bus/EventBus";
 
 
 export default {
@@ -83,9 +84,11 @@ export default {
             addNewComment(){
                 if(this.newComment.lenght!=0){
                     this.$http
-                        .put(`/apartments/${id}/comment`,)
-                        .then(res => console.log(JSON.stringify(res.body)))
+                        .put(`/apartments/${id}/comment`,{text: newComment}, {headers: {'x-auth': this.$auth.getToken() }})
+                        .then(res => console.log(res))
                         .catch(e => console.log(e));
+
+
                 }       
             }
         },
