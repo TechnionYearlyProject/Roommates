@@ -40,7 +40,7 @@
                 </b-col>
                 <b-col cols="auto">
                     <b-button size="sm" variant="primary"
-                              :to="{ name: 'apartment-page', params: { id: apartment._id, apartmentP: apartment }}">
+                              :to="{ name: 'apartment-page', params: { id: apartment._id }}">
                         More Info
                     </b-button>
                 </b-col>

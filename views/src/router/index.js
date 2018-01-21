@@ -29,11 +29,6 @@ const routes = [
     {
         path: '/apartments/:id',
         name: 'apartment-page',
-        component: ApartmentPage
-    },
-    {
-        path: '/apartment2',
-        name: 'apartment2',
         component: Apartment2
     },
     {

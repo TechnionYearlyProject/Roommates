@@ -27,7 +27,7 @@ describe('User Tests', () => {
 
     it('should return 0 - hobbies are not defined for one user (callee)', (done) => {
       const user = new User(users[0]);
-      expect(user.getMatchingResult(users[4])).toBe(getMatchScore(users[0].hobbies, users[1].hobbies));
+      expect(user.getMatchingResult(users[4])).toBe(getMatchScore(users[0].hobbies, users[4].hobbies));
       done();
     });
 

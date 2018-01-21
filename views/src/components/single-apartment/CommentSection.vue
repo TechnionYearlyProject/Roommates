@@ -1,25 +1,25 @@
 
 <template>
 
-<div class="w-100" style="background-color: #eee;">
-    <b-card border-variant="light"  >
+<div class="w-70" style="background-color: #eee;">
+    <b-card border-variant="light"  bg-variant="secondary">
         <b-container>
             <b-row>
                 <b-col align="center">
-                    <b-card>
-                        <b-card-header>
+                    <b-card bg-variant="light">
+                        <b-card-header bg-variant="white">
                             <b-container fluid>
                                 <b-row>
                                     <h3>users comments</h3>
                                 </b-row>
                             </b-container>
                         </b-card-header>
-                        <b-card-body v-if="comments.length==0">
+                        <b-card-body v-if="comments.length==0" bg-variant="light">
                             <h1>
                                 no comments yet....
                             </h1>
                         </b-card-body>
-                        <b-card-body v-if="comments.length!=0">
+                        <b-card-body v-if="comments.length!=0" bg-variant="light">
                             <b-list-group>
                                 <b-list-group-item v-for="comment in comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1)" :key="comment">
                                     {{comment.comment}} at: {{comment.writenAt}}
@@ -27,11 +27,11 @@
                                 <b-list-group-item v-for="p in (5-comments.slice(5 * (this.comPage) - 4, 5 * (this.comPage) + 1).length)" :key="p"><br></b-list-group-item>
                             </b-list-group>
                         </b-card-body>
-                        <b-card-body v-if="comments.length!=0">
+                        <b-card-body v-if="comments.length!=0" bg-variant="light">
                             <b-pagination align="center" :total-rows="comments.length"
                                     v-model="comPage" :per-page="5" />
                         </b-card-body>
-                        <b-card-footer v-if="isAuth">
+                        <b-card-footer v-if="isAuth" bg-variant="white">
                             <b-btn v-b-toggle.collapse1 variant="primary" align="center" >leave a comment</b-btn>
                             <b-collapse id="collapse1" class="mt-2">
                                 <checked-form @updated="updateComment" label="Comment:" labelFor="email" inputType="text"></checked-form>

@@ -16,7 +16,7 @@
     </b-row>
   </b-container>
 
-    <comments-section :comments="apartment.comments" :isAuth="isAuth"></comments-section>
+    <comments-section :apartment="apartment" :isAuth="isAuth" @commentPosted="afterComment"></comments-section>
 
   </b-container>
 </template>
@@ -35,12 +35,12 @@
   export default {
     data() {
       return {
-        id: "5a5879a991ce7538e484130c",
-        apartment: null,
-        publisher: null,
+        id: this.$route.params.id,
+        apartment: [],
+        publisher: [],
         
 
-        isAuth: null,
+        isAuth: false,
         expressedInterest: false
       };
     },
@@ -48,6 +48,9 @@
       expressInterest(apartment) {
         this.expressedInterest = !this.expressedInterest;
         this.apartment = apartment;
+      },
+      afterComment(comments) {
+        this.apartment.comments = comments;
       }
     },
     async created() {

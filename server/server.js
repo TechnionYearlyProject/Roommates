@@ -2,9 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
 const {
-    BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK
+  BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK
 } = require('http-status');
-const httpRequestLogger = require('morgan');
 
 require('./server-config');
 require('./db/mongoose');
@@ -102,6 +101,11 @@ app.get('/apartments', async (req, res) => {
         'longitude'
       ]);
 
+    let tags;
+    if (body.tags && Array.isArray(body.tags)) {
+      tags = body.tags.map(tagName => getSupportedTags().filter(t => t.name === tagName)[0]._id);
+    }
+
     const results = await Apartment.findByProperties({
       _id: body.id,
       _createdBy: body.createdBy,
@@ -114,13 +118,32 @@ app.get('/apartments', async (req, res) => {
       currentRoommatesNumber: body.currentRoommatesNumber,
       minFloor: body.minFloor,
       maxFloor: body.maxFloor,
+      tags,
       latestEntranceDate: body.latestEntranceDate,
       latitude: body.latitude,
       longitude: body.longitude
     });
     res.send({ results });
   } catch (err) {
+    console.error(err);
     res.status(BAD_REQUEST).send(err);
+  }
+});
+
+app.get('/apartments/:id/interested', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
+    }
+
+    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+
+    return res.send({ _interested });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
   }
 });
 
@@ -301,7 +324,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
 
 
 app.listen(process.env.PORT, () => {
-    logInfo(`Server is up on port ${process.env.PORT}.`);
+  logInfo(`Server is up on port ${process.env.PORT}.`);
 });
 
 module.exports = {

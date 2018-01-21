@@ -15,3 +15,15 @@
 {"level":"error","message":"/apartments/5a58794d91ce7538e4841308/interested returned: 404 for the following request: {}","timestamp":"17:38:50"}
 {"level":"info","message":"Server is up on port 3000.","timestamp":"21:23:53"}
 {"level":"info","message":"Mongoose connection success.","timestamp":"21:23:53"}
+{"level":"info","message":"Server is up on port 3000.","timestamp":"21:45:55"}
+{"level":"info","message":"Mongoose connection success.","timestamp":"21:45:55"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/interested returned: 401 for the following request: {}","timestamp":"21:48:03"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/interested returned: 401 for the following request: {}","timestamp":"21:48:33"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/interested returned: 401 for the following request: {}","timestamp":"21:50:00"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/interested returned: 401 for the following request: {}","timestamp":"21:54:09"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/interested returned: 401 for the following request: {}","timestamp":"21:54:38"}
+{"level":"info","message":"Server is up on port 3000.","timestamp":"22:06:21"}
+{"level":"info","message":"Mongoose connection success.","timestamp":"22:06:21"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/comment returned: 400 for the following request: {}","timestamp":"23:02:05"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/comment returned: 400 for the following request: {}","timestamp":"23:02:32"}
+{"level":"error","message":"/apartments/5a5879a991ce7538e484130c/comment returned: 401 for the following request: {\"text\":\"test number three !\"}","timestamp":"23:36:42"}

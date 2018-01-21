@@ -17,7 +17,7 @@
         <b-carousel-slide v-for="img in images" :key="img" :img-src="img" img-height="480" img-width="auto"/>
     </b-carousel>
     <br>
-    <b-row align-v="end">
+    <b-row >
         <b-col align="start">
             <h1>
                 {{city}}, {{street}},
