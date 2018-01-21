@@ -29,6 +29,24 @@ app.use(bodyParser.json({ limit: '5mb' }));
 useCors(app);
 useVue(app);
 
+/**
+ * Add a new apartemnt. The posting user has to be authenticated.
+ * the specified center point and radius.
+ *
+ * @param {String} title
+ * @param {Number} price
+ * @param {String} address
+ * @param {String} entrance date
+ * @param {[String]} images
+ * @param {String} description
+ * @param {[Number]} tags
+ * @param {Number} requiredNumberOfRoommates
+ * @param {Number} currentlyNumberOfRoommates
+ * @param {[Number]} numberOfRooms
+ * @param {Number} floor
+ * @param {Number} totalFloors
+ * @param {[Number]} area
+ */
 app.post('/apartments', authenticate, async (req, res) => {
     try {
         const address = _.pick(req.body.address, ['state', 'city', 'street', 'number']);
@@ -72,6 +90,9 @@ app.post('/apartments', authenticate, async (req, res) => {
     }
 });
 
+/**
+ * Get all server supported apartment tags 
+ */
 app.get('/apartments/tags', async (req, res) => {
     try {
         res.send({ tags: getSupportedTags() });
@@ -80,6 +101,26 @@ app.get('/apartments/tags', async (req, res) => {
     }
 });
 
+/**
+ * Get apartment based on the given filters.
+ *
+ * @param {String} id
+ * @param {Number} createdBy
+ * @param {Number} minPrice
+ * @param {Number} maxPrice
+ * @param {Number} minEntranceDate
+ * @param {Number} latestEntranceDate
+ * @param {String} address
+ * @param {Number} radius
+ * @param {Number} minRoommates
+ * @param {Number} maxRoommates
+ * @param {Number} currentRoommatesNumber
+ * @param {Number} minFloor
+ * @param {Number} maxFloor
+ * @param {[Number]} tags
+ * @param {Number} latitude
+ * @param {Number} longitude
+ */
 app.get('/apartments', async (req, res) => {
     try {
         const body = _.pick(req.query,
@@ -131,6 +172,11 @@ app.get('/apartments', async (req, res) => {
   }
 });
 
+/**
+ * Get apartment interested users sorted by matching to the logged-in user.
+ *
+ * @param {String} id
+ */
 app.get('/apartments/:id/interested', authenticate, async (req, res) => {
 	try {
 	    const { id } = req.params;
@@ -148,6 +194,11 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
     }
 });
 
+/**
+ * Toggle the interested state of the logged-in user.
+ *
+ * @param {String} id
+ */
 app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
@@ -170,6 +221,13 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
         return res.status(BAD_REQUEST).send(err);
     }
 });
+
+/**
+ * Adds a comment to a specific apartment.  The posting user has to be authenticated.
+ *
+ * @param {String} id
+ * @param {String} text
+ */
 app.put('/apartments/:id/comment', authenticate, async (req, res) => {
     try {
         const body = _.pick(req.body, ['text']);
@@ -190,6 +248,11 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
     }
 });
 
+/**
+ * Deletes a specific apartment.  The posting user has to be the owner.
+ *
+ * @param {String} id
+ */
 app.delete('/apartments/:id', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
@@ -207,6 +270,16 @@ app.delete('/apartments/:id', authenticate, async (req, res) => {
     }
 });
 
+/**
+ * Adds a new user (registration)
+ *
+ * @param {String} email
+ * @param {String} password
+ * @param {String} firstName
+ * @param {String} lastName
+ * @param {Number} birthDate
+ * @param {String} gender
+ */
 app.post('/users', async (req, res) => {
     try {
         const body = _.pick(req.body,
@@ -229,6 +302,12 @@ app.post('/users', async (req, res) => {
     }
 });
 
+/**
+ * Login
+ *
+ * @param {String} email
+ * @param {String} password
+ */
 app.post('/users/login', async (req, res) => {
     try {
         const body = _.pick(req.body, ['email', 'password']);
@@ -243,11 +322,18 @@ app.post('/users/login', async (req, res) => {
     }
 });
 
+/**
+ * Get self user details. The user has to be the logged-in.
+ *
+ */
 app.get('/users/self', authenticate, (req, res) => {
     res.send({ self: req.user });
 });
 
-
+/**
+ * Get all server supported user tags
+ *
+ */
 app.get('/users/tags', async (req, res) => {
     try {
         res.send({ tags: getSupportedHobbies() });
@@ -256,6 +342,11 @@ app.get('/users/tags', async (req, res) => {
     }
 });
 
+/**
+ * Get user details for the given id
+ *
+ * @param {String} id
+ */
 app.get('/users/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -270,6 +361,11 @@ app.get('/users/:id', async (req, res) => {
     }
 });
 
+/**
+ * Get all the apartments the user is interested in. The user has to be the logged-in.
+ *
+ * @param {String} id
+ */
 app.get('/users/:id/interested', async (req, res) => {
     try {
         const { id } = req.params;
@@ -285,6 +381,11 @@ app.get('/users/:id/interested', async (req, res) => {
     }
 });
 
+/**
+ * Get all the apartments the user published. The user has to be the logged-in.
+ *
+ * @param {String} id
+ */
 app.get('/users/:id/published', async (req, res) => {
     try {
         const { id } = req.params;
@@ -300,6 +401,10 @@ app.get('/users/:id/published', async (req, res) => {
     }
 });
 
+/**
+ * Update self details.
+ *
+ */
 app.patch('/users/self', authenticate, async (req, res) => {
     try {
         const body = _.pick(req.body,
