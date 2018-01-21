@@ -34,7 +34,6 @@ logger.stream = {
 };
 
 module.exports = {
-	logger,
 	logError,
 	logWarning,
 	logInfo,

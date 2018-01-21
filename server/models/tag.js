@@ -1,4 +1,4 @@
-const array_functions = require('../helpers/arrayFunctions');
+const arrayFunctions = require('../helpers/arrayFunctions');
 
 const supportedTags = [
   {
@@ -35,13 +35,37 @@ const supportedTags = [
   },
 ];
 
+/**
+ *
+ * @returns a list of all tags.
+ */
 const getSupportedTags = () => supportedTags;
 
+/**
+ * check if a tag has a property with the specified value.
+ *
+ * @param {Number} key
+ * @param {String} value
+ * @returns
+ */
+const isSupportedTag = (key, value) => arrayFunctions.containsElementWithProperty(supportedTags, key, value);
+
+/**
+ * check if the id is a valid tag's id.
+ *
+ * @param {Number} tagID
+ * @returns true if the id is valid, otherwise false.
+ */
 const isSupportedTagId = (tagID) => isSupportedTag('_id', tagID);
 
+/**
+ * check if the name is a valid tag's name.
+ *
+ * @param {any} tagName
+ * @returns true if the name is valid, otherwise false.
+ */
 const isSupportedTagName = (tagName) => isSupportedTag('name', tagName.toUpperCase());
 
-const isSupportedTag = (key, value) => array_functions.containsElementWithProperty(supportedTags, key, value);
 
 module.exports = {
   getSupportedTags,

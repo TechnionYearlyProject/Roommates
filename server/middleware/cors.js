@@ -8,6 +8,13 @@ const corsOptions = {
   exposedHeaders: ['Content-Type', XAUTH, XEXPIRATION],
   optionsSuccessStatus: 200
 };
+
+/**
+ * a middleware function.
+ * set the HTTP configuration.
+ *
+ * @param {Express Object} app
+ */
 const useCors = (app) =>
   app.use(cors(corsOptions));
 

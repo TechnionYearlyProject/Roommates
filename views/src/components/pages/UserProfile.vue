@@ -30,7 +30,7 @@
         ],
          data: function() {
             return {
-              user: null,
+              user: [],
               tags: []
             };
         },

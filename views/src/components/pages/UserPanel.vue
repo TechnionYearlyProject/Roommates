@@ -24,7 +24,7 @@
         ],
         data: function () {
             return {
-                user: null,
+                user: [],
                 actions: []
             };
         },
