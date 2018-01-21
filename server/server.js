@@ -128,6 +128,23 @@ app.get('/apartments', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(BAD_REQUEST).send(err);
+  }
+});
+
+app.get('/apartments/:id/interested', authenticate, async (req, res) => {
+	try {
+	    const { id } = req.params;
+
+	    const apartment = await Apartment.findById(id);
+	    if (!apartment) {
+	      return res.status(NOT_FOUND).send();
+	    }
+
+	    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+
+    	return res.send({ _interested });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
     }
 });
 
