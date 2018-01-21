@@ -2,9 +2,9 @@
 <template>
 
 <div class="w-100" style="background-color: #eee;">
-    <b-card border-variant="light" >
+    <b-card border-variant="light" bg-variant="secondary">
         <b-container>
-            <b-card-header v-if="interstedUsers.length==0">
+            <!-- <b-card-header v-if="interstedUsers.length==0">
                 <h5>no interest in this apartment yet</h5>
             </b-card-header>
             <b-card-header v-if="interstedUsers.length==1">
@@ -12,11 +12,25 @@
             </b-card-header>
             <b-card-header v-if="interstedUsers.length>1">
                 <h5>{{interstedUsers.length}} other people like this apartment</h5>
-            </b-card-header>
+            </b-card-header> -->
             <b-row>
                 <b-col align="center">
+                    <b-btn v-b-modal.modal1 variant="warning">
+                        <h5 v-if="interstedUsers.length==0">no interest in this apartment yet</h5>
+                        <h5 v-if="interstedUsers.length==1">one other person likes this apartment</h5>
+                        <h5 v-if="interstedUsers.length>1">{{interstedUsers.length}} other people like this apartment</h5>
+                    </b-btn>
+                    <b-modal id="modal1" title="interested users">
+                        <b-card>
+                            <b-card-body v-for="user in calUsers" :key="user._id" >
+                                <b-link :to="{ name: 'user-profile', params: { id: user._id } }">
+                                        {{user.firstName}} {{user.lastName}}
+                                </b-link>
+                            </b-card-body>
+                        </b-card>
+                    </b-modal>
 
-                    <b-dropdown id="ddown1" text="Interested Users" ariant="primary" class="m-md-2">
+                    <!-- <b-dropdown id="ddown1" text="Interested Users" ariant="primary" class="m-md-2">
                         <b-container>
                             <b-row>
                                 <b-col align="center">
@@ -32,7 +46,7 @@
                                 </b-col>
                             </b-row>
                         </b-container>
-                    </b-dropdown>
+                    </b-dropdown> -->
 
 
                     <!-- <b-card v-if="interstedUsers.length!=0">
@@ -63,7 +77,7 @@
                 </b-col>
             </b-row>
                 <b-button  @click="interest" :pressed="intress" variant="link"  v-if="isAuth">
-                    <b-img :src="interested"
+                    <b-img :src="interested" rounded
                     alt="Responsive image" height="40" width="auto"/>
                 </b-button>
         </b-container>
