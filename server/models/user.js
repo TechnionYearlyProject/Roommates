@@ -111,7 +111,7 @@ const UserSchema = new mongoose.Schema({
  * this function is doing some operations before the save function is called
  * on user.
  * before saving a user the function:
- * encrypts the user password, if it was modified. 
+ * encrypts the user password, if it was modified.
  */
 UserSchema.pre('save', function (next) {
   const user = this;
@@ -130,9 +130,9 @@ UserSchema.pre('save', function (next) {
 
 /**
  * find a user with the specified credentials.
- * 
- * @param {String} email 
- * @param {String} password 
+ *
+ * @param {String} email
+ * @param {String} password
  * @returns Promise object.
  */
 UserSchema.statics.findByCredentials = function (email, password) {
@@ -157,8 +157,8 @@ UserSchema.statics.findByCredentials = function (email, password) {
 
 /**
  * find a user with the specified auth token string.
- * 
- * @param {String} token 
+ *
+ * @param {String} token
  * @returns Promise Object.
  */
 UserSchema.statics.findByToken = function (token) {
@@ -182,8 +182,8 @@ UserSchema.statics.findByToken = function (token) {
  * we don't want all of a user properties to be exposed.
  * dues we make sure that the toJSON operation returns only some of
  * its properties.
- * 
- * @param {User Object} user 
+ *
+ * @param {User Object} user
  * @returns Object with the public properties of the user
  */
 UserSchema.statics.toJSON = function (user) {
@@ -206,11 +206,11 @@ UserSchema.statics.toJSON = function (user) {
 
 /**
  * express uses this function when sending an object over HTTP requests.
- * 
+ *
  * we don't want all of a user properties to be exposed.
  * dues we make sure that the toJSON operation returns only some of
  * its properties.
- * 
+ *
  * @returns Object with the public properties of the user
  */
 UserSchema.methods.toJSON = function () {
@@ -222,9 +222,9 @@ UserSchema.methods.toJSON = function () {
 };
 
 /**
- * 
- * @param {String} token 
- * @returns the ticket with the specified token. if not ticket found return null. 
+ *
+ * @param {String} token
+ * @returns the ticket with the specified token. if not ticket found return null.
  */
 UserSchema.methods.getTicket = function (token) {
   const user = this;
@@ -234,7 +234,7 @@ UserSchema.methods.getTicket = function (token) {
 
 /**
  * remove expired tokens from the user's tokens list.
- * 
+ *
  * @returns Promsie object with the user.
  */
 UserSchema.methods.removeExpiredTokens = function () {
@@ -246,8 +246,8 @@ UserSchema.methods.removeExpiredTokens = function () {
 };
 
 /**
- * 
- * @param {String} token 
+ *
+ * @param {String} token
  * @returns Promise object with the new expiration time.
  */
 UserSchema.methods.updateTokenTime = function (token) {
@@ -260,7 +260,7 @@ UserSchema.methods.updateTokenTime = function (token) {
 
 /**
  * generate a new auth token to the user.
- * 
+ *
  * @returns Promise object with the ticket.
  */
 UserSchema.methods.generateAuthenticationToken = function () {
@@ -281,14 +281,14 @@ UserSchema.methods.generateAuthenticationToken = function () {
  * validation to the data provided
  * encryption of the password
  * saving the user to the db.
- * 
+ *
  * the registration will fail if:
  * the data provided in not a legal user data (see schema for more details)
  * the email is already in use by other user
  * the encryption of the password has failed.
- * 
+ *
  * the function also generates a new auth token to the user.
- * 
+ *
  * @returns Promise object.
  */
 UserSchema.methods.register = function () {
@@ -304,8 +304,8 @@ UserSchema.methods.register = function () {
  * the matching is based on common hobbies.
  * each hobbie has a predefined score.
  * every common hobbie adds up to the total matching score.
- * 
- * @param {User Object} userToGetMatchingWith 
+ *
+ * @param {User Object} userToGetMatchingWith
  * @returns matching score of the users.
  */
 UserSchema.methods.getMatchingResult = function (userToGetMatchingWith) {
@@ -317,9 +317,9 @@ UserSchema.methods.getMatchingResult = function (userToGetMatchingWith) {
 /**
  * sort the users in the array by their matching score comparing to
  * the current user.
- * the matching score is the sum of the scores of the common hobbies. 
- * 
- * @param {Array} userIds 
+ * the matching score is the sum of the scores of the common hobbies.
+ *
+ * @param {Array} userIds
  * @returns sorted list in ascending order of the users.
  */
 UserSchema.methods.getBestMatchingUsers = function (userIds) {
@@ -333,8 +333,8 @@ UserSchema.methods.getBestMatchingUsers = function (userIds) {
 };
 
 /**
- * 
- * @param {any} apartmentId 
+ *
+ * @param {any} apartmentId
  * @returns true if the user is the owner of the specified apartment, otherwise false.
  */
 UserSchema.methods.isOwner = function (apartmentId) {
@@ -345,8 +345,8 @@ UserSchema.methods.isOwner = function (apartmentId) {
 
 /**
  * remove an apartment from the user's published apartments.
- * 
- * @param {String} apartmentId 
+ *
+ * @param {String} apartmentId
  * @returns Promise object.
  */
 UserSchema.methods.removeApartment = function (apartmentId) {
@@ -362,8 +362,8 @@ UserSchema.methods.removeApartment = function (apartmentId) {
 
 /**
  * add a new apartment to the interested apartments list of the user.
- * 
- * @param {String} _apartmentID 
+ *
+ * @param {String} _apartmentID
  * @returns Promise object.
  */
 UserSchema.methods.addInterestInApartment = function (_apartmentID) {
@@ -376,8 +376,8 @@ UserSchema.methods.addInterestInApartment = function (_apartmentID) {
 
 /**
  * check if the apartment is being interested by the user.
- * 
- * @param {String} _apartmentID 
+ *
+ * @param {String} _apartmentID
  * @returns true if the user interested, otherwise false.
  */
 UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
@@ -389,8 +389,8 @@ UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
 
 /**
  * remove an apartment from the user's interested list.
- * 
- * @param {String} _apartmentID 
+ *
+ * @param {String} _apartmentID
  * @returns Promise object.
  */
 UserSchema.methods.removeInterestInApartment = function (_apartmentID) {

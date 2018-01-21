@@ -141,7 +141,7 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
       await req.user.addInterestInApartment(id);
     }
 
-    return res.status(OK).send();
+    return res.status(OK).send({ apartment });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }

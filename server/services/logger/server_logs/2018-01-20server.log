@@ -1,0 +1,4 @@
+{"level":"info","message":"Server is up on port 3000.","timestamp":"13:33:32"}
+{"level":"info","message":"Mongoose connection success.","timestamp":"13:33:32"}
+{"level":"error","message":"/users/login returned: 400 for the following request: {\"email\":\"alon1234678@gmail.com\",\"password\":\"123456\"}","timestamp":"13:47:41"}
+{"level":"error","message":"/users/login returned: 400 for the following request: {\"email\":\"alon1234678@gmail.com\",\"password\":\"123456\"}","timestamp":"13:47:52"}

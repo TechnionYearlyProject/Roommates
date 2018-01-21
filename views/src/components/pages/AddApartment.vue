@@ -59,7 +59,7 @@
             </b-button>
             <b-button v-if="progression < 4" class="go-right" size="lg" :variant="isValidInput ? 'primary' : 'secondary'" @click="goNextPage">Next
             </b-button>
-            <b-button v-else class="go-right" variant="primary" size="lg" @click="submitApartment">Done!
+            <b-button v-else-if="progression === 4" class="go-right" variant="primary" size="lg" @click="submitApartment">Done!
             </b-button>
         </div>
 
