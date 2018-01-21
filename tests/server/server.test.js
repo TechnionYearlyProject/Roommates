@@ -295,9 +295,64 @@ describe('Server Tests', () => {
         }).timeout(5000);
     });
 
-    describe('DELETE /apartments', () => {
-        it('should not delete aprtment - apartment doesnt exist', (done) => {
-            const id = new ObjectID().toHexString();
+  describe('GET /apartments/:id/interested', () => {
+    it('should not get interested - unregistered user', (done) => {
+      const id = apartments[1]._id;
+      request(app)
+        .get(`/apartments/${id}/interested`)
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should not get interested - apartment doesnt exist', (done) => {
+      const id = new ObjectID().toHexString();
+      request(app)
+        .get(`/apartments/${id}/interested`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(NOT_FOUND)
+        .end(done);
+    });
+
+    it('should not get interested - no interested users', (done) => {
+      const id = apartments[1]._id;
+      request(app)
+        .get(`/apartments/${id}/interested`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .expect((res) => {expect(res.body._interested.length).toBe(0);})
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+            return done();
+        });
+    }).timeout(5000);
+
+    it('should get interested sorted', (done) => {
+      const id = apartments[0]._id;
+      request(app)
+        .get(`/apartments/${id}/interested`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body._interested.length).toBe(apartments[0]._interested.length);
+          expect(res.body._interested[0]._id).toEqual(users[1]._id.toHexString());
+          expect(res.body._interested[1]._id).toEqual(users[0]._id.toHexString());
+          expect(res.body._interested[2]._id).toEqual(users[2]._id.toHexString());
+        })
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+            return done();
+        });
+    }).timeout(5000);
+
+  });
+
+  describe('DELETE /apartments', () => {
+    it('should not delete aprtment - apartment doesnt exist', (done) => {
+      const id = new ObjectID().toHexString();
 
             request(app)
                 .delete(`/apartments/${id}`)

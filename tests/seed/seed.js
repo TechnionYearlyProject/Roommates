@@ -120,7 +120,7 @@ const user2 = {
     mobilePhone: '',
     image: '',
     about: '',
-    hobbies: [4, 5, 6],
+    hobbies: [1, 4, 5, 6],
     _publishedApartments: [apartment1Id.toHexString()],
     _interestedApartments: [apartment2Id.toHexString()],
     tokens: [{
