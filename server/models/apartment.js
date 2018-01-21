@@ -274,7 +274,7 @@ ApartmentSchema.statics.findByProperties = async function (p) {
 
 /**
  *
- * @returns the apartment location as a string.
+ * @returns string the apartment location as a string.
  */
 ApartmentSchema.methods.getAddressString = function () {
     const apartment = this;
