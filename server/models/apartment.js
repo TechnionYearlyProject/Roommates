@@ -254,7 +254,7 @@ ApartmentSchema.statics.findByProperties = async function (p) {
 
     let tags;
     if (p.tags) {
-        tags = { $in: p.tags };
+        tags = {  $all: p.tags };
     }
 
     const properties = removeFalsyProps({
