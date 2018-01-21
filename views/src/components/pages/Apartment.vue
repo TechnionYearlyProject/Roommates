@@ -1,18 +1,5 @@
 <template>
     <div class="apartPage grid w-100">
-        <b-container fluid>
-            <!-- <b-row>
-                <b-col>
-                    <div class="w-100" style="background-color: #eee;">
-                        <b-card border-variant="light" >
-                            <h1>
-                                {{apartment.location.address.city}}, {{apartment.location.address.street}},
-                                {{apartment.location.address.number}}/{{apartment.location.address.apartmentNumber}}
-                            </h1>
-                        </b-card>
-                    </div>
-                </b-col>
-            </b-row> -->
             <br>
             <b-row align="center">
                 <b-col cols="7">
@@ -47,16 +34,13 @@
                             </b-row>   
                         </b-container>
                     </b-card>
+                    <br>
                     <interested-users
                         :interstedUsers="apartment._interested" :apartmentId="apartment._id"
                         />
                 </b-col>
             </b-row>
             <br>
-            <!-- <b-row>
-                <apartmentTags :apartmentTags="apartment.tags" />
-            </b-row>
-            <br> -->
             <b-row>
                 <div class="w-100" style="background-color: #eee;">
                     <b-card border-variant="light">
@@ -125,18 +109,12 @@
         //TODO:
         //get current apartment
         async created() {
-            // console.log(this.$route);
             this.apartment = this.$route.params.apartmentP;
             this.$http.get(`users/${this.$route.params.apartmentP._createdBy}`)
                 .then(res => {
                     console.log(res);
                     this.setAuther(res,this);})
                 .catch(e => console.log(e))
-        },
-        computed: {
-            calCom() {
-                return this.apartment.comments.slice(5 * (this.commentPage) - 4, 5 * (this.commentPage) + 1);
-            }
         },
         methods:{
             setAuther(responseFromServer,pThis){
