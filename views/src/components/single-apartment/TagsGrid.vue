@@ -11,14 +11,19 @@
                     </b-col>
                     <br><br><br>
                 </b-row>
-                <b-row no-gutters v-for="rowIndex in Math.ceil(apartmentTags.length / 4)" :key="rowIndex">
+                <b-row>
+                    <div v-for="(i,index) in apartmentTags instanceof Array" :key="index">
+                        <icon :name="symbals[i].vicon" scale="1.6"/>>
+                    </div>
+                </b-row>
+                <!-- <b-row no-gutters v-for="rowIndex in Math.ceil(apartmentTags.length / 4)" :key="rowIndex">
                     <b-col v-for="colIndex in 4" :key="colIndex"
                            v-if="(index = (rowIndex - 1) * 4 + colIndex - 1) < apartmentTags.length">
-                        <icon :name="apartmentTags[index].vicon" scale="1.6"/>
-                        <span>{{apartmentTags[index].name}}</span>
+                        <icon :name="symbals[apartmentTags[index]].vicon" scale="1.6"/>
+                        <span>{{symbals[apartmentTags[index]].name}}</span>
                     </b-col>
                     <br><br><br>
-                </b-row>
+                </b-row> -->
             </b-container>
         </b-card>
     </div>
