@@ -20,14 +20,10 @@
 
 <style scoped>
  .image {
-    width: auto;
-  height: auto;
    max-width: 100%;
    max-height: 400px;
-   vertical-align: middle;
    border: 0 none;
    object-fit: none; 
   object-position: center;
-    display: flex;
  }
 </style>
