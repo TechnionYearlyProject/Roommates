@@ -2,10 +2,10 @@
   <b-container class="tag-box">
     <b-row>
       <ul>
-        <li v-for="(_, i) in apartment.tags" :key="i">
+        <li v-for="(i, j) in apartment.tags" :key="j">
           <b-col sm="12">
-            <icon :name="tags[i].vicon" scale="1.7" class="icon mr-3" />
-            <span class="tag-info">{{ tags[i].name }}</span>
+            <icon :name="tags[i-1].vicon" scale="1.7" class="icon mr-3" />
+            <span class="tag-info">{{ tags[i-1].name }}</span>
             </b-form-checkbox>
           </b-col>
         </li>
