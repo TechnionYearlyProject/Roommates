@@ -25,8 +25,8 @@
                 <b-col cols="3">
                   <ul>
                     <li v-for="i in apartment.tags" :key="i">
-                      <b-badge variant="secondary" v-b-popover.hover.left="tags[i].name">
-                        <icon :name="tags[i].vicon" />
+                      <b-badge variant="secondary" v-b-popover.hover.left="tags[i-1].name">
+                        <icon :name="tags[i-1].vicon" />
                       </b-badge>
                     </li>
                   </ul>
@@ -55,11 +55,12 @@
   import Icon from "vue-awesome/components/Icon";
   import InterestedBanner from "@/components/interested/InterestedBanner.vue";
   import PriceBanner from "@/components/interested/PriceBanner.vue";
+  import Tags from "@/../static/js/tags";
 
   export default {
     data() {
       return {
-        tags: require("@/../static/js/tags").tags,
+        tags: Tags,
         blankSrc: require("@/../static/images/apartments/default/default.png"),
         apartments: []
       };
