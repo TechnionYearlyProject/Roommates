@@ -11,7 +11,7 @@
         <b-container class="result-details h-100">
             <b-row no-gutters class="result-title">
                 <b-col>
-                    <b-link :to="{ name: 'apartment-page', params: { id: apartment._id, apartmentP: apartment }}">{{ address }}
+                    <b-link :to="{ name: 'apartment-page', params: { id: apartment._id, apartmentP: apartment }}">{{ `${this.apartment.location.address.street} ${this.apartment.location.address.number}, ${this.apartment.location.address.city}, ${this.apartment.location.address.state}` }}
                     </b-link>
                     <div class="result-price">
                         <price-tag v-model="apartment.price" />
