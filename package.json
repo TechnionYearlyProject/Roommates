@@ -4,6 +4,7 @@
   "description": "Roommates website for Software Engineering Yearly Project.",
   "main": "server.js",
   "dependencies": {
+    "@sendgrid/mail": "^6.2.1",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "codecov.io": "^0.1.6",

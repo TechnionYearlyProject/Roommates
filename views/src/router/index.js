@@ -11,6 +11,7 @@ import InterestedApartments from '@/components/pages/InterestedApartments'
 import UserPanel from '@/components/pages/UserPanel'
 import HobbiesSelection from '@/components/pages/HobbiesSelection'
 import PublishedApartments from '@/components/pages/PublishedApartments'
+import VerifyAccount from '@/components/pages/VerifyAccount'
 
 Vue.use(Router);
 
@@ -65,7 +66,13 @@ const routes = [
         component: UserPanel,
         meta: { forAuth: true }
     },
+    {
+        path: '/verify-account',
+        name: 'verify-account',
+        component: VerifyAccount,
+        meta: { forAuth: true }
 
+    },
 ];
 
 const beforeEach = (to, from, next) => {

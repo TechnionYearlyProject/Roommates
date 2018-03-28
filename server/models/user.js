@@ -90,6 +90,10 @@ const UserSchema = new mongoose.Schema({
     minlength: 6,
     required: true
   },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
   tokens: [{
     access: {
       type: String,
@@ -191,6 +195,7 @@ UserSchema.statics.toJSON = function (user) {
     [
       '_id',
       'email',
+      'confirmed',
       'firstName',
       'lastName',
       'birthdate',

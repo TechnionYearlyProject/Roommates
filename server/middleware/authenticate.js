@@ -3,8 +3,10 @@ const { UNAUTHORIZED } = require('http-status');
 const { User } = require('../models/user');
 const { XAUTH, XEXPIRATION } = require('../constants');
 
-
 /**
+ * @author: Alon Talmor
+ * @date: previous simester
+ *
  * a middleware function.
  * check that the header auth token is a valid token.
  * if the token is valid update the token expiration value and call next.
@@ -26,11 +28,12 @@ const authenticate = (req, res, next) => {
         return user.removeExpiredTokens()
           .then(() => Promise.reject());
       }
+
       return user.updateTokenTime(token)
         .then((expiration) => {
+          res.header(XEXPIRATION, expiration);
           req.user = user;
           req.token = token;
-          res.header(XEXPIRATION, expiration);
           return next();
         });
     })

@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
 const {
-  BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, OK
+  BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, FORBIDDEN, OK
 } = require('http-status');
 
 require('./server-config');
@@ -18,6 +18,7 @@ const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
 const { logInfo } = require('./services/logger/logger');
 const httpLogger = require('./services/logger/http-logger');
+const userVerificator = require('./services/user-verification/user-verificator');
 const errors = require('./errors');
 
 
@@ -27,6 +28,8 @@ app.use(httpLogger.logResponseBodyOnError);
 app.use(bodyParser.json({ limit: '5mb' }));
 useCors(app);
 useVue(app);
+
+
 
 /**
  * Add a new apartemnt. The posting user has to be authenticated.
@@ -293,9 +296,19 @@ app.post('/users', async (req, res) => {
 
     const user = new User(body);
     const ticket = await user.register();
+    userVerificator.sendVerificationEmail(user);
 
-    res.header(XAUTH, ticket.token);
-    res.header(XEXPIRATION, ticket.expiration).send({ user });
+    /**
+     * @updatedBy: Alon Talmor
+     * @date: 28/3/18
+     * Do not generate an authentication token because the user must verify himself/herself 
+     * first by using the link that has been sent to his/her mailbox.
+     * This means that the registration will NOT allow immediate login afterwards.
+     */
+   res.send({ user });
+
+    // res.header(XAUTH, ticket.token);
+    // res.header(XEXPIRATION, ticket.expiration).send({ user });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -312,6 +325,15 @@ app.post('/users/login', async (req, res) => {
     const body = _.pick(req.body, ['email', 'password']);
 
     const user = await User.findByCredentials(body.email, body.password);
+
+    /**
+     * @updatedBy: Alon Talmor
+     * @date: 28/3/18
+     * We should not generate a token if the user is yet to be verified (verification is by mail).
+     */
+    if (!user.isVerified) {
+      res.status(FORBIDDEN).send('the user is not verified') //TODO: change to error using the "errors" module.
+    }
     user.removeExpiredTokens();
     const ticket = await user.generateAuthenticationToken();
     res.header(XAUTH, ticket.token);
@@ -427,6 +449,71 @@ app.patch('/users/self', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * @author: Alon Talmor
+ * @date: 28/3/18
+ * 
+ * This route is used to verify new user account.
+ * User should recieve a verification code by mail.
+ * after clicking the link, the browser should redirect the user 
+ * using this route.
+ * By the end of this procedure, an user account status should be "confirmed".
+ * 
+ * TODO: Add a test which checks that an unverified user becomes verified after this operation.
+ */
+app.get('/user/verify/:token', async (req, res) => {
+  try {
+    await userVerificator.verifyUser(req.params.token);
+    res.send('verification successful');
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
+
+/**
+ * @author: Alon Talmor
+ * @date: 28/3/18
+ * 
+ * This route is used to resend user verification link to his/her mailbox.
+ * To authenticated the user, one should supply its credentials (email + password) 
+ * in the HTTP POST request body.
+ * The route first finds the user in the database. if the user is not found 
+ * the method should fail and "UNAUTHORIZED" HTTP respond is sent back to the client.
+ * If the user is already verfied, no mail should be send and a "BAD_REQUEST" respond is returned.
+ * otherwise, a verfication email containing an appropriate link is sent.
+ * 
+ * TODO: Add a few tests that checks all 3 return braches of this procedure.
+ */
+app.post('/user/verify', async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['email', 'password']);
+    const user = await User.findByCredentials(body.email, body.password);
+    //if a user is already verified do not send an email (to prevent frauds)
+    if (user.isVerified) {
+      res.status(BAD_REQUEST).send();
+    }
+    userVerificator.sendVerificationEmail(user); //TODO: add a timeout between multiple "send email" requests!
+    res.send('email was sent');
+  } catch (err) {
+    res.status(UNAUTHORIZED).send(err);
+  }
+}); 
+
+/**
+ * @author: Alon Talmor
+ * @date: 28/3/18
+ * 
+ * This is considered as the "default route".
+ * Note that this route MUST be the latest route defined
+ * in order for it to catch ONLY undefined routes!
+ * Nothing special here, it only returns an 404 HTTP respond.
+ * 
+ * TODO: Add a test that routes to an undefined route (such as "/undefined/:-)").
+ * Expect to recieve 404 respond.
+ */
+app.get('*', (req, res) => {
+  res.status(NOT_FOUND).send('404');
+});
 
 app.listen(process.env.PORT, () => {
   logInfo(`Server is up on port ${process.env.PORT}.`);

@@ -15,6 +15,7 @@ module.exports = {
         "max-len": 0,
         "dot-notation": 0,
         "no-tabs": 0,
+        "no-multi-spaces": 0,
         "no-use-before-define": ["error", { "variables": false }]
     },
     env: {
