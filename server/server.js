@@ -93,6 +93,54 @@ app.post('/apartments', authenticate, async (req, res) => {
 });
 
 /**
+ * Update apartment ad. The patching user has to be authenticated and the owner of the ad.
+ *
+ *
+ * @param {String} title
+ * @param {Number} price
+ * @param {String} entrance date
+ * @param {[String]} images
+ * @param {String} description
+ * @param {[Number]} tags
+ * @param {Number} requiredNumberOfRoommates
+ * @param {Number} currentlyNumberOfRoommates
+ * @param {[Number]} numberOfRooms
+ * @param {Number} floor
+ * @param {Number} totalFloors
+ * @param {[Number]} area
+ */
+app.patch('/apartments/:id', authenticate, async (req, res) => {
+	try {
+		const { id } = req.params;
+
+	    if (!(req.user.isOwner(id))) {
+	      return res.status(UNAUTHORIZED).send();
+	    }
+
+	    const apartmentData = _.pick(req.body,
+	      [
+	        'title',
+	        'price',
+	        'enteranceDate',
+	        'images',
+	        'description',
+	        'tags',
+	        'requiredNumberOfRoommates',
+	        'currentlyNumberOfRoommates',
+	        'numberOfRooms',
+	        'floor',
+	        'totalFloors',
+	        'area'
+	      ]);
+
+	    const apartment = await Apartment.findByIdAndUpdate(id, { $set: apartmentData }, { new: true, runValidators: true });
+	    res.send({ apartment });
+  } catch (err) {
+    	return res.status(BAD_REQUEST).send(errors.unknownError);
+  }
+});
+
+/**
  * Get all server supported apartment tags 
  */
 app.get('/apartments/tags', async (req, res) => {
