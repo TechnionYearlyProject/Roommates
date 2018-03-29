@@ -292,7 +292,7 @@ UserSchema.methods.generateAuthenticationToken = function () {
  * the email is already in use by other user
  * the encryption of the password has failed.
  *
- * the function also generates a new auth token to the user.
+ * The function returns the saved user (wrapped inside a Promise) on success.
  *
  * @returns Promise object.
  */
@@ -300,7 +300,6 @@ UserSchema.methods.register = function () {
   const user = this;
 
   return user.save()
-    .then(() => user.generateAuthenticationToken())
     .catch(() => { throw emailInUse; });
 };
 

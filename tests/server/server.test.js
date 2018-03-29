@@ -30,8 +30,8 @@ describe('Server Tests', () => {
     beforeEach(populateUsers);
     beforeEach(populateApartments);
     // beforeEach((done) => {
-    //   sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
-    //   done();
+    //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
+    //     done();
     // });
 
     describe('POST /apartments', () => {
@@ -295,64 +295,64 @@ describe('Server Tests', () => {
         }).timeout(5000);
     });
 
-  describe('GET /apartments/:id/interested', () => {
-    it('should not get interested - unregistered user', (done) => {
-      const id = apartments[1]._id;
-      request(app)
-        .get(`/apartments/${id}/interested`)
-        .expect(UNAUTHORIZED)
-        .end(done);
+    describe('GET /apartments/:id/interested', () => {
+        it('should not get interested - unregistered user', (done) => {
+            const id = apartments[1]._id;
+            request(app)
+                .get(`/apartments/${id}/interested`)
+                .expect(UNAUTHORIZED)
+                .end(done);
+        });
+
+        it('should not get interested - apartment doesnt exist', (done) => {
+            const id = new ObjectID().toHexString();
+            request(app)
+                .get(`/apartments/${id}/interested`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .expect(NOT_FOUND)
+                .end(done);
+        });
+
+        it('should not get interested - no interested users', (done) => {
+            const id = apartments[1]._id;
+            request(app)
+                .get(`/apartments/${id}/interested`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .expect(OK)
+                .expect((res) => { expect(res.body._interested.length).toBe(0); })
+                .end(async (err) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    return done();
+                });
+        }).timeout(5000);
+
+        it('should get interested sorted', (done) => {
+            const id = apartments[0]._id;
+            request(app)
+                .get(`/apartments/${id}/interested`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .expect(OK)
+                .expect((res) => {
+                    expect(res.body._interested.length).toBe(apartments[0]._interested.length);
+                    expect(res.body._interested[0]._id).toEqual(users[1]._id.toHexString());
+                    expect(res.body._interested[1]._id).toEqual(users[0]._id.toHexString());
+                    expect(res.body._interested[2]._id).toEqual(users[2]._id.toHexString());
+                })
+                .end(async (err) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    return done();
+                });
+        }).timeout(5000);
+
     });
 
-    it('should not get interested - apartment doesnt exist', (done) => {
-      const id = new ObjectID().toHexString();
-      request(app)
-        .get(`/apartments/${id}/interested`)
-        .set(XAUTH, users[1].tokens[0].token)
-        .expect(NOT_FOUND)
-        .end(done);
-    });
-
-    it('should not get interested - no interested users', (done) => {
-      const id = apartments[1]._id;
-      request(app)
-        .get(`/apartments/${id}/interested`)
-        .set(XAUTH, users[1].tokens[0].token)
-        .expect(OK)
-        .expect((res) => {expect(res.body._interested.length).toBe(0);})
-        .end(async (err) => {
-          if (err) {
-            return done(err);
-          }
-            return done();
-        });
-    }).timeout(5000);
-
-    it('should get interested sorted', (done) => {
-      const id = apartments[0]._id;
-      request(app)
-        .get(`/apartments/${id}/interested`)
-        .set(XAUTH, users[1].tokens[0].token)
-        .expect(OK)
-        .expect((res) => {
-          expect(res.body._interested.length).toBe(apartments[0]._interested.length);
-          expect(res.body._interested[0]._id).toEqual(users[1]._id.toHexString());
-          expect(res.body._interested[1]._id).toEqual(users[0]._id.toHexString());
-          expect(res.body._interested[2]._id).toEqual(users[2]._id.toHexString());
-        })
-        .end(async (err) => {
-          if (err) {
-            return done(err);
-          }
-            return done();
-        });
-    }).timeout(5000);
-
-  });
-
-  describe('DELETE /apartments', () => {
-    it('should not delete aprtment - apartment doesnt exist', (done) => {
-      const id = new ObjectID().toHexString();
+    describe('DELETE /apartments', () => {
+        it('should not delete aprtment - apartment doesnt exist', (done) => {
+            const id = new ObjectID().toHexString();
 
             request(app)
                 .delete(`/apartments/${id}`)
@@ -677,7 +677,7 @@ describe('Server Tests', () => {
                 .send(notRegisteredUser)
                 .expect(OK)
                 .expect((res) => {
-                    expect(res.headers[XAUTH]).toBeTruthy();
+                    expect(res.headers[XAUTH]).toBeFalsy(); // No token is returned after registeration  
                     expect(res.body.user._id).toBeTruthy();
                     expect(res.body.user).toMatchObject(User.toJSON(notRegisteredUser));
                 })
@@ -706,7 +706,7 @@ describe('Server Tests', () => {
                 .send(user)
                 .expect(OK)
                 .expect((res) => {
-                    expect(res.headers[XAUTH]).toBeTruthy();
+                    expect(res.headers[XAUTH]).toBeFalsy();
                     expect(res.body.user).toMatchObject(User.toJSON(user));
                 })
                 .end((err) => {
@@ -915,6 +915,8 @@ describe('Server Tests', () => {
                                 access: XAUTH,
                                 token: res.headers[XAUTH]
                             });
+                            // It is important to check that the user is indeed verified, otherwise he shouldn't have been abled to login.
+                            expect(user.isVerified).toBeTruthy();
                             done();
                         }).catch((errr) => done(errr));
                 });
@@ -1201,4 +1203,4 @@ describe('Server Tests', () => {
                 .end(done);
         });
     });
-});
+ });

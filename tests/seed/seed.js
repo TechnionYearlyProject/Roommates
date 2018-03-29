@@ -99,6 +99,7 @@ const user1 = {
     _id: user1Id,
     email: 'user1@gmail.com',
     password: '123456',
+    isVerified: true,
     firstName: 'user1_firstName',
     lastName: 'user1_lastName',
     birthdate: new Date('1992-06-24').getTime(),

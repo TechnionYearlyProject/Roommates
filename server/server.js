@@ -169,7 +169,6 @@ app.get('/apartments', async (req, res) => {
     });
     res.send({ results });
   } catch (err) {
-    console.error(err);
     res.status(BAD_REQUEST).send(err);
   }
 });
@@ -295,7 +294,7 @@ app.post('/users', async (req, res) => {
       ]);
 
     const user = new User(body);
-    const ticket = await user.register();
+    await user.register();
     userVerificator.sendVerificationEmail(user);
 
     /**
