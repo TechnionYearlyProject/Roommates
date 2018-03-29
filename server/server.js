@@ -497,7 +497,7 @@ app.post('/user/verify', async (req, res) => {
   } catch (err) {
     res.status(UNAUTHORIZED).send(err);
   }
-}); 
+});
 
 /**
  * @author: Alon Talmor

@@ -3,3 +3,5 @@ node_modules/
 .coverage/
 .idea/
 coverage/
+server/services/mail/mail.json
+server/services/logger/server_logs/*

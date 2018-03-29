@@ -1,14 +1,11 @@
 const jwt = require('jsonwebtoken');
-const sgMail = require('@sendgrid/mail');
 
+const mail = require('../mail/mail');
 const { User } = require('../../models/user');
 
-const supportMail = 'support@roommatesyearlyproject.com';
-const key = process.env.SENDGRID_API_KEY;
-const EMAIL_SECRET = 'change_this_to_emailSecret'; //need to set EMAIL_SECRET env variable (also in real server)
 
-// Email service configuration
-sgMail.setApiKey(key);
+const supportMail = 'support@roommatesyearlyproject.com';
+const EMAIL_SECRET = 'change_this_to_emailSecret'; //need to set EMAIL_SECRET env variable (also in real server)
 
 const sendVerificationEmail = (user) => {
   jwt.sign(
@@ -36,7 +33,7 @@ const sendVerificationEmail = (user) => {
                <p>To verify your account please follow this link:<br> 
                <a href="${verificationURL}">${verificationURL}</a></p>`,
       };
-      sgMail.send(msg);
+      mail.sendMail(msg);
       console.log('verification email sent.');
     }
   );

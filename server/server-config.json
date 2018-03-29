@@ -3,13 +3,11 @@
         "PORT": 3000,
         "MONGODB_URI": "mongodb://localhost:27017/RoommatesApp",
         "JWT_SECRET": "developmentjwtsecret-hdjgmk3d0932mcm3x",
-        "CORS": "http://localhost:8080",
-        "SENDGRID_API_KEY": "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"
+        "CORS": "http://localhost:8080"
     },
     "test": {
         "PORT": 3000,
         "MONGODB_URI": "mongodb://localhost:27017/RoommatesAppTest",
-        "JWT_SECRET": "testjwtsecret-k4fdc4k3oc4i320jfjt54",
-        "SENDGRID_API_KEY": "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"
+        "JWT_SECRET": "testjwtsecret-k4fdc4k3oc4i320jfjt54"
     }
 }
