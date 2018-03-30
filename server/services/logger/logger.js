@@ -5,8 +5,9 @@ require('winston-daily-rotate-file');
 const {getLoggerToFileConfig} = require('./logger-config');
 
 var logger = new (winston.Logger)({
+	levels: winston.config.syslog.levels,
 	transports: [
-	 	new (winston.transports.Console)(),
+	 	new (winston.transports.Console)(getLoggerToFileConfig()),
 		new (winston.transports.DailyRotateFile)(getLoggerToFileConfig())
 	]
 });
@@ -16,7 +17,7 @@ var logError = (msg) => {
 };
 
 var logWarning = (msg) => {
-	logger.warn(msg);
+	logger.warning(msg);
 };
 
 var logInfo = (msg) => {
