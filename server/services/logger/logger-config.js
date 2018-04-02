@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 
+
 exports.getLoggerToFileConfig = function () {
 	const logDirectory = path.join(__dirname, 'server_logs');
 	const logFileName = path.join(logDirectory, 'server.log');
@@ -17,7 +18,7 @@ exports.getLoggerToFileConfig = function () {
 	      		"maxsize": 10000000,
 			    "maxFiles": 10,
 	      		"prepend": true,
-	      		"level":  process.env.ENV === 'development' ? 'debug' : 'info',
+	      		"level":  process.env.LOG_LEVEL,
 	      		"handleExceptions": true,
 	            "humanReadableUnhandledException": true
         	};

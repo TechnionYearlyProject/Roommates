@@ -295,14 +295,83 @@ describe('Server Tests', () => {
         }).timeout(5000);
     });
 
-    describe('GET /apartments/:id/interested', () => {
-        it('should not get interested - unregistered user', (done) => {
-            const id = apartments[1]._id;
-            request(app)
-                .get(`/apartments/${id}/interested`)
-                .expect(UNAUTHORIZED)
-                .end(done);
-        });
+   describe('PATCH /apartments/:id', () => {
+    it('should not edit apartment - non existing one', (done) => {
+        const nonExistingId = new ObjectID();
+        request(app)
+            .patch(`/apartments/${nonExistingId}`)
+            .set(XAUTH, users[1].tokens[0].token)
+            .send({})
+            .expect(UNAUTHORIZED)
+            .end(done);
+    });
+
+    it('should not edit apartment - user is not the owner', (done) => {
+        const apartmentId = apartments[1]._id;
+        request(app)
+            .patch(`/apartments/${apartmentId}`)
+            .set(XAUTH, users[1].tokens[0].token)
+            .send({})
+            .expect(UNAUTHORIZED)
+            .end(done);
+    });
+
+    it('should not edit apartment - value is illegal - invalid price value', (done) => {
+        const apartmentId = apartments[0]._id.toHexString();;
+        request(app)
+            .patch(`/apartments/${apartmentId}`)
+            .set(XAUTH, users[1].tokens[0].token)
+            .send({price: -1})
+            .expect(BAD_REQUEST)
+            .end(done);
+    });
+
+    it('should not edit apartment - value is illegal - invalid floor type', (done) => {
+        const apartmentId = apartments[0]._id.toHexString();;
+        request(app)
+            .patch(`/apartments/${apartmentId}`)
+            .set(XAUTH, users[1].tokens[0].token)
+            .send({floor: 'abc'})
+            .expect(BAD_REQUEST)
+            .end(done);
+    });
+
+    it('should edit apartment', (done) => {
+        const apartmentId = apartments[0]._id.toHexString();;
+        request(app)
+            .patch(`/apartments/${apartmentId}`)
+            .set(XAUTH, users[1].tokens[0].token)
+            .send({price: 30})
+            .expect(OK)
+            .expect((res) => {
+                expect(res.body.apartment.price).toBe(30);
+                expect(res.body.apartment.title).toEqual('Apartment 1');
+            })
+            .end(async (err) => {
+                if (err) {
+                    return done(err);
+                }
+                try {
+                    const apartment = await Apartment.findById(apartmentId);
+                    expect(apartment.price).toBe(30);
+                    expect(apartment.title).toEqual('Apartment 1');
+                    return done();
+                } catch (e) {
+                    return done(e);
+                }
+            });
+    });
+
+  });
+
+  describe('GET /apartments/:id/interested', () => {
+    it('should not get interested - unregistered user', (done) => {
+      const id = apartments[1]._id;
+      request(app)
+        .get(`/apartments/${id}/interested`)
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
 
         it('should not get interested - apartment doesnt exist', (done) => {
             const id = new ObjectID().toHexString();

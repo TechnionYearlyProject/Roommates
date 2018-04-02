@@ -12,6 +12,7 @@
       <b-col>
         <publisher-section :publisher="publisher"></publisher-section>
         <interested-section :apartment="apartment" :expressedInterest="expressedInterest" :isAuth="isAuth" @interestedExpress="expressInterest"></interested-section>
+        <share-buttons></share-buttons>
       </b-col>
     </b-row>
   </b-container>
@@ -30,7 +31,7 @@
   import InterestedSection from "@/components/apartment2/InterestedSection.vue";
   import CommentsSection from "@/components/apartment2/CommentsSection.vue";
   import InterestedBanner from "@/components/interested/InterestedBanner.vue";
- 
+  import ShareButtons from "@/components/apartment2/ShareButtons.vue";
 
   export default {
     data() {
@@ -38,8 +39,6 @@
         id: this.$route.params.id,
         apartment: [],
         publisher: [],
-        
-
         isAuth: false,
         expressedInterest: false
       };
@@ -78,7 +77,8 @@
       DescriptionSection,
       PublisherSection,
       InterestedSection,
-      CommentsSection
+      CommentsSection,
+      ShareButtons
     }
   };
 </script>
