@@ -17,8 +17,8 @@ const mail = require('../mail/mail');
 const { User } = require('../../models/user');
 
 
-const supportMail = 'support@roommatesyearlyproject.com';
-const EMAIL_SECRET = 'change_this_to_emailSecret'; //need to set EMAIL_SECRET env variable (also in real server)
+const verifyMail = 'verify@roommatesyearlyproject.com';
+const VERIFICATION_SECRET = 'change_this_to_emailSecret'; //need to set EMAIL_SECRET env variable (also in real server)
 const verificationEmailExperationTime = '1d';
 /**
  * @author: Alon Talmor
@@ -29,13 +29,15 @@ const verificationEmailExperationTime = '1d';
  * After creating the token, an email is sent to the user using the email address
  * the user has used during registration. The body of the mail includes a url to
  * the appropriate verification page. The server is responsible to handle such requests.
+ * 
+ * @param {User} user: The user to send verification email to.
  */
 const sendVerificationEmail = (user) => {
   jwt.sign(
     {
       id: user._id
     },
-    EMAIL_SECRET,
+    VERIFICATION_SECRET,
     {
       expiresIn: verificationEmailExperationTime
     },
@@ -44,20 +46,19 @@ const sendVerificationEmail = (user) => {
         //no error indication is produced - for now.
         return;
       }
-      const verificationURL = `http://localhost:3000/user/verify/${EmailToken}`; //TODO: user CORS
+      const verificationURL = `http://localhost:3000/users/verify/${EmailToken}`; //TODO: user CORS
 
       //send mail
       const msg = {
         to: user.email,
-        from: supportMail,
-        subject: 'Roommates New Account Verification',
+        from: verifyMail,
+        subject: '[Roommates] New Account Verification!',
         //text: ``,
         html: `<h1>Welcome To Roommates!</h1>
                <p>To verify your account please follow this link:<br> 
                <a href="${verificationURL}">${verificationURL}</a></p>`,
       };
       mail.sendMail(msg);
-      console.log('verification email sent.');
     }
   );
 };
@@ -73,7 +74,7 @@ const sendVerificationEmail = (user) => {
  * and the verification process has completed successfully.
  */
 const verifyUser = (token) => {
-  const { id } = jwt.verify(token, EMAIL_SECRET);
+  const { id } = jwt.verify(token, VERIFICATION_SECRET);
   return User.findByIdAndUpdate(id, { $set: { isVerified: true } });
 };
 

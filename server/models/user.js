@@ -9,7 +9,7 @@ const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH } = require('../constants');
 const ticket = require('./ticket');
-const { invalidCradentials, emailInUse } = require('../errors');
+const { invalidCradentials, emailInUse, PasswordResetFailure } = require('../errors');
 
 
 const UserSchema = new mongoose.Schema({
@@ -406,6 +406,34 @@ UserSchema.methods.removeInterestInApartment = function (_apartmentID) {
   }
 
   return user.save();
+};
+
+/**
+ * @author: Alon Talmor
+ * @date: 2/4/18
+ *
+ * Changing password is not an everyday process. Here, we take extra care when
+ * handling with sensitive information.
+ * Starting with hashing the new to-be password and comparing it with the old password.
+ * If the passwords (old and new) match it means that a user is trying to change his/her password
+ * to a password he already has! This is a behaviour which I decided does not make sence.
+ * It situation such as, a PasswordResetFailure error is thrown.
+ * Otherwise, change the user password to the new one. In Addition, clear the tokens list. This means
+ * that after reseting a password the user does not have any open auth relation with the server.
+ * It is assumed that the "save" function encrypts the password before saving it in the database.
+ * @returns Promise object which includes the user.
+ */
+UserSchema.methods.resetPassword = function (newPassword) {
+  const user = this;
+  return bcrypt.compare(newPassword, user.password)
+    .then((passwordsEqual) => {
+      if (passwordsEqual) {
+        throw PasswordResetFailure;
+      }
+      user.password = newPassword;
+      user.tokens = []; // Clear all previous generated tokens list (because password has changed)
+      return user.save(); // It is important to use the "save" function here for password encryption
+    });
 };
 
 const User = mongoose.model('User', UserSchema);

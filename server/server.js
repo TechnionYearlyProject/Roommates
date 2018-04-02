@@ -19,6 +19,7 @@ const { getSupportedTags } = require('./models/tag');
 const { logInfo } = require('./services/logger/logger');
 const httpLogger = require('./services/logger/http-logger');
 const userVerificator = require('./services/user-verification/user-verificator');
+const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
 
 
@@ -304,7 +305,7 @@ app.post('/users', async (req, res) => {
      * first by using the link that has been sent to his/her mailbox.
      * This means that the registration will NOT allow immediate login afterwards.
      */
-   res.send({ user });
+    res.send({ user });
 
     // res.header(XAUTH, ticket.token);
     // res.header(XEXPIRATION, ticket.expiration).send({ user });
@@ -460,9 +461,9 @@ app.patch('/users/self', authenticate, async (req, res) => {
  * 
  * TODO: Add a test which checks that an unverified user becomes verified after this operation.
  */
-app.get('/user/verify/:token', async (req, res) => {
+app.get('/users/verify/:token', (req, res) => {
   try {
-    await userVerificator.verifyUser(req.params.token);
+    userVerificator.verifyUser(req.params.token);
     res.send('verification successful');
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
@@ -483,7 +484,7 @@ app.get('/user/verify/:token', async (req, res) => {
  * 
  * TODO: Add a few tests that checks all 3 return braches of this procedure.
  */
-app.post('/user/verify', async (req, res) => {
+app.post('/users/verify', async (req, res) => {
   try {
     const body = _.pick(req.body, ['email', 'password']);
     const user = await User.findByCredentials(body.email, body.password);
@@ -495,6 +496,73 @@ app.post('/user/verify', async (req, res) => {
     res.send('email was sent');
   } catch (err) {
     res.status(UNAUTHORIZED).send(err);
+  }
+});
+
+/**
+ * @author: Alon Talmor
+ * @data: 2/4/18
+ * 
+ * This route is used to send an email upon reset password request.
+ * To perform the action we use the Password-Reset service.
+ * Authentiation is first required for security enhancement.
+ * 
+ * TODO: Add tests to check the authentiation constraint.
+ */
+app.post('/users/forgot-password', authenticate, (req, res) => {
+  try {
+    passwordReset.sendResetPasswordMail(req.user);
+    res.send('forgot email was sent');
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
+
+/**
+ * @author: Alon Talmor
+ * @date: 2/4/18
+ * 
+ * Handles the GET request which is sent to the server when a user
+ * clicks on the Password-Reset URL attach to the mail sent by
+ * "/users/forgot-password" route.
+ * This route is important because of it supplies verification. The server
+ * will not display the change password page unless the "token" is valid.
+ * Authentication is required.
+ * 
+ * TODO: Add tests that checks failure on bad token and success on good one.
+ */
+app.get('/users/reset-password/:token', authenticate, (req,res) => {
+  try {
+    passwordReset.verifyResetToken(req.user, req.params.token);
+    res.send('Reset verification successful');
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
+
+/**
+ * @author: Alon Talmor
+ * @date: 2/4/18
+ * 
+ * After the user chooses his/her new password, it send to the server in the request's body.
+ * It is assumed that the password is sent under the property "password".
+ * First the token is revarified, so we know that no malicious user is trying to change the
+ * password without acctually recieving a token!
+ * Next, the user's password is reset and is changed to the new password. It is assumed that
+ * the resetPassword method performs checks on the password (on error an exception might be thrown).
+ * If everything went well, updated user object is returned.
+ * The user should not be authenticated afterwards (he/she is required to login in again).
+ * 
+ * TODO: Add tests that checks failure on bad token and success on good one.
+ */
+app.post('/users/reset-password/:token', authenticate, async (req,res) => {
+  try {
+    passwordReset.verifyResetToken(req.user, req.params.token);
+    const user = await req.user.resetPassword(req.body.password);
+    //TODO: disable using this same link after password change.
+    res.send({ user });
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
   }
 });
 
