@@ -1,9 +1,9 @@
 <template>
     <div id="search-results">
         <transition name="slide-fade" mode="out-in">
-            <h1 v-if="value instanceof Array && value.length === 0">No Results</h1>
-            <transition-group v-else-if="value instanceof Array" name="results-list" tag="ul">
-                <single-result v-for="(apartment, index) in value" :key="index"
+            <h1 v-if="apartments instanceof Array && apartments.length === 0">No Results</h1>
+            <transition-group v-else-if="apartments instanceof Array" name="results-list" tag="ul">
+                <single-result v-for="(apartment, index) in apartments" :key="index"
                                :apartment="apartment" />
             </transition-group>
         </transition>
@@ -15,7 +15,11 @@
 
     export default {
         name: "search-results",
-        props: ['value'],
+        computed: {
+            apartments () {
+                return this.$store.getters.loadedApartments;
+            }
+        },
         components: {
             SingleResult
         }

@@ -96,6 +96,7 @@ const beforeEach = (to, from, next) => {
 };
 
 export default new Router({
+    mode: 'history', // Remove the annoying # sign from the URL!
     routes,
     beforeEach
 });

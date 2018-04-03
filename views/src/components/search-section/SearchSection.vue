@@ -77,6 +77,7 @@
     import Icon from 'vue-awesome/components/Icon'
 
     import Tags from '@/../static/js/tags'
+    import { LOAD_APARTMENTS } from '@/vuex/constant-mutations';
 
     const defaultLocation = {
         name: 'Technion - Israel Institute of Technology, Haifa, Israel',
@@ -162,7 +163,7 @@
                         latestEntranceDate: this.fields.latestEntranceDate,
                         tags: this.fields.selectedBinaryProps
                     }
-                }).then(res => that.$emit('newResults', res.body.results))
+                }).then(payload => this.$store.commit(LOAD_APARTMENTS, payload.body.results))
                     .catch(e => console.error(e));
             },
             onModalShow() {

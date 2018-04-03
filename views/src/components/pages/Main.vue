@@ -1,7 +1,7 @@
 <template>
     <div class="grid">
-        <search-section @newResults="onNewResults" />
-        <search-results v-model="apartments" />
+        <search-section/>
+        <search-results/>
     </div>
 </template>
 
@@ -13,16 +13,6 @@
         name: "main-page",
         components: {
             SearchSection, SearchResults
-        },
-        data() {
-            return {
-                apartments: null
-            };
-        },
-        methods: {
-            onNewResults(results) {
-                this.apartments = results;
-            }
         }
     }
 </script>

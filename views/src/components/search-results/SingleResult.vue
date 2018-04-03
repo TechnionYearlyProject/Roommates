@@ -1,7 +1,7 @@
 <template>
     <b-media tag="li" class="box">
         <b-carousel slot="aside" indicators controls class="search-result-carousel">
-            <b-carousel-slide v-for="img in apartment.images" :key="i"
+            <b-carousel-slide v-for="(img,index) in apartment.images" :key="index"
                               :img-src="img" />
 
             <b-carousel-slide v-if="apartment.images.length === 0" class="d-block img-fluid w-100"

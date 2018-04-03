@@ -11,7 +11,7 @@
       </b-button>
       <b-modal v-model="showList" id="modal-center" centered hide-footer :title="title">
         <b-list-group>
-          <b-list-group-item v-for="user in inerestedList">
+          <b-list-group-item v-for="(user, index) in inerestedList" :key="index">
             <router-link :to="{ name: 'user-profile', params: { id: user._id} }">
               <div class="list-name">
                 <icon name="address-card-o" scale="1.3" class="icon-big" />
