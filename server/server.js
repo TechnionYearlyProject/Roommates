@@ -503,15 +503,13 @@ app.patch('/users/self', authenticate, async (req, res) => {
  * 
  * This route is used to verify new user account.
  * User should recieve a verification code by mail.
- * after clicking the link, the browser should redirect the user 
+ * After clicking the link, the browser should redirect the user 
  * using this route.
  * By the end of this procedure, an user account status should be "confirmed".
- * 
- * TODO: Add a test which checks that an unverified user becomes verified after this operation.
  */
-app.get('/users/verify/:token', (req, res) => {
+app.get('/users/verify/:token', async (req, res) => {
   try {
-    userVerificator.verifyUser(req.params.token);
+    await userVerificator.verifyUser(req.params.token);
     res.send('verification successful');
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
@@ -529,8 +527,6 @@ app.get('/users/verify/:token', (req, res) => {
  * the method should fail and "UNAUTHORIZED" HTTP respond is sent back to the client.
  * If the user is already verfied, no mail should be send and a "BAD_REQUEST" respond is returned.
  * otherwise, a verfication email containing an appropriate link is sent.
- * 
- * TODO: Add a few tests that checks all 3 return braches of this procedure.
  */
 app.post('/users/verify', async (req, res) => {
   try {
@@ -538,7 +534,7 @@ app.post('/users/verify', async (req, res) => {
     const user = await User.findByCredentials(body.email, body.password);
     //if a user is already verified do not send an email (to prevent frauds)
     if (user.isVerified) {
-      res.status(BAD_REQUEST).send();
+      return res.status(BAD_REQUEST).send();
     }
     userVerificator.sendVerificationEmail(user); //TODO: add a timeout between multiple "send email" requests!
     res.send('email was sent');
@@ -553,9 +549,7 @@ app.post('/users/verify', async (req, res) => {
  * 
  * This route is used to send an email upon reset password request.
  * To perform the action we use the Password-Reset service.
- * Authentiation is first required for security enhancement.
- * 
- * TODO: Add tests to check the authentiation constraint.
+ * Authentication is first required for security enhancement.
  */
 app.post('/users/forgot-password', authenticate, (req, res) => {
   try {
@@ -576,8 +570,6 @@ app.post('/users/forgot-password', authenticate, (req, res) => {
  * This route is important because of it supplies verification. The server
  * will not display the change password page unless the "token" is valid.
  * Authentication is required.
- * 
- * TODO: Add tests that checks failure on bad token and success on good one.
  */
 app.get('/users/reset-password/:token', authenticate, (req,res) => {
   try {
@@ -600,10 +592,8 @@ app.get('/users/reset-password/:token', authenticate, (req,res) => {
  * the resetPassword method performs checks on the password (on error an exception might be thrown).
  * If everything went well, updated user object is returned.
  * The user should not be authenticated afterwards (he/she is required to login in again).
- * 
- * TODO: Add tests that checks failure on bad token and success on good one.
  */
-app.post('/users/reset-password/:token', authenticate, async (req,res) => {
+app.patch('/users/reset-password/:token', authenticate, async (req,res) => {
   try {
     passwordReset.verifyResetToken(req.user, req.params.token);
     const user = await req.user.resetPassword(req.body.password);

@@ -10,9 +10,9 @@ const jwt = require('jsonwebtoken');
 
 const mail = require('../mail/mail');
 const { PasswordResetFailure } = require('../../errors');
+const { FORGOT_SECRET } = require('../../constants');
 
 const forgotPasswordMail = 'forgotpassword@roommatesyearlyproject.com';
-const FORGOT_SECRET = 'change_it_to_secret_String';
 const forgotPasswordExperationTime = '12h'; // There is a timeout for the JWT token.
 
 /**

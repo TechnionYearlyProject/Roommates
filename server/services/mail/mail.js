@@ -39,6 +39,9 @@ try {
  * @prop: html: It is possible to send formatted message using html syntax.
  */
 const sendMail = (msg) => {
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
   sgMail.send(msg);
 };
 

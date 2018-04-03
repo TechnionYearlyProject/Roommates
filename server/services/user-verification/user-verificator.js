@@ -15,11 +15,11 @@ const jwt = require('jsonwebtoken');
 
 const mail = require('../mail/mail');
 const { User } = require('../../models/user');
-
+const { VERIFICATION_SECRET } = require('../../constants');
 
 const verifyMail = 'verify@roommatesyearlyproject.com';
-const VERIFICATION_SECRET = 'change_this_to_emailSecret'; //need to set EMAIL_SECRET env variable (also in real server)
 const verificationEmailExperationTime = '1d';
+
 /**
  * @author: Alon Talmor
  * @date: 29/3/18
@@ -29,7 +29,7 @@ const verificationEmailExperationTime = '1d';
  * After creating the token, an email is sent to the user using the email address
  * the user has used during registration. The body of the mail includes a url to
  * the appropriate verification page. The server is responsible to handle such requests.
- * 
+ *
  * @param {User} user: The user to send verification email to.
  */
 const sendVerificationEmail = (user) => {
