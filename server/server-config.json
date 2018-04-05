@@ -13,6 +13,7 @@
         "LOG_LEVEL": "emerg"
     },
     "default": {
-        "LOG_LEVEL": "info"
+        "LOG_LEVEL": "info",
+        "CORS": ""
     }
 }

@@ -46,7 +46,7 @@ const sendVerificationEmail = (user) => {
         //no error indication is produced - for now.
         return;
       }
-      const verificationURL = `http://localhost:3000/users/verify/${EmailToken}`; //TODO: user CORS
+      const verificationURL = `${process.env.CORS}/users/verify/${EmailToken}`;
 
       //send mail
       const msg = {

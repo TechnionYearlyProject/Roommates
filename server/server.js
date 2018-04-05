@@ -349,7 +349,7 @@ app.post('/users', async (req, res) => {
     /**
      * @updatedBy: Alon Talmor
      * @date: 28/3/18
-     * Do not generate an authentication token because the user must verify himself/herself 
+     * Do not generate an authentication token because the user must verify himself/herself
      * first by using the link that has been sent to his/her mailbox.
      * This means that the registration will NOT allow immediate login afterwards.
      */
@@ -380,7 +380,7 @@ app.post('/users/login', async (req, res) => {
      * We should not generate a token if the user is yet to be verified (verification is by mail).
      */
     if (!user.isVerified) {
-      res.status(FORBIDDEN).send('the user is not verified') //TODO: change to error using the "errors" module.
+      return res.send({ user });
     }
     user.removeExpiredTokens();
     const ticket = await user.generateAuthenticationToken();
@@ -503,11 +503,11 @@ app.patch('/users/self', authenticate, async (req, res) => {
  * 
  * This route is used to verify new user account.
  * User should recieve a verification code by mail.
- * After clicking the link, the browser should redirect the user 
- * using this route.
- * By the end of this procedure, an user account status should be "confirmed".
+ * After clicking the link, the browser should redirect the user to a page
+ * which in its turn should sent a verification request using this route.
+ * By the end of this procedure, an user account status should be "verified".
  */
-app.get('/users/verify/:token', async (req, res) => {
+app.patch('/users/verify/:token', async (req, res) => {
   try {
     await userVerificator.verifyUser(req.params.token);
     res.send('verification successful');
@@ -519,11 +519,11 @@ app.get('/users/verify/:token', async (req, res) => {
 /**
  * @author: Alon Talmor
  * @date: 28/3/18
- * 
+ *
  * This route is used to resend user verification link to his/her mailbox.
- * To authenticated the user, one should supply its credentials (email + password) 
+ * To authenticated the user, one should supply its email + password)
  * in the HTTP POST request body.
- * The route first finds the user in the database. if the user is not found 
+ * The route first finds the user in the database. if the user is not found
  * the method should fail and "UNAUTHORIZED" HTTP respond is sent back to the client.
  * If the user is already verfied, no mail should be send and a "BAD_REQUEST" respond is returned.
  * otherwise, a verfication email containing an appropriate link is sent.
@@ -571,7 +571,7 @@ app.post('/users/forgot-password', authenticate, (req, res) => {
  * will not display the change password page unless the "token" is valid.
  * Authentication is required.
  */
-app.get('/users/reset-password/:token', authenticate, (req,res) => {
+app.get('/users/reset-password/:token', authenticate, (req, res) => {
   try {
     passwordReset.verifyResetToken(req.user, req.params.token);
     res.send('Reset verification successful');

@@ -1274,10 +1274,10 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('GET /users/verify/:token', () => {
+  describe('PATCH /users/verify/:token', () => {
     it('should verify the user', (done) => {
       request(app)
-        .get(`/users/verify/${user2VerificationToken}`)
+        .patch(`/users/verify/${user2VerificationToken}`)
         .expect(OK)
         .end((err) => {
           if (err) {
@@ -1293,7 +1293,7 @@ describe('Server Tests', () => {
     });
     it('should fail to verify the user', (done) => {
       request(app)
-        .get(`/users/verify/${user2VerificationToken}1`) // Bad token
+        .patch(`/users/verify/${user2VerificationToken}1`) // Bad token
         .expect(BAD_REQUEST)
         .end(done);
     });

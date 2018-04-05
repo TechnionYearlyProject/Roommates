@@ -195,7 +195,7 @@ UserSchema.statics.toJSON = function (user) {
     [
       '_id',
       'email',
-      'confirmed',
+      'isVerified',
       'firstName',
       'lastName',
       'birthdate',

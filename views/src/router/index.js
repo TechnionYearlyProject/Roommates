@@ -11,7 +11,8 @@ import InterestedApartments from '@/components/pages/InterestedApartments'
 import UserPanel from '@/components/pages/UserPanel'
 import HobbiesSelection from '@/components/pages/HobbiesSelection'
 import PublishedApartments from '@/components/pages/PublishedApartments'
-import VerifyAccount from '@/components/pages/VerifyAccount'
+import VerificationRequest from '@/components/pages/VerificationRequest'
+import VerificationApproval from '@/components/pages/VerificationApproval'
 
 Vue.use(Router);
 
@@ -67,12 +68,16 @@ const routes = [
         meta: { forAuth: true }
     },
     {
-        path: '/verify-account',
-        name: 'verify-account',
-        component: VerifyAccount,
-        meta: { forAuth: true }
-
+        path: '/send-verify',
+        name: 'verification-request',
+        component: VerificationRequest,
+        props: true
     },
+    {
+        path: '/users/verify/:token',
+        name: 'verification-approval',
+        component: VerificationApproval,
+    }
 ];
 
 const beforeEach = (to, from, next) => {
