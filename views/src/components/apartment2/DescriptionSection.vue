@@ -6,6 +6,7 @@
 
         <p class="description">
           {{ apartment.description }}
+          <br><br><u><b>The entrance date is not before {{new Date(this.apartment.enteranceDate).toDateString() }}.</b></u>
         </p>
       </div>
 
