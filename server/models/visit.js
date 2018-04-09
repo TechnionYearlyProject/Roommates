@@ -34,16 +34,60 @@ const visitStatusCodes = [
   }
 ];
 
+const visitStatusChangeLogic = [
+  {
+    operation_name: "APPROVE",
+    from_status: VISIT_STATUS_PENDING_OWNER_APPROVAL,
+    to_status: VISIT_STATUS_APPROVED,
+    can_be_done_by_the_owner: true,
+    can_be_done_by_the_visitor: false
+  },
+  {
+    operation_name: "APPROVE",
+    from_status: VISIT_STATUS_PENDING_VISITOR_APPROVAL,
+    to_status: VISIT_STATUS_APPROVED,
+    can_be_done_by_the_owner: false,
+    can_be_done_by_the_visitor: true
+  },
+  {
+    operation_name: "CANCEL",
+    //from_status: Not needed, can be from every status
+    to_status: VISIT_STATUS_CANCELED,
+    can_be_done_by_the_owner: true,
+    can_be_done_by_the_visitor: true
+  },
+  {
+    operation_name: "EDIT",
+    //from_status: Not needed, can be from every status
+    to_status: VISIT_STATUS_PENDING_VISITOR_APPROVAL,
+    can_be_done_by_the_owner: true,
+    can_be_done_by_the_visitor: false
+  },
+  {
+    operation_name: "EDIT",
+    //from_status: Not needed, can be from every status
+    to_status: VISIT_STATUS_PENDING_OWNER_APPROVAL,
+    can_be_done_by_the_owner: false,
+    can_be_done_by_the_visitor: true
+  },
+  {
+    operation_name: "ADD",
+    //from_status: Not needed, can be from every status
+    to_status: VISIT_STATUS_PENDING_OWNER_APPROVAL,
+    can_be_done_by_the_owner: false,
+    can_be_done_by_the_visitor: true
+  },
+];
+
 
 /**
  * @author: Or Abramovich
  * @date: 04/18
- *
  * Verifies that the given value represents a supported visit status id i.e. it exists in the visitStatusCodes array
  *
  * @param {Number} value: the status id to be checked
  *
- * @returns boolean.
+ * @returns boolean indicating whether the value is a valid visit id
  */
 const isSupportedVisitStatusID = (value) => {
   return arrayFunctions.containsElementWithProperty(visitStatusCodes, '_id', value);
@@ -57,6 +101,15 @@ const isSupportedVisitStatusID = (value) => {
  * @returns array with all available status codes
  */
 const getVisitStatusCodes = () => visitStatusCodes;
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * returnes all supported visit status changes according to the business logic
+ *
+ * @returns array with all available status change actions
+ */
+const getVisitStatusChangeActions = () => visitStatusChangeLogic;
 /**
  * @author: Or Abramovich
  * @date: 04/18
@@ -137,29 +190,20 @@ const canAddVisit = (isOwner) => {
  * @returns boolean.
  */
 const isValidVisitStatusChange = (currentStaus, targetStatus, isOwner) => {
-  if(targetStatus == VISIT_STATUS_CANCELED) //anyone can cancel at any time
-    return true;
+  var allowedChanges = visitStatusChangeLogic.filter(function (statusChange) {
+    var fromStatusChecker = statusChange.hasOwnProperty('from_status') ? statusChange.from_status == currentStaus : true;
+    var targetStatusChecker = statusChange.hasOwnProperty('to_status') ? statusChange.to_status == targetStatus : true;
+    var modifierChecker = isOwner ? (statusChange.can_be_done_by_the_owner) : (statusChange.can_be_done_by_the_visitor);
+    
+    return fromStatusChecker && targetStatusChecker && modifierChecker;
+  });
 
-  if(isOwner && targetStatus == VISIT_STATUS_PENDING_OWNER_APPROVAL)
-    return false;
-
-  if(!isOwner && targetStatus == VISIT_STATUS_PENDING_VISITOR_APPROVAL)
-    return false;
-
-  if(targetStatus == VISIT_STATUS_APPROVED && currentStaus != VISIT_STATUS_PENDING_OWNER_APPROVAL && currentStaus != VISIT_STATUS_PENDING_VISITOR_APPROVAL)
-    return false;
-
-  if(!isOwner && currentStaus == VISIT_STATUS_PENDING_OWNER_APPROVAL && targetStatus == VISIT_STATUS_APPROVED)
-    return false;
-
-  if(isOwner && currentStaus == VISIT_STATUS_PENDING_VISITOR_APPROVAL && targetStatus == VISIT_STATUS_APPROVED)
-    return false;
-
-  return true;
+  return (allowedChanges.length > 0);
 };
 
 
 module.exports = {
+  getVisitStatusChangeActions,
   canAddVisit,
   canModifyVisit,
   getVisitStatusOnApproval,
