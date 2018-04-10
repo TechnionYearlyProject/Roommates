@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
-const visit = require('./visit');
 const { removeFalsyProps } = require('../helpers/removeFalsyProps');
 const { isSupportedTagId } = require('./tag');
 const { getIndexOfValue } = require('../helpers/arrayFunctions');
