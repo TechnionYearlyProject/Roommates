@@ -141,32 +141,6 @@ const ApartmentSchema = new mongoose.Schema({
       maxlength: 1000,
       required: true
     }
-  }],
-  visits: [{
-    _askedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    createdAt: {
-      type: Number,
-      required: true,
-    },
-    scheduledTo: {
-      type: Number,
-      required: true,
-      validate: {
-        validator: (value) => value > Date.now(),
-        message: '{VALUE} is not a future date'
-      }
-    },
-    status: {
-      type: Number,
-      required: true,
-      validate: {
-        validator: (value) => visit.isSupportedVisitStatusID(value),
-        message: '{VALUE} is not a valid visit status'
-      }
-    }
   }]
 });
 
