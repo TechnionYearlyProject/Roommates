@@ -147,7 +147,6 @@
         methods: {
             onSubmit(e) {
                 e.preventDefault();
-
                 let that = this;
                 this.$http.get('apartments', {
                     params: {
@@ -160,11 +159,18 @@
                         maxRoommates: this.fields.ranges.roommates.value.max,
                         minFloor: this.fields.ranges.floor.value.min,
                         maxFloor: this.fields.ranges.floor.value.max,
-                        latestEntranceDate: this.fields.latestEntranceDate,
+                        latestEntranceDate:this.getLastEntranceDateFilter(),
                         tags: this.fields.selectedBinaryProps
                     }
                 }).then(payload => this.$store.commit(LOAD_APARTMENTS, payload.body.results))
                     .catch(e => console.error(e));
+            },
+            getLastEntranceDateFilter() {
+                try{
+                	return this.fields.latestEntranceDate.getTime();
+                }catch(e){
+                	return null;
+                }
             },
             onModalShow() {
                 Vue.$gmapDefaultResizeBus.$emit('resize');

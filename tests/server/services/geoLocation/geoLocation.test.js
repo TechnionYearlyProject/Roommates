@@ -26,7 +26,7 @@ describe('geoLocation Tests', () => {
               longitude: result[0].longitude,
               latitude: result[0].latitude
             }
-          )).toBeLessThanOrEqual(100);
+          )).toBeLessThanOrEqual(150);
           done();
         }).catch(done);
     });
