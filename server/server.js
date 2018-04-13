@@ -344,7 +344,14 @@ app.post('/users', async (req, res) => {
 
     const user = new User(body);
     await user.register();
-    userVerificator.sendVerificationEmail(user);
+	/**
+	* @updatedBy: Alon Talmor
+     * @date: 13/04/18
+     * Do not send verification mail!
+	 * If you want the verification mail to be sent, use the route:
+	 * POST /users/verify
+	*/
+    //userVerificator.sendVerificationEmail(user);
 
     /**
      * @updatedBy: Alon Talmor

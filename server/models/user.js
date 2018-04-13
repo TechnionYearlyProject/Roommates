@@ -300,7 +300,10 @@ UserSchema.methods.register = function () {
   const user = this;
 
   return user.save()
-    .catch(() => { throw emailInUse; });
+    .catch((error) => { 
+	console.log(error)
+	throw emailInUse; 
+	});
 };
 
 /**
