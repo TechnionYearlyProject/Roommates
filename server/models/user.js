@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const { isSupportedHobbieId } = require('./hobbie');
+const { NotificationSchema } = require('./notification');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH } = require('../constants');
@@ -107,7 +108,8 @@ const UserSchema = new mongoose.Schema({
       type: Number,
       required: true
     }
-  }]
+  }],
+  notifications: [NotificationSchema],
 });
 
 /**

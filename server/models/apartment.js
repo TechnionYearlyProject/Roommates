@@ -140,7 +140,10 @@ const ApartmentSchema = new mongoose.Schema({
       maxlength: 1000,
       required: true
     }
-  }]
+  }],
+  _notificationSubscribers:{
+      type: [mongoose.Schema.Types.ObjectId],
+  },
 });
 
 /**
