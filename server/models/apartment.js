@@ -362,6 +362,87 @@ ApartmentSchema.methods.isUserInterested = function (_interestedID) {
 
   return (interestedIDIndex > -1);
 };
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Returns the index of the subscriber id inside the inner data structure
+ *
+ * @param {objectID} _userID: the id of the user to get his index.
+ *
+ * @returns {Number} indicating the index of the user or -1 if not found
+ */
+ApartmentSchema.methods.getIndexOfSubscriberUser = function (_subscriberID) {
+  const apartment = this;
+  
+  var index = -1;
+
+  for(var i=0;i<apartment._notificationSubscribers.length;i++){
+    if(apartment._notificationSubscribers[i].equals(_subscriberID))
+      index = i;
+  }
+
+  return index;
+}
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * check if the given user is a subscriber of the apartment ad i.e. he is notified about changes in the apartment ad.
+ *
+ * @param {objectID} _userID: the id of the user to check.
+ *
+ * @returns {Boolean} indicating whether the given user is a subscriber of the ad or not.
+ */
+ApartmentSchema.methods.isUserSubscriber = function (_userID) {
+    const apartment = this;
+
+    return apartment.getIndexOfSubscriberUser(_userID) > -1;
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Adds the given user as a subscriber of the apartment ad i.e. he will be notified about changes in the apartment ad.
+ *
+ * @param {objectID} _userID: the id of the user to add.
+ *
+ * @returns {Promise} that resolved once the apartment document is updated in DB with the new subscriber.
+ */
+ApartmentSchema.methods.saveSubscriber = function (_subscriberID) {
+  const apartment = this;
+  
+  if(!apartment.isUserSubscriber(_subscriberID)){
+    apartment._notificationSubscribers.push(_subscriberID);
+  }
+
+  return apartment.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Removes the given user from the subscriber of the apartment ad i.e. he will not be notified about changes in the apartment ad anymore.
+ *
+ * @param {objectID} _userID: the id of the user to remove.
+ *
+ * @returns {Promise} that resolved once the apartment document is updated in DB withot the deleted subscriber.
+ */
+ApartmentSchema.methods.deleteSubscriber = function (_subscriberID) {
+  const apartment = this;
+
+  const subscriberIndex = apartment.getIndexOfSubscriberUser(_subscriberID);
+
+  if(subscriberIndex > -1){
+    apartment._notificationSubscribers.splice(subscriberIndex, 1);
+  }
+
+  return apartment.save();
+};
 
 const Apartment = mongoose.model('Apartment', ApartmentSchema);
 
