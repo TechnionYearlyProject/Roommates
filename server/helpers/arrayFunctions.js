@@ -45,9 +45,34 @@ const getIndexOfValue = (array, value) => {
   return -1;
 };
 
+
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * get the index in the array of the first element that its key value match the given value.
+ *
+ * @param {Array} array: array to search in.
+ * @param {any} key: the key to search for.
+ * @param {any} value: the value to search for.
+ *
+ * @returns the index of the key-value in the array or -1 if not found.
+ */
+const getIndexOfFirstElementMatchKey = (array, key, value) => {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i][key] == value) {
+      return i;
+    }
+  }
+  return -1;
+};
+
+
 module.exports = {
   findMatchingValuesInArrays,
   containsElementWithProperty,
   sortArrayASC,
-  getIndexOfValue
+  getIndexOfValue,
+  getIndexOfFirstElementMatchKey
 };

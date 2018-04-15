@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const { isSupportedHobbieId } = require('./hobbie');
+const { NotificationSchema, addAggregationDataInNotification } = require('./notification');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH } = require('../constants');
@@ -107,7 +108,8 @@ const UserSchema = new mongoose.Schema({
       type: Number,
       required: true
     }
-  }]
+  }],
+  notifications: [NotificationSchema],
 });
 
 /**
@@ -437,6 +439,64 @@ UserSchema.methods.resetPassword = function (newPassword) {
       user.tokens = []; // Clear all previous generated tokens list (because password has changed)
       return user.save(); // It is important to use the "save" function here for password encryption
     });
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Adds the given notification to the user's notifications list.
+ *
+ * @param {Notification} notification: the notification to be added to the current user.
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB with the new notification.
+ */
+UserSchema.methods.saveNewNotification = function (notification ) {
+  const user = this;
+      
+  user.notifications.push(notification);
+
+  return user.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Adds the given data to an existed notification (i.e. aggregation of notifiications data).
+ *
+ * @param {ObjectID} _notificationId: the notification id that the data has to be added to.
+ * @param {Arry of objectID} newNotifiedObjectIdsArr: the new ids of the objects that were modified that caused the notification to be added.
+ * @param {array of objectID} newCreateByIdsArray: the new ids of the users that triggered the notification (who did the action that caused the notification) to be added.
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB with the new data of the notification.
+ */
+UserSchema.methods.saveAggregationDataInNotification = function (_notificationId, newNotifiedObjectIdsArr, newCreateByIdsArray) {
+  const user = this;
+  
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+
+  if(notificationIndex < 0){
+    return Promise.reject();
+  }
+
+  user.notifications[notificationIndex] = addAggregationDataInNotification(user.notifications[notificationIndex], newNotifiedObjectIdsArr, newCreateByIdsArray);
+
+  return user.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Returns the entire notifications list of the user.
+ *
+ * @returns {array of Notifications} that belongs to the current user
+ */
+UserSchema.methods.getNotifications = function () {
+  const user = this;
+      
+  return user.notifications;
 };
 
 const User = mongoose.model('User', UserSchema);
