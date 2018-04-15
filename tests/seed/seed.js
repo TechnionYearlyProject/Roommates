@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 require('../../server/server');
 const { Apartment } = require('../../server/models/apartment');
 const { User } = require('../../server/models/user');
+const { NotificationsTypesEnum } = require('../../server/models/notification');
 const { XAUTH, VERIFICATION_SECRET, FORGOT_SECRET } = require('../../server/constants');
 
 const user1Id = new ObjectID();
@@ -42,7 +43,8 @@ const apartment1 = new Apartment({
   //description:
   //tags:
   requiredNumberOfRoommates: 2,
-  currentlyNumberOfRoommates: 1
+  currentlyNumberOfRoommates: 1,
+  _notificationSubscribers: [user2Id],
   //comments
 });
 
@@ -107,7 +109,21 @@ const user1 = {
   mobilePhone: '',
   image: '',
   about: '',
-  hobbies: [1, 2, 3]
+  hobbies: [1, 2, 3],
+  notifications: [
+    {
+      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+      _createdBy: new ObjectID(),
+      wasRead: false,
+      _notifiedObjectsIds: [new ObjectID()]
+    },
+    {
+      notificationType: NotificationsTypesEnum.USER_LIKED_APARTMENT,
+      _createdBy: new ObjectID(),
+      wasRead: true,
+      _notifiedObjectsIds: [new ObjectID()]
+    },
+  ],
 };
 
 const user2 = {
