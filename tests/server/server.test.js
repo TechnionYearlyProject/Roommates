@@ -172,6 +172,69 @@ describe('Server Tests', () => {
     });
   });
 
+  describe('PUT /apartments/:id/subscription', () => {
+
+    it('should return 404 when invalid id', (done) => {
+      const id = new ObjectID();
+      request(app)
+        .put(`/apartments/${id}/subscription`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(NOT_FOUND)
+        .end(done);
+    });
+
+    it('should not toggle subscription - unregistered user', (done) => {
+      const id = apartments[1]._id;
+      request(app)
+        .put(`/apartments/${id}/subscription`)
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should remove subscription', (done) => {
+      const id = apartments[0]._id;
+      request(app)
+        .put(`/apartments/${id}/subscription`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const apartment = await Apartment.findById(id);
+            expect(apartment.isUserSubscriber(users[1]._id)).toBe(false);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    }).timeout(5000);
+
+    it('should toggle to subscriber', (done) => {
+      const id = apartments[1]._id;
+      request(app)
+        .put(`/apartments/${id}/subscription`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const apartment = await Apartment.findById(id);
+            expect(apartment.isUserSubscriber(users[1]._id)).toBe(true);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    }).timeout(5000);
+
+  });
+
   describe('PUT /apartments/:id/comment', () => {
     it('should add a new comment', (done) => {
       const id = apartments[1]._id;
