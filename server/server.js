@@ -278,7 +278,36 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     return res.status(BAD_REQUEST).send(err);
   }
 });
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Toggle the subscription state of the logged-in user for the given apartment.
+ *
+ * @param {ObjectID} apartment id that the user would like to toggle his subscription state.
+ *
+ * @returns {JSON} containing the updated apartment document.
+ */
+app.put('/apartments/:id/subscription', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
+    }
+
+    if (apartment.isUserSubscriber(req.user._id)) {
+      await apartment.deleteSubscriber(req.user._id);
+    } else {
+      await apartment.saveSubscriber(req.user._id);
+    }
+
+    return res.status(OK).send({ apartment });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
 /**
  * Adds a comment to a specific apartment.  The posting user has to be authenticated.
  *
