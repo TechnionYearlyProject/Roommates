@@ -16,8 +16,10 @@ const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
+const { NotificationsTypesEnum } = require('./models/notification');
 const { logInfo } = require('./services/logger/logger');
 const httpLogger = require('./services/logger/http-logger');
+const {notifyUsers} = require('./services/notifications-system/notifier');
 const userVerificator = require('./services/user-verification/user-verificator');
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
@@ -78,6 +80,7 @@ app.post('/apartments', authenticate, async (req, res) => {
         'area'
       ]);
     apartmentData._createdBy = req.user._id;
+    apartmentData._notificationSubscribers = [req.user._id];
     apartmentData.createdAt = Date.now();
     apartmentData.location = location;
 
@@ -135,6 +138,9 @@ app.patch('/apartments/:id', authenticate, async (req, res) => {
 	      ]);
 
 	    const apartment = await Apartment.findByIdAndUpdate(id, { $set: apartmentData }, { new: true, runValidators: true });
+
+      notifyUsers(NotificationsTypesEnum.APARTMENT_WAS_MODIFIED, req.user._id, apartment._notificationSubscribers, [id]);
+
 	    res.send({ apartment });
   } catch (err) {
     	return res.status(BAD_REQUEST).send(errors.unknownError);
@@ -264,6 +270,7 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     } else {
       await apartment.addInterestedUser(req.user._id);
       await req.user.addInterestInApartment(id);
+      notifyUsers(NotificationsTypesEnum.USER_LIKED_APARTMENT, req.user._id, apartment._notificationSubscribers, [id]);
     }
 
     return res.status(OK).send({ apartment });
@@ -289,6 +296,8 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
     }
 
     await apartment.addComment(req.user._id, body.text, Date.now());
+
+    notifyUsers(NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT, req.user._id, apartment._notificationSubscribers, [id]);
 
     const { comments } = apartment;
 
