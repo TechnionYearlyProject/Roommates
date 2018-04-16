@@ -75,7 +75,7 @@ const sendVerificationEmail = (user) => {
  */
 const verifyUser = (token) => {
   const { id } = jwt.verify(token, VERIFICATION_SECRET);
-  return User.findByIdAndUpdate(id, { $set: { isVerified: true } });
+  return User.findByIdAndUpdate(id, { $set: { isVerified: true } }, { new: true });
 };
 
 module.exports = {

@@ -4,7 +4,6 @@ const _ = require('lodash');
 const {
   BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, FORBIDDEN, OK
 } = require('http-status');
-
 require('./server-config');
 require('./db/mongoose');
 const { useVue } = require('./middleware/vuejs');
@@ -17,6 +16,7 @@ const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
 const { logInfo } = require('./services/logger/logger');
+const { ObjectID } = require('mongodb');
 const httpLogger = require('./services/logger/http-logger');
 const userVerificator = require('./services/user-verification/user-verificator');
 const passwordReset = require('./services/password-reset/password-reset');
@@ -29,7 +29,6 @@ app.use(httpLogger.logResponseBodyOnError);
 app.use(bodyParser.json({ limit: '5mb' }));
 useCors(app);
 useVue(app);
-
 
 
 /**
@@ -111,38 +110,38 @@ app.post('/apartments', authenticate, async (req, res) => {
  * @param {[Number]} area
  */
 app.patch('/apartments/:id', authenticate, async (req, res) => {
-	try {
-		const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-	    if (!(req.user.isOwner(id))) {
-	      return res.status(UNAUTHORIZED).send();
-	    }
+    if (!(req.user.isOwner(id))) {
+      return res.status(UNAUTHORIZED).send();
+    }
 
-	    const apartmentData = _.pick(req.body,
-	      [
-	        'title',
-	        'price',
-	        'enteranceDate',
-	        'images',
-	        'description',
-	        'tags',
-	        'requiredNumberOfRoommates',
-	        'currentlyNumberOfRoommates',
-	        'numberOfRooms',
-	        'floor',
-	        'totalFloors',
-	        'area'
-	      ]);
+    const apartmentData = _.pick(req.body,
+      [
+        'title',
+        'price',
+        'enteranceDate',
+        'images',
+        'description',
+        'tags',
+        'requiredNumberOfRoommates',
+        'currentlyNumberOfRoommates',
+        'numberOfRooms',
+        'floor',
+        'totalFloors',
+        'area'
+      ]);
 
-	    const apartment = await Apartment.findByIdAndUpdate(id, { $set: apartmentData }, { new: true, runValidators: true });
-	    res.send({ apartment });
+    const apartment = await Apartment.findByIdAndUpdate(id, { $set: apartmentData }, { new: true, runValidators: true });
+    res.send({ apartment });
   } catch (err) {
-    	return res.status(BAD_REQUEST).send(errors.unknownError);
+    return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
 
 /**
- * Get all server supported apartment tags 
+ * Get all server supported apartment tags
  */
 app.get('/apartments/tags', async (req, res) => {
   try {
@@ -155,68 +154,72 @@ app.get('/apartments/tags', async (req, res) => {
 /**
  * Get apartment based on the given filters.
  *
- * @param {String} id
- * @param {Number} createdBy
- * @param {Number} minPrice
- * @param {Number} maxPrice
- * @param {Number} minEntranceDate
- * @param {Number} latestEntranceDate
- * @param {String} address
- * @param {Number} radius
- * @param {Number} minRoommates
- * @param {Number} maxRoommates
- * @param {Number} currentRoommatesNumber
- * @param {Number} minFloor
- * @param {Number} maxFloor
- * @param {[Number]} tags
- * @param {Number} latitude
- * @param {Number} longitude
+ * @updatedBy: Alon Talmor
+ * @date: 16/04/18
+ * Changed expected query representation.
+ * The new query properties are:
+ * @param {String} id - apartment's id, should be a legal ObjectId
+ * @param {String} createdBy - the creator of the apartment ad, should be a legal ObjectId
+ * @param {String} entranceDate - a strings which can be converted into a date
+ * @param {String} address - string of the full address expected
+ * @param {Number} radius - number representing distance from address or geolocation
+ * @param {Array of Number} price - should be an array of 2 numbers, which represents the price range
+ * @param {Array of Number} roommates - should be an array of 2 numbers, which represents the [min, max] roommates required
+ * @param {Array of Number} floor - should be an array of 2 numbers, which represents the [low, high] floors required
+ * @param {Array of Number} tags - a list of all the tags represented by their ids
+ * @param {Array of Number} geolocation - structure: [longitude, latitude]
+ *
+ * @returns the list of all the apartments that passed the above filter attributes.
  */
 app.get('/apartments', async (req, res) => {
   try {
-    const body = _.pick(req.query,
+    const query = _.pick(req.query,
       [
-        'id',
-        'createdBy',
-        'minPrice',
-        'maxPrice',
-        'minEntranceDate',
-        'latestEntranceDate',
-        'address',
-        'radius',
-        'minRoommates',
-        'maxRoommates',
-        'currentRoommatesNumber',
-        'minFloor',
-        'maxFloor',
-        'tags',
-        'latitude',
-        'longitude'
+        'id', // String of a legal ObjectID
+        'createdBy', // String of a legal ObjectID
+        // 'minPrice',
+        // 'maxPrice',
+        'entranceDate', // A value which can be converted into Date
+        // 'minEntranceDate',
+        // 'latestEntranceDate',
+        'address', // String of the full address
+        'radius', // Number, which indicates the range from the address or geolocation
+        // 'minRoommates',
+        // 'maxRoommates',
+        'price', // Array of 2 Numbers, which indicates the price range
+        'roommates', // Array of 2 Numbers, which indicates the roommates range
+        'floor', // Array of 2 Numbers, which indicates the floor range
+        'tags', // Array of the tags Numbers (ids)
+        'geolocation' // Array of 2 numbers: ['longitude','latitude']
+        // 'longitude',
+        // 'latitude'
       ]);
 
-    let tags;
-    if (body.tags && Array.isArray(body.tags)) {
-      tags = body.tags.map(tagName => getSupportedTags().filter(t => t.name === tagName)[0]._id);
-    }
+    const apartments = await Apartment.findByProperties(query);
+    res.send({ apartments });
+    // let tags;
+    // if (body.tags && Array.isArray(body.tags)) {
+    //   tags = body.tags.map(tagName => getSupportedTags().filter(t => t.name === tagName)[0]._id);
+    // } Remove unsupported tags
 
-    const results = await Apartment.findByProperties({
-      _id: body.id,
-      _createdBy: body.createdBy,
-      address: body.address,
-      minPrice: body.minPrice,
-      maxPrice: body.maxPrice,
-      radius: body.radius,
-      minRoommates: body.minRoommates,
-      maxRoommates: body.maxRoommates,
-      currentRoommatesNumber: body.currentRoommatesNumber,
-      minFloor: body.minFloor,
-      maxFloor: body.maxFloor,
-      tags,
-      latestEntranceDate: body.latestEntranceDate,
-      latitude: body.latitude,
-      longitude: body.longitude
-    });
-    res.send({ results });
+    // const results = await Apartment.findByProperties({
+    //   _id: body.id,
+    //   _createdBy: body.createdBy,
+    //   address: body.address,
+    //   minPrice: body.minPrice,
+    //   maxPrice: body.maxPrice,
+    //   radius: body.radius,
+    //   minRoommates: body.minRoommates,
+    //   maxRoommates: body.maxRoommates,
+    //   currentRoommatesNumber: body.currentRoommatesNumber,
+    //   minFloor: body.minFloor,
+    //   maxFloor: body.maxFloor,
+    //   tags,
+    //   latestEntranceDate: body.latestEntranceDate,
+    //   latitude: body.latitude,
+    //   longitude: body.longitude
+    // });
+    // res.send({ results });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -344,7 +347,7 @@ app.post('/users', async (req, res) => {
 
     const user = new User(body);
     await user.register();
-	/**
+    /**
 	* @updatedBy: Alon Talmor
      * @date: 13/04/18
      * Do not send verification mail!
@@ -355,15 +358,13 @@ app.post('/users', async (req, res) => {
 
     /**
      * @updatedBy: Alon Talmor
-     * @date: 28/3/18
-     * Do not generate an authentication token because the user must verify himself/herself
-     * first by using the link that has been sent to his/her mailbox.
-     * This means that the registration will NOT allow immediate login afterwards.
-     */
+     * @date: 16/4/18
+     * generate an authentication token to start a session between the 2 ends.
+    */
+    const ticket = user.generateAuthenticationToken();
+    res.header(XAUTH, ticket.token);
+    res.header(XEXPIRATION, ticket.expiration).send({ user });
     res.send({ user });
-
-    // res.header(XAUTH, ticket.token);
-    // res.header(XEXPIRATION, ticket.expiration).send({ user });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -383,12 +384,13 @@ app.post('/users/login', async (req, res) => {
 
     /**
      * @updatedBy: Alon Talmor
-     * @date: 28/3/18
-     * We should not generate a token if the user is yet to be verified (verification is by mail).
-     */
+     * @date: 16/04/18
+     * We should  generate a token even if the user is yet to be verified (verification is by mail).
+
     if (!user.isVerified) {
       return res.send({ user });
     }
+	 */
     user.removeExpiredTokens();
     const ticket = await user.generateAuthenticationToken();
     res.header(XAUTH, ticket.token);
@@ -507,7 +509,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
 /**
  * @author: Alon Talmor
  * @date: 28/3/18
- * 
+ *
  * This route is used to verify new user account.
  * User should recieve a verification code by mail.
  * After clicking the link, the browser should redirect the user to a page
@@ -516,8 +518,8 @@ app.patch('/users/self', authenticate, async (req, res) => {
  */
 app.patch('/users/verify/:token', async (req, res) => {
   try {
-    await userVerificator.verifyUser(req.params.token);
-    res.send('verification successful');
+    const user = await userVerificator.verifyUser(req.params.token);
+    res.send({ user });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -553,7 +555,7 @@ app.post('/users/verify', async (req, res) => {
 /**
  * @author: Alon Talmor
  * @data: 2/4/18
- * 
+ *
  * This route is used to send an email upon reset password request.
  * To perform the action we use the Password-Reset service.
  * Authentication is first required for security enhancement.
@@ -570,7 +572,7 @@ app.post('/users/forgot-password', authenticate, (req, res) => {
 /**
  * @author: Alon Talmor
  * @date: 2/4/18
- * 
+ *
  * Handles the GET request which is sent to the server when a user
  * clicks on the Password-Reset URL attach to the mail sent by
  * "/users/forgot-password" route.
@@ -590,7 +592,7 @@ app.get('/users/reset-password/:token', authenticate, (req, res) => {
 /**
  * @author: Alon Talmor
  * @date: 2/4/18
- * 
+ *
  * After the user chooses his/her new password, it send to the server in the request's body.
  * It is assumed that the password is sent under the property "password".
  * First the token is revarified, so we know that no malicious user is trying to change the
@@ -600,7 +602,7 @@ app.get('/users/reset-password/:token', authenticate, (req, res) => {
  * If everything went well, updated user object is returned.
  * The user should not be authenticated afterwards (he/she is required to login in again).
  */
-app.patch('/users/reset-password/:token', authenticate, async (req,res) => {
+app.patch('/users/reset-password/:token', authenticate, async (req, res) => {
   try {
     passwordReset.verifyResetToken(req.user, req.params.token);
     const user = await req.user.resetPassword(req.body.password);
@@ -614,12 +616,12 @@ app.patch('/users/reset-password/:token', authenticate, async (req,res) => {
 /**
  * @author: Alon Talmor
  * @date: 28/3/18
- * 
+ *
  * This is considered as the "default route".
  * Note that this route MUST be the latest route defined
  * in order for it to catch ONLY undefined routes!
  * Nothing special here, it only returns an 404 HTTP respond.
- * 
+ *
  * TODO: Add a test that routes to an undefined route (such as "/undefined/:-)").
  * Expect to recieve 404 respond.
  */

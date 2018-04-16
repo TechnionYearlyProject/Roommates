@@ -141,8 +141,8 @@ const ApartmentSchema = new mongoose.Schema({
       required: true
     }
   }],
-  _notificationSubscribers:{
-      type: [mongoose.Schema.Types.ObjectId],
+  _notificationSubscribers: {
+    type: [mongoose.Schema.Types.ObjectId],
   },
 });
 
@@ -197,91 +197,61 @@ ApartmentSchema.statics.findAllByIds = function (listIds) {
 };
 
 /**
- * TODO: add the rest of properties
+ * @updatedBy: Alon Talmor
+ * @date: 17/04/18
  *
- * find all the apartments with the specified properties.
- * properties currently supported:
- * _id
- * _createdBy
- * minPrice
- * maxPrice
- * latestEntranceDate
- * minRoommates
- * maxRoommates
- * latitude, logitude
- * address
- * minFloor
- * maxFloor
- * tags
- *
- * properties need to add:
- * minRoommates
- * maxRoommates
- *
- * @param {Object} p
- * @returns Promise object.
+ * The function now supports the new schema by which is should fetch all relevant apartments.
+ * receives an object which contains all the properties to filter by.
+ * properties are:
+ * @prop: id - should be a String of a legal ObjectID
+ * @prop: createdBy, - should be a String of a legal ObjectID
+ * @prop: entranceDate - A value which can be converted into Date
+ * @prop: address - String of the full address
+ * @prop: radius - Number, which indicates the range from the address or geolocation
+ * @prop: price -  Array of 2 Numbers, which indicates the price range
+ * @prop: roommates - Array of 2 Numbers, which indicates the roommates range
+ * @prop: floor - Array of 2 Numbers, which indicates the floor range
+ * @prop: tags - Array of the tags Numbers (ids)
+ * @prop: geolocation - Array of 2 numbers: ['longitude','latitude']
+ * @returns Promise Object with a list of all relevant apartments.
  */
 ApartmentSchema.statics.findByProperties = async function (p) {
   const Apartment = this;
 
-  let price;
-  if (p.minPrice || p.maxPrice) {
-    price = removeFalsyProps({ $gte: p.minPrice, $lte: p.maxPrice });
+  const query = {};
+  if (p.id && ObjectID.isValid(p.id)) { // id
+    query._id = p.id;
   }
-
-  let entranceDate;
-  if (p.latestEntranceDate) {
-    entranceDate = removeFalsyProps({ $lte: p.latestEntranceDate });
+  if (p.createdBy && ObjectID.isValid(p.createdBy)) { // createdBy
+    query._createdBy = p.createdBy;
   }
-
-  let roommates;
-  if (p.minRoommates || p.maxRoommates) {
-    roommates = removeFalsyProps({ $gte: p.minRoommates, $lte: p.maxRoommates });
+  if (p.entranceDate) { // entranceDate
+    query.enteranceDate = { $lte: new Date(p.entranceDate).getTime() };
   }
-
-  let geolocation;
-  let SearchRadius = 5; //km
-  if (p.radius) {
-    SearchRadius = p.radius;
-  }
-  if (p.latitude && p.longitude) {
-    const coords = [p.longitude, p.latitude];
-    geolocation = getGeoWithinObj(coords, SearchRadius);
-  } else if (p.address) {
-    geolocation = await geoLocation.getGeoLocationCoords(p.address);
+  const radius = p.radius || 5; //km //address + geolocation + radius
+  if (p.geolocation) { // find by geolocation first
+    query.location = { geolocation: getGeoWithinObj(p.geolocation, radius) };
+  } else if (p.address) { // find by address if geolocation is not defined
+    const geolocation = await geoLocation.getGeoLocationCoords(p.address);
     if (!geolocation) {
       return new Promise((resolve) => resolve([]));
     }
-    geolocation = getGeoWithinObj(geolocation, SearchRadius);
+    query.location = { geolocation: getGeoWithinObj(geolocation, radius) };
+  }
+  if (p.price && Array.isArray(p.price)) { // price
+    query.price = removeFalsyProps({ $gte: p.price[0], $lte: p.price[1] });
+  }
+  if (p.roommates && Array.isArray(p.roommates)) { // roommates
+    query.roommates = removeFalsyProps({ $gte: p.roommates[0], $lte: p.roommates[1] });
+  }
+  if (p.floor && Array.isArray(p.floor)) { // floor
+    query.floor = removeFalsyProps({ $gte: p.floor[0], $lte: p.floor[1] });
+  }
+  if (p.tags && Array.isArray(p.tags)) { // tags
+    query.tags = { $all: p.tags };
   }
 
-  let floor;
-  if (p.minFloor || p.maxFloor) {
-    floor = removeFalsyProps({ $gte: p.minFloor, $lte: p.maxFloor });
-  }
-
-  let tags;
-  if (p.tags) {
-    tags = { $all: p.tags };
-  }
-
-  if ((p._id && !ObjectID.isValid(p._id)) || (p._createdBy && !ObjectID.isValid(p._createdBy))) {
-    return Promise.reject();
-  }
-
-  const properties = removeFalsyProps({
-    _id: p._id,
-    _createdBy: p._createdBy,
-    price,
-    enteranceDate: entranceDate,
-    'location.geolocation': geolocation,
-    requiredNumberOfRoommates: roommates,
-    currentlyNumberOfRoommates: p.currentRoommatesNumber,
-    tags,
-    floor
-  });
-
-  return Apartment.find(properties);
+  return Apartment.find(query);
 };
 
 /**
@@ -375,11 +345,11 @@ ApartmentSchema.methods.isUserInterested = function (_interestedID) {
  */
 ApartmentSchema.methods.getIndexOfSubscriberUser = function (_subscriberID) {
   const apartment = this;
-  
+
   var index = -1;
 
-  for(var i=0;i<apartment._notificationSubscribers.length;i++){
-    if(apartment._notificationSubscribers[i].equals(_subscriberID))
+  for (var i = 0; i < apartment._notificationSubscribers.length; i++) {
+    if (apartment._notificationSubscribers[i].equals(_subscriberID))
       index = i;
   }
 
@@ -397,9 +367,9 @@ ApartmentSchema.methods.getIndexOfSubscriberUser = function (_subscriberID) {
  * @returns {Boolean} indicating whether the given user is a subscriber of the ad or not.
  */
 ApartmentSchema.methods.isUserSubscriber = function (_userID) {
-    const apartment = this;
+  const apartment = this;
 
-    return apartment.getIndexOfSubscriberUser(_userID) > -1;
+  return apartment.getIndexOfSubscriberUser(_userID) > -1;
 };
 /**
  *
@@ -414,8 +384,8 @@ ApartmentSchema.methods.isUserSubscriber = function (_userID) {
  */
 ApartmentSchema.methods.saveSubscriber = function (_subscriberID) {
   const apartment = this;
-  
-  if(!apartment.isUserSubscriber(_subscriberID)){
+
+  if (!apartment.isUserSubscriber(_subscriberID)) {
     apartment._notificationSubscribers.push(_subscriberID);
   }
 
@@ -437,7 +407,7 @@ ApartmentSchema.methods.deleteSubscriber = function (_subscriberID) {
 
   const subscriberIndex = apartment.getIndexOfSubscriberUser(_subscriberID);
 
-  if(subscriberIndex > -1){
+  if (subscriberIndex > -1) {
     apartment._notificationSubscribers.splice(subscriberIndex, 1);
   }
 
