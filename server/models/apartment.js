@@ -31,7 +31,7 @@ const ApartmentSchema = new mongoose.Schema({
     type: String,
     ref: 'User'
   }],
-  enteranceDate: {
+  entranceDate: {
     type: Number,
     required: true
   },
@@ -114,16 +114,16 @@ const ApartmentSchema = new mongoose.Schema({
       message: '{VALUE} is not a supported tag'
     }
   }],
-  requiredNumberOfRoommates: {
+  requiredRoommates: {
     type: Number,
     min: 1,
     max: 10,
     required: true
   },
-  currentlyNumberOfRoommates: {
+  totalRoommates: {
     type: Number,
     min: 0,
-    max: 10
+    max: 11
   },
   comments: [{
     _createdBy: {
@@ -226,23 +226,23 @@ ApartmentSchema.statics.findByProperties = async function (p) {
     query._createdBy = p.createdBy;
   }
   if (p.entranceDate) { // entranceDate
-    query.enteranceDate = { $lte: new Date(p.entranceDate).getTime() };
+    query.entranceDate = { $lte: new Date(p.entranceDate).getTime() };
   }
-  const radius = p.radius || 5; //km //address + geolocation + radius
+  const radius = +p.radius || 5; //km //address + geolocation + radius
   if (p.geolocation) { // find by geolocation first
-    query.location = { geolocation: getGeoWithinObj(p.geolocation, radius) };
+    query['location.geolocation'] = getGeoWithinObj(p.geolocation, radius);
   } else if (p.address) { // find by address if geolocation is not defined
     const geolocation = await geoLocation.getGeoLocationCoords(p.address);
     if (!geolocation) {
       return new Promise((resolve) => resolve([]));
     }
-    query.location = { geolocation: getGeoWithinObj(geolocation, radius) };
+    query['location.geolocation'] = getGeoWithinObj(geolocation, radius);
   }
   if (p.price && Array.isArray(p.price)) { // price
     query.price = removeFalsyProps({ $gte: p.price[0], $lte: p.price[1] });
   }
   if (p.roommates && Array.isArray(p.roommates)) { // roommates
-    query.roommates = removeFalsyProps({ $gte: p.roommates[0], $lte: p.roommates[1] });
+    query.totalRoommates = removeFalsyProps({ $gte: p.roommates[0], $lte: p.roommates[1] });
   }
   if (p.floor && Array.isArray(p.floor)) { // floor
     query.floor = removeFalsyProps({ $gte: p.floor[0], $lte: p.floor[1] });

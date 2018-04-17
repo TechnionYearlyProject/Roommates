@@ -24,7 +24,7 @@ const apartment1 = new Apartment({
   createdAt: Date.now(),
   price: 2000,
   _interested: [user1Id.toHexString(), user2Id.toHexString(), user3Id.toHexString()],
-  enteranceDate: new Date('1-1-2018').getTime(),
+  entranceDate: new Date('1-1-2018').getTime(),
   location: {
     address: {
       state: 'israel',
@@ -42,8 +42,8 @@ const apartment1 = new Apartment({
   //images:
   //description:
   //tags:
-  requiredNumberOfRoommates: 2,
-  currentlyNumberOfRoommates: 1,
+  requiredRoommates: 2,
+  totalRoommates: 3,
   _notificationSubscribers: [user2Id],
   //comments
 });
@@ -55,7 +55,7 @@ const apartment2 = new Apartment({
   createdAt: Date.now(),
   price: 1000,
   //_interested:
-  enteranceDate: new Date('12-29-2019').getTime(),
+  entranceDate: new Date('12-29-2019').getTime(),
   location: {
     address: {
       state: 'israel',
@@ -73,8 +73,8 @@ const apartment2 = new Apartment({
   //images:
   //description:
   tags: [1, 8],
-  requiredNumberOfRoommates: 1,
-  currentlyNumberOfRoommates: 2,
+  requiredRoommates: 1,
+  totalRoommates: 2,
   //comments
 });
 
@@ -87,10 +87,10 @@ const notPublishedApartment = {
     number: 1
   },
   price: 2000,
-  enteranceDate: new Date('1-1-2018').getTime(),
+  entranceDate: new Date('1-1-2018').getTime(),
   description: 'notPublishedApartment',
-  requiredNumberOfRoommates: 1,
-  currentlyNumberOfRoommates: 0,
+  requiredRoommates: 1,
+  totalRoommates: 4,
   numberOfRooms: 2,
   floor: 2,
   totalFloors: 3,

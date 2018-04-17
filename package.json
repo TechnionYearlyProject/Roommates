@@ -31,7 +31,7 @@
     "eslint": "^4.13.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
-    "expect": "^22.0.6",
+    "expect": "^22.4.3",
     "istanbul": "^0.4.5",
     "mocha": "^4.0.1",
     "nyc": "^11.4.1",

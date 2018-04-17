@@ -44,8 +44,8 @@ useVue(app);
  * @param {[String]} images
  * @param {String} description
  * @param {[Number]} tags
- * @param {Number} requiredNumberOfRoommates
- * @param {Number} currentlyNumberOfRoommates
+ * @param {Number} requiredRoommates
+ * @param {Number} totalRoommates
  * @param {[Number]} numberOfRooms
  * @param {Number} floor
  * @param {Number} totalFloors
@@ -67,12 +67,12 @@ app.post('/apartments', authenticate, async (req, res) => {
         'title',
         'price',
         'address',
-        'enteranceDate',
+        'entranceDate',
         'images',
         'description',
         'tags',
-        'requiredNumberOfRoommates',
-        'currentlyNumberOfRoommates',
+        'requiredRoommates',
+        'totalRoommates',
         'numberOfRooms',
         'floor',
         'totalFloors',
@@ -105,8 +105,8 @@ app.post('/apartments', authenticate, async (req, res) => {
  * @param {[String]} images
  * @param {String} description
  * @param {[Number]} tags
- * @param {Number} requiredNumberOfRoommates
- * @param {Number} currentlyNumberOfRoommates
+ * @param {Number} requiredRoommates
+ * @param {Number} totalRoommates
  * @param {[Number]} numberOfRooms
  * @param {Number} floor
  * @param {Number} totalFloors
@@ -124,12 +124,12 @@ app.patch('/apartments/:id', authenticate, async (req, res) => {
       [
         'title',
         'price',
-        'enteranceDate',
+        'entranceDate',
         'images',
         'description',
         'tags',
-        'requiredNumberOfRoommates',
-        'currentlyNumberOfRoommates',
+        'requiredRoommates',
+        'totalRoommates',
         'numberOfRooms',
         'floor',
         'totalFloors',
@@ -401,7 +401,7 @@ app.post('/users', async (req, res) => {
     */
     const ticket = user.generateAuthenticationToken();
     res.header(XAUTH, ticket.token);
-    res.header(XEXPIRATION, ticket.expiration).send({ user });
+    res.header(XEXPIRATION, ticket.expiration);
     res.send({ user });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);

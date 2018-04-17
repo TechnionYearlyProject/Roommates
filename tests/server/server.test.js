@@ -551,19 +551,23 @@ describe('Server Tests', () => {
         .query({ id })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0]._id).toBe(id);
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0]._id).toBe(id);
         })
         .end(done);
     });
 
-    it('should not find apartment with invalid id', (done) => {
+    it('should ignore id property when invalid', (done) => {
       const id = '12345';
 
       request(app)
         .get('/apartments')
         .query({ id })
-        .expect(BAD_REQUEST)
+        .expect(OK)
+        .expect((res) => {
+          // the id is ignored, so all apartments are returned (same as query {})
+          expect(res.body.apartments.length).toBe(2);
+        })
         .end(done);
     });
 
@@ -575,7 +579,7 @@ describe('Server Tests', () => {
         .query({ id })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(0);
+          expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
     });
@@ -588,19 +592,23 @@ describe('Server Tests', () => {
         .query({ createdBy })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0]._createdBy).toBe(createdBy);
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0]._createdBy).toBe(createdBy);
         })
         .end(done);
     });
 
-    it('should not find apartment with invalid owner\'s id', (done) => {
+    it('should ignore owner\'s id property when invalid', (done) => {
       const createdBy = '12345';
 
       request(app)
         .get('/apartments')
         .query({ createdBy })
-        .expect(BAD_REQUEST)
+        .expect(OK)
+        .expect((res) => {
+          // the owner's id is ignored, so all apartments are returned (same as query {})
+          expect(res.body.apartments.length).toBe(2);
+        })
         .end(done);
     });
 
@@ -612,7 +620,7 @@ describe('Server Tests', () => {
         .query({ createdBy })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(0);
+          expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
     });
@@ -623,11 +631,11 @@ describe('Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ minPrice, maxPrice })
+        .query({ price: [minPrice, maxPrice] })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0].price).toBe(apartments[1].price);
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0].price).toBe(apartments[1].price);
         })
         .end(done);
     });
@@ -638,36 +646,36 @@ describe('Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ minPrice, maxPrice })
+        .query({ price: [minPrice, maxPrice] })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(0);
+          expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
     });
 
-    it('should find apartment due enterance date', (done) => {
-      const latestEntranceDate = apartments[0].enteranceDate;
+    it('should find apartment due entrance date', (done) => {
+      const entranceDate = new Date(apartments[0].entranceDate).toISOString();
       request(app)
         .get('/apartments')
-        .query({ latestEntranceDate })
+        .query({ entranceDate })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0].enteranceDate).toBeLessThanOrEqual(apartments[0].enteranceDate);
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0].entranceDate).toBeLessThanOrEqual(apartments[0].entranceDate);
         })
         .end(done);
     });
 
-    it('should not find apartment due invalid enterance date', (done) => {
-      const latestEntranceDate = new Date('1-1-2017').getTime();
+    it('should not find apartment due invalid entrance date', (done) => {
+      const entranceDate = '1-1-2017';
 
       request(app)
         .get('/apartments')
-        .query({ latestEntranceDate })
+        .query({ entranceDate })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(0);
+          expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
     });
@@ -680,9 +688,9 @@ describe('Server Tests', () => {
         .query({ address })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
+          expect(res.body.apartments.length).toBe(1);
           //expect(res.body.results[0].location.geolocation).toEqual(apartments[0].location.geolocation);
-          expect(res.body.results[0].location.address).toEqual(apartments[0].location.address);
+          expect(res.body.apartments[0].location.address).toEqual(apartments[0].location.address);
         })
         .end(done);
     });
@@ -695,7 +703,7 @@ describe('Server Tests', () => {
         .query({ address })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(0);
+          expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
     });
@@ -706,12 +714,12 @@ describe('Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ latitude, longitude })
+        .query({ geolocation: [longitude, latitude] })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0].location.geolocation[0]).toBe(apartments[0].location.geolocation[0]);
-          expect(res.body.results[0].location.geolocation[1]).toBe(apartments[0].location.geolocation[1]);
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0].location.geolocation[0]).toBe(apartments[0].location.geolocation[0]);
+          expect(res.body.apartments[0].location.geolocation[1]).toBe(apartments[0].location.geolocation[1]);
         })
         .end(done);
     });
@@ -723,10 +731,10 @@ describe('Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ latitude, longitude, radius })
+        .query({ geolocation: [longitude, latitude], radius })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(2); //should find haifa and tel aviv
+          expect(res.body.apartments.length).toBe(2); //should find haifa and tel aviv
         })
         .end(done);
     });
@@ -738,10 +746,10 @@ describe('Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ latitude, longitude, radius })
+        .query({ geolocation: [longitude, latitude], radius })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1); //should find only haifa
+          expect(res.body.apartments.length).toBe(1); //should find only haifa
         })
         .end(done);
     });
@@ -755,49 +763,78 @@ describe('Server Tests', () => {
         .query({ address, radius })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
+          expect(res.body.apartments.length).toBe(1);
           //expect(res.body.results[0].location.geolocation).toEqual(apartments[0].location.geolocation);
-          expect(res.body.results[0].location.address).toEqual(apartments[0].location.address);
+          expect(res.body.apartments[0].location.address).toEqual(apartments[0].location.address);
         })
         .end(done);
     }).timeout(5000);
 
-    it('should find apartment by total number of roommates', (done) => {
-      const currentRoommatesNumber = apartments[1].currentlyNumberOfRoommates;
+    it('should find apartment by min number of roommates', (done) => {
+      const minRoommates = apartments[0].totalRoommates;
 
       request(app)
         .get('/apartments')
-        .query({ currentRoommatesNumber })
+        .query({ roommates: [minRoommates ,null] })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(1);
-          expect(res.body.results[0].currentlyNumberOfRoommates).toBe(currentRoommatesNumber);
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0].totalRoommates).toBeGreaterThanOrEqual(minRoommates);
+        })
+        .end(done);
+    });
+
+    it('should find apartment by max number of roommates', (done) => {
+      const maxRoommates = apartments[1].totalRoommates;
+
+      request(app)
+        .get('/apartments')
+        .query({ roommates: [null, maxRoommates] })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0].totalRoommates).toBeLessThanOrEqual(maxRoommates);
+        })
+        .end(done);
+    });
+
+    it('should find apartment by a range of roommates number', (done) => {
+      const minRoommates = apartments[1].totalRoommates;
+      const maxRoommates = apartments[1].totalRoommates;
+
+      request(app)
+        .get('/apartments')
+        .query({ roommates: [minRoommates, maxRoommates] })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0].totalRoommates).toBeGreaterThanOrEqual(minRoommates);
+          expect(res.body.apartments[0].totalRoommates).toBeLessThanOrEqual(maxRoommates);
         })
         .end(done);
     });
 
     it('should not find apartment with invalid number of roommates', (done) => {
-      const currentRoommatesNumber = 11;
+      const minRoommates = 11;
 
       request(app)
         .get('/apartments')
-        .query({ currentRoommatesNumber })
+        .query({ roommates: [minRoommates, null] })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results.length).toBe(0);
+          expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
     });
 
     it('should find apartment with valid tags', (done) => {
-      const apartment = apartments[1];
-
       request(app)
         .get('/apartments')
-        .query({ tags: apartment.tags.map(tagID => getSupportedTags().filter(t => t._id === tagID)[0].name) })
+        .query({ tags: [1, 8] })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.results[0]._id.toString()).toBe(apartment._id.toString());
+          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments[0]._id.toString()).toBe(apartments[1]._id.toString());
         })
         .end(done);
     });
@@ -810,7 +847,7 @@ describe('Server Tests', () => {
         .send(notRegisteredUser)
         .expect(OK)
         .expect((res) => {
-          expect(res.headers[XAUTH]).toBeFalsy(); // No token is returned after registration
+          expect(res.headers[XAUTH]).toBeTruthy(); // token is returned after registration
           expect(res.body.user._id).toBeTruthy();
           expect(res.body.user).toMatchObject(User.toJSON(notRegisteredUser));
         })
@@ -839,7 +876,7 @@ describe('Server Tests', () => {
         .send(user)
         .expect(OK)
         .expect((res) => {
-          expect(res.headers[XAUTH]).toBeFalsy();
+          expect(res.headers[XAUTH]).toBeTruthy();
           expect(res.body.user).toMatchObject(User.toJSON(user));
         })
         .end((err) => {

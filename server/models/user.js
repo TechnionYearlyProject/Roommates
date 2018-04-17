@@ -283,29 +283,30 @@ UserSchema.methods.generateAuthenticationToken = function () {
 };
 
 /**
- * register a new user.
- * the registration includes:
+ * @updatedBy: Alon Talmor
+ * @date: 18/04/18
+ * Register a new user.
+ * The registration includes:
  * validation to the data provided
  * encryption of the password
  * saving the user to the db.
  *
- * the registration will fail if:
+ * The registration will fail if:
  * the data provided in not a legal user data (see schema for more details)
  * the email is already in use by other user
  * the encryption of the password has failed.
  *
  * The function returns the saved user (wrapped inside a Promise) on success.
  *
- * @returns Promise object.
+ * @returns Promise Object with holds the registered user.
  */
 UserSchema.methods.register = function () {
   const user = this;
 
   return user.save()
-    .catch((error) => { 
-	console.log(error)
-	throw emailInUse; 
-	});
+    .catch((error) => {
+      throw emailInUse;
+    });
 };
 
 /**
@@ -451,9 +452,9 @@ UserSchema.methods.resetPassword = function (newPassword) {
  *
  * @returns {Promise} that resolved once the user document is updated in DB with the new notification.
  */
-UserSchema.methods.saveNewNotification = function (notification ) {
+UserSchema.methods.saveNewNotification = function (notification) {
   const user = this;
-      
+
   user.notifications.push(notification);
 
   return user.save();
@@ -473,10 +474,10 @@ UserSchema.methods.saveNewNotification = function (notification ) {
  */
 UserSchema.methods.saveAggregationDataInNotification = function (_notificationId, newNotifiedObjectIdsArr, newCreateByIdsArray) {
   const user = this;
-  
+
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
 
-  if(notificationIndex < 0){
+  if (notificationIndex < 0) {
     return Promise.reject();
   }
 
@@ -495,7 +496,7 @@ UserSchema.methods.saveAggregationDataInNotification = function (_notificationId
  */
 UserSchema.methods.getNotifications = function () {
   const user = this;
-      
+
   return user.notifications;
 };
 
