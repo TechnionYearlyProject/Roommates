@@ -1,24 +1,34 @@
 <template>
-    <div>
-        <header-section />
-        <router-view />
-        <footer-section />
-    </div>
+<v-app>
+  <app-toolbar/>
+  <v-content>
+    <!-- <v-container fluid> -->
+      <app-loader :loading="getLoadingStatus" />
+      <router-view/>
+      <app-snackbar :text="getSnackbarText" />
+    <!-- </v-container> -->
+  </v-content>
+  <app-footer/>
+</v-app>
 </template>
 
 <script>
-    import HeaderSection from '@/components/header-section/HeaderSection'
-    import FooterSection from "@/components/footer-section/FooterSection";
+import { mapGetters } from 'vuex';
+import AppToolbar from './components/AppToolbar';
+import AppLoader from './components/AppLoader';
+import AppSnackbar from './components/AppSnackbar';
+import AppFooter from './components/AppFooter';
 
-    export default {
-        name: "app",
-        components: {
-            FooterSection,
-            HeaderSection
-        }
-    };
+export default {
+  computed: {
+    ...mapGetters(['getLoadingStatus', 'getSnackbarText'])
+  },
+  components: {
+    AppToolbar,
+    AppLoader,
+    AppSnackbar,
+    AppFooter,
+  },
+  name: 'App',
+};
 </script>
-
-<style>
-
-</style>

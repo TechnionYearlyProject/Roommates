@@ -1,6 +1,6 @@
-# roommates-web-view
+# views
 
-> Roommates website-view for Software Engineering Yearly Project.
+> The front-end for Roommates - Software Engineering Yearly Project
 
 ## Build Setup
 
