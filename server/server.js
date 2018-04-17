@@ -533,7 +533,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
         'about',
         'image',
         'hobbies',
-        '_publishedApartments',
+        // '_publishedApartments',
         '_interestedApartments'
       ]);
 

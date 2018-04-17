@@ -82,7 +82,7 @@
             this.$router.push({ name: 'AppMain' });
             this.showSnackbar(user);
           })
-          .catch(() => this.showBadAlert())
+          .catch((err) => this.showBadAlert())
           .then(() => this.hideLoading());
       }
     }
