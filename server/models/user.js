@@ -489,6 +489,33 @@ UserSchema.methods.saveAggregationDataInNotification = function (_notificationId
  * @author: Or Abramovich
  * @date: 04/18
  *
+ * Update an existing notification with new data.
+ *
+ * @param {_notificationId} _notificationId: the notification id that the data has to be added to.
+ * @param {Notification} newNotification: the notifcation with the updated data to be stored.
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB with the new data of the notification.
+ */
+UserSchema.methods.saveUpdatedNotification = function (_notificationId, newNotification) {
+  const user = this;
+  
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+
+  if(notificationIndex < 0){
+    return Promise.reject();
+  }
+
+  newNotification._id = _notificationId;
+
+  user.notifications[notificationIndex] = newNotification;
+
+  return user.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
  * Returns the entire notifications list of the user.
  *
  * @returns {array of Notifications} that belongs to the current user
@@ -497,6 +524,22 @@ UserSchema.methods.getNotifications = function () {
   const user = this;
       
   return user.notifications;
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Returns the notification with the given ID.
+ *
+ * @returns {Notification} 
+ */
+UserSchema.methods.getNotificationById = function (_notificationId) {
+  const user = this;
+      
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+
+  return user.notifications[notificationIndex];
 };
 
 const User = mongoose.model('User', UserSchema);
