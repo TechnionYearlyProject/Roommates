@@ -145,7 +145,16 @@ const user2 = {
     access: XAUTH,
     token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString(),
     expiration: Date.now() + 1000000
-  }]
+  }],
+  notifications: [
+    {
+      _id: new ObjectID(),
+      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+      _createdBy: new ObjectID(),
+      wasRead: false,
+      _notifiedObjectsIds: [new ObjectID()]
+    },
+  ],
 };
 
 const user3 = {

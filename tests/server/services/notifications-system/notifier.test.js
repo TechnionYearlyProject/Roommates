@@ -47,10 +47,10 @@ describe('Notificator Tests', () => {
             expect(user.notifications[2]._createdBy[0].equals(createdBy)).toBe(true);
             expect(user.notifications[2]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
             User.findById(users[1]._id).then((userB)=> {
-              expect(userB.notifications.length).toBe(1);
-              expect(userB.notifications[0].notificationType).toBe(notificationType);
-              expect(userB.notifications[0]._createdBy[0].equals(createdBy)).toBe(true);
-              expect(userB.notifications[0]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+              expect(userB.notifications.length).toBe(2);
+              expect(userB.notifications[1].notificationType).toBe(notificationType);
+              expect(userB.notifications[1]._createdBy[0].equals(createdBy)).toBe(true);
+              expect(userB.notifications[1]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
               done();
             });
           });
