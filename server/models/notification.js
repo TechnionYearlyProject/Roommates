@@ -160,6 +160,25 @@ const buildNotificationJSON = (notificationType, createdBy, wasRead, notifiedObj
 		_notifiedObjectsIds: notifiedObjectsIds
 	};
 };
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Updates the given notification with the values taken from the json
+ *
+ * @param {Notification} curNotificationJson: the notifcation that you would like to modify its read flag.
+ * @param {JSON} updateJson: a json containing the updated values with the same property names
+ *
+ * @returns {Notificaiton} with the modified data.
+ */
+const updateNotificationByJson = (curNotificationJson, updateJson) => {
+  Object.keys(updateJson).forEach(function(key) {
+    if(curNotificationJson.hasOwnProperty(key)){
+      curNotificationJson[key] = updateJson[key];
+    }    
+  });
+  return curNotificationJson;
+};
 
 
 
@@ -170,5 +189,6 @@ module.exports = {
   getNotificationType,
   wasNotificationRead,
   addAggregationDataInNotification,
-  buildNotificationJSON
+  buildNotificationJSON,
+  updateNotificationByJson
 };

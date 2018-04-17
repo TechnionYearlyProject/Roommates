@@ -15,7 +15,7 @@ const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
-const { NotificationsTypesEnum } = require('./models/notification');
+const { NotificationsTypesEnum, updateNotificationByJson } = require('./models/notification');
 const { logInfo } = require('./services/logger/logger');
 const { ObjectID } = require('mongodb');
 const httpLogger = require('./services/logger/http-logger');
@@ -648,6 +648,38 @@ app.patch('/users/reset-password/:token', authenticate, async (req, res) => {
     res.send({ user });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
+  }
+});
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Update fields of the registered user notification. 
+ * Currently suppports only wasRead flag (a flag indicates whether the notified person read the notification).
+ *
+ * @param {ObjectID} notification id that has to be cahnged.
+ *
+ * @returns {JSON} containing the updated user document.
+ */
+
+app.patch('/users/notifications/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const notificationData = _.pick(req.body,
+    [
+      'wasRead'
+    ]);
+
+    const curNotification = JSON.parse(JSON.stringify(req.user.getNotificationById(id)));
+    const newNotification = updateNotificationByJson(curNotification, notificationData);
+
+    const user = await req.user.saveUpdatedNotification(id, newNotification);
+
+    res.send({ user });
+
+  } catch (err) {
+      return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
 

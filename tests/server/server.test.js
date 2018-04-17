@@ -235,6 +235,40 @@ describe('Server Tests', () => {
 
   });
 
+   describe('PATCH /users/notifications/:id', () => {
+    it('should not edit notification - non existing one', (done) => {
+      const nonExistingId = new ObjectID();
+      request(app)
+        .patch(`/users/notifications/${nonExistingId}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should edit notification', (done) => {
+      const notificationId = users[1].notifications[0]._id;
+      request(app)
+        .patch(`/users/notifications/${notificationId}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ wasRead: true })
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const user = await User.findById(users[1]._id);
+            expect(user.getNotifications().length).toBe(1);
+            expect(user.getNotifications()[0].wasRead).toBe(true);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    });
+  });
+
   describe('PUT /apartments/:id/comment', () => {
     it('should add a new comment', (done) => {
       const id = apartments[1]._id;

@@ -193,6 +193,44 @@ describe('Notification Tests', () => {
     });
   });
 
+  describe('#updateNotificationByJson', () => {
+    it('should change partial fields (some others are not supported)', (done) => {
+     
+      const notificationExample = {
+        notificationType: 1,
+       _createdBy: new ObjectID(),
+        wasRead: false,
+        _notifiedObjectsIds: [new ObjectID()]
+      };
+
+      var json = {notificationType: 2, wasReadTEMP: true};
+      var notification = NotificationModule.updateNotificationByJson(notificationExample, json);
+      
+      expect(notification.notificationType).toBe(2);
+      expect(notification.wasRead).toBe(false);
+
+      done();
+    });
+
+    it('should change partial fields (all are supported)', (done) => {
+     
+      const notificationExample = {
+        notificationType: 1,
+       _createdBy: new ObjectID(),
+        wasRead: false,
+        _notifiedObjectsIds: [new ObjectID()]
+      };
+
+      var json = {notificationType: 2, wasRead: true};
+      var notification = NotificationModule.updateNotificationByJson(notificationExample, json);
+      
+      expect(notification.notificationType).toBe(2);
+      expect(notification.wasRead).toBe(true);
+
+      done();
+    });
+  });
+
 
 
 
