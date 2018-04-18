@@ -79,14 +79,14 @@ describe('Notificator Tests', () => {
     });
 
     it('should not notify user on his own changes', (done) => {
-      const notificationType = NotificationModule.NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT;
+      const notificationType = NotificationModule.NotificationsTypesEnum.USER_LIKED_APARTMENT;
       const createdBy = users[1]._id;
       const notifiedObjectsIds = [new ObjectID()];
 
       Notificator.notifyUsers(notificationType, createdBy, [createdBy], notifiedObjectsIds).then((promises) =>{
         Promise.all(promises).then((res) => {
           User.findById(createdBy).then((user)=> {
-            expect(user.notifications.length).toBe(0);
+            expect(user.notifications.length).toBe(1);
             done();
           });
         });
