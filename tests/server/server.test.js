@@ -1314,6 +1314,7 @@ describe('Server Tests', () => {
       const user = Object.assign({}, users[3]);
       user.email = users[1].email;
       user._id = users[1]._id;
+      user._publishedApartments = users[1]._publishedApartments;
 
       request(app)
         .patch('/users/self')
@@ -1323,6 +1324,8 @@ describe('Server Tests', () => {
         .expect((res) => {
           const expected = User.toJSON(user);
           expected._id = expected._id.toHexString();
+          //should not update the published apartment list
+          expected._publishedApartments = users[1]._publishedApartments;
           expect(res.body.user).toMatchObject(expected);
         })
         .end((err) => {
@@ -1332,6 +1335,7 @@ describe('Server Tests', () => {
           return User.findById(users[1]._id.toHexString())
             .then($ => {
               delete user.password; // we don't want to check the password since it's encrypted
+              delete user._id;
               expect($.toObject()).toMatchObject(user);
               done();
             })

@@ -9,8 +9,7 @@ const { NotificationSchema, addAggregationDataInNotification } = require('./noti
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH, XAUTH_EXPIRATION_TIME } = require('../constants');
-const ticket = require('./ticket');
-const { invalidCradentials, emailInUse, PasswordResetFailure } = require('../errors');
+const { invalidCredentials, emailInUse, PasswordResetFailure } = require('../errors');
 
 
 const UserSchema = new mongoose.Schema({
@@ -142,7 +141,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
 
   return User.findOne({ email }).then((user) => {
     if (!user) {
-      return Promise.reject(invalidCradentials);
+      return Promise.reject(invalidCredentials);
     }
 
     return new Promise((resolve, reject) => {
@@ -150,7 +149,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
         if (res) {
           resolve(user);
         } else {
-          reject(invalidCradentials);
+          reject(invalidCredentials);
         }
       });
     });

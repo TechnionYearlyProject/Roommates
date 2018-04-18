@@ -14,7 +14,7 @@ const Error = function (code, message) {
 };
 
 module.exports = {
-  invalidCradentials: Error(ERR_INVALID_CRADENTIALS, 'Invalid cradentials.'),
+  invalidCredentials: Error(ERR_INVALID_CRADENTIALS, 'Invalid cradentials.'),
   emailInUse: Error(ERR_EMAIL_IN_USE, 'Email already in use.'),
   invalidLocation: Error(INVALID_LOCATION, 'Couldn\'t find location.'),
   unknownError: Error(UNKNOWN_ERROR, 'Uknown error occured.'),
