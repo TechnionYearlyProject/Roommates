@@ -399,10 +399,17 @@ app.post('/users', async (req, res) => {
      * @date: 16/4/18
      * generate an authentication token to start a session between the 2 ends.
     */
-    const ticket = user.generateAuthenticationToken();
-    res.header(XAUTH, ticket.token);
+    const token = user.generateAuthenticationToken();
+    res.header(XAUTH, token).send({ user });
+
+    /**
+     * @updatedBy: Alon Talmor
+     * @date: 18/04/18
+     * Expiration time is now a part of the authentication code instead of a separate property.
+      
     res.header(XEXPIRATION, ticket.expiration);
     res.send({ user });
+    */
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -423,16 +430,23 @@ app.post('/users/login', async (req, res) => {
     /**
      * @updatedBy: Alon Talmor
      * @date: 16/04/18
-     * We should  generate a token even if the user is yet to be verified (verification is by mail).
+     * We should generate a token even if the user is yet to be verified (verification is by mail).
 
     if (!user.isVerified) {
       return res.send({ user });
     }
 	 */
     user.removeExpiredTokens();
-    const ticket = await user.generateAuthenticationToken();
-    res.header(XAUTH, ticket.token);
-    res.header(XEXPIRATION, ticket.expiration).send({ user });
+    const token = await user.generateAuthenticationToken();
+    res.header(XAUTH, token).send({ user });
+
+    /**
+     * @updatedBy: Alon Talmor
+     * @date: 18/04/18
+     * Expiration time is now a part of the authentication code instead of a separate property.
+
+     res.header(XEXPIRATION, ticket.expiration);
+    */
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }

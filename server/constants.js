@@ -1,7 +1,7 @@
 const EARTH_RADIUS_IN_KM = 6378.1;
 const XAUTH = 'x-auth';
 const XEXPIRATION = 'x-expiration';
-const XAUTH_EXPIRATION_TIME = 1000 * 60 * 60 * 2; // 2 hours
+const XAUTH_EXPIRATION_TIME = '24h'; // 24 hours
 
 const VERIFICATION_SECRET = 'change_this_to_emailSecret';
 const FORGOT_SECRET = 'change_it_to_secret_String';

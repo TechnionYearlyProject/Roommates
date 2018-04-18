@@ -8,7 +8,7 @@ const { isSupportedHobbieId } = require('./hobbie');
 const { NotificationSchema, addAggregationDataInNotification } = require('./notification');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
-const { XAUTH } = require('../constants');
+const { XAUTH, XAUTH_EXPIRATION_TIME } = require('../constants');
 const ticket = require('./ticket');
 const { invalidCradentials, emailInUse, PasswordResetFailure } = require('../errors');
 
@@ -103,10 +103,6 @@ const UserSchema = new mongoose.Schema({
     token: {
       type: String,
       required: true
-    },
-    expiration: {
-      type: Number,
-      required: true
     }
   }],
   notifications: [NotificationSchema],
@@ -173,14 +169,14 @@ UserSchema.statics.findByToken = function (token) {
 
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (e) {
+  } catch (error) { // may fail if token is expired or token is invalid
     return Promise.reject();
   }
 
   return User.findOne({
     _id: decoded._id,
-    'tokens.token': token,
-    'tokens.access': XAUTH
+    'tokens.access': XAUTH,
+    'tokens.token': token
   });
 };
 
@@ -231,7 +227,7 @@ UserSchema.methods.toJSON = function () {
 /**
  *
  * @param {String} token
- * @returns the ticket with the specified token. if not ticket found return null.
+ * @returns the ticket with the specified token. if no ticket found returns null.
  */
 UserSchema.methods.getTicket = function (token) {
   const user = this;
@@ -240,46 +236,70 @@ UserSchema.methods.getTicket = function (token) {
 };
 
 /**
- * remove expired tokens from the user's tokens list.
+ * Remove expired tokens from the user's tokens list.
  *
- * @returns Promsie object with the user.
+ * @updatedBy: Alon Talmor
+ * @date: 18/04/18
+ *
+ * removed the expiration propery from the user's schema.
+ * Now the expiration time is encoded as part of the jwt token.
+ * Keep only the tokens that do not have expiration time or
+ * have expiration time which has yet to pass.
+ *
+ * @returns Promsie Object containing the modified user.
  */
 UserSchema.methods.removeExpiredTokens = function () {
   const user = this;
 
-  const tokens = user.tokens.filter(t => Date.now() < t.expiration);
+  const currentTime = Date.now() / 1000;
+  const tokens = user.tokens.filter(t => !t.exp || t.exp < currentTime);
   user.tokens = tokens;
   return user.save();
 };
 
-/**
- *
- * @param {String} token
- * @returns Promise object with the new expiration time.
- */
-UserSchema.methods.updateTokenTime = function (token) {
-  const user = this;
+// /**
+//  *
+//  * @param {String} token
+//  * @returns Promise object with the new expiration time.
+//  */
+// UserSchema.methods.updateTokenTime = function (token) {
+//   const user = this;
 
-  const newExpiration = ticket.generateNewExpiration();
-  user.getTicket(token).expiration = newExpiration;
-  return user.save().then(() => newExpiration);
-};
+//   const newExpiration = ticket.generateNewExpiration();
+//   user.getTicket(token).expiration = newExpiration;
+//   return user.save().then(() => newExpiration);
+// };
 
 /**
- * generate a new auth token to the user.
+ * Generate a new auth token to the user.
  *
- * @returns Promise object with the ticket.
+ * @updatedBy: Alon Talmor
+ * @date: 18/04/18
+ *
+ * Added XAUTH_EXPIRATION_TIME to be a part of the jwt token
+ * instead of a separate property. This saves the need of saving
+ * 2 different pieces of data both in back-end & front-end.
+ * @returns Promise Object containing the token.
  */
 UserSchema.methods.generateAuthenticationToken = function () {
   const user = this;
 
   const access = XAUTH;
-  const token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.JWT_SECRET).toString();
-  const t = ticket.create(access, token);
-  user.tokens.push(t);
+  const token = jwt.sign(
+    {
+      _id: user._id.toHexString(),
+      access
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: XAUTH_EXPIRATION_TIME
+    }
+  ).toString();
+
+  user.tokens.push({ access, token });
 
   return user.save()
-    .then(() => t);
+    .then(() => token);
 };
 
 /**
@@ -427,7 +447,7 @@ UserSchema.methods.removeInterestInApartment = function (_apartmentID) {
  * Otherwise, change the user password to the new one. In Addition, clear the tokens list. This means
  * that after reseting a password the user does not have any open auth relation with the server.
  * It is assumed that the "save" function encrypts the password before saving it in the database.
- * @returns Promise object which includes the user.
+ * @returns Promise Object which includes the user.
  */
 UserSchema.methods.resetPassword = function (newPassword) {
   const user = this;
@@ -499,10 +519,10 @@ UserSchema.methods.saveAggregationDataInNotification = function (_notificationId
  */
 UserSchema.methods.saveUpdatedNotification = function (_notificationId, newNotification) {
   const user = this;
-  
+
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
 
-  if(notificationIndex < 0){
+  if (notificationIndex < 0) {
     return Promise.reject();
   }
 
@@ -537,7 +557,7 @@ UserSchema.methods.getNotifications = function () {
  */
 UserSchema.methods.getNotificationById = function (_notificationId) {
   const user = this;
-      
+
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
 
   return user.notifications[notificationIndex];
