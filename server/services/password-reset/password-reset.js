@@ -45,7 +45,7 @@ const sendResetPasswordMail = (user) => {
     if (err) {
       throw PasswordResetFailure;
     }
-    const resetPasswordURL = `http://localhost:3000/users/reset-password/${ResetToken}`; //TODO: user CORS
+    const resetPasswordURL = `http://localhost:8080/users/reset-password/${ResetToken}`; //TODO: user CORS
 
     const msg = {
       to: user.email,

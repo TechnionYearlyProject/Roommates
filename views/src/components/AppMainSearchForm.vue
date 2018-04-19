@@ -26,7 +26,7 @@
       <v-card-text v-show="extendSearch">
         <v-layout wrap row mt-3>
           <v-flex xs12 sm4>
-            <app-calendar-form @dateUpdated="payload.latestEntranceDate = $event" label="Enterance Date"></app-calendar-form>
+            <app-calendar-form @dateUpdated="payload.latestEntranceDate = $event" label="Entrance Date"></app-calendar-form>
           </v-flex>
           <v-flex xs12 sm4 v-for="(slider,i) in sliders" :key="`slider-${i}`">
             <v-slider :label="slider.label" v-model="payload[slider.ref]" thumb-label :step="slider.interval" :min="slider.value.min" :max="slider.value.max" ticks></v-slider>

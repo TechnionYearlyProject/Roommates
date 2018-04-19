@@ -77,7 +77,7 @@
             {
               title: 'Account',
               icon: 'settings',
-              to: '##',
+              to: 'AppResetPassword',
               do: () => {}
             },
             {

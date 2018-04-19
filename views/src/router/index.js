@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import AppMain from '@/components/AppMain';
 import AppIdentification from '@/components/AppIdentification';
 import AppVerification from '@/components/AppVerification';
+import AppResetPassword from '@/components/AppResetPassword';
 import AppUserProfile from '@/components/AppUserProfile';
 import AppPublishApartment from '@/components/AppPublishApartment';
 import store from '../store';
@@ -42,7 +43,13 @@ const router = new Router({
       }
     },
     {
-      path: '/user-profile',
+      path: '/reset_password/:token?',
+      name: 'AppResetPassword',
+      alias: '/users/reset-password/:token',
+      component: AppResetPassword,
+    },
+    {
+      path: '/user_profile',
       name: 'AppUserProfile',
       component: AppUserProfile,
       meta: {

@@ -10,7 +10,7 @@
                 <v-flex xs12>
                     <v-list-tile>
                         <v-list-tile-action>
-                            Enterance date
+                            Entrance date
                         </v-list-tile-action>
                         <v-list-tile-content>
                             <v-list-tile-title class="grey--text">

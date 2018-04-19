@@ -105,6 +105,7 @@ export default new Vuex.Store({
     register({ commit, getters }, payload) {
       return axios.post('http://localhost:3000/users', payload
       ).then((response) => {
+        commit('startSession', response.headers['x-auth']);
         commit('setUser', response.data.user);
         return getters.getUser;
       });
@@ -115,9 +116,15 @@ export default new Vuex.Store({
      * @param: payload: object of {email,password}
      */
     sendVerificationMail(context, payload) {
-      // eslint-disable-next-line 
-      console.log(payload);
       return axios.post('http://localhost:3000/users/verify', payload);
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 19/04/18
+     * @param: payload: object of {email}
+     */
+    sendResetMail(context, payload) {
+      return axios.post('http://localhost:3000/users/reset', payload);
     },
     /**
      * @author: Alon Talmor
@@ -126,11 +133,24 @@ export default new Vuex.Store({
      */
     verifyAccount({ commit, getters }, jwt) {
       if (getters.isVerified) {
-        return;
+        return Promise.reject('Account Already verified');
       }
       return axios.patch(`http://localhost:3000/users/verify/${jwt}`)
         .then((response) => {
           commit('setUser', response.data.user);
+          return getters.getUser;
+        });
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 20/04/18
+     * @param: params: object of {jwt}
+     * @param: payload: object of {email,password}
+     */
+    resetPassword({ commit, getters }, { jwt, payload }) {
+      return axios.patch(`http://localhost:3000/users/reset/${jwt}`, payload)
+        .then(() => {
+          commit('logout'); // clear user session (if logged in)
           return getters.getUser;
         });
     },

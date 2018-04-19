@@ -611,11 +611,13 @@ app.post('/users/verify', async (req, res) => {
  *
  * This route is used to send an email upon reset password request.
  * To perform the action we use the Password-Reset service.
- * Authentication is first required for security enhancement.
+ * Authentication is not required, but the designated user email
+ * should be supplied via the request body.
  */
-app.post('/users/forgot-password', authenticate, (req, res) => {
+app.post('/users/reset', async (req, res) => {
   try {
-    passwordReset.sendResetPasswordMail(req.user);
+    const user = await User.findOne({ email: req.body.email });
+    passwordReset.sendResetPasswordMail(user);
     res.send('forgot email was sent');
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
@@ -628,12 +630,17 @@ app.post('/users/forgot-password', authenticate, (req, res) => {
  *
  * Handles the GET request which is sent to the server when a user
  * clicks on the Password-Reset URL attach to the mail sent by
- * "/users/forgot-password" route.
+ * "POST /users/reset" route.
  * This route is important because of it supplies verification. The server
  * will not display the change password page unless the "token" is valid.
  * Authentication is required.
+ *
+ * @updatedBy: Alon Talmor
+ * @date: 19/04/18
+ * !! DEPRECATED !! Please do not use.
+ * The method of reset password was changed, authentication is no more required!
  */
-app.get('/users/reset-password/:token', authenticate, (req, res) => {
+app.get('/users/reset/:token', (req, res) => {
   try {
     passwordReset.verifyResetToken(req.user, req.params.token);
     res.send('Reset verification successful');
@@ -646,22 +653,34 @@ app.get('/users/reset-password/:token', authenticate, (req, res) => {
  * @author: Alon Talmor
  * @date: 2/4/18
  *
- * After the user chooses his/her new password, it send to the server in the request's body.
+ * After the user chooses his/her new password, it sends it to the server in the request's body.
+ * In addition, he/she must add email address - this is required for fetching the account details from the db.
  * It is assumed that the password is sent under the property "password".
- * First the token is revarified, so we know that no malicious user is trying to change the
+ * First the token is verified, so we know that no malicious user is trying to change the
  * password without acctually recieving a token!
  * Next, the user's password is reset and is changed to the new password. It is assumed that
  * the resetPassword method performs checks on the password (on error an exception might be thrown).
  * If everything went well, updated user object is returned.
  * The user should not be authenticated afterwards (he/she is required to login in again).
+ *
+ * @updatedBy: Alon Talmor
+ * @date: 19/04/18
+ * Property email is also assumed to be sent in the request body.
  */
-app.patch('/users/reset-password/:token', authenticate, async (req, res) => {
+app.patch('/users/reset/:token', async (req, res) => {
   try {
-    passwordReset.verifyResetToken(req.user, req.params.token);
-    const user = await req.user.resetPassword(req.body.password);
+	console.log(req.body);
+	const user = await User.findOne({ email: req.body.email });
+	console.log(user);
+    passwordReset.verifyResetToken(user, req.params.token);
+	console.log("3");
+    await user.resetPassword(req.body.password);
+		console.log("5");
+
     //TODO: disable using this same link after password change.
     res.send({ user });
   } catch (err) {
+	  console.log(err);
     res.status(BAD_REQUEST).send(err);
   }
 });
@@ -682,9 +701,9 @@ app.patch('/users/notifications/:id', authenticate, async (req, res) => {
     const { id } = req.params;
 
     const notificationData = _.pick(req.body,
-    [
-      'wasRead'
-    ]);
+      [
+        'wasRead'
+      ]);
 
     const curNotification = JSON.parse(JSON.stringify(req.user.getNotificationById(id)));
     const newNotification = updateNotificationByJson(curNotification, notificationData);
@@ -694,7 +713,7 @@ app.patch('/users/notifications/:id', authenticate, async (req, res) => {
     res.send({ user });
 
   } catch (err) {
-      return res.status(BAD_REQUEST).send(errors.unknownError);
+    return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
 

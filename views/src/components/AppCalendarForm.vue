@@ -1,6 +1,6 @@
 <template>
     <v-menu ref="menu" lazy :close-on-content-click="false" v-model="menu" transition="scale-transition" offset-y full-width :nudge-right="40" min-width="290px" :return-value.sync="date">
-        <v-text-field :label="label" slot="activator" v-model="date" :prepend-icon="no-icon? '' : 'event'" readonly :single-line="true" :required="required"></v-text-field>
+        <v-text-field :label="label" slot="activator" v-model="date" :prepend-icon="noIcon? '' : 'event'" readonly :single-line="true" :required="required"></v-text-field>
         <v-date-picker v-model="date" no-title scrollable>
             <v-spacer></v-spacer>
             <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
@@ -24,11 +24,7 @@
           type: String,
           default: ''
         },
-        'no-form': {
-          type: Boolean,
-          default: false
-        },
-        'no-icon': {
+        noIcon: {
           type: Boolean,
           default: false
         }
