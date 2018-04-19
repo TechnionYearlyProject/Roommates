@@ -68,7 +68,7 @@ router.beforeEach((to, from, next) => {
     next({ name: 'AppIdentification' });
   } else if (to.matched.some(record => record.meta.rejectsAuth) && store.getters.isAuthenticated) {
     next({ name: 'AppMain' });
-  } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isAuthenticated) {
+  } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isAuthenticated) { // eslint-disable-line 
     next({ name: 'AppIdentification' });
   } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isVerified) {
     next({ name: 'AppVerification' });

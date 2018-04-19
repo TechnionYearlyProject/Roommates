@@ -86,7 +86,7 @@
     mounted() {
       this.payload.email = this.$store.getters.getUser.email;
       if (this.$route.params.token) {
-        this.verifyAccount()
+        this.verifyAccount();
       }
     }
   };

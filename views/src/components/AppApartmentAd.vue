@@ -22,10 +22,10 @@
             </v-flex>
             <v-spacer></v-spacer>
             <v-tooltip top slot="activator">
-                <v-btn icon slot="activator" :class="apartment.fav ? 'red--text' : ''" @click.native="favorite">
+                <v-btn icon slot="activator" :class="fav ? 'red--text' : ''" @click.native="favorite">
                     <v-icon>favorite</v-icon>
                 </v-btn>
-                <span>I'm interested!</span>
+                <span>{{ interestedMessage }}</span>
             </v-tooltip>
             <v-menu offset-x :close-on-content-click="false" :nudge-width="245" lazy>
                 <v-tooltip top slot="activator">
@@ -88,14 +88,14 @@
                     <strong>published:</strong> {{ new Date(apartment.createdAt).toDateString() }}</small>
             </v-flex>
             <v-spacer></v-spacer>
-            <v-btn icon @click.native="apartment.show = !apartment.show">
+            <v-btn icon @click.native="show = !show">
                 <v-icon>{{ apartment.show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
             </v-btn>
 
         </v-card-actions>
 
         <v-slide-y-transition>
-            <v-card-text v-show="apartment.show" class="pt-0">
+            <v-card-text v-show="show" class="pt-0">
                 <v-divider class="mb-3"></v-divider>
 
                 <strong>Enterance date:</strong> {{ new Date(apartment.enteranceDate).toDateString() }}
@@ -106,8 +106,8 @@
                     <v-divider></v-divider>
                     <v-list dense>
                         <v-list-tile v-for="(attribute,i) in attributes" :key="`attribute-${i}`">
-                            <v-list-tile-content>{{attribute.label }}</v-list-tile-content>
-                            <v-list-tile-content class="align-end">{{ apartment[attribute.ref] }}</v-list-tile-content>
+                            <v-list-tile-content>{{ attribute.label }}</v-list-tile-content>
+                            <v-list-tile-content class="align-end">{{ apartment[attribute.ref] || '-' }}</v-list-tile-content>
                         </v-list-tile>
                     </v-list>
                     <v-divider></v-divider>
@@ -150,6 +150,7 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
     import defaultApartmentImage from '../assets/apartment-defalut.jpg';
     import tagsList from '../assets/tags';
     import AppAvatar from './AppAvatar';
@@ -161,7 +162,7 @@
           attributes: [
             {
               label: 'required roommates',
-              ref: 'requiredNumberOfRoommates'
+              ref: 'requiredRoommates'
             },
             {
               label: 'total roommates',
@@ -184,17 +185,34 @@
               ref: 'area'
             }
           ],
+          show: false,
+          fav: false,
           tags: tagsList,
           defaultImage: defaultApartmentImage,
           imageNumber: 0,
+          interestedMessage: "I'm interested!",
           e1: 'recent'
         };
       },
       methods: {
         favorite() {
-          this.apartment.fav = !this.apartment.fav;
+          if (!this.isAuthenticated) {
+            this.interestedMessage = 'Please login first';
+          } else if (!this.isVerified) {
+            this.interestedMessage = 'Please verify account';
+          } else {
+            this.fav = !this.fav;
+            this.$store
+              .dispatch('favor', { id: this.apartment._id })
+              .catch((error) => {
+                // eslint-disable-next-line 
+                console.log(error);
+                this.fav = !this.fav;
+              });
+          }
         },
         getPublisher() {
+            // eslint-disable-next-line 
           console.log('fetch publisher');
         },
         nextImage() {
@@ -211,6 +229,7 @@
         }
       },
       computed: {
+        ...mapGetters(['isAuthenticated', 'isVerified']),
         image() {
           return this.apartment.images[0]
             ? this.apartment.images[this.imageNumber]
@@ -219,6 +238,13 @@
       },
       components: {
         AppAvatar
+      },
+      created() {
+        if (this.isAuthenticated) {
+          this.fav = this.apartment._interested.includes(
+            this.$store.getters.getUser._id
+          );
+        }
       }
     };
 </script>

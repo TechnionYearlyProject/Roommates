@@ -160,6 +160,7 @@
     },
     methods: {
       editItem() {
+        // eslint-disable-next-line 
         console.log('editted!');
       },
       removeItem(i, j) {
@@ -180,6 +181,7 @@
           value: item.value,
           removable: true
         });
+        // eslint-disable-next-line
         item.value = '';
       }
     },

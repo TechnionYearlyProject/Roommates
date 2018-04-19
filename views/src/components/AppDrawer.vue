@@ -1,6 +1,6 @@
 <template>
-    <v-navigation-drawer absolute clipped class="grey lighten-4" app v-model="drawer">
-        <v-text-field label='Search by address' autofocus :prepend-icon="placeIcon" :append-icon="searchIcon" :prepend-icon-cb="openMap" :append-icon-cb="search" @keyup.enter="search" clearable></v-text-field>
+    <v-navigation-drawer fixed clipped class="grey lighten-4" app v-model="drawer">
+        <v-text-field v-model="payload.address" label='Search by address' autofocus :prepend-icon="placeIcon" :append-icon="searchIcon" :prepend-icon-cb="openMap" :append-icon-cb="search" @keyup.enter="search"></v-text-field>
         <v-list dense>
             <v-subheader>
                 Filters
@@ -88,8 +88,8 @@
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
-    import AppCalendarForm from './AppCalendarForm';
     import vueSlider from 'vue-slider-component';
+    import AppCalendarForm from './AppCalendarForm';
     import tags from '../assets/tags';
 
     export default {
@@ -153,9 +153,10 @@
       methods: {
         ...mapMutations(['toggleDrawer']),
         search() {
-          alert('search');
+          this.$emit('search', this.payload);
         },
         openMap() {
+          // eslint-disable-next-line
           alert('openMap');
         },
         formatedValue(value) {

@@ -109,6 +109,7 @@
           this.$router.push({ name: 'AppMain' });
           this.showSnackbar(user);
         } catch (error) {
+          // eslint-disable-next-line 
           console.log(error);
         } finally {
           this.hideLoading();

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <app-drawer></app-drawer>
+    <app-drawer @search="search"></app-drawer>
     <v-parallax absolute :src="image">
       <v-container fill-height>
         <v-layout align-center align-content-center wrap row>
@@ -18,12 +18,20 @@
     </v-parallax>
 
     <v-container>
-      <v-card style="margin-top:-104px;">
+      <v-card style="margin-top:-104px; min-height: 500px;">
         <v-container grid-list-lg>
           <v-layout wrap row>
-            <v-flex xs12 sm6 md6 lg4 v-for="(apartment,i) in apartments" :key="`apartment-${i}`">
-              <app-apartment-ad :apartment="apartment"></app-apartment-ad>
+            <v-flex v-if="loading" class="text-xs-center" xs12>
+              <v-progress-circular indeterminate color="purple" class="ma-5" />
             </v-flex>
+            <v-flex v-else-if="!apartments || apartments.length === 0" class="text-xs-center" xs12>
+              No results
+            </v-flex>
+            <transition-group name="scale-transition" tag="v-layout" class="wrap row">
+              <v-flex xs12 sm6 md6 lg4 v-for="(apartment,i) in apartments" :key="`apartment-${i}`">
+                <app-apartment-ad :apartment="apartment"></app-apartment-ad>
+              </v-flex>
+            </transition-group>
           </v-layout>
         </v-container>
       </v-card>
@@ -35,6 +43,7 @@
 </template>
 
 <script>
+  import { mapGetters, mapMutations } from 'vuex';
   import AppMainSearchForm from './AppMainSearchForm';
   import AppApartmentAd from './AppApartmentAd';
   import AppDrawer from './AppDrawer';
@@ -43,264 +52,39 @@
   export default {
     data() {
       return {
-        apartments: [],
+        // apartments: null,
         scrollOptions: {
           duration: 500,
           offset: 10,
           easing: 'easeInOutCubic'
         },
-        image: cityImage
+        image: cityImage,
+        loading: false
       };
     },
-    mounted() {
-
-      this.apartments = [
-        {
-          _id: '5a5879a991ce7538e484130c',
-          title: 'great place!',
-          price: 1000,
-          enteranceDate: 12345678,
-          requiredNumberOfRoommates: 1,
-          totalRoommates: 3,
-          numberOfRooms: 4,
-          floor: 2,
-          totalFloors: 3,
-          area: 100,
-          _createdBy: '5a58794d91ce7538e4841308',
-          createdAt: 1515747753079.0,
-          comments: [
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516568639448.0,
-              text: 'this is a test!',
-              _id: '5a65003f8af5bb30e4a212ef'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570437663.0,
-              text: 'test number two !',
-              _id: '5a6507458af5bb30e4a212f1'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570538975.0,
-              text: 'test number three !',
-              _id: '5a6507aa8af5bb30e4a212f2'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570647247.0,
-              text: 'test number four',
-              _id: '5a6508178af5bb30e4a212f4'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516575941005.0,
-              text: 'hi how are you ?',
-              _id: '5a651cc58af5bb30e4a212f6'
-            }
-          ],
-          tags: [1, 3, 6],
-          description: 'Great place',
-          images: [],
-          location: {
-            geolocation: [35.0164783, 32.7831797],
-            address: {
-              state: 'israel',
-              city: 'haifa',
-              street: 'gilboa',
-              number: 35
-            }
-          },
-          _interested: ['5a58794d91ce7538e4841308', '5a651d668af5bb30e4a212f7'],
-          __v: 72,
-          show: false,
-          fav: false // this should be accourding to the objectId of the connected user
-        },
-        {
-          _id: '5a5879a991ce7538e484130c',
-          title: 'great place!',
-          price: 1000,
-          enteranceDate: 12345678,
-          requiredNumberOfRoommates: 1,
-          numberOfRooms: 4,
-          floor: 2,
-          totalFloors: 3,
-          area: 100,
-          _createdBy: '5a58794d91ce7538e4841308',
-          createdAt: 1515747753079.0,
-          comments: [
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516568639448.0,
-              text: 'this is a test!',
-              _id: '5a65003f8af5bb30e4a212ef'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570437663.0,
-              text: 'test number two !',
-              _id: '5a6507458af5bb30e4a212f1'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570538975.0,
-              text: 'test number three !',
-              _id: '5a6507aa8af5bb30e4a212f2'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570647247.0,
-              text: 'test number four',
-              _id: '5a6508178af5bb30e4a212f4'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516575941005.0,
-              text: 'hi how are you ?',
-              _id: '5a651cc58af5bb30e4a212f6'
-            }
-          ],
-          tags: [1, 3, 6],
-          description: 'Great place',
-          images: [],
-          location: {
-            geolocation: [35.0164783, 32.7831797],
-            address: {
-              state: 'israel',
-              city: 'haifa',
-              street: 'gilboa',
-              number: 35
-            }
-          },
-          _interested: ['5a58794d91ce7538e4841308', '5a651d668af5bb30e4a212f7'],
-          __v: 72,
-          show: false,
-          fav: false // this should be accourding to the objectId of the connected user
-        },
-        {
-          _id: '5a5879a991ce7538e484130c',
-          title: 'great place!',
-          price: 1000,
-          enteranceDate: 12345678,
-          requiredNumberOfRoommates: 1,
-          numberOfRooms: 4,
-          floor: 2,
-          totalFloors: 3,
-          area: 100,
-          _createdBy: '5a58794d91ce7538e4841308',
-          createdAt: 1515747753079.0,
-          comments: [
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516568639448.0,
-              text: 'this is a test!',
-              _id: '5a65003f8af5bb30e4a212ef'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570437663.0,
-              text: 'test number two !',
-              _id: '5a6507458af5bb30e4a212f1'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570538975.0,
-              text: 'test number three !',
-              _id: '5a6507aa8af5bb30e4a212f2'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570647247.0,
-              text: 'test number four',
-              _id: '5a6508178af5bb30e4a212f4'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516575941005.0,
-              text: 'hi how are you ?',
-              _id: '5a651cc58af5bb30e4a212f6'
-            }
-          ],
-          tags: [1, 3, 6],
-          description: 'Great place',
-          images: [],
-          location: {
-            geolocation: [35.0164783, 32.7831797],
-            address: {
-              state: 'israel',
-              city: 'haifa',
-              street: 'gilboa',
-              number: 35
-            }
-          },
-          _interested: ['5a58794d91ce7538e4841308', '5a651d668af5bb30e4a212f7'],
-          __v: 72,
-          show: false,
-          fav: false // this should be accourding to the objectId of the connected user
-        },
-        {
-          _id: '5a5879a991ce7538e484130c',
-          title: 'great place!',
-          price: 1000,
-          enteranceDate: 12345678,
-          requiredNumberOfRoommates: 1,
-          numberOfRooms: 4,
-          floor: 2,
-          totalFloors: 3,
-          area: 100,
-          _createdBy: '5a58794d91ce7538e4841308',
-          createdAt: 1515747753079.0,
-          comments: [
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516568639448.0,
-              text: 'this is a test!',
-              _id: '5a65003f8af5bb30e4a212ef'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570437663.0,
-              text: 'test number two !',
-              _id: '5a6507458af5bb30e4a212f1'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570538975.0,
-              text: 'test number three !',
-              _id: '5a6507aa8af5bb30e4a212f2'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516570647247.0,
-              text: 'test number four',
-              _id: '5a6508178af5bb30e4a212f4'
-            },
-            {
-              _createdBy: '5a58794d91ce7538e4841308',
-              createdAt: 1516575941005.0,
-              text: 'hi how are you ?',
-              _id: '5a651cc58af5bb30e4a212f6'
-            }
-          ],
-          tags: [1, 3, 6],
-          description: 'Great place',
-          images: [],
-          location: {
-            geolocation: [35.0164783, 32.7831797],
-            address: {
-              state: 'israel',
-              city: 'haifa',
-              street: 'gilboa',
-              number: 35
-            }
-          },
-          _interested: ['5a58794d91ce7538e4841308', '5a651d668af5bb30e4a212f7'],
-          __v: 72,
-          show: false,
-          fav: false // this should be accourding to the objectId of the connected user
-        }
-      ];
+    computed: {
+      ...mapGetters({ apartments: 'getApartments' })
+    },
+    methods: {
+      ...mapMutations(['setApartments']),
+      search(filters) {
+        this.setApartments([]);
+        this.loading = true;
+        this.$store
+          .dispatch('searchApartments', filters)
+          .catch(error =>
+          // eslint-disable-next-line 
+          console.log(error)
+          )
+          .then(() => {
+            this.loading = false;
+          });
+      }
+    },
+    beforeMount() {
+      if (!this.apartments) {
+        this.search({});
+      }
     },
     components: {
       AppMainSearchForm,
@@ -311,6 +95,5 @@
 </script>
 
 <style >
-  #parallax-id img {
-  }
+
 </style>

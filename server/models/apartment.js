@@ -250,7 +250,6 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   if (p.tags && Array.isArray(p.tags)) { // tags
     query.tags = { $all: p.tags };
   }
-
   return Apartment.find(query);
 };
 
@@ -296,7 +295,7 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-
+  
   return apartment.save();
 };
 

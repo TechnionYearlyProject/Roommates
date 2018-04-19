@@ -1,10 +1,10 @@
 <template>
-    <v-toolbar app absolute clipped-left dark color="primary">
+    <v-toolbar app fixed clipped-left dark color="primary">
         <v-toolbar-side-icon @click.stop="toggleSearchMenu"></v-toolbar-side-icon>
         <v-btn dark flat exact :to="{ name: 'AppMain' }" class="pr-3" active-class="">
-        
-        <v-toolbar-title class="hidden-xs-only">Roommates</v-toolbar-title>
-        <v-toolbar-title class="hidden-sm-and-up">R</v-toolbar-title>
+
+            <v-toolbar-title class="hidden-xs-only">Roommates</v-toolbar-title>
+            <v-toolbar-title class="hidden-sm-and-up">R</v-toolbar-title>
 
         </v-btn>
         <v-spacer></v-spacer>
@@ -61,8 +61,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
-    import { mapMutations } from 'vuex';
+    import { mapGetters, mapMutations } from 'vuex';
     import AppAvatar from './AppAvatar';
 
     export default {
@@ -87,22 +86,22 @@
               to: 'AppMain',
               do: () => this.$store.dispatch('logout')
             }
-          ],
+          ]
         };
       },
       methods: {
         ...mapMutations(['toggleDrawer']),
         toggleSearchMenu() {
-            if (this.$route.name === 'AppMain') {
-                this.toggleDrawer();
-            } else {
-                this.toggleDrawer(true);
-                this.$router.push({ name: 'AppMain' });
-            }
+          if (this.$route.name === 'AppMain') {
+            this.toggleDrawer();
+          } else {
+            this.toggleDrawer(true);
+            this.$router.push({ name: 'AppMain' });
+          }
         }
       },
       computed: {
-        ...mapGetters(['isAuthenticated', 'isVerified']),
+        ...mapGetters(['isAuthenticated', 'isVerified'])
       },
       components: {
         AppAvatar

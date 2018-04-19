@@ -25,6 +25,9 @@ export default new Vuex.Store({
     getUser(state) {
       return state.user;
     },
+    getApartments(state) {
+      return state.apartments;
+    },
     getLoadingStatus(state) {
       return state.loading;
     },
@@ -32,10 +35,10 @@ export default new Vuex.Store({
       return state.snackbar.text;
     },
     isAuthenticated(state) {
-      return state.user != null;
+      return state.user != null && state.sessionToken != null;
     },
     isVerified(state) {
-      return state.user && state.user.isVerified;
+      return state.user && state.user.isVerified && state.sessionToken;
     },
     getDrawerStatus(state) {
       return state.drawer;
@@ -44,6 +47,9 @@ export default new Vuex.Store({
   mutations: {
     setUser(state, user) {
       state.user = user;
+    },
+    setApartments(state, apartments) {
+      state.apartments = apartments;
     },
     showLoading(state) {
       state.loading = true;
@@ -58,13 +64,13 @@ export default new Vuex.Store({
       state.drawer = typeof value === 'boolean' ? value : !state.drawer;
     },
     startSession(state, token) {
-      state.sessionToken = token;
-      axios.defaults.headers.common['x-auth'] = token;
+      state.sessionToken = token || state.sessionToken;
+      axios.defaults.headers.common['x-auth'] = state.sessionToken;
     },
     endSession(state) {
       state.sessionToken = null;
       axios.defaults.headers.common['x-auth'] = null;
-    }
+    },
   },
   actions: {
     /**
@@ -109,6 +115,7 @@ export default new Vuex.Store({
      * @param: payload: object of {email,password}
      */
     sendVerificationMail(context, payload) {
+      // eslint-disable-next-line 
       console.log(payload);
       return axios.post('http://localhost:3000/users/verify', payload);
     },
@@ -127,9 +134,32 @@ export default new Vuex.Store({
           return getters.getUser;
         });
     },
-  },
-  created() {
-    this.state.drawer = this.$vuetify.breakpoint.mdAndUp;
+    /**
+     * @author: Alon Talmor
+     * @date: 18/04/18
+     * @param: params: object of {address,price,radius,roommates,floor,entranceDate,tags} -
+     * filter of the apartments list
+     */
+    searchApartments({ commit, getters }, params) {
+      return axios.get('http://localhost:3000/apartments', { params })
+        .then((response) => {
+          commit('setApartments', response.data.apartments);
+          return getters.getApartments;
+        });
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 19/04/18
+     * @param: params: object of {id} - the id of the apartment to favor
+     */
+    favor({ commit, getters }, params) {
+      return axios.put(`http://localhost:3000/apartments/${params.id}/interested`)
+        .then((response) => {
+          // eslint-disable-next-line 
+          console.log(response.data);
+          return response.data.apartment;
+        });
+    }
   },
   plugins: [vuexPersistence.plugin]
 });

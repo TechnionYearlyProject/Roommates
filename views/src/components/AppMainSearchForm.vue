@@ -97,9 +97,11 @@
     },
     methods: {
       openMap() {
+        // eslint-disable-next-line
         alert('open map');
       },
       search() {
+        // eslint-disable-next-line
         alert('search');
       }
     },

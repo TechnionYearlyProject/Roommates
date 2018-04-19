@@ -200,7 +200,6 @@ app.get('/apartments', async (req, res) => {
         // 'longitude',
         // 'latitude'
       ]);
-
     const apartments = await Apartment.findByProperties(query);
     res.send({ apartments });
     // let tags;
@@ -263,6 +262,8 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     const { id } = req.params;
 
     const apartment = await Apartment.findById(id);
+    console.log(apartment);
+    console.log(req.user);
     if (!apartment) {
       return res.status(NOT_FOUND).send();
     }
