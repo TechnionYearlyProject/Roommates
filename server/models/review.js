@@ -6,6 +6,14 @@ const { getIndexOfValue } = require('../helpers/arrayFunctions');
 const { ObjectID } = require('mongodb');
 
 const ReviewSchema = new mongoose.Schema({
+    _createdBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
+    createdAt: {
+        type: Number,
+        required: true
+    },
     street: {
         type: String,
         minlength: 2,
@@ -46,27 +54,19 @@ const ReviewSchema = new mongoose.Schema({
         generalRating:  {
             type: Number
         }
-   },
-    voters: [{
+    },
+    pros: {
         type: String,
-        ref: 'User'
-  }],
-    reviews: [{
-    _createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
+        minlength: 10,
+        maxlength: 1000,
+        required: true
     },
-    createdAt: {
-      type: Number,
-      required: true
+    Cons: {
+        type: String,
+        minlength: 10,
+        maxlength: 1000,
+        required: true
     },
-    review: {
-      type: String,
-      minlength: 10,
-      maxlength: 1000,
-      required: true
-    }
-  }],
 });
 
 /**
