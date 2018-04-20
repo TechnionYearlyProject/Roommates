@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 require('../../server/server');
 const { Apartment } = require('../../server/models/apartment');
+const { Review } = require('../../server/models/review');
 const { User } = require('../../server/models/user');
 const { NotificationsTypesEnum } = require('../../server/models/notification');
 const { XAUTH, VERIFICATION_SECRET, FORGOT_SECRET } = require('../../server/constants');
@@ -16,6 +17,9 @@ const user6Id = new ObjectID();
 
 const apartment1Id = new ObjectID();
 const apartment2Id = new ObjectID();
+
+const review1Id = new ObjectID();
+const review2Id = new ObjectID();
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
@@ -238,7 +242,44 @@ const getForgotPasswordToken = (hashedPassword) => jwt.sign(
     expiresIn: '1h'
   });
 
+const review1 = {
+  _id: review1Id,
+  _createdBy: new ObjectID(),
+  createdAt: Date.now(),
+  street: 'Shalom Aleichem',
+  city: 'Haifa',
+  geolocation: [32.7824885, 35.0177497],
+  ratedCharacteristics:{
+    parking: 3,
+    publicTransport:  3,
+    noise:  3,
+    commercialServices:  3,
+    upkeep:  3,
+    generalRating:  3
+  },
+  Pros: 'looks good,smells nice',
+  Cons: 'no parks and no parking'
+};
 
+const review2 = {
+  _id: review2Id,
+  _createdBy: new ObjectID(),
+  createdAt: Date.now(),
+  street: 'Malal Street',
+  city: 'Haifa',
+  geolocation: [32.7793633, 35.0157763],
+  ratedCharacteristics:{
+    parking: 2,
+    publicTransport:  4,
+    noise:  3,
+    commercialServices:  5,
+    upkeep:  1,
+    generalRating:  3
+  },
+  Pros: 'looks good,smells nice',
+  Cons: 'no parks and no parking what so ever'
+};
+  
 const apartments = [
   apartment1,
   apartment2
@@ -251,6 +292,11 @@ const users = [
   user4,
   user5,
   user6
+];
+
+const reviews = [
+  review1,
+  review2
 ];
 
 const coords = {
@@ -280,11 +326,25 @@ const populateApartments = (done) => {
     .catch(done);
 };
 
+const populateReviews = (done) => {
+  Review.remove({})
+    .then(() =>
+      Promise.all([
+        new Review(reviews[0]).save(),
+        new Review(reviews[1]).save(),
+
+      ]))
+    .then(() => done())
+    .catch(done);
+};
+
 module.exports = {
   apartments,
   users,
+  reviews,
   coords,
   populateApartments,
+  populateReviews,
   populateUsers,
   notPublishedApartment,
   notRegisteredUser,

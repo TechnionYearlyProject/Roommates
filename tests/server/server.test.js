@@ -14,13 +14,16 @@ const { app } = require('../../server/server');
 const { XAUTH } = require('../../server/constants');
 const { User } = require('../../server/models/user');
 const { Apartment } = require('../../server/models/apartment');
+const { Review } = require('../../server/models/review');
 const { getSupportedTags } = require('../../server/models/tag');
 const { getSupportedHobbies } = require('../../server/models/hobbie');
 
 const {
   apartments,
   users,
+  reviews,
   populateApartments,
+  populateReviews,
   populateUsers,
   notPublishedApartment,
   notRegisteredUser,
@@ -32,6 +35,7 @@ const {
 describe('Server Tests', () => {
   beforeEach(populateUsers);
   beforeEach(populateApartments);
+  beforeEach(populateReviews);
   // beforeEach((done) => {
   //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
   //     done();

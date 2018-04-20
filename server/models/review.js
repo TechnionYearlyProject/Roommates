@@ -55,7 +55,7 @@ const ReviewSchema = new mongoose.Schema({
             type: Number
         }
     },
-    pros: {
+    Pros: {
         type: String,
         minlength: 10,
         maxlength: 1000,
