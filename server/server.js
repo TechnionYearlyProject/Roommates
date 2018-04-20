@@ -6,6 +6,7 @@ const {
 } = require('http-status');
 require('./server-config');
 require('./db/mongoose');
+require('./socketsServer');
 const { useVue } = require('./middleware/vuejs');
 const { useCors } = require('./middleware/cors');
 const geoLocation = require('./services/geoLocation/geoLocation');
