@@ -9,6 +9,7 @@
  *
  */
 const io = require('socket.io')();
+const socketioJwt   = require("socketio-jwt");
 
 const { logInfo, logError } = require('./services/logger/logger');
 
@@ -51,14 +52,26 @@ const SocketMsgTypesEnum = {
  * @author: Or Abramovich
  * @date: 04/18
  *
+ * Authenticates the token used by the client.
+ * 
+ *
+ */
+io.use(socketioJwt.authorize({
+  secret: process.env.JWT_SECRET,
+  handshake: true
+}));
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
  * Define the connection and join messages callback.
  * 
  * @param {Socket} socket: web socket that raised the connection request.
  *
  */
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function (socket) { 
   socket.on('join', function (data) {
- 	  establishRoomsWithUser(data, socket);
+ 	  establishRoomsWithUser(socket.decoded_token._id, data, socket);
   });
 });
 
@@ -93,11 +106,11 @@ const joinPrivateRoom = (_userId, socket) => {
  * @param {Socket} socket: web socket that raised the join request.
  *
  */
-const establishRoomsWithUser = (params, socket) => {
+const establishRoomsWithUser = (_userId, params, socket) => {
   try{
   	switch(params.type){
   		case SocketJoinTypesEnum.JOIN_PRIVATE:
-  			joinPrivateRoom(params._id, socket);
+  			joinPrivateRoom(_userId, socket);
   		break;
   		default:
   			console.log("Not supported");
