@@ -1,6 +1,8 @@
 <template>
-    <v-container fluid>
+    <v-container >
         <v-stepper v-model="e6" vertical>
+             <h3 class="headline secondary--text ma-4">Advertise</h3>
+              <v-divider></v-divider>
             <v-stepper-step step="1" :complete="e6 > 1">
                 Main details
                 <small>The most important stuff!</small>
@@ -13,18 +15,18 @@
                             <v-flex xs12 sm12 md2>
                                 <v-subheader v-text="'Address'"></v-subheader>
                             </v-flex>
-                            <v-flex xs12 sm12 md3>
-                                <v-select :items="cities" v-model="payload.city" label="City" prepend-icon="map" autocomplete single-line required></v-select>
+                            <v-flex xs12 sm12 md6>
+                                <v-text-field ref="address" v-model="payload.street" @placechanged="setAddress" label="Street and City"
+                                 prepend-icon="map" single-line clearable required></v-text-field> 
                             </v-flex>
-                            <v-flex xs12 sm12 md3>
-                                <v-text-field v-model="payload.street" label="Street" single-line required></v-text-field>
+
+                            <v-flex xs12 sm12 offset-xs1 md2 offset-md0>
+                                <v-text-field v-model="payload.number" label="Street Number" type="number" mask="###" single-line required></v-text-field>
                             </v-flex>
-                            <v-flex xs12 sm12 md2>
-                                <v-text-field v-model="payload.number" label="Street Number" mask="###" single-line required></v-text-field>
+                            <v-flex xs12 sm12 offset-xs1 md2 offset-md0>
+                                <v-text-field v-model="payload.apartmentNumber" label="Apartment Number" type="number" mask="###" single-line></v-text-field>
                             </v-flex>
-                            <v-flex xs12 sm12 md2>
-                                <v-text-field v-model="payload.apartmentNumber" label="Apartment Number" mask="###" single-line></v-text-field>
-                            </v-flex>
+
                         </v-layout>
                         <v-layout wrap row>
                             <v-flex xs12 sm12 md2>
@@ -163,7 +165,6 @@
 
 <script>
     import AppCalendarForm from './AppCalendarForm';
-    import citiesList from '../assets/israel-cities.json';
     import tagsList from '../assets/tags';
 
     export default {
@@ -191,15 +192,20 @@
           floorSlider: 2,
           e6: 1,
           color: 'grey lighten-5',
-          cities: [],
-          tags: []
+          tags: [],
+          countries: ['IL'],
+          types: 'address'
         };
       },
       methods: {
         submit() {
           // eslint-disable-next-line
           alert('submitted');
-        }
+        },
+        setAddress(data) {
+          this.payload.city = data.locality;
+          this.payload.street = data.route;
+        },
       },
       watch: {
         requiredRoommatesSlide(val) {
@@ -214,8 +220,8 @@
         }
       },
       mounted() {
-        this.cities = citiesList.map(x => x.english_name);
         this.tags = tagsList;
+        this.$setAutocomplete(this.$refs.address, ['address']);
       },
       components: {
         AppCalendarForm

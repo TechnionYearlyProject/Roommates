@@ -9,6 +9,7 @@ import App from './App';
 import router from './router';
 import './assets/stringAssets';
 import store from './store';
+import GoogleMaps from './services/google-maps';
 
 Vue.use(Vuetify, {
   theme: {
@@ -24,6 +25,7 @@ Vue.use(Vuetify, {
   }
 });
 Vue.use(VueAxios, axios);
+Vue.use(GoogleMaps);
 
 Vue.config.productionTip = false;
 

@@ -13,12 +13,15 @@
                 </v-layout>
             </v-container>
         </v-card-media>
-        <v-card-actions>
+            <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
+
+        <v-card-actions class="pt-4">
+            
             <v-flex>
-                {{ apartment.location.address.street.capitalize()}} {{ apartment.location.address.number}}, {{ apartment.location.address.city.capitalize()}}
-            </v-flex>
-            <v-flex>
-                ${{ apartment.price }}
+                <span class="caption">
+                    <span class="body-2">published:</span>
+                    <span class="body-1">{{ new Date(apartment.createdAt).toDateString() }}</span>
+                    </span>
             </v-flex>
             <v-spacer></v-spacer>
             <v-tooltip top slot="activator">
@@ -82,11 +85,14 @@
                 <span>Share</span>
             </v-tooltip>
         </v-card-actions>
-        <v-card-actions>
-            <v-flex>
-                <small>
-                    <strong>published:</strong> {{ new Date(apartment.createdAt).toDateString() }}</small>
-            </v-flex>
+        <v-card-actions class="subheading">
+                    <v-btn icon @click.native="openMap" class="pink--text">
+                    <v-icon class="pb-2">place</v-icon>
+                    </v-btn>
+                    {{ apartment.location.address.street.capitalize()}} {{ apartment.location.address.number}}, {{ apartment.location.address.city.capitalize()}}
+                        <v-spacer></v-spacer>
+                ${{ apartment.price }}
+           
             <v-spacer></v-spacer>
             <v-btn icon @click.native="show = !show">
                 <v-icon>{{ apartment.show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
@@ -97,6 +103,7 @@
         <v-slide-y-transition>
             <v-card-text v-show="show" class="pt-0">
                 <v-divider class="mb-3"></v-divider>
+
 
                 <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
                 <v-card class="mt-3">
@@ -154,6 +161,8 @@
     import defaultApartmentImage from '../assets/apartment-defalut.jpg';
     import tagsList from '../assets/tags';
     import AppAvatar from './AppAvatar';
+    import AppMap from './AppMap';
+
 
     export default {
       props: ['apartment'],
@@ -187,6 +196,7 @@
           ],
           show: false,
           fav: false,
+          showMap: false,
           tags: tagsList,
           defaultImage: defaultApartmentImage,
           imageNumber: 0,
@@ -226,6 +236,9 @@
             this.imageNumber <= 0
               ? this.apartment.images.length - 1
               : this.imageNumber - 1;
+        },
+        openMap() {
+            this.showMap = true;
         }
       },
       computed: {
@@ -237,7 +250,8 @@
         }
       },
       components: {
-        AppAvatar
+        AppAvatar,
+        AppMap
       },
       created() {
         if (this.isAuthenticated) {
@@ -245,7 +259,7 @@
             this.$store.getters.getUser._id
           );
         }
-      }
+      },
     };
 </script>
 

@@ -5,7 +5,7 @@
       <v-container pa-0 fill-height fluid>
         <v-layout flex align-center justify-center>
           <v-container fill-height>
-            <v-text-field v-model="payload.address" label="Search" :prepend-icon="'place'" :prepend-icon-cb="openMap" :append-icon="'search'" :append-icon-cb="search"  color="secondary" single-line hide-details>
+            <v-text-field v-model="payload.address" label="Search" :prepend-icon="'place'" :prepend-icon-cb="openMap" :append-icon="'search'" :append-icon-cb="search" color="secondary" single-line hide-details>
             </v-text-field>
             <!-- <v-speed-dial v-model="settings" class="ma-0">
         <v-btn slot="activator" v-model="settings" fab icon @click.native="extendSearch = !extendSearch">
@@ -52,6 +52,8 @@
           maxFloor: 3,
           latestEntranceDate: null
         },
+        countries: ['IL'],
+        types: 'address',
         settings: false,
         extendSearch: false,
         sliders: [

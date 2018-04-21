@@ -6,11 +6,14 @@
     <v-layout>
       <v-flex>
         <v-form v-model="valid">
-          <v-text-field label="E-mail" type="email" prepend-icon="email" v-model="payload.email" :rules="rules.email" required></v-text-field>
-          <v-text-field @keyup.enter="login" label="Password" type="password" prepend-icon="lock" v-model="payload.password" :rules="rules.password" required></v-text-field>
-          <router-link :to="{ name: 'AppResetPassword' }" class="" style="text-decoration:none;">
-            <span class="text-xs-right d-block">Forgot password?</span>
+          <v-text-field label="E-mail" type="email" prepend-icon="email" v-model="payload.email" :rules="rules.email" validate-on-blur required></v-text-field>
+          <v-text-field @keyup.enter="login" label="Password" type="password" prepend-icon="lock" v-model="payload.password" :rules="rules.password" validate-on-blur required></v-text-field>
+          <v-flex class="text-xs-right">
+          <router-link :to="{ name: 'AppResetPassword' }" style="text-decoration:none;">
+            Forgot password?
           </router-link>
+          </v-flex>
+
           <v-btn @click="login" :disabled="!valid || loading" :loading="loading">
             Login
           </v-btn>
