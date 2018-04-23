@@ -9,6 +9,9 @@
 const {shouldNotificationsBeAgregated} = require('../../logic/notificationsAggregationPolicy');
 const {buildNotificationJSON} = require('../../models/notification');
 const {User} = require('../../models/user');
+const {sendUserRealTimeMsg, SocketMsgTypesEnum} = require('../../socketsServer');
+const _ = require('lodash');
+
 /**
  * @author: Or Abramovich
  * @date: 04/18
@@ -44,9 +47,18 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
 			  		}
 			 	});
 			 	if(!shouldBeAggregated){
-			 		 return user.saveNewNotification(newNotification);
+			 		 const previousNotifications = user.getNotifications().slice();
+			 		 return user.saveNewNotification(newNotification).then((updatedUser) => {
+			 		 	//send real-time update for the new one
+			 		 	const newNotidications = _.difference(updatedUser.getNotifications(), previousNotifications);
+			 		 	newNotidications.forEach((newNotification) => {
+			 		 		sendUserRealTimeNotification(userId, newNotification);
+			 		 	})
+			 		 }).catch();
 			 	}else{
-			 		return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate);
+			 		return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate).then(($) => {
+			 			sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
+			 		}).catch();
 			 	}
 		 	});
 		 	promises.push(findUserByIdPromise);
@@ -54,6 +66,22 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
 	 });
 	 return Promise.all(promises);
 };
+
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Sends a real-time update to logged-in users about new notifications.
+ * 
+ * @param {objectID} userId: the user id that the notification should be sent to.
+ * @param {Notification} notification: the notification to be sent to the user.
+ *
+ * 
+ */
+const sendUserRealTimeNotification = (userId, notification) => {
+	sendUserRealTimeMsg(userId, SocketMsgTypesEnum.NOTIFICATION, JSON.stringify(notification));
+}
+
 
 module.exports = {
   notifyUsers
