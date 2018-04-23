@@ -45,35 +45,7 @@ describe('Server Tests', () => {
   // });
 
 
-  describe('GET /reviews/:long/:lat', () => {
-    it('should return accurate calculated review for technion', (done) => {
-      const tech = [35.020568, 32.776515];
-      const rated = {
-        parking: 2,
-        publicTransport:  2,
-        noise:  2,
-        commercialServices:  2,
-        upkeep:  2,
-        generalRating:  2,    
-      };
-      request(app)
-        .get(`/reviews/${tech[0]}/${tech[1]}`)
-        .expect(OK)
-        .end(done);
-    });
-  });
 
-
-
-  // describe('GET /reviews/:long/:lat', () => {
-  //   it('should return accurate calculated review for technion', (done)=>{
-
-  //     request(app)
-  //     .get(`/reviews/${tech[0]}/${tech[1]}`)
-  //     .expect(OK)
-  //     .end(done);
-  //   });
-  // });
 
 
 
@@ -1730,6 +1702,23 @@ describe('Server Tests', () => {
   
   });
 
+  describe('GET /reviews/:long/:lat', () => {
+    it('should return accurate calculated review for technion', (done) => {
+      const tech = [35.020568, 32.776515];
+      const rated = {
+        parking: 2,
+        publicTransport:  2,
+        noise:  2,
+        commercialServices:  2,
+        upkeep:  2,
+        generalRating:  2,    
+      };
+      request(app)
+        .get(`/reviews/${tech[0]}/${tech[1]}`)
+        .expect(OK)
+        .end(done);
+    });
+  });
 
   
   describe('GET *', () => {
