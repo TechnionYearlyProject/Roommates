@@ -61,7 +61,7 @@ describe('Notificator Tests', () => {
     it('should notify single user with aggregation', (done) => {
       const notificationType = NotificationModule.NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT;
       const createdBy = new ObjectID();
-      const notifiedObjectsIds = [new ObjectID()];
+      const notifiedObjectsIds = [new ObjectID(users[0].notifications[0]._notifiedObjectsIds[0])];
 
       Notificator.notifyUsers(notificationType, createdBy, [users[0]._id], notifiedObjectsIds).then((promises) =>{
         Promise.all(promises).then((res) => {
@@ -70,8 +70,8 @@ describe('Notificator Tests', () => {
             expect(user.notifications[0].notificationType).toBe(notificationType);
             expect(user.notifications[0]._createdBy.length).toBe(2);
             expect(user.notifications[0]._createdBy[1].equals(createdBy)).toBe(true);
-            expect(user.notifications[0]._notifiedObjectsIds.length).toBe(2);
-            expect(user.notifications[0]._notifiedObjectsIds[1].equals(notifiedObjectsIds[0])).toBe(true);
+            expect(user.notifications[0]._notifiedObjectsIds.length).toBe(1);
+            expect(user.notifications[0]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
             done();
           });
         });

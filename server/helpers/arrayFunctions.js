@@ -67,12 +67,41 @@ const getIndexOfFirstElementMatchKey = (array, key, value) => {
   }
   return -1;
 };
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Creates an union of the given 2 ObjectIDs arrays
+ *
+ * @param {Array of ObjectID} arrayA:  first array to appear in the union
+ * @param {Array of ObjectID} arrayB: second array to appear in the union
+ *
+ * @returns the union of the two arrays
+ */
+const unionArrays = (arrayA, arrayB) => {
+  var res = arrayA.slice();
+  
+  arrayB.forEach(function(bElement){
+    var contains = false;
+    arrayA.forEach(function(aElement){
+      if(aElement.equals(bElement)){
+        contains = true;
+      } 
+    });
+    if(!contains){
+      res.push(bElement);
+    }
+  });
 
+  return res;
+};
 
 module.exports = {
   findMatchingValuesInArrays,
   containsElementWithProperty,
   sortArrayASC,
   getIndexOfValue,
-  getIndexOfFirstElementMatchKey
+  getIndexOfFirstElementMatchKey,
+  unionArrays
 };

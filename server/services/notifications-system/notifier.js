@@ -36,7 +36,7 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr)
 			  	var shouldBeAggregated = false;
 			  	var aggregateWithId;
 			  	userNotifications.forEach(function(curNotification) {
-			  		if(shouldNotificationsBeAgregated(newNotification, curNotification)){
+			  		if(shouldNotificationsBeAgregated(curNotification, newNotification)){
 			  			aggregateWithId = curNotification._id;
 			  			shouldBeAggregated = true;
 			  		}

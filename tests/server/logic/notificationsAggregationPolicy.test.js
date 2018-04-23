@@ -31,6 +31,13 @@ const notificationDType1AndNotRead = {
     _notifiedObjectsIds: [new ObjectID()]
 };
 
+const notificationDType1AndNotReadSameNotifiedObjectLikeA = {
+   notificationType: 1,
+    _createdBy: new ObjectID(),
+    wasRead: false,
+    _notifiedObjectsIds: [notificationAType1AndNotRead._notifiedObjectsIds[0]]
+};
+
 const notificationEType1AndRead = {
    notificationType: 1,
     _createdBy: new ObjectID(),
@@ -40,7 +47,7 @@ const notificationEType1AndRead = {
 
 describe('Notifications Aggregation Policy Tests', () => {
   describe('#shouldNotificationsBeAgregated', () => {
-    it('should return false - different otifications types', (done) => {
+    it('should return false - different notifications types', (done) => {
       expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationBType2AndNotRead)).toBe(false);
       done();
     });
@@ -50,8 +57,13 @@ describe('Notifications Aggregation Policy Tests', () => {
       done();
     });
 
-    it('should return true - same type and both were not read', (done) => {
-      expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationDType1AndNotRead)).toBe(true);
+    it('should return false - same type and both were not read but different notified ids', (done) => {
+      expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationDType1AndNotRead)).toBe(false);
+      done();
+    });
+
+    it('should return true - same type and both were not read and same notified ID', (done) => {
+      expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationDType1AndNotReadSameNotifiedObjectLikeA)).toBe(true);
       done();
     });
 
