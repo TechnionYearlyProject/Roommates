@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import VueResource from 'vue-resource';
 import BootstrapVue from 'bootstrap-vue';
+import VueSocketio from 'vue-socket.io';
 import Icon from 'vue-awesome/components/Icon.vue';
 import 'vue-awesome/icons';
 import 'bootstrap/dist/css/bootstrap.css';
@@ -17,6 +18,7 @@ import '@/configuration/register-icons.js';
 
 Vue.config.productionTip = false; // Don't show Vue's annoying tips in the console
 Vue.use(BootstrapVue);
+Vue.use(VueSocketio, 'http://localhost:2000');
 Vue.use(Icon);
 Vue.use(VueResource);
 Vue.use(Auth);

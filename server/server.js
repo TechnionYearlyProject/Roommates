@@ -7,6 +7,7 @@ const {
 require('./server-config');
 require('./db/mongoose');
 require('./socketsServer');
+require('./privateMessagingSever');
 const { useVue } = require('./middleware/vuejs');
 const { useCors } = require('./middleware/cors');
 const geoLocation = require('./services/geoLocation/geoLocation');
