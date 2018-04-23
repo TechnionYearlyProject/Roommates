@@ -116,44 +116,20 @@ ReviewSchema.statics.findInRange = function (centerLong, centerLat) {
   });
 };
 
-/**
- * add a new review to a street.
- *
- * @param {ObjectId} _createdBy
- * @param {String} review
- * @param {Number} createdAt
- * @returns Promise object.
- */
-ReviewSchema.methods.addComment = function (_createdBy, review, createdAt) {
-  const street = this;
-  if(street.voters.find(_createdBy)){
-      return;
-  }
-  street.reviews.push({
-    _createdBy,
-    createdAt,
-    review
-  });
-  street.voters.push(_createdBy);
 
-  return review.save();
-};
+// /**
+//  * check if the user is interested in the apartment.
+//  *
+//  * @param {any} reviewerID
+//  * @returns true if the user is interested, otherwise false.
+//  */
+// ReviewSchema.methods.didUserReview = function (reviewerID) {
+//   const review = this;
 
+//   const interestedIDIndex = getIndexOfValue(review.voters, reviewerID);
 
-
-/**
- * check if the user is interested in the apartment.
- *
- * @param {any} reviewerID
- * @returns true if the user is interested, otherwise false.
- */
-ReviewSchema.methods.didUserReview = function (reviewerID) {
-  const review = this;
-
-  const interestedIDIndex = getIndexOfValue(review.voters, reviewerID);
-
-  return (interestedIDIndex > -1);
-};
+//   return (interestedIDIndex > -1);
+// };
 
 
 

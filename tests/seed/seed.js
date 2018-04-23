@@ -271,12 +271,12 @@ const review2 = {
   state: 'israel',
   geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
   ratedCharacteristics:{
-    parking: 2,
-    publicTransport:  4,
-    noise:  3,
-    commercialServices:  5,
+    parking: 1,
+    publicTransport:  1,
+    noise:  1,
+    commercialServices:  1,
     upkeep:  1,
-    generalRating:  3
+    generalRating:  1
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking what so ever'
@@ -291,12 +291,12 @@ const notPublishedReview1 = {
   state: 'israel',
   // geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
   ratedCharacteristics:{
-    parking: 2,
-    publicTransport:  1,
-    noise:  1,
-    commercialServices:  5,
-    upkeep:  1,
-    generalRating:  3,
+    parking: 4,
+    publicTransport:  4,
+    noise:  4,
+    commercialServices:  4,
+    upkeep:  4,
+    generalRating:  4,
   },
   Pros: 'looks good,smells nice but so odd',
   Cons: 'no parks and no parking what so ever'

@@ -733,6 +733,56 @@ app.post('/reviews', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * Get calculated review of vacinity of given coordinadets.
+ */
+app.get('/reviews/:long/:lat', async (req, res) => {
+  try {
+
+    var r = {
+      ratedCharacteristics:{
+        parking: 0,
+        publicTransport:  0,
+        noise:  0,
+        commercialServices:  0,
+        upkeep:  0,
+        generalRating:  0,
+      },
+      Pros: [],
+      Cons: [],
+      numberOfRaters: 0
+    } 
+    var count = 0;
+    Review.findInRange(req.params.long, req.params.lat, 1)
+    .then((result) => {
+      for (let index = 0; index < result.length; index++) {
+        const element = result[index];
+        count++;
+        r.ratedCharacteristics.parking += element.ratedCharacteristics.parking;
+        r.ratedCharacteristics.publicTransport += element.ratedCharacteristics.publicTransport;
+        r.ratedCharacteristics.noise += element.ratedCharacteristics.noise;
+        r.ratedCharacteristics.commercialServices += element.ratedCharacteristics.commercialServices;
+        r.ratedCharacteristics.upkeep += element.ratedCharacteristics.upkeep;
+        r.ratedCharacteristics.generalRating += element.ratedCharacteristics.generalRating;
+        r.Pros.push(element.Pros);
+        r.Cons.push(element.Cons);   
+      };
+      if(count == 0){
+        return res.send({r});
+      }
+      r.ratedCharacteristics.parking/=count;
+      r.ratedCharacteristics.publicTransport/=count;
+      r.ratedCharacteristics.noisecount;
+      r.ratedCharacteristics.commercialServicescount;
+      r.ratedCharacteristics.upkeepcount;
+      r.ratedCharacteristics.generalRatingcount;
+      r.numberOfRaters = count;
+      return res.send({result});
+    });
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
 
 
 /**
