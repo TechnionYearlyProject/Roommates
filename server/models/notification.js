@@ -87,6 +87,32 @@ const wasNotificationRead = (notification) => notification.wasRead;
  * @author: Or Abramovich
  * @date: 04/18
  *
+ * Returns the notified objects ids associated with the notification
+ *
+ * @param {Notification} notification: the notifcation that you would like to retrieve the notified objects ids from.
+ *
+ * @returns {Array of ObjectID} of the notified objects ids of the given notification
+ */
+const getNotifiedObjectsIDs = (notification) => notification._notifiedObjectsIds;
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Returns whether the given object ids are already associated with the notification.
+ *
+ * @param {Notification} notification: the notifcation that you would like to check the association of the notified object id with.
+ * @param {array of ObjectID} _notifiedObjectIDsArr: the array of object IDs to be checked if already assocaited with the notification
+ *
+ * @returns {Boolean} indicating whether the given object ids are already associated with the given notification.
+ */
+const containsNotifiedObjectIDs = (notification, _notifiedObjectIDsArr) => {
+  const temp = arrayFunctions.unionArrays(notification._notifiedObjectsIds, _notifiedObjectIDsArr);
+  return temp.length == notification._notifiedObjectsIds.length;
+}
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
  * Adds the given notified ids (represents the ids of the objects that were modified that caused the notification) 
  * to the given notification. The notified ids are added to the notified ids array of the 
  * notification which is a set i.e no duplicate values. The function handles situation of duplications.
@@ -97,7 +123,7 @@ const wasNotificationRead = (notification) => notification.wasRead;
  * @returns {Notification} which is same to the given one but with the additionals notified ids.
  */
 const addNotifiedIdsToNotification = (notification, notifiedObjectsIdsArray) => {
-	notification._notifiedObjectsIds = _.union(notification._notifiedObjectsIds, notifiedObjectsIdsArray);
+	notification._notifiedObjectsIds = arrayFunctions.unionArrays(notification._notifiedObjectsIds, notifiedObjectsIdsArray);
 	return notification;
 };
 /**
@@ -114,7 +140,7 @@ const addNotifiedIdsToNotification = (notification, notifiedObjectsIdsArray) => 
  * @returns {Notification} which is same to the given one but with the additionals create by ids.
  */
 const addCreatedByIdsToNotification = (notification, createdByIdsArray) => {
-	notification._createdBy = _.union(notification._createdBy, createdByIdsArray);
+	notification._createdBy = arrayFunctions.unionArrays(notification._createdBy, createdByIdsArray);
 	return notification;
 };
 /**
@@ -187,6 +213,8 @@ module.exports = {
   NotificationsTypesEnum,
   isSupportedNotificationType,
   getNotificationType,
+  getNotifiedObjectsIDs,
+  containsNotifiedObjectIDs,
   wasNotificationRead,
   addAggregationDataInNotification,
   buildNotificationJSON,

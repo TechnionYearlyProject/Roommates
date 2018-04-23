@@ -8,7 +8,7 @@
  *
  */
 
-const {getNotificationType, wasNotificationRead} = require('../models/notification');
+const {getNotificationType, wasNotificationRead, containsNotifiedObjectIDs, getNotifiedObjectsIDs} = require('../models/notification');
 
 /**
  * @author: Or Abramovich
@@ -17,16 +17,17 @@ const {getNotificationType, wasNotificationRead} = require('../models/notificati
  * Check if two notifications should be aggregated according to the policy which is -  
  * Both notifications were not read and are of the same type.
  *
- * @param {Notification} notificationA: one of the notifcation to be checked.
- * @param {Notification} notificationB: the other notifcation to be checked.
+ * @param {Notification} notificationToIncludeTheOtherOne: the candidate notification to include the other notification
+ * @param {Notification} notificationToBeIncluded: the candidate notifcation to be included in the otherOne
  *
  * @returns {Boolean} indicating whether both notifications should be aggregated according to the business logic.
  */
-const shouldNotificationsBeAgregated = (notificationA, notificationB) => {
+const shouldNotificationsBeAgregated = (notificationToIncludeTheOtherOne, notificationToBeIncluded) => {
 	return (
-		getNotificationType(notificationA) == getNotificationType(notificationB) 
-		&& !wasNotificationRead(notificationA)
-		&& !wasNotificationRead(notificationB));
+		getNotificationType(notificationToIncludeTheOtherOne) == getNotificationType(notificationToBeIncluded)
+		&& containsNotifiedObjectIDs(notificationToIncludeTheOtherOne, getNotifiedObjectsIDs(notificationToBeIncluded))
+		&& !wasNotificationRead(notificationToIncludeTheOtherOne)
+		&& !wasNotificationRead(notificationToBeIncluded));
 }
 
 
