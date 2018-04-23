@@ -246,9 +246,9 @@ const review1 = {
   _id: review1Id,
   _createdBy: new ObjectID(),
   createdAt: Date.now(),
-  street: 'Shalom Aleichem',
-  city: 'Haifa',
-  geolocation: [32.7824885, 35.0177497],
+  street: 'shalom Aleichem',
+  city: 'haifa',
+  geolocation: [35.020568, 32.776515],//[32.7824885, 35.0177497],
   ratedCharacteristics:{
     parking: 3,
     publicTransport:  3,
@@ -265,9 +265,9 @@ const review2 = {
   _id: review2Id,
   _createdBy: new ObjectID(),
   createdAt: Date.now(),
-  street: 'Malal Street',
-  city: 'Haifa',
-  geolocation: [32.7793633, 35.0157763],
+  street: 'malal street',
+  city: 'haifa',
+  geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
   ratedCharacteristics:{
     parking: 2,
     publicTransport:  4,
@@ -280,6 +280,25 @@ const review2 = {
   Cons: 'no parks and no parking what so ever'
 };
   
+const notPublishedReview = {
+  // _id: review2Id,
+  // _createdBy: new ObjectID(),
+  // createdAt: Date.now(),
+  street: 'malal street',
+  city: 'haifa',
+  geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
+  ratedCharacteristics:{
+    parking: 2,
+    publicTransport:  1,
+    noise:  1,
+    commercialServices:  5,
+    upkeep:  1,
+    generalRating:  3,
+  },
+  Pros: 'looks good,smells nice but so odd',
+  Cons: 'no parks and no parking what so ever'
+}
+
 const apartments = [
   apartment1,
   apartment2
@@ -347,6 +366,7 @@ module.exports = {
   populateReviews,
   populateUsers,
   notPublishedApartment,
+  notPublishedReview,
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,

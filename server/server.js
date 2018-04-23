@@ -10,6 +10,7 @@ const { useVue } = require('./middleware/vuejs');
 const { useCors } = require('./middleware/cors');
 const geoLocation = require('./services/geoLocation/geoLocation');
 const { Apartment } = require('./models/apartment');
+const { Review } = require('./models/review');
 const { User } = require('./models/user');
 const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
@@ -682,6 +683,45 @@ app.patch('/users/notifications/:id', authenticate, async (req, res) => {
       return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
+
+
+
+/**
+ * Add a new review. The posting user has to be authenticated.
+ *
+ * @param {[Number]} geolocation
+ * @param {String} Pros
+ * @param {String} Cons
+ * @param {[Number]} ratedCharacteristics
+ * @param {String} street
+ * @param {String} city
+ */
+
+
+
+app.post('/reviews', authenticate, async (req, res) => {
+  try {
+    const reviewData = _.pick(req.body,
+      [
+        'street',
+        'city',
+        'geolocation',
+        'ratedCharacteristics',
+        'Pros',
+        'Cons'
+      ]);
+    reviewData._createdBy = req.user._id;
+    reviewData.createdAt = Date.now();
+    // console.log(reviewData);
+
+    const review = await new Review(reviewData).save();
+    return res.send({ review });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(errors.unknownError);
+  }
+});
+
+
 
 /**
  * @author: Alon Talmor

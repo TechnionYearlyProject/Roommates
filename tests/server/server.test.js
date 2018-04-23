@@ -26,6 +26,7 @@ const {
   populateReviews,
   populateUsers,
   notPublishedApartment,
+  notPublishedReview,
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,
@@ -40,6 +41,71 @@ describe('Server Tests', () => {
   //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
   //     done();
   // });
+
+  describe('POST /reviews', () => {
+    it('should create a new review', (done) => {
+      const review = Object.assign({}, notPublishedReview);
+
+      request(app)
+        .post('/reviews')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send(notPublishedReview)
+        .expect(OK)
+        .expect((res) => {
+          review.geolocation = [35.020568, 32.776515];
+        })
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+          return Review.find({ Pros: notPublishedReview.Pros })
+            .then(($) => {
+              expect($[0]._createdBy).toEqual(users[1]._id);
+              expect($[0].createdAt).toBeTruthy();
+              expect($[0].toObject()).toMatchObject(review);
+              expect($[0].geolocation).not.toEqual([35.020568, 32.776515]);
+              done();
+            }).catch((e) => done(e));
+        });
+    }).timeout(5000);
+
+
+    it('should not create review to unautherized user', (done) => {
+      request(app)
+        .post('/reviews')
+        .set(XAUTH, '1234')
+        .send({})
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should not create review with invalid data', (done) => {
+      const review = {
+        Pros: 'This is a great price. only for this test !!'
+      };
+      request(app)
+        .post('/reviews')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({})
+        .expect(BAD_REQUEST)
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+
+          return Review.find({ Pros: review.Pros })
+            .then((result) => {
+              expect(result.length).toBe(0);
+              done();
+            }).catch((e) => done(e));
+        });
+    });
+
+  });///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
   describe('POST /apartments', () => {
     it('should create a new apartment', (done) => {
@@ -1616,6 +1682,9 @@ describe('Server Tests', () => {
         });
     });
   });
+/////////////////////////////////////////////////////////////////////////////////
+ 
+
   describe('GET *', () => {
     it('should return 404 on invalid route requests', (done) => {
       request(app)
