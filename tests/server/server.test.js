@@ -78,7 +78,6 @@ describe('Server Tests', () => {
           if (err) {
             return done(err);
           }
-
           return Review.find({ Pros: review.Pros })
             .then((result) => {
               expect(result.length).toBe(1);
