@@ -691,12 +691,12 @@ app.patch('/users/notifications/:id', authenticate, async (req, res) => {
 /**
  * Add a new review. The posting user has to be authenticated.
  *
- * @param {[Number]} geolocation
  * @param {String} Pros
  * @param {String} Cons
  * @param {[Number]} ratedCharacteristics
  * @param {String} street
  * @param {String} city
+ * @param {String} state
  */
 
 
@@ -707,14 +707,24 @@ app.post('/reviews', authenticate, async (req, res) => {
       [
         'street',
         'city',
-        'geolocation',
+        'state',
         'ratedCharacteristics',
         'Pros',
         'Cons'
       ]);
+    reviewData.geolocation = await geoLocation.getGeoLocationCoords(`${reviewData.street} ${reviewData.city} ${reviewData.state}`);
     reviewData._createdBy = req.user._id;
     reviewData.createdAt = Date.now();
-    // console.log(reviewData);
+    
+    Review.findInRange(reviewData.geolocation[0], reviewData.geolocation[1], 1)
+    .then((result) => {
+      result.forEach((review) => {
+        if (review._createdBy.equals(reviewData._createdBy)) {
+          return res.status(BAD_REQUEST).send(errors.multiRating);
+        }
+      });
+    });
+
 
     const review = await new Review(reviewData).save();
     return res.send({ review });

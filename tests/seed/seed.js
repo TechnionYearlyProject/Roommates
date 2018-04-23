@@ -244,10 +244,11 @@ const getForgotPasswordToken = (hashedPassword) => jwt.sign(
 
 const review1 = {
   _id: review1Id,
-  _createdBy: new ObjectID(),
+  _createdBy: user1Id,
   createdAt: Date.now(),
   street: 'shalom Aleichem',
   city: 'haifa',
+  state: 'israel',
   geolocation: [35.020568, 32.776515],//[32.7824885, 35.0177497],
   ratedCharacteristics:{
     parking: 3,
@@ -263,10 +264,11 @@ const review1 = {
 
 const review2 = {
   _id: review2Id,
-  _createdBy: new ObjectID(),
+  _createdBy: user2Id,
   createdAt: Date.now(),
   street: 'malal street',
   city: 'haifa',
+  state: 'israel',
   geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
   ratedCharacteristics:{
     parking: 2,
@@ -280,13 +282,34 @@ const review2 = {
   Cons: 'no parks and no parking what so ever'
 };
   
-const notPublishedReview = {
+const notPublishedReview1 = {
+  // _id: review2Id,
+  // _createdBy: new ObjectID(),
+  // createdAt: Date.now(),
+  street: 'derech ruppin',
+  city: 'jerusalem',
+  state: 'israel',
+  // geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
+  ratedCharacteristics:{
+    parking: 2,
+    publicTransport:  1,
+    noise:  1,
+    commercialServices:  5,
+    upkeep:  1,
+    generalRating:  3,
+  },
+  Pros: 'looks good,smells nice but so odd',
+  Cons: 'no parks and no parking what so ever'
+}
+
+const notPublishedReview2 = {
   // _id: review2Id,
   // _createdBy: new ObjectID(),
   // createdAt: Date.now(),
   street: 'malal street',
   city: 'haifa',
-  geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
+  state: 'israel',
+  // geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
   ratedCharacteristics:{
     parking: 2,
     publicTransport:  1,
@@ -366,7 +389,8 @@ module.exports = {
   populateReviews,
   populateUsers,
   notPublishedApartment,
-  notPublishedReview,
+  notPublishedReview1,
+  notPublishedReview2,
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,

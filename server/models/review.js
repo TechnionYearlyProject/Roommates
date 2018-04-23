@@ -30,6 +30,14 @@ const ReviewSchema = new mongoose.Schema({
         trim: true,
         required: true
     },
+    state: {
+        type: String,
+        minlength: 2,
+        maxlength: 30,
+        lowercase: true,
+        trim: true,
+        required: true
+    },
     geolocation: {
         type: [Number],
         index: '2dsphere',

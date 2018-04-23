@@ -26,7 +26,8 @@ const {
   populateReviews,
   populateUsers,
   notPublishedApartment,
-  notPublishedReview,
+  notPublishedReview1,
+  notPublishedReview2,
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,
@@ -44,26 +45,43 @@ describe('Server Tests', () => {
 
   describe('POST /reviews', () => {
     it('should create a new review', (done) => {
-      const review = Object.assign({}, notPublishedReview);
+      const review = Object.assign({}, notPublishedReview1);
 
       request(app)
         .post('/reviews')
         .set(XAUTH, users[1].tokens[0].token)
-        .send(notPublishedReview)
+        .send(notPublishedReview1)
         .expect(OK)
-        .expect((res) => {
-          review.geolocation = [35.020568, 32.776515];
-        })
         .end((err) => {
           if (err) {
             return done(err);
           }
-          return Review.find({ Pros: notPublishedReview.Pros })
+          return Review.find({ Pros: notPublishedReview1.Pros })
             .then(($) => {
               expect($[0]._createdBy).toEqual(users[1]._id);
               expect($[0].createdAt).toBeTruthy();
               expect($[0].toObject()).toMatchObject(review);
               expect($[0].geolocation).not.toEqual([35.020568, 32.776515]);
+              done();
+            }).catch((e) => done(e));
+        });
+    }).timeout(5000);
+
+    it('should not create a new review in an adjacent location by same user', (done) => {
+      const review = Object.assign({}, notPublishedReview2);
+      request(app)
+        .post('/reviews')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send(notPublishedReview2)
+        .expect(BAD_REQUEST)
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+
+          return Review.find({ Pros: review.Pros })
+            .then((result) => {
+              expect(result.length).toBe(1);
               done();
             }).catch((e) => done(e));
         });
