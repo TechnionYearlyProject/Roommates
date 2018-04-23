@@ -469,10 +469,11 @@ UserSchema.methods.saveNewNotification = function (notification) {
  * @param {ObjectID} _notificationId: the notification id that the data has to be added to.
  * @param {Arry of objectID} newNotifiedObjectIdsArr: the new ids of the objects that were modified that caused the notification to be added.
  * @param {array of objectID} newCreateByIdsArray: the new ids of the users that triggered the notification (who did the action that caused the notification) to be added.
+ * @param {Number} newCreationDate: the new date to be kept in the notification structure as the creation date
  *
  * @returns {Promise} that resolved once the user document is updated in DB with the new data of the notification.
  */
-UserSchema.methods.saveAggregationDataInNotification = function (_notificationId, newNotifiedObjectIdsArr, newCreateByIdsArray) {
+UserSchema.methods.saveAggregationDataInNotification = function (_notificationId, newNotifiedObjectIdsArr, newCreateByIdsArray, newCreationDate) {
   const user = this;
 
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
@@ -481,7 +482,7 @@ UserSchema.methods.saveAggregationDataInNotification = function (_notificationId
     return Promise.reject();
   }
 
-  user.notifications[notificationIndex] = addAggregationDataInNotification(user.notifications[notificationIndex], newNotifiedObjectIdsArr, newCreateByIdsArray);
+  user.notifications[notificationIndex] = addAggregationDataInNotification(user.notifications[notificationIndex], newNotifiedObjectIdsArr, newCreateByIdsArray, newCreationDate);
 
   return user.save();
 };

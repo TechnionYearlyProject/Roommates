@@ -140,13 +140,16 @@ describe('Notification Tests', () => {
     	const createdBy = new ObjectID();
     	const wasRead = false;
     	const notifiedObjectsIds = [new ObjectID()];
+      const newDate = new Date().getTime();
 
-    	const notification = NotificationModule.buildNotificationJSON(notificationType, createdBy, wasRead, notifiedObjectsIds);
+    	const notification = NotificationModule.buildNotificationJSON(notificationType, createdBy, wasRead, notifiedObjectsIds, newDate);
 
       	expect(notification.notificationType).toBe(NotificationModule.NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT);
       	expect(createdBy.equals(notification._createdBy)).toBe(true);
       	expect(notification.wasRead).toBe(false);
       	expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+        expect(notification.createdAt).toBe(newDate);
+
 
       	done();
     });
@@ -156,13 +159,15 @@ describe('Notification Tests', () => {
     	const createdBy = new ObjectID();
     	const wasRead = true;
     	const notifiedObjectsIds = [new ObjectID()];
-    	
-    	const notification = NotificationModule.buildNotificationJSON(notificationType, createdBy, wasRead, notifiedObjectsIds);
+    	const newDate = new Date().getTime();
 
-      	expect(notification.notificationType).toBe(NotificationModule.NotificationsTypesEnum.USER_LIKED_APARTMENT);
-      	expect(createdBy.equals(notification._createdBy)).toBe(true);
-      	expect(notification.wasRead).toBe(true);
-      	expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+    	const notification = NotificationModule.buildNotificationJSON(notificationType, createdBy, wasRead, notifiedObjectsIds, newDate);
+
+      expect(notification.notificationType).toBe(NotificationModule.NotificationsTypesEnum.USER_LIKED_APARTMENT);
+      expect(createdBy.equals(notification._createdBy)).toBe(true);
+      expect(notification.wasRead).toBe(true);
+      expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+      expect(notification.createdAt).toBe(newDate);
 
       	done();
     });
@@ -176,9 +181,11 @@ describe('Notification Tests', () => {
     	const notifiedObjectsIds = [new ObjectID()];
     	const newNotifiedObjectId = [new ObjectID()];
     	const newCreatedBy = [new ObjectID()];
+      const oldDate = new Date('1-1-2000').getTime();
+      const newDate = new Date().getTime();
 
-    	var notification = NotificationModule.buildNotificationJSON(notificationType, createdBy, wasRead, notifiedObjectsIds);
-    	notification = NotificationModule.addAggregationDataInNotification(notification, newNotifiedObjectId, newCreatedBy);
+    	var notification = NotificationModule.buildNotificationJSON(notificationType, createdBy, wasRead, notifiedObjectsIds, oldDate);
+    	notification = NotificationModule.addAggregationDataInNotification(notification, newNotifiedObjectId, newCreatedBy, newDate);
 
     	expect(notification._notifiedObjectsIds.length).toBe(2);
       expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
@@ -188,7 +195,9 @@ describe('Notification Tests', () => {
       expect(notification._createdBy[0].equals(createdBy[0])).toBe(true);
 		  expect(notification._createdBy[1].equals(newCreatedBy[0])).toBe(true);
 
-      	done();
+      expect(notification.createdAt).toBe(newDate);
+
+      done();
     });
 
     it('should add new and different ids to both - notified and createdBy', (done) => {
@@ -197,22 +206,27 @@ describe('Notification Tests', () => {
     	const wasRead = false;
     	const notifiedObjectsIds = [new ObjectID()];
     	const newNotifiedObjectId = [new ObjectID(), new ObjectID()];
-		const newCreatedBy = [new ObjectID(), new ObjectID()];
+		  const newCreatedBy = [new ObjectID(), new ObjectID()];
+      const oldDate = new Date('1-1-2000').getTime();
+      const newDate = new Date().getTime();
 
-    	var notification = NotificationModule.buildNotificationJSON(notificationType, [createdBy], wasRead, notifiedObjectsIds);
-    	notification = NotificationModule.addAggregationDataInNotification(notification, newNotifiedObjectId, newCreatedBy);
+    	var notification = NotificationModule.buildNotificationJSON(notificationType, [createdBy], wasRead, notifiedObjectsIds, oldDate);
+    	notification = NotificationModule.addAggregationDataInNotification(notification, newNotifiedObjectId, newCreatedBy, newDate);
 
     	expect(notification._notifiedObjectsIds.length).toBe(3);
-      	expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
-      	expect(notification._notifiedObjectsIds[1].equals(newNotifiedObjectId[0])).toBe(true);
-      	expect(notification._notifiedObjectsIds[2].equals(newNotifiedObjectId[1])).toBe(true);
+      expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+      expect(notification._notifiedObjectsIds[1].equals(newNotifiedObjectId[0])).toBe(true);
+      expect(notification._notifiedObjectsIds[2].equals(newNotifiedObjectId[1])).toBe(true);
 
-      	expect(notification._createdBy.length).toBe(3);
-      	expect(notification._createdBy[0].equals(createdBy)).toBe(true);
-      	expect(notification._createdBy[1].equals(newCreatedBy[0])).toBe(true);
-      	expect(notification._createdBy[2].equals(newCreatedBy[1])).toBe(true);
+      expect(notification._createdBy.length).toBe(3);
+      expect(notification._createdBy[0].equals(createdBy)).toBe(true);
+      expect(notification._createdBy[1].equals(newCreatedBy[0])).toBe(true);
+      expect(notification._createdBy[2].equals(newCreatedBy[1])).toBe(true);
 
-      	done();
+      expect(notification.createdAt).toBe(newDate);
+
+
+      done();
     });
 
     it('should return same notifiedObjectsIds and createdBy array since its a set and we supplied same id', (done) => {
@@ -220,17 +234,21 @@ describe('Notification Tests', () => {
     	const createdBy = new ObjectID();
     	const wasRead = false;
     	const notifiedObjectsIds = [new ObjectID()];
+      const oldDate = new Date('1-1-2000').getTime();
+      const newDate = new Date().getTime();
 
-    	var notification = NotificationModule.buildNotificationJSON(notificationType, [createdBy], wasRead, notifiedObjectsIds);
-    	notification = NotificationModule.addAggregationDataInNotification(notification, notifiedObjectsIds, [createdBy]);
+    	var notification = NotificationModule.buildNotificationJSON(notificationType, [createdBy], wasRead, notifiedObjectsIds,oldDate);
+    	notification = NotificationModule.addAggregationDataInNotification(notification, notifiedObjectsIds, [createdBy], newDate);
 
     	expect(notification._notifiedObjectsIds.length).toBe(1);
-      	expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+      expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
 
-      	expect(notification._createdBy.length).toBe(1);
-      	expect(notification._createdBy[0].equals(createdBy)).toBe(true);
+      expect(notification._createdBy.length).toBe(1);
+      expect(notification._createdBy[0].equals(createdBy)).toBe(true);
 
-      	done();
+      expect(notification.createdAt).toBe(newDate);
+
+      done();
     });
 
     it('should add some of the ids since its a set and we supplied same id', (done) => {	
@@ -240,30 +258,35 @@ describe('Notification Tests', () => {
     	const notifiedObjectsIds = [new ObjectID()];
     	const newNotifiedObjectId = [new ObjectID(), notifiedObjectsIds[0]];
     	const newCreatedBy = [new ObjectID(), createdBy];
+      const oldDate = new Date('1-1-2000').getTime();
+      const newDate = new Date().getTime();
 
-    	var notification = NotificationModule.buildNotificationJSON(notificationType, [createdBy], wasRead, notifiedObjectsIds);
-    	notification = NotificationModule.addAggregationDataInNotification(notification, newNotifiedObjectId, newCreatedBy);
+    	var notification = NotificationModule.buildNotificationJSON(notificationType, [createdBy], wasRead, notifiedObjectsIds, oldDate);
+    	notification = NotificationModule.addAggregationDataInNotification(notification, newNotifiedObjectId, newCreatedBy, newDate);
 
     	expect(notification._notifiedObjectsIds.length).toBe(2);
-      	expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
-      	expect(notification._notifiedObjectsIds[1].equals(newNotifiedObjectId[0])).toBe(true);
+      expect(notification._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+      expect(notification._notifiedObjectsIds[1].equals(newNotifiedObjectId[0])).toBe(true);
 
-      	expect(notification._createdBy.length).toBe(2);
-      	expect(notification._createdBy[0].equals(createdBy)).toBe(true);
-		expect(notification._createdBy[1].equals(newCreatedBy[0])).toBe(true);
+      expect(notification._createdBy.length).toBe(2);
+      expect(notification._createdBy[0].equals(createdBy)).toBe(true);
+		  expect(notification._createdBy[1].equals(newCreatedBy[0])).toBe(true);
 
-      	done();
+      expect(notification.createdAt).toBe(newDate);
+
+      done();
     });
   });
 
   describe('#updateNotificationByJson', () => {
     it('should change partial fields (some others are not supported)', (done) => {
-     
+      const newDate = new Date().getTime();
       const notificationExample = {
         notificationType: 1,
        _createdBy: new ObjectID(),
         wasRead: false,
-        _notifiedObjectsIds: [new ObjectID()]
+        _notifiedObjectsIds: [new ObjectID()],
+        createdAt: newDate
       };
 
       var json = {notificationType: 2, wasReadTEMP: true};
@@ -271,6 +294,7 @@ describe('Notification Tests', () => {
       
       expect(notification.notificationType).toBe(2);
       expect(notification.wasRead).toBe(false);
+      expect(notification.createdAt).toBe(newDate);
 
       done();
     });

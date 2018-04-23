@@ -20,14 +20,16 @@ const {User} = require('../../models/user');
  * @param {objectID} fromId: the user id that triggered the notification (who did the action that caused the notification).
  * @param {array of objectID} toIdsArray: an array of users ids that have to be notified
  * @param {Arry of objectID} notifiedObjectIdsArr: the ids of the objects that were modified that caused the notification
+ * @param {Boolean} wasRead: a flag indicates whether the notified person read the notification
+ * @param {Number} creationDate: the creation date of the notification event
  *
  * @returns {Promise} which returns a promise (on resolve). The first promise is resolved once the function finds the user to be notified.
  * and the second one is resolved once the user DB document is updated with the notification.
  * 
  */
-const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr) => {
+const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr, wasRead, creationDate) => {
 	 var promises = [];
-	 const newNotification = buildNotificationJSON(notificationType, fromId, false, notifiedObjectIdsArr);
+	 const newNotification = buildNotificationJSON(notificationType, fromId, wasRead, notifiedObjectIdsArr, creationDate);
 	 toIdsArray.forEach(function(userId) {
 	 	if(!userId.equals(fromId)){ //don't notify the user on his own changes
 		 	var findUserByIdPromise = User.findById(userId);
@@ -44,7 +46,7 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr)
 			 	if(!shouldBeAggregated){
 			 		 return user.saveNewNotification(newNotification);
 			 	}else{
-			 		return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId]);
+			 		return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate);
 			 	}
 		 	});
 		 	promises.push(findUserByIdPromise);

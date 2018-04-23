@@ -141,7 +141,7 @@ app.patch('/apartments/:id', authenticate, async (req, res) => {
 
     const apartment = await Apartment.findByIdAndUpdate(id, { $set: apartmentData }, { new: true, runValidators: true });
 
-    notifyUsers(NotificationsTypesEnum.APARTMENT_WAS_MODIFIED, req.user._id, apartment._notificationSubscribers, [id]);
+    notifyUsers(NotificationsTypesEnum.APARTMENT_WAS_MODIFIED, req.user._id, apartment._notificationSubscribers, [id], false, new Date().getTime());
 
     res.send({ apartment });
   } catch (err) {
@@ -276,7 +276,7 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     } else {
       await apartment.addInterestedUser(req.user._id);
       await req.user.addInterestInApartment(id);
-      notifyUsers(NotificationsTypesEnum.USER_LIKED_APARTMENT, req.user._id, apartment._notificationSubscribers, [id]);
+      notifyUsers(NotificationsTypesEnum.USER_LIKED_APARTMENT, req.user._id, apartment._notificationSubscribers, [id], false, new Date().getTime());
     }
 
     return res.status(OK).send({ apartment });
@@ -332,7 +332,7 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
 
     await apartment.addComment(req.user._id, body.text, Date.now());
 
-    notifyUsers(NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT, req.user._id, apartment._notificationSubscribers, [id]);
+    notifyUsers(NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT, req.user._id, apartment._notificationSubscribers, [id], false, new Date().getTime());
 
     const { comments } = apartment;
 

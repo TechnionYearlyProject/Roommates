@@ -9,6 +9,7 @@
  * @param {Arry of objectID} _createdBy: an array of user Ids that triggered the notification (who did the action that caused the notification)
  * @param {Boolean} wasRead: a flag indicates whether the notified person read the notification
  * @param {Arry of objectID} _notifiedObjectsIds: the ids of the objects that were modified that caused the notification
+ * @param {Number} creationDate: the creation date of the notification event
  *
  */
 
@@ -44,6 +45,10 @@ const NotificationSchema = new mongoose.Schema({
     },
     _notifiedObjectsIds: {
       type: [mongoose.Schema.Types.ObjectId],
+      required: true
+    },
+    createdAt: {
+      type: Number,
       required: true
     },
 });
@@ -156,13 +161,14 @@ const addCreatedByIdsToNotification = (notification, createdByIdsArray) => {
  * @param {Notification} notification: the notifcation that you would like to modify its created by and notified ids.
  * @param {Array of objectID} notifiedObjectsIdsArray: the new notified ids to be added to the given notification.
  * @param {Array of objectID} newCreateByIdsArray: the new created by ids to be added to the given notification.
-
+ * @param {Number} newCreationDate: the new date to be kept in the notification structure as the creation date
  *
  * @returns {Notification} which is same to the given one but with the aggregated data i.e additionals created by and notified ids.
  */
-const addAggregationDataInNotification = (notification, notifiedObjectsIdsArray, newCreateByIdsArray) => {
+const addAggregationDataInNotification = (notification, notifiedObjectsIdsArray, newCreateByIdsArray, newCreationDate) => {
 	notification = addNotifiedIdsToNotification(notification, notifiedObjectsIdsArray);
 	notification = addCreatedByIdsToNotification(notification,newCreateByIdsArray);
+  notification.createdAt = newCreationDate;
 	return notification;
 }
 /**
@@ -175,15 +181,17 @@ const addAggregationDataInNotification = (notification, notifiedObjectsIdsArray,
  * @param {Arry of objectID} createdBy: an array of user Ids that triggered the notification (who did the action that caused the notification)
  * @param {Boolean} wasRead: a flag indicates whether the notified person read the notification
  * @param {Arry of objectID} notifiedObjectsIds: the ids of the objects that were modified that caused the notification
+ * @param {Number} creationDate: the creation date of the notification event
  *
  * @returns {JSON} which encloses all above information which is equivalent to the notification document except that id doesn't have an _id property. 
  */
-const buildNotificationJSON = (notificationType, createdBy, wasRead, notifiedObjectsIds) => {
+const buildNotificationJSON = (notificationType, createdBy, wasRead, notifiedObjectsIds, creationDate) => {
 	return {
 		notificationType: notificationType,
 		_createdBy: createdBy,
 		wasRead: wasRead,
-		_notifiedObjectsIds: notifiedObjectsIds
+		_notifiedObjectsIds: notifiedObjectsIds,
+    createdAt: creationDate
 	};
 };
 /**

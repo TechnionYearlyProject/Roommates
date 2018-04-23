@@ -119,13 +119,15 @@ const user1 = {
       notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
       _createdBy: new ObjectID(),
       wasRead: false,
-      _notifiedObjectsIds: [new ObjectID()]
+      _notifiedObjectsIds: [new ObjectID()],
+      createdAt: new Date().getTime()
     },
     {
       notificationType: NotificationsTypesEnum.USER_LIKED_APARTMENT,
       _createdBy: new ObjectID(),
       wasRead: true,
-      _notifiedObjectsIds: [new ObjectID()]
+      _notifiedObjectsIds: [new ObjectID()],
+      createdAt: new Date().getTime()
     },
   ],
 };
@@ -156,7 +158,8 @@ const user2 = {
       notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
       _createdBy: new ObjectID(),
       wasRead: false,
-      _notifiedObjectsIds: [new ObjectID()]
+      _notifiedObjectsIds: [new ObjectID()],
+      createdAt: new Date().getTime()
     },
   ],
 };
