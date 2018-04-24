@@ -18,6 +18,7 @@ const { XAUTH, XEXPIRATION } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
+const { getVisitStatusCodes, canModifyVisit, canAddVisit, getVisitStatusChangeActions } = require('./models/visit');
 const { NotificationsTypesEnum, updateNotificationByJson } = require('./models/notification');
 const { logInfo } = require('./services/logger/logger');
 const { ObjectID } = require('mongodb');
@@ -784,7 +785,111 @@ app.get('/reviews/:long/:lat', async (req, res) => {
   }
 });
 
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Returns the entire list of supported visit statuses
+ *
+ */
+app.get('/apartments/visit/statuses', async (req, res) => {
+  try {
+    res.send({ statuses: getVisitStatusCodes() });
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Returns the entire list of supported visit status changes based on the business logic. 
+ * i.e. the returened JSON describes the possible "movements" of the visit status. 
+ *
+ */
+app.get('/apartments/visit/actions', async (req, res) => {
+  try {
+    res.send({ statuses: getVisitStatusChangeActions() });
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Modifies an existing visit with the given ID in the given apartment. 
+ * The user who request the modification must be authenticated.
+ *
+ * Parameters of the route:
+ *
+ * @param {Number} schedTo: the requested time for the visit.
+ * @param {Number} status: the new status of the visit.
+ *
+ */
+app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
+  try{
+    
+    const body = _.pick(req.body, ['schedTo', 'status']);
+    const { id, visitId } = req.params;
 
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
+    }
+
+    const visitData = apartment.getVisitDataById(visitId);
+
+    if(!canModifyVisit(apartment._createdBy, visitData._askedBy, req.user._id)){
+      return res.status(UNAUTHORIZED).send();
+    }
+
+    await apartment.updateVisit(visitId, req.user._id, body.status, body.schedTo);
+     
+    return res.send({ apartment });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
+
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Adds a new visit to the given apartment. 
+ * The user who request it must be authenticated.
+ *
+ * Parameters of the route:
+ *
+ * @param {Number} schedTo: the requested time for the visit.
+ *
+ */
+app.put('/apartments/:id/visit/', authenticate, async (req, res) => {
+  try{
+    const body = _.pick(req.body, ['schedTo']);
+    const { id } = req.params;
+    const visitId = body.visitId;
+
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
+    }
+
+     if(!canAddVisit(apartment.isOwner(req.user._id))){
+      return res.status(UNAUTHORIZED).send();
+    }
+
+    await apartment.addNewVisit(req.user._id, body.schedTo);
+    
+    return res.send({ apartment });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
 /**
  * @author: Alon Talmor
  * @date: 28/3/18
