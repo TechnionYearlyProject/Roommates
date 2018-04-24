@@ -4,8 +4,10 @@ const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
 const { removeFalsyProps } = require('../helpers/removeFalsyProps');
 const { isSupportedTagId } = require('./tag');
-const { getIndexOfValue } = require('../helpers/arrayFunctions');
+const { getIndexOfValue, getIndexOfFirstElementMatchKey } = require('../helpers/arrayFunctions');
 const { ObjectID } = require('mongodb');
+const visit = require('./visit');
+
 
 const ApartmentSchema = new mongoose.Schema({
   title: {
@@ -144,6 +146,32 @@ const ApartmentSchema = new mongoose.Schema({
   _notificationSubscribers: {
     type: [mongoose.Schema.Types.ObjectId],
   },
+  visits: [{
+    _askedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
+    createdAt: {
+      type: Number,
+      required: true,
+    },
+    scheduledTo: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: (value) => value > Date.now(),
+        message: '{VALUE} is not a future date'
+      }
+    },
+    status: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: (value) => visit.isSupportedVisitStatusID(value),
+        message: '{VALUE} is not a valid visit status'
+      }
+    }
+   }],
 });
 
 /**
@@ -412,6 +440,204 @@ ApartmentSchema.methods.deleteSubscriber = function (_subscriberID) {
   }
 
   return apartment.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Check whether the given user ID is the owner of the apartment
+ *
+ * @param {ObjectID} _userID: the ID of the user to check
+ * 
+ * @returns {Boolean} indicating whether the given ID is the owner of the apartment.
+ */
+ApartmentSchema.methods.isOwner = function (_userID) {
+  const apartment = this;
+  
+  return _userID.equals(apartment._createdBy);
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Adds a new visit request to the apartment with the status of pending the owner and date now. Invariant: User can't have 2 future visits.
+ *
+ * @param {ObjectId} _visitorID: the ID of the user requested the visit
+ * @param {Number} schedTo: the requested time for the visit
+ *
+ * @returns {Promise} that resolved once the visit was added to the apartment.
+ */
+ApartmentSchema.methods.addNewVisit = function (_visitorID, schedTo) {
+  const apartment = this;
+
+  if(apartment.isFutureVisitPlanned(_visitorID, Date.now()) || !visit.canAddVisit(apartment.isOwner(_visitorID))){
+    return Promise.reject();
+  }
+  else{
+    return apartment.saveNewVisit(_visitorID, Date.now(), schedTo, visit.getVisitStatusOnCreate());
+  }
+};
+
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Updates an existing visit request with the given status and sched to
+ *
+ * @param {ObjectId} _visitID: the ID of the visit document.
+ * @param {ObjectId} _offeringUserID: the ID of the user who triggered the visit modification.
+ * @param {Number} targetStatus: the new requested status of the visit.
+ * @param {Number} schedTo: the requested time for the visit.
+ *
+ * @returns {Promise} that resolved once the visit was modified.
+ */
+ApartmentSchema.methods.updateVisit = function (_visitID, _offeringUserID, targetStatus, schedTo) {
+  const apartment = this;
+
+  return apartment.updateVisitProps(_visitID, _offeringUserID, ['scheduledTo', 'status'], [schedTo, targetStatus]);
+ 
+};
+
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Adds a new visit request to the apartment. 
+ *
+ * @param {ObjectId} _visitorID: the ID of the user who would like to visit in the apartment.
+ * @param {Number} createdAt: time representing the creartion of the visit request.
+ * @param {Number} schedTo: the requested time for the visit.
+ * @param {Number} status: the status of the visit to be added.
+ *
+ * @returns {Promise} that resolved once the visit was added.
+ */
+ApartmentSchema.methods.saveNewVisit = function (_askedBy, createdAt, scheduledTo, status) {
+  const apartment = this;
+      
+  apartment.visits.push({
+    _askedBy,
+    createdAt,
+    scheduledTo,
+    status
+  });
+
+  return apartment.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Updates an existing visit request  according to the given parameters
+ *
+ * @param {ObjectId} _visitID: the ID of the visit document.
+ * @param {ObjectId} _offeringUserID: the ID of the user who triggered the visit modification.
+ * @param {Array} propNames: an array of the visit properties names to be modified. 
+ * @param {Array} propValues: an array of the new data to be set - the value at pos i is for property i in the propNames array.
+ *
+ * @returns Promise object that resolved once the visit was modified.
+ */
+ApartmentSchema.methods.updateVisitProps = function (_visitID, _offeringUserID, propNames, propValues) {
+  const apartment = this;
+ 
+  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID);
+  if(visitIndex < 0){
+     return Promise.reject();
+  }
+  
+  if(!apartment.isLegalVisitChange(apartment.visits[visitIndex], _offeringUserID, propNames, propValues)){
+    return Promise.reject();
+  }
+  
+  for(let i=0;i<propNames.length;i++){
+     apartment.visits[visitIndex][propNames[i]] = propValues[i];
+  }
+  
+  return apartment.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Validates the ability of the visit to be set with the new given parameters.
+ *
+ * @param {Object} visitData: the relevant visit document.
+ * @param {ObjectId} _offeringUserID: the ID of the user who would like to change the visit.
+ * @param {Array} propNames: an array of the visit properties names to be modified. 
+ * @param {Array} propValues: an array of the new data to be set - the value at pos i is for property i in the propNames array.
+ *
+ * @returns {Boolean} indicating whether the change is valid.
+ */
+ApartmentSchema.methods.isLegalVisitChange = function (visitData, _offeringUserID, propNames, propValues) {
+  const apartment = this;
+
+  if(!visit.canModifyVisit(apartment._createdBy, visitData._askedBy, _offeringUserID)){
+    return false;
+  }
+
+  for(let i=0;i<propNames.length;i++){
+      switch (propNames[i]){
+        case 'status':
+          if(!visit.isValidVisitStatusChange(visitData.status, propValues[i], apartment.isOwner(_offeringUserID)))
+            return false;
+      }
+  }
+
+  return true;
+};
+
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Check whether the user has a visit after the provided date which is not canceled
+ *
+ * @param {ObjectId} _userID: the ID of the user you would like to check his vistis.
+ * @param {Number} date: the base date that any following date is considered as future.
+ * 
+ * @returns {Boolean} indicating whether there is a furture visit for the user (i.e. which is planned to be after the given date).
+ */
+ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
+  const apartment = this;
+
+  var futureVisitExist = false;
+  apartment.visits.forEach(function(visitData) {
+    if(visitData._askedBy.equals(_userID) && 
+      visitData.status != visit.getVisitStatusOnCancelation() && 
+      visitData.scheduledTo > date)
+      futureVisitExist = true;
+  });
+
+  return futureVisitExist;
+};
+
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Gets the visit document with the given ID
+ *
+ * @param {ObjectID} _visitID: the requested visit document ID.
+ * 
+ * @returns {Object} comtaining the visit schema.
+ */
+ApartmentSchema.methods.getVisitDataById = function (_visitID) {
+  const apartment = this;
+  
+  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID);
+  
+  if(visitIndex < 0){
+     return {};
+  }
+
+  return apartment.visits[visitIndex];
 };
 
 const Apartment = mongoose.model('Apartment', ApartmentSchema);
