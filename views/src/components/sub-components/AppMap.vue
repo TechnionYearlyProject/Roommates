@@ -5,7 +5,7 @@
                 <v-card>
                     <v-card-title class="py-0">
                         <template v-if="allowSearch">
-                            <v-text-field class="pt-4" v-model="address" ref="search" :placeholder="'Search a location'" prepend-icon="place" @placechanged="setPlace" single-line/>
+                            <v-text-field class="pt-4" style="min-width: 50%" v-model="address" ref="search" :placeholder="'Search a location'" prepend-icon="place" @placechanged="setPlace" single-line/>
                             <v-btn color="primary" @click="emitSearch">Search
                                 <v-icon right>search</v-icon>
                             </v-btn>

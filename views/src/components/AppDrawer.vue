@@ -90,8 +90,8 @@
 <script>
   import { mapGetters, mapMutations } from 'vuex';
   import vueSlider from 'vue-slider-component';
-  import AppCalendarForm from './AppCalendarForm';
-  import AppMap from './AppMap';
+  import AppCalendarForm from './sub-components/AppCalendarForm';
+  import AppMap from './sub-components/AppMap';
   import tags from '../assets/tags';
 
   export default {

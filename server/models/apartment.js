@@ -275,7 +275,7 @@ ApartmentSchema.methods.getAddressString = function () {
 ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
   const apartment = this;
 
-  apartment.comments.push({
+  apartment.comments.unshift({
     _createdBy,
     createdAt,
     text

@@ -62,7 +62,7 @@
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
-    import AppAvatar from './AppAvatar';
+    import AppAvatar from './sub-components/AppAvatar';
 
     export default {
       data() {

@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import AppCalendarForm from './AppCalendarForm';
+  import AppCalendarForm from './sub-components/AppCalendarForm';
 
   export default {
     data: () => ({

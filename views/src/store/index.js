@@ -144,7 +144,7 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 20/04/18
-     * @param: params: object of {jwt}
+     * @param: jwt: jwt token
      * @param: payload: object of {email,password}
      */
     resetPassword({ commit, getters }, { jwt, payload }) {
@@ -178,6 +178,20 @@ export default new Vuex.Store({
           // eslint-disable-next-line 
           console.log(response.data);
           return response.data.apartment;
+        });
+    },
+        /**
+     * @author: Alon Talmor
+     * @date: 23/04/18
+     * @param: params: object of {id} - the id of the apartment
+     * @param: payload: object of {text} - the text of the comment
+     */
+    addApartmentComment({ commit, getters }, { params, payload }) {
+      return axios.put(`http://localhost:3000/apartments/${params.id}/comment`, payload)
+        .then((response) => {
+          // eslint-disable-next-line 
+          console.log(response.data);
+          return response.data.comments;
         });
     }
   },

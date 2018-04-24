@@ -44,7 +44,7 @@
 
 <script>
     import { mapGetters, mapMutations } from 'vuex';
-    import AppMainSearchForm from './AppMainSearchForm';
+    import AppMainSearchForm from './sub-components/AppMainSearchForm';
     import AppApartmentAd from './AppApartmentAd';
     import AppDrawer from './AppDrawer';
     import cityImage from '../assets/city-image.jpg';
@@ -80,7 +80,7 @@
             .then(() => {
               this.loading = false;
             });
-        }
+        },
       },
       beforeMount() {
         if (!this.apartments) {

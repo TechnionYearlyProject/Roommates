@@ -13,15 +13,15 @@
                 </v-layout>
             </v-container>
         </v-card-media>
-            <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
+        <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
 
         <v-card-actions class="pt-4">
-            
+
             <v-flex>
                 <span class="caption">
                     <span class="body-2">published:</span>
                     <span class="body-1">{{ new Date(apartment.createdAt).toDateString() }}</span>
-                    </span>
+                </span>
             </v-flex>
             <v-spacer></v-spacer>
             <v-tooltip top slot="activator">
@@ -86,67 +86,81 @@
             </v-tooltip>
         </v-card-actions>
         <v-card-actions class="subheading">
-                    <v-btn icon @click.native="openMap" class="pink--text">
-                    <v-icon class="pb-2">place</v-icon>
-                    </v-btn>
-                    {{ apartment.location.address.street.capitalize()}} {{ apartment.location.address.number}}, {{ apartment.location.address.city.capitalize()}}
-                        <v-spacer></v-spacer>
-                ${{ apartment.price }}
-           
+            <v-btn icon @click.native="openMap" class="pink--text mb-1">
+                <v-icon>place</v-icon>
+            </v-btn>
+            {{ apartment.location.address.street.capitalize()}} {{ apartment.location.address.number}}, {{ apartment.location.address.city.capitalize()}}
             <v-spacer></v-spacer>
-            <v-btn icon @click.native="show = !show">
-                <v-icon>{{ apartment.show ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
+            ${{ apartment.price }}
+
+            <v-spacer></v-spacer>
+            <v-btn icon @click.native="expandDetails">
+                <v-icon>{{ expended ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
             </v-btn>
 
         </v-card-actions>
 
-        <v-slide-y-transition>
-            <v-card-text v-show="show" class="pt-0">
+        <v-slide-y-transition mode="out-in">
+
+            <v-card-text ref="details" v-show="expended" class="pt-0">
                 <v-divider class="mb-3"></v-divider>
+                <transition name="slide-x-transition" mode="out-in" v-if="show">
+                    <div v-if="show === 'apartmentDetails'" ref='cardDetails' key="apartmentDetails">
+                        <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
+                        <v-card class="mt-3">
+                            <v-card-title>
+                                <h4>Attributes</h4>
+                            </v-card-title>
+                            <v-divider></v-divider>
+                            <v-list dense>
+                                <v-list-tile v-for="(attribute,i) in attributes" :key="`attribute-${i}`">
+                                    <v-list-tile-content>{{ attribute.label }}</v-list-tile-content>
+                                    <v-list-tile-content class="align-end">{{ apartment[attribute.ref] || '-' }}</v-list-tile-content>
+                                </v-list-tile>
+                            </v-list>
+                            <v-divider></v-divider>
+                        </v-card>
+                        <v-layout row wrap py-3>
+                            <v-flex xs3 v-for="(tag,i) in apartment.tags" :key="`tag-${i}`" mx-auto>
+                                <div class="text-xs-center">
+                                    <v-icon>{{ tags[tag].vicon }}</v-icon><br>
+                                    <small>{{ tags[tag].name }}</small>
+                                </div>
 
+                            </v-flex>
+                        </v-layout>
 
-                <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
-                <v-card class="mt-3">
-                    <v-card-title>
-                        <h4>Attributes</h4>
-                    </v-card-title>
-                    <v-divider></v-divider>
-                    <v-list dense>
-                        <v-list-tile v-for="(attribute,i) in attributes" :key="`attribute-${i}`">
-                            <v-list-tile-content>{{ attribute.label }}</v-list-tile-content>
-                            <v-list-tile-content class="align-end">{{ apartment[attribute.ref] || '-' }}</v-list-tile-content>
-                        </v-list-tile>
-                    </v-list>
-                    <v-divider></v-divider>
-                </v-card>
-                <v-layout row wrap py-3>
-                    <v-flex xs3 v-for="(tag,i) in apartment.tags" :key="`tag-${i}`" mx-auto>
-                        <div class="text-xs-center">
-                            <v-icon>{{ tags[tag].vicon }}</v-icon><br>
-                            <small>{{ tags[tag].name }}</small>
-                        </div>
+                        <v-card v-if="apartment.description">
+                            <v-card-title>
+                                <h4>About</h4>
+                            </v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text>
+                                <i>{{ apartment.description }}</i>
+                            </v-card-text>
+                        </v-card>
+                    </div>
 
-                    </v-flex>
-                </v-layout>
+                    <div v-else-if="show === 'comments'" :style="{'height': detailsHeight}" key="comments">
+                        <app-comments :comments="apartment.comments" :onComment="addComment"></app-comments>
+                    </div>
 
-                <v-card v-if="apartment.description">
-                    <v-card-title>
-                        <h4>About</h4>
-                    </v-card-title>
-                    <v-divider></v-divider>
-                    <v-card-text>
-                        <i>{{ apartment.description }}</i>
-
-                    </v-card-text>
-                </v-card>
+                    <div v-else-if="show === 'favors'" :style="{'height': detailsHeight}" key="favors">
+                        <app-favors :favors="apartment._interested"></app-favors>
+                    </div>
+                </transition>
+                <v-divider/>
                 <v-breadcrumbs divider="/">
-                    <v-breadcrumbs-item :disabled="false" v-show="true" to="#">
+                    <v-breadcrumbs-item v-if="show !== 'apartmentDetails'" @click.native="showApartmentDetails">
+                        &larr; Go back
+                    </v-breadcrumbs-item>
+                    <v-breadcrumbs-item v-if="show !== 'favors'" :disabled="false" v-show="true" @click.native="showFavores">
                         {{ apartment._interested.length }} interested
                     </v-breadcrumbs-item>
-                    <v-breadcrumbs-item :disabled="false" v-show="true" to="#">
+                    <v-breadcrumbs-item v-if="show !== 'comments'" @click.native="showComments">
                         {{ apartment.comments.length }} comments
                     </v-breadcrumbs-item>
-                    <v-breadcrumbs-item :disabled="true" v-show="true" to="#">
+                    <v-breadcrumbs-item :disabled="false" v-show="true" to="#">
                         reviews
                     </v-breadcrumbs-item>
                 </v-breadcrumbs>
@@ -160,9 +174,10 @@
     import { mapGetters } from 'vuex';
     import defaultApartmentImage from '../assets/apartment-defalut.jpg';
     import tagsList from '../assets/tags';
-    import AppAvatar from './AppAvatar';
-    import AppMap from './AppMap';
-
+    import AppAvatar from './sub-components/AppAvatar';
+    import AppMap from './sub-components/AppMap';
+    import AppComments from './sub-components/AppComments';
+    import AppFavors from './sub-components/AppFavors';
 
     export default {
       props: ['apartment'],
@@ -194,7 +209,8 @@
               ref: 'area'
             }
           ],
-          show: false,
+          expended: false,
+          show: 'apartmentDetails',
           fav: false,
           showMap: false,
           tags: tagsList,
@@ -214,15 +230,18 @@
             this.fav = !this.fav;
             this.$store
               .dispatch('favor', { id: this.apartment._id })
+              .then((apartment) => {
+                this.apartment._interested = apartment._interested;
+              })
               .catch((error) => {
-                // eslint-disable-next-line 
+                // eslint-disable-next-line
                 console.log(error);
                 this.fav = !this.fav;
               });
           }
         },
         getPublisher() {
-            // eslint-disable-next-line 
+          // eslint-disable-next-line
           console.log('fetch publisher');
         },
         nextImage() {
@@ -238,7 +257,43 @@
               : this.imageNumber - 1;
         },
         openMap() {
-            this.showMap = true;
+          this.showMap = true;
+        },
+        expandDetails() {
+          if (this.expended) {
+            this.expended = false;
+          } else {
+            this.expended = true;
+          }
+        },
+        showApartmentDetails() {
+          this.show = 'apartmentDetails';
+          this.goToTopOfAdd();
+        },
+        showFavores() {
+          this.show = 'favors';
+          this.goToTopOfAdd();
+        },
+        showComments() {
+          this.show = 'comments';
+          this.goToTopOfAdd();
+        },
+        addComment(comment) {
+          return this.$store.dispatch('addApartmentComment', {
+            params: {
+              id: this.apartment._id
+            },
+            payload: {
+              text: comment.text
+            }
+          });
+        },
+        goToTopOfAdd() {
+          this.$vuetify.goTo(this.$refs.details, {
+            duration: 1100,
+            offset: -200,
+            easing: 'easeInOutCubic'
+          });
         }
       },
       computed: {
@@ -247,19 +302,24 @@
           return this.apartment.images[0]
             ? this.apartment.images[this.imageNumber]
             : this.defaultImage;
+        },
+        detailsHeight() {
+          return `${this.$refs.cardDetails.clientHeight}px`;
         }
       },
       components: {
         AppAvatar,
-        AppMap
+        AppMap,
+        AppComments,
+        AppFavors
       },
-      created() {
+      mounted() {
         if (this.isAuthenticated) {
           this.fav = this.apartment._interested.includes(
             this.$store.getters.getUser._id
           );
         }
-      },
+      }
     };
 </script>
 
