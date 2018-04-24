@@ -7,6 +7,7 @@ const { Review } = require('../../server/models/review');
 const { User } = require('../../server/models/user');
 const { NotificationsTypesEnum } = require('../../server/models/notification');
 const { XAUTH, VERIFICATION_SECRET, FORGOT_SECRET } = require('../../server/constants');
+const visit = require('../../server/models/visit');
 
 const user1Id = new ObjectID();
 const user2Id = new ObjectID();
@@ -20,6 +21,9 @@ const apartment2Id = new ObjectID();
 
 const review1Id = new ObjectID();
 const review2Id = new ObjectID();
+
+const apartment1User1VisitId = new ObjectID();
+const apartment1User2VisitId = new ObjectID();
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
@@ -49,6 +53,21 @@ const apartment1 = new Apartment({
   requiredRoommates: 2,
   totalRoommates: 3,
   _notificationSubscribers: [user2Id],
+  visits: [{
+       _id: apartment1User1VisitId,
+       _askedBy: user1Id,
+       createdAt: new Date('1-1-2018').getTime(),
+       scheduledTo:  new Date('1-1-2019').getTime(), 
+       status: visit.getVisitStatusOnCreate()
+    },
+    {
+       _id: apartment1User2VisitId,
+       _askedBy: user2Id,
+       createdAt: new Date('1-1-2018').getTime(),
+       scheduledTo:  new Date('1-1-2019').getTime(), 
+       status: visit.getVisitStatusOnCreate()
+    }
+  ],
   //comments
 });
 
@@ -384,6 +403,8 @@ const populateReviews = (done) => {
 };
 
 module.exports = {
+  apartment1User2VisitId,
+  apartment1User1VisitId,
   apartments,
   users,
   reviews,

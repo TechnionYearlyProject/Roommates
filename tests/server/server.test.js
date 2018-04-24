@@ -17,8 +17,12 @@ const { Apartment } = require('../../server/models/apartment');
 const { Review } = require('../../server/models/review');
 const { getSupportedTags } = require('../../server/models/tag');
 const { getSupportedHobbies } = require('../../server/models/hobbie');
+const { getVisitStatusCodes, getVisitStatusOnCreate, getVisitStatusOnCancelation, 
+		getVisitStatusOnChange, getVisitStatusChangeActions} = require('../../server/models/visit');
 
 const {
+  apartment1User1VisitId,
+  apartment1User2VisitId,
   apartments,
   users,
   reviews,
@@ -605,17 +609,220 @@ describe('Server Tests', () => {
     }).timeout(5000);
   });
 
-  describe('GET /apartments/tags', () => {
-    it('should get all apartment tags', (done) => {
-      request(app)
-        .get('/apartments/tags')
-        .expect(OK)
-        .expect((res) => {
-          expect(res.body.tags).toEqual(getSupportedTags());
-        })
-        .end(done);
+    describe('GET /apartments/visit/statuses', () => {
+        it('should get all apartment visit statuses', (done) => {
+            request(app)
+                .get('/apartments/visit/statuses')
+                .expect(OK)
+                .expect((res) => {
+                    expect(res.body.statuses).toEqual(getVisitStatusCodes());
+                })
+                .end(done);
+        });
     });
-  });
+
+    describe('GET /apartments/visit/actions', () => {
+        it('should get all apartment visit statuses change actions', (done) => {
+            request(app)
+                .get('/apartments/visit/actions')
+                .expect(OK)
+                .expect((res) => {
+                    expect(res.body.statuses).toEqual(getVisitStatusChangeActions());
+                })
+                .end(done);
+        });
+    });
+    
+
+    describe('PATCH /apartments/:id/visit/:visitId', () => {
+ 
+        it('should not edit a visit - user is not relevant to the visit', (done) => {
+             const apartmentId = apartments[0]._id.toHexString();
+             const visitId = apartment1User1VisitId.toHexString();
+             request(app)
+                .patch(`/apartments/${apartmentId}/visit/${visitId}`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({ schedTo: new Date('1-1-2027').getTime(), 
+                        status: getVisitStatusOnCancelation()})
+                .expect(UNAUTHORIZED)
+                .end(done);
+        });
+
+        it('should not edit a visit - visit scheduled to the past', (done) => {
+             const apartmentId = apartments[0]._id.toHexString();
+             const visitId = apartment1User2VisitId.toHexString();
+             request(app)
+                .patch(`/apartments/${apartmentId}/visit/${visitId}`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({ schedTo: new Date('1-1-2017').getTime(), 
+                        status: getVisitStatusOnChange(false)})
+                .expect(BAD_REQUEST)
+                .end(done);
+        });
+       
+        it('should not edit a visit - status is illegal', (done) => {
+             const apartmentId = apartments[0]._id.toHexString();
+             const visitId = apartment1User2VisitId.toHexString();
+             request(app)
+                .patch(`/apartments/${apartmentId}/visit/${visitId}`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({ schedTo: new Date('1-1-2023').getTime(), 
+                        status: getVisitStatusOnChange(true)})
+                .expect(BAD_REQUEST)
+                .end(done);
+        });
+
+        it('should not edit a visit - status is missing', (done) => {
+             const apartmentId = apartments[0]._id.toHexString();
+             const visitId = apartment1User2VisitId.toHexString();
+             request(app)
+                .patch(`/apartments/${apartmentId}/visit/${visitId}`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({ schedTo: new Date('1-1-2023').getTime()})
+                .expect(BAD_REQUEST)
+                .end(done);
+        });
+
+        it('should edit a visit', (done) => {
+             const apartmentId = apartments[0]._id.toHexString();
+             const visitId = apartment1User2VisitId.toHexString();
+             request(app)
+                .patch(`/apartments/${apartmentId}/visit/${visitId}`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({ schedTo: new Date('1-1-2030').getTime(),
+                        status: getVisitStatusOnCancelation()})
+                .expect(OK)
+                .end((err) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    return Apartment.findById(apartmentId)
+                        .then((apartment) => {
+                            const visit = apartment.getVisitDataById(visitId);
+                            expect(visit._askedBy.toHexString()).toBe(users[1]._id.toHexString());
+                            expect(visit.status).toBe(getVisitStatusOnCancelation());
+                            done();
+                        }).catch((e) => done(e));
+                });
+        });
+    
+    });
+
+    describe('PUT /apartments/:id/visit', () => {
+        
+        it('should not add a visit - visit scheduled to the past', (done) => {
+             const apartmentId = apartments[1]._id.toHexString();
+             request(app)
+                .put(`/apartments/${apartmentId}/visit`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({ schedTo: 10000})
+                .expect(BAD_REQUEST)
+                .end(done);
+        });
+
+        it('should not add a visit - unregistered user', (done) => {
+             const apartmentId = apartments[1]._id.toHexString();
+             request(app)
+                .put(`/apartments/${apartmentId}/visit`)
+                .send({ schedTo: new Date('1-1-2027').getTime()})
+                .expect(UNAUTHORIZED)
+                .end(done);
+        });
+
+        it('should not add a visit - apartment doesnt exist', (done) => {
+             const apartmentId = new ObjectID().toHexString();
+             request(app)
+                .put(`/apartments/${apartmentId}/visit`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({ schedTo: new Date('1-1-2027').getTime()})
+                .expect(NOT_FOUND)
+                .end(done);
+        });
+
+        it('should not add a visit - visit has no schedule time', (done) => {
+             const apartmentId = apartments[1]._id.toHexString();
+             request(app)
+                .put(`/apartments/${apartmentId}/visit`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({})
+                .expect(BAD_REQUEST)
+                .end(done);
+        });
+
+        it('should add a visit', (done) => {
+             const apartmentId = apartments[1]._id.toHexString();
+             request(app)
+                .put(`/apartments/${apartmentId}/visit`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({schedTo: new Date('1-1-2027').getTime()})
+                .expect(OK)
+                .expect((res) => {
+                    expect(res.body.apartment.visits.length).toBe(1);
+                    expect(res.body.apartment.visits[0].scheduledTo).toBe(new Date('1-1-2027').getTime());
+                    expect(res.body.apartment.visits[0]._askedBy).toBe(users[1]._id.toHexString());
+                    expect(res.body.apartment.visits[0].status).toBe(getVisitStatusOnCreate());
+                })
+                .end((err) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    return Apartment.findById(apartmentId)
+                        .then((apartment) => {
+                            expect(apartment.visits.length).toBe(1);
+                            expect(apartment.visits[0].scheduledTo).toBe(new Date('1-1-2027').getTime());
+                            expect(apartment.visits[0]._askedBy.toHexString()).toBe(users[1]._id.toHexString());
+                            expect(apartment.visits[0].status).toBe(getVisitStatusOnCreate());
+                            done();
+                        }).catch((e) => done(e));
+                });
+        });
+        
+        it('should not add a visit twice', (done) => {
+             const apartmentId = apartments[1]._id.toHexString();
+             request(app)
+                .put(`/apartments/${apartmentId}/visit`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .send({schedTo: new Date('1-1-2027').getTime()})
+                .expect(OK)
+                .expect((res) => {
+                    expect(res.body.apartment.visits.length).toBe(1);
+                    expect(res.body.apartment.visits[0].scheduledTo).toBe(new Date('1-1-2027').getTime());
+                    expect(res.body.apartment.visits[0]._askedBy).toBe(users[1]._id.toHexString());
+                    expect(res.body.apartment.visits[0].status).toBe(getVisitStatusOnCreate());
+                    request(app)
+                        .put(`/apartments/${apartmentId}/visit`)
+                        .set(XAUTH, users[1].tokens[0].token)
+                        .send({schedTo: new Date('1-1-2028').getTime()})
+                        .expect(BAD_REQUEST)
+                })
+                .end((err) => {
+                    if (err) {
+                        return done(err);
+                    }
+                    return Apartment.findById(apartmentId)
+                        .then((apartment) => {
+                            expect(apartment.visits.length).toBe(1);
+                            expect(apartment.visits[0].scheduledTo).toBe(new Date('1-1-2027').getTime());
+                            expect(apartment.visits[0]._askedBy.toHexString()).toBe(users[1]._id.toHexString());
+                            expect(apartment.visits[0].status).toBe(getVisitStatusOnCreate());
+                            done();
+                        }).catch((e) => done(e));
+                });
+        });
+    });
+
+
+    describe('GET /apartments/tags', () => {
+        it('should get all apartment tags', (done) => {
+            request(app)
+                .get('/apartments/tags')
+                .expect(OK)
+                .expect((res) => {
+                    expect(res.body.tags).toEqual(getSupportedTags());
+                })
+                .end(done);
+        });
+    });
 
   describe('#GET /apartments', () => {
     it('should find apartment by id', (done) => {
