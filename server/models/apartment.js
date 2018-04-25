@@ -8,12 +8,6 @@ const { getIndexOfValue } = require('../helpers/arrayFunctions');
 const { ObjectID } = require('mongodb');
 
 const ApartmentSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    min: 4,
-    max: 35,
-    required: true
-  },
   _createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true

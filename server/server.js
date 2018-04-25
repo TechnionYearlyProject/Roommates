@@ -64,9 +64,7 @@ app.post('/apartments', authenticate, async (req, res) => {
 
     const apartmentData = _.pick(req.body,
       [
-        'title',
         'price',
-        'address',
         'entranceDate',
         'images',
         'description',
@@ -78,6 +76,7 @@ app.post('/apartments', authenticate, async (req, res) => {
         'totalFloors',
         'area'
       ]);
+	  console.log(apartmentData);
     apartmentData._createdBy = req.user._id;
     apartmentData._notificationSubscribers = [req.user._id];
     apartmentData.createdAt = Date.now();
@@ -91,6 +90,7 @@ app.post('/apartments', authenticate, async (req, res) => {
       });
     return res.send({ apartment });
   } catch (err) {
+	  console.log(err);
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });

@@ -20,7 +20,7 @@
         <v-container>
             <v-card style="margin-top:-104px; min-height: 500px;">
                 <v-container grid-list-lg>
-                    <v-layout wrap row>
+                    <v-layout wrap row >
                         <v-flex v-if="loading" class="text-xs-center" xs12>
                             <v-progress-circular indeterminate color="purple" class="ma-5" />
                         </v-flex>
@@ -83,7 +83,10 @@
         },
       },
       beforeMount() {
-        if (!this.apartments) {
+        console.log(this.$route)
+        if (this.$route.query.id) {
+            this.search({ id: this.$route.query.id });
+        } else if (!this.apartments) {
           this.search({});
         }
       },

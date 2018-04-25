@@ -157,8 +157,8 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 18/04/18
-     * @param: params: object of {address,price,radius,roommates,floor,entranceDate,tags} -
-     * filter of the apartments list
+     * @param: params: object of {id, address, price, radius, roommates, floor, entranceDate,tags} -
+     * filter of the apartments list (the properties are optional). Empty object {} will return all apartments
      */
     searchApartments({ commit, getters }, params) {
       return axios.get('http://localhost:3000/apartments', { params })
@@ -172,7 +172,7 @@ export default new Vuex.Store({
      * @date: 19/04/18
      * @param: params: object of {id} - the id of the apartment to favor
      */
-    favor({ commit, getters }, params) {
+    favor(context, params) {
       return axios.put(`http://localhost:3000/apartments/${params.id}/interested`)
         .then((response) => {
           // eslint-disable-next-line 
@@ -180,19 +180,34 @@ export default new Vuex.Store({
           return response.data.apartment;
         });
     },
-        /**
+    /**
      * @author: Alon Talmor
      * @date: 23/04/18
      * @param: params: object of {id} - the id of the apartment
      * @param: payload: object of {text} - the text of the comment
      */
-    addApartmentComment({ commit, getters }, { params, payload }) {
+    addApartmentComment(context, { params, payload }) {
       return axios.put(`http://localhost:3000/apartments/${params.id}/comment`, payload)
         .then((response) => {
           // eslint-disable-next-line 
           console.log(response.data);
           return response.data.comments;
         });
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 24/04/18
+     * @param: payload: object of {address:{state, city, street, number, apartmentNumber},
+     * price, entranceDate, requiredRoommates, totalRoommates, floor, totalFloors,
+     * numberOfRooms, area, description, tags} - the details of the new apartment
+     */
+    publishApartment(context, payload) {
+      return axios.post('http://localhost:3000/apartments', payload)
+      .then((response) => {
+        // eslint-disable-next-line 
+        console.log(response.data);
+        return response.data.apartment;
+      });
     }
   },
   plugins: [vuexPersistence.plugin]
