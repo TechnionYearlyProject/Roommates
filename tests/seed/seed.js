@@ -27,7 +27,6 @@ const apartment1User2VisitId = new ObjectID();
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
-  title: 'Apartment 1',
   _createdBy: new ObjectID(),
   createdAt: Date.now(),
   price: 2000,
@@ -73,7 +72,6 @@ const apartment1 = new Apartment({
 
 const apartment2 = new Apartment({
   _id: apartment2Id,
-  title: 'Apartment 2',
   _createdBy: new ObjectID(),
   createdAt: Date.now(),
   price: 1000,
@@ -102,7 +100,6 @@ const apartment2 = new Apartment({
 });
 
 const notPublishedApartment = {
-  title: 'Not published Apartment',
   address: {
     state: 'israel',
     city: 'haifa',

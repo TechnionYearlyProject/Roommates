@@ -80,7 +80,6 @@ app.post('/apartments', authenticate, async (req, res) => {
         'totalFloors',
         'area'
       ]);
-	  console.log(apartmentData);
     apartmentData._createdBy = req.user._id;
     apartmentData._notificationSubscribers = [req.user._id];
     apartmentData.createdAt = Date.now();
@@ -94,7 +93,6 @@ app.post('/apartments', authenticate, async (req, res) => {
       });
     return res.send({ apartment });
   } catch (err) {
-	  console.log(err);
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
@@ -266,8 +264,6 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     const { id } = req.params;
 
     const apartment = await Apartment.findById(id);
-    console.log(apartment);
-    console.log(req.user);
     if (!apartment) {
       return res.status(NOT_FOUND).send();
     }
@@ -673,18 +669,13 @@ app.get('/users/reset/:token', (req, res) => {
  */
 app.patch('/users/reset/:token', async (req, res) => {
   try {
-	console.log(req.body);
-	const user = await User.findOne({ email: req.body.email });
-	console.log(user);
+    const user = await User.findOne({ email: req.body.email });
     passwordReset.verifyResetToken(user, req.params.token);
-	console.log("3");
     await user.resetPassword(req.body.password);
-		console.log("5");
 
     //TODO: disable using this same link after password change.
     res.send({ user });
   } catch (err) {
-	  console.log(err);
     res.status(BAD_REQUEST).send(err);
   }
 });
@@ -750,15 +741,15 @@ app.post('/reviews', authenticate, async (req, res) => {
     reviewData.geolocation = await geoLocation.getGeoLocationCoords(`${reviewData.street} ${reviewData.city} ${reviewData.state}`);
     reviewData._createdBy = req.user._id;
     reviewData.createdAt = Date.now();
-    
+
     Review.findInRange(reviewData.geolocation[0], reviewData.geolocation[1], 1)
-    .then((result) => {
-      result.forEach((review) => {
-        if (review._createdBy.equals(reviewData._createdBy)) {
-          return res.status(BAD_REQUEST).send(errors.multiRating);
-        }
+      .then((result) => {
+        result.forEach((review) => {
+          if (review._createdBy.equals(reviewData._createdBy)) {
+            return res.status(BAD_REQUEST).send(errors.multiRating);
+          }
+        });
       });
-    });
 
 
     const review = await new Review(reviewData).save();
@@ -775,45 +766,45 @@ app.get('/reviews/:long/:lat', async (req, res) => {
   try {
 
     var r = {
-      ratedCharacteristics:{
+      ratedCharacteristics: {
         parking: 0,
-        publicTransport:  0,
-        noise:  0,
-        commercialServices:  0,
-        upkeep:  0,
-        generalRating:  0,
+        publicTransport: 0,
+        noise: 0,
+        commercialServices: 0,
+        upkeep: 0,
+        generalRating: 0,
       },
       Pros: [],
       Cons: [],
       numberOfRaters: 0
-    } 
+    }
     var count = 0;
     Review.findInRange(req.params.long, req.params.lat, 1)
-    .then((result) => {
-      for (let index = 0; index < result.length; index++) {
-        const element = result[index];
-        count++;
-        r.ratedCharacteristics.parking += element.ratedCharacteristics.parking;
-        r.ratedCharacteristics.publicTransport += element.ratedCharacteristics.publicTransport;
-        r.ratedCharacteristics.noise += element.ratedCharacteristics.noise;
-        r.ratedCharacteristics.commercialServices += element.ratedCharacteristics.commercialServices;
-        r.ratedCharacteristics.upkeep += element.ratedCharacteristics.upkeep;
-        r.ratedCharacteristics.generalRating += element.ratedCharacteristics.generalRating;
-        r.Pros.push(element.Pros);
-        r.Cons.push(element.Cons);   
-      };
-      if(count == 0){
-        return res.send({r});
-      }
-      r.ratedCharacteristics.parking/=count;
-      r.ratedCharacteristics.publicTransport/=count;
-      r.ratedCharacteristics.noisecount;
-      r.ratedCharacteristics.commercialServicescount;
-      r.ratedCharacteristics.upkeepcount;
-      r.ratedCharacteristics.generalRatingcount;
-      r.numberOfRaters = count;
-      return res.send({result});
-    });
+      .then((result) => {
+        for (let index = 0; index < result.length; index++) {
+          const element = result[index];
+          count++;
+          r.ratedCharacteristics.parking += element.ratedCharacteristics.parking;
+          r.ratedCharacteristics.publicTransport += element.ratedCharacteristics.publicTransport;
+          r.ratedCharacteristics.noise += element.ratedCharacteristics.noise;
+          r.ratedCharacteristics.commercialServices += element.ratedCharacteristics.commercialServices;
+          r.ratedCharacteristics.upkeep += element.ratedCharacteristics.upkeep;
+          r.ratedCharacteristics.generalRating += element.ratedCharacteristics.generalRating;
+          r.Pros.push(element.Pros);
+          r.Cons.push(element.Cons);
+        };
+        if (count == 0) {
+          return res.send({ r });
+        }
+        r.ratedCharacteristics.parking /= count;
+        r.ratedCharacteristics.publicTransport /= count;
+        r.ratedCharacteristics.noisecount;
+        r.ratedCharacteristics.commercialServicescount;
+        r.ratedCharacteristics.upkeepcount;
+        r.ratedCharacteristics.generalRatingcount;
+        r.numberOfRaters = count;
+        return res.send({ result });
+      });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -865,8 +856,8 @@ app.get('/apartments/visit/actions', async (req, res) => {
  *
  */
 app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
-  try{
-    
+  try {
+
     const body = _.pick(req.body, ['schedTo', 'status']);
     const { id, visitId } = req.params;
 
@@ -877,12 +868,12 @@ app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
 
     const visitData = apartment.getVisitDataById(visitId);
 
-    if(!canModifyVisit(apartment._createdBy, visitData._askedBy, req.user._id)){
+    if (!canModifyVisit(apartment._createdBy, visitData._askedBy, req.user._id)) {
       return res.status(UNAUTHORIZED).send();
     }
 
     await apartment.updateVisit(visitId, req.user._id, body.status, body.schedTo);
-     
+
     return res.send({ apartment });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
@@ -903,7 +894,7 @@ app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
  *
  */
 app.put('/apartments/:id/visit/', authenticate, async (req, res) => {
-  try{
+  try {
     const body = _.pick(req.body, ['schedTo']);
     const { id } = req.params;
     const visitId = body.visitId;
@@ -913,12 +904,12 @@ app.put('/apartments/:id/visit/', authenticate, async (req, res) => {
       return res.status(NOT_FOUND).send();
     }
 
-     if(!canAddVisit(apartment.isOwner(req.user._id))){
+    if (!canAddVisit(apartment.isOwner(req.user._id))) {
       return res.status(UNAUTHORIZED).send();
     }
 
     await apartment.addNewVisit(req.user._id, body.schedTo);
-    
+
     return res.send({ apartment });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);

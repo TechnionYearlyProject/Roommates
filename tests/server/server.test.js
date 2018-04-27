@@ -490,7 +490,6 @@ describe('Server Tests', () => {
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartment.price).toBe(30);
-          expect(res.body.apartment.title).toEqual('Apartment 1');
         })
         .end(async (err) => {
           if (err) {
@@ -499,7 +498,6 @@ describe('Server Tests', () => {
           try {
             const apartment = await Apartment.findById(apartmentId);
             expect(apartment.price).toBe(30);
-            expect(apartment.title).toEqual('Apartment 1');
             return done();
           } catch (e) {
             return done(e);
@@ -1716,7 +1714,7 @@ describe('Server Tests', () => {
         .expect(UNAUTHORIZED)
         .end(done);
     });
-    it('should not send verification mail when already verfied', (done) => {
+    it('should not send verification mail when already verified', (done) => {
       request(app)
         .post('/users/verify')
         .send({
@@ -1728,23 +1726,30 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('POST /users/forgot-password', () => {
+  describe('POST /users/reset', () => {
     it('should send email when authenticated', (done) => {
       request(app)
-        .post('/users/forgot-password')
+        .post('/users/reset')
         .set(XAUTH, users[1].tokens[0].token)
+        .send({
+          email: users[1].email
+        })
         .expect(OK)
         .end(done);
     });
-    it('should not send email when not authenticated', (done) => {
+    it('should send email when not authenticated', (done) => {
       request(app)
-        .post('/users/forgot-password')
-        .expect(UNAUTHORIZED)
+        .post('/users/reset')
+        .send({
+          email: users[1].email
+        })
+        .expect(OK)
         .end(done);
     });
   });
 
-  describe('GET /users/reset-password/:token', () => {
+  /** Alon Talmor: this route is deprecated 
+  describe('GET /users/reset/:token', () => {
     // Prepare the token for the tests.
     let hashedPassword = null;
     let user2ForgotPasswordToken = null;
@@ -1755,27 +1760,27 @@ describe('Server Tests', () => {
 
     it('should accept password reset', (done) => {
       request(app)
-        .get(`/users/reset-password/${user2ForgotPasswordToken}`)
+        .get(`/users/reset/${user2ForgotPasswordToken}`)
         .set(XAUTH, users[1].tokens[0].token)
         .expect(OK)
         .end(done);
     });
     it('should not accept password reset on bad token', (done) => {
       request(app)
-        .get(`/users/reset-password/${user2ForgotPasswordToken}l`)
+        .get(`/users/reset/${user2ForgotPasswordToken}l`)
         .set(XAUTH, users[1].tokens[0].token)
         .expect(BAD_REQUEST)
         .end(done);
     });
     it('should not accept password reset when not authenticated', (done) => {
       request(app)
-        .get(`/users/reset-password/${user2ForgotPasswordToken}`) // The token is good
+        .get(`/users/reset/${user2ForgotPasswordToken}`) // The token is good
         .expect(UNAUTHORIZED) // but the user is not authorized
         .end(done);
     });
-  });
+  });*/
 
-  describe('PATCH /users/reset-password/:token', () => {
+  describe('PATCH /users/reset/:token', () => {
     // Prepare the token for the tests.
     let hashedPassword = null;
     let user2ForgotPasswordToken = null;
@@ -1786,11 +1791,11 @@ describe('Server Tests', () => {
 
     it('should change the user\'s password', (done) => {
       request(app)
-        .patch(`/users/reset-password/${user2ForgotPasswordToken}`)
+        .patch(`/users/reset/${user2ForgotPasswordToken}`)
         .send({
+          email: users[1].email,
           password: 'newPassword'
         })
-        .set(XAUTH, users[1].tokens[0].token)
         .expect(OK)
         .end((err) => {
           if (err) {
@@ -1806,11 +1811,11 @@ describe('Server Tests', () => {
     });
     it('should not change to invalid password', (done) => {
       request(app)
-        .patch(`/users/reset-password/${user2ForgotPasswordToken}`)
+        .patch(`/users/reset/${user2ForgotPasswordToken}`)
         .send({
+          email: users[1].email,
           password: 'a' // Password is too short.
         })
-        .set(XAUTH, users[1].tokens[0].token)
         .expect(BAD_REQUEST)
         .end((err) => {
           if (err) {
@@ -1826,31 +1831,12 @@ describe('Server Tests', () => {
     });
     it('should not change password when token is invalid', (done) => {
       request(app)
-        .patch(`/users/reset-password/${user2ForgotPasswordToken}l`) // Token is invalid.
+        .patch(`/users/reset/${user2ForgotPasswordToken}l`) // Token is invalid.
         .send({
+          email: users[1].email,
           password: 'newPassword' // Password is valid.
         })
-        .set(XAUTH, users[1].tokens[0].token)
         .expect(BAD_REQUEST)
-        .end((err) => {
-          if (err) {
-            return done(err);
-          }
-          return User.findById(users[1]._id.toHexString())
-            .then((user) => {
-              expect(user.password).toBe(hashedPassword); // Password has not changed.
-              done();
-            })
-            .catch(done);
-        });
-    });
-    it('should not change password when not authorized', (done) => {
-      request(app)
-        .patch(`/users/reset-password/${user2ForgotPasswordToken}`) // Token is valid.
-        .send({
-          password: 'newPassword' // Password is valid.
-        })
-        .expect(UNAUTHORIZED) // But not authorized
         .end((err) => {
           if (err) {
             return done(err);
