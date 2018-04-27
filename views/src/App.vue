@@ -1,28 +1,46 @@
 <template>
-    <div>
-        <header-section />
-        <router-view />
-        <footer-section />
-
-        <chat />
-    </div>
+  <v-app>
+    <app-toolbar/>
+    <v-content>
+      <!-- <v-container fluid> -->
+      <app-loader :loading="getLoadingStatus" />
+      <router-view/>
+      <app-snackbar :text="getSnackbarText" />
+      <!-- </v-container> -->
+    </v-content>
+    <app-footer/>
+  </v-app>
 </template>
 
 <script>
-    import HeaderSection from '@/components/header-section/HeaderSection'
-    import FooterSection from "@/components/footer-section/FooterSection";
-    import Chat from "@/components/chat/Chat";
+  import { mapGetters, mapMutations } from 'vuex';
+  import AppToolbar from './components/AppToolbar';
+  import AppLoader from './components/AppLoader';
+  import AppSnackbar from './components/AppSnackbar';
+  import AppFooter from './components/AppFooter';
 
-    export default {
-        name: "app",
-        components: {
-            Chat,
-            FooterSection,
-            HeaderSection
+  export default {
+    computed: {
+      ...mapGetters(['getLoadingStatus', 'getSnackbarText', 'isAuthenticated'])
+    },
+    components: {
+      AppToolbar,
+      AppLoader,
+      AppSnackbar,
+      AppFooter
+    },
+    name: 'App',
+    methods: {
+      ...mapMutations(['toggleDrawer', 'startSession']),
+      loadInitialState() {
+        // this.toggleDrawer(this.$vuetify.breakpoint.mdAndUp);
+        if (this.isAuthenticated) {
+          this.startSession();
         }
-    };
+      }
+    },
+    created() {
+      this.loadInitialState();
+    }
+  };
 </script>
-
-<style>
-
-</style>

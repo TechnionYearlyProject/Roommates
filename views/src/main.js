@@ -1,64 +1,38 @@
+// The Vue build version to load with the `import` command
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
-import Vuex from 'vuex';
-import VueResource from 'vue-resource';
-import BootstrapVue from 'bootstrap-vue';
-import VueSocketio from 'vue-socket.io';
-import Icon from 'vue-awesome/components/Icon.vue';
-import 'vue-awesome/icons';
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import Vuetify from 'vuetify';
+import 'vuetify/dist/vuetify.min.css';
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+import App from './App';
+import router from './router';
+import './assets/stringAssets';
+import store from './store';
+import GoogleMaps from './services/google-maps';
 
-import App from '@/App.vue';
-import router from '@/router';
-import Auth from '@/auth/Auth.js';
-import { store } from '@/vuex/store.js';
-import '@/../static/css/style.css';
-import '@/../static/js/string-utils.js';
-import '@/configuration/register-icons.js';
-
-Vue.config.productionTip = false; // Don't show Vue's annoying tips in the console
-Vue.use(BootstrapVue);
-Vue.use(VueSocketio, 'http://localhost:2000');
-Vue.use(Icon);
-Vue.use(VueResource);
-Vue.use(Auth);
-
-Vue.http.options.root = process.env.SERVER_URI;
-Vue.http.headers.common['x-auth'] = 'x-auth';
-Vue.http.interceptors.push((request, next) => {
-    if (Vue.auth.isAuthenticated()) {
-        request.headers.set('X-Auth', Vue.auth.getToken());
-    }
-
-    next();
+Vue.use(Vuetify, {
+  theme: {
+    primary: '#3F51B5',
+    secondary: '#E91E63',
+    accent: '#82B1FF',
+    error: '#FF5252',
+    info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FFC107',
+    accept: '#009688',
+    cancel: '#E91E63',
+  }
 });
+Vue.use(VueAxios, axios);
+Vue.use(GoogleMaps);
 
-router.beforeEach(
-    (to, from, next) => {
-        if (to.matched.some(record => record.meta.forVisitors)) {
-            if (Vue.auth.isAuthenticated()) {
-                console.log('authenticated');
-                next({ name: 'main-page' });
-            } else {
-                next();
-            }
-        } else if (to.matched.some(record => record.meta.forAuth)) {
-            if (!Vue.auth.isAuthenticated()) {
-                console.log('not authenticated');
-                next({ name: 'identification' });
-            } else {
-                next();
-            }
-        } else {
-            next();
-        }
-    }
-);
+Vue.config.productionTip = false;
 
 new Vue({
-    el: '#app',
-    router,
-    store,
-    template: '<App />',
-    components: { App }
+  el: '#app',
+  router,
+  store,
+  components: { App },
+  template: '<App/>',
 });

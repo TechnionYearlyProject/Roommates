@@ -1,107 +1,89 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
-import MainPage from '@/components/pages/Main'
-import Identification from '@/components/pages/Identification'
-import ApartmentPage from '@/components/pages/Apartment'
-import Apartment2 from '@/components/pages/Apartment2'
-import UserProfilePage from '@/components/pages/UserProfile'
-import AddApartmentPage from '@/components/pages/AddApartment'
-import InterestedApartments from '@/components/pages/InterestedApartments'
-import UserPanel from '@/components/pages/UserPanel'
-import HobbiesSelection from '@/components/pages/HobbiesSelection'
-import PublishedApartments from '@/components/pages/PublishedApartments'
-import VerificationRequest from '@/components/pages/VerificationRequest'
-import VerificationApproval from '@/components/pages/VerificationApproval'
+import AppMain from '@/components/AppMain';
+import AppIdentification from '@/components/AppIdentification';
+import AppVerification from '@/components/AppVerification';
+import AppResetPassword from '@/components/AppResetPassword';
+import AppUserProfile from '@/components/AppUserProfile';
+import AppPublishApartment from '@/components/AppPublishApartment';
+import store from '../store';
+// import HelloWorld from '@/components/HelloWorld';
 
 Vue.use(Router);
 
-const routes = [
+const router = new Router({
+  mode: 'history',
+  routes: [
+    // {
+    //   path: '/test',
+    //   name: 'HelloWorld',
+    //   component: HelloWorld,
+    // },
     {
-        path: '/',
-        name: 'main-page',
-        component: MainPage
+      path: '/',
+      name: 'AppMain',
+      component: AppMain,
     },
     {
-        path: '/identification',
-        name: 'identification',
-        component: Identification,
-        meta: { forVisitors: true }
+      path: '/identification',
+      name: 'AppIdentification',
+      component: AppIdentification,
+      meta: {
+        rejectsAuth: true
+      }
     },
     {
-        path: '/apartments/:id',
-        name: 'apartment-page',
-        component: Apartment2
+      path: '/verification/:token?',
+      name: 'AppVerification',
+      alias: '/users/verify/:token',
+      component: AppVerification,
+      meta: {
+        requiresAuth: true,
+        rejectsVerify: true
+      }
     },
     {
-        path: '/add',
-        name: 'add-apartment-page',
-        component: AddApartmentPage,
-        meta: { forAuth: true }
+      path: '/reset_password/:token?',
+      name: 'AppResetPassword',
+      alias: '/users/reset-password/:token',
+      component: AppResetPassword,
     },
     {
-        path: '/users/:id/interested',
-        name: 'interested-apartments',
-        component: InterestedApartments
+      path: '/user_profile',
+      name: 'AppUserProfile',
+      component: AppUserProfile,
+      meta: {
+        requiresVerify: true
+      }
     },
     {
-        path: '/users/:id/published',
-        name: 'published-apartments',
-        component: PublishedApartments
+      path: '/advertise',
+      name: 'AppPublishApartment',
+      component: AppPublishApartment,
+      meta: {
+        requiresVerify: true
+      }
     },
-    {
-        path: '/users/hobbies',
-        name: 'select-hobbies',
-        component: HobbiesSelection,
-        props: true
-    },
-    {
-        path: '/users/:id/profile',
-        name: 'user-profile',
-        component: UserProfilePage,
-        props: true
-    },
-    {
-        path: '/users/control-panel',
-        name: 'user-panel',
-        component: UserPanel,
-        meta: { forAuth: true }
-    },
-    {
-        path: '/send-verify',
-        name: 'verification-request',
-        component: VerificationRequest,
-        props: true
-    },
-    {
-        path: '/users/verify/:token',
-        name: 'verification-approval',
-        component: VerificationApproval,
-    }
-];
-
-const beforeEach = (to, from, next) => {
-    if (to.matched.some(record => record.meta.forVisitors)) {
-        if (Vue.auth.isAuthenticated()) {
-            console.log('authenticated')
-            next({ name: 'main-page' });
-        } else {
-            next();
-        }
-    } else if (to.matched.some(record => record.meta.forAuth)) {
-        if (!Vue.auth.isAuthenticated()) {
-            console.log('not authenticated')
-            next({ name: 'identification' });
-        } else {
-            next();
-        }
-    } else {
-        next();
-    }
-};
-
-export default new Router({
-    mode: 'history', // Remove the annoying # sign from the URL!
-    routes,
-    beforeEach
+  ],
+  scrollBehavior() {
+    return { x: 0, y: 0 };
+  },
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth) && !store.getters.isAuthenticated) {
+    next({ name: 'AppIdentification' });
+  } else if (to.matched.some(record => record.meta.rejectsAuth) && store.getters.isAuthenticated) {
+    next({ name: 'AppMain' });
+  } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isAuthenticated) { // eslint-disable-line 
+    next({ name: 'AppIdentification' });
+  } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isVerified) {
+    next({ name: 'AppVerification' });
+  } else if (to.matched.some(record => record.meta.rejectsVerify) && store.getters.isVerified) {
+    next({ name: 'AppMain' });
+  } else {
+    next();
+  }
+});
+
+export default router;

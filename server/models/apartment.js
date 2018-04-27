@@ -10,12 +10,6 @@ const visit = require('./visit');
 
 
 const ApartmentSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    min: 4,
-    max: 35,
-    required: true
-  },
   _createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true
@@ -278,7 +272,6 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   if (p.tags && Array.isArray(p.tags)) { // tags
     query.tags = { $all: p.tags };
   }
-
   return Apartment.find(query);
 };
 
@@ -304,7 +297,7 @@ ApartmentSchema.methods.getAddressString = function () {
 ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
   const apartment = this;
 
-  apartment.comments.push({
+  apartment.comments.unshift({
     _createdBy,
     createdAt,
     text
@@ -324,7 +317,7 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-
+  
   return apartment.save();
 };
 

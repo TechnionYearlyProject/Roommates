@@ -16,28 +16,19 @@ const { XAUTH, XEXPIRATION } = require('../constants');
  * @param {Function} next
  * @returns a Promise object.
  */
-const authenticate = (req, res, next) => {
+const authenticate = async (req, res, next) => {
   const token = req.header(XAUTH);
-
-  User.findByToken(token)
-    .then((user) => {
-      if (!user) {
-        return Promise.reject();
-      }
-      if (Date.now() > user.getTicket(token).expiration) {
-        return user.removeExpiredTokens()
-          .then(() => Promise.reject());
-      }
-
-      return user.updateTokenTime(token)
-        .then((expiration) => {
-          res.header(XEXPIRATION, expiration);
-          req.user = user;
-          req.token = token;
-          return next();
-        });
-    })
-    .catch((err) => res.status(UNAUTHORIZED).send(err));
+  try {
+    const user = await User.findByToken(token);
+    if (!user) {
+      return Promise.reject();
+    }
+    req.user = user;
+    req.token = token;
+    return next();
+  } catch (error) {
+    res.status(UNAUTHORIZED).send(error);
+  }
 };
 
 module.exports = { authenticate };
