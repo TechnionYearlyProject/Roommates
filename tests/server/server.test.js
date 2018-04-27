@@ -1448,7 +1448,7 @@ describe('Server Tests', () => {
   });
 
   describe('#GET /users/:id', () => {
-    it('should find existing user by id', (done) => {
+    it('should find single existing user by id', (done) => {
       const id = users[1]._id.toHexString();
 
       request(app)
@@ -1457,8 +1457,30 @@ describe('Server Tests', () => {
         .expect((res) => {
           const expected = User.toJSON(users[1]);
           expected._id = expected._id.toHexString();
-          expect(res.body.user).toEqual(expected);
+          expect(res.body.users[expected._id]).toEqual(expected);
         })
+        .end(done);
+    });
+
+    it('should find multiple existing user by id', (done) => {
+     var id = [users[0]._id.toHexString(), users[1]._id.toHexString() ];
+      request(app)
+        .get(`/users/${id}`)
+        .expect(OK)
+        .expect(async (res) => {
+          const user1 = JSON.stringify(await User.findById(users[0]._id.toHexString()));
+          const user2 = JSON.stringify(await User.findById(users[1]._id.toHexString()));
+          expect(JSON.stringify(res.body.users[users[0]._id])).toEqual(user1);
+          expect(JSON.stringify(res.body.users[users[1]._id])).toEqual(user2);
+        })
+        .end(done);
+    });
+
+    it('should not find multiple users by id where one doesnt exist', (done) => {
+     var id = [users[0]._id.toHexString(), new ObjectID() ];
+      request(app)
+        .get(`/users/${id}`)
+        .expect(NOT_FOUND)
         .end(done);
     });
 
