@@ -301,7 +301,7 @@
       }
     },
     computed: {
-      ...mapGetters(['getUser']),
+      ...mapGetters(['getUser', 'isAuthenticated']),
       title() {
         return (
           this.profile.properties[1] && this.profile.properties[1].value.current
@@ -319,7 +319,7 @@
         this.$store
           .dispatch('fetchUser', { id })
           .then((users) => {
-            this.isMyProfile = this.getUser._id === id;
+            this.isMyProfile = this.isAuthenticated && this.getUser._id === id;
             this.initProfile(users[id]);
           })
           .catch(() => {
