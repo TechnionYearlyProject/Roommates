@@ -19,8 +19,29 @@
 
         <v-container>
             <v-card style="margin-top:-104px; min-height: 500px;">
+                <v-toolbar class="mb-1" card prominent color="secondary lighten-3">
+                    <v-toolbar-title class="body-2">
+                        <v-icon>sort</v-icon>Sort</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-breadcrumbs large>
+                        <v-breadcrumbs-item v-for="sortOption in sortOptions" :key="sortOption.title" :disabled="loading" @click.native="sort(sortOption)" style="cursor: pointer;">
+                            <span class="black--text">{{ sortOption.title }}</span>
+                            <span style="width: 15px">
+                                <v-icon v-if="sortOption.direction" medium>{{ sortOption.direction === 'up' ? 'arrow_drop_up' : 'arrow_drop_down' }}</v-icon>
+                            </span>
+                        </v-breadcrumbs-item>
+                    </v-breadcrumbs>
+                    <!-- <div v-for="(sortOption, i) in sortOptions" :key="`sort-${i}`">
+
+                        <v-btn flat @click="sort(sortOption)" :disabled="loading" :loading="loading" style="text-transform: none">
+                            <v-icon left>{{ sortOption.icon }}</v-icon>
+                            <span class="hidden-xs-only pr-1">{{ sortOption.title }}</span>
+                            <v-icon v-if="sortOption.direction" small>{{ sortOption.direction === 'up' ? 'arrow_upward' : 'arrow_downward' }}</v-icon>
+                        </v-btn>
+                    </div> -->
+                </v-toolbar>
                 <v-container grid-list-lg>
-                    <v-layout wrap row >
+                    <v-layout wrap row>
                         <v-flex v-if="loading" class="text-xs-center" xs12>
                             <v-progress-circular indeterminate color="purple" class="ma-5" />
                         </v-flex>
@@ -60,7 +81,27 @@
           },
           image: cityImage,
           loading: false,
-          dialog: false
+          dialog: false,
+          sortOptions: [
+            {
+              title: 'Price',
+              direction: null,
+              icon: 'toll',
+              compareFunction: (x, y) => x.price - y.price
+            },
+            {
+              title: 'Entrance date',
+              direction: null,
+              icon: 'event',
+              compareFunction: (x, y) => x.entranceDate - y.entranceDate
+            },
+            {
+              title: 'Interest',
+              direction: null,
+              icon: 'favorite',
+              compareFunction: (x, y) => x._interested.length - y._interested.length
+            }
+          ]
         };
       },
       computed: {
@@ -81,11 +122,30 @@
               this.loading = false;
             });
         },
+        async sort(sortOption) {
+          this.loading = true;
+          await new Promise((resolve) => {
+            const preserveOrder = (x, y) =>
+              this.apartments.indexOf(x._id) - this.apartments.indexOf(y._id);
+            if (sortOption.direction === null || sortOption.direction === 'down') {
+              this.apartments.sort(
+                (x, y) => sortOption.compareFunction(x, y) || preserveOrder(x, y)
+              );
+              sortOption.direction = 'up';
+            } else {
+              this.apartments.sort(
+                (x, y) => sortOption.compareFunction(y, x) || preserveOrder(x, y)
+              );
+              sortOption.direction = 'down';
+            }
+            resolve();
+          });
+          this.loading = false;
+        }
       },
       beforeMount() {
-        console.log(this.$route)
         if (this.$route.query.id) {
-            this.search({ id: this.$route.query.id });
+          this.search({ id: this.$route.query.id });
         } else if (!this.apartments) {
           this.search({});
         }
@@ -93,7 +153,7 @@
       components: {
         AppMainSearchForm,
         AppApartmentAd,
-        AppDrawer,
+        AppDrawer
       }
     };
 </script>

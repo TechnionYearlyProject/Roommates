@@ -4,7 +4,8 @@
       <v-card>
         <v-card-media :src="image" height="300px">
           <v-layout column class="media">
-            <v-card-title>
+            <v-card-title primary-title>
+              <div class="display-1 white--text ml-3">{{ title }}</div>
               <v-spacer></v-spacer>
               <v-btn dark icon class="mr-3">
                 <v-icon>edit</v-icon>
@@ -12,75 +13,77 @@
             </v-card-title>
           </v-layout>
         </v-card-media>
-
-        <v-list subheader two-line>
-          <v-list-group v-model="item.active" v-for="(item,i) in items" :key="`item-${i}`" :prepend-icon="item.action" no-action>
+        <v-list subheader>
+          <v-list-group v-model="profile.active" :prepend-icon="profile.icon" no-action>
             <v-list-tile slot="activator">
               <v-list-tile-content>
-                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                <v-list-tile-title>{{ profile.title }} </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <div v-if="item['ref'] === 'profile'">
-              <v-list-tile v-for="(subItem,j) in profile" :key="`profile-${j}`">
-                <v-list-tile-content>
-                  <v-list-tile-sub-title>{{ subItem.title }}</v-list-tile-sub-title>
-                  <span v-if="subItem.editMode" style="width:170px">
-                    <v-text-field v-if="subItem.editKind === 'text'" :label="subItem.label? subItem.label : 'Edit'" :mask="subItem.mask" v-model="subItem.value" :counter="subItem.counter" :rules="subItem.rules" :multi-line="subItem.multi" single-line autofocus return-masked-value></v-text-field>
-                    <v-radio-group v-else-if="subItem.editKind === 'radio'" v-model="subItem.value" row>
-                      <v-radio v-for="(gender,i) in genderList" :key="`gender-${i}`" :label="gender.title" :value="gender.value"></v-radio>
-                    </v-radio-group>
-                  </span>
-                  <span v-else>
-                    {{ subItem.value.length > 150? subItem.value.slice(0,147) + '...' : subItem.value }}
-                  </span>
-                </v-list-tile-content>
-                <v-list-tile-action class="pt-3">
-                  <!-- edit -->
-                  <v-btn icon class="mx-0" v-if="subItem.editable && !subItem.editMode" @click="subItem.editMode = true">
-                    <v-icon color="accept">edit</v-icon>
-                  </v-btn>
-                  <div v-if="subItem.editable && subItem.editMode">
-                    <v-btn icon class="mx-0" @click="subItem.editMode = false;editItem(subItem)">
-                      <v-icon color="accept">check</v-icon>
+            <v-container pt-1>
+              <div v-for="(property, i) in profile.properties" :key="`property-${i}`" class="pb-3">
+                <v-subheader>
+                  <!-- <v-icon class="pr-2">{{ property.icon }}</v-icon> -->
+                  {{ property.title }}
+                  <v-spacer/>
+                  <span v-if="property.isEditable">
+                    <v-btn icon v-if="!property.edit.active" @click="property.edit.active = true">
+                      <v-icon color="info">edit</v-icon>
                     </v-btn>
-                    <v-btn icon class="mx-0" @click="subItem.editMode = false;subItem.value = subItem.prev;">
-                      <v-icon color="cancel">close</v-icon>
+                    <v-btn icon v-if="property.edit.active" @click="editProperty(property)">
+                      <v-icon color="success">check</v-icon>
                     </v-btn>
-                  </div>
-                </v-list-tile-action>
-              </v-list-tile>
-            </div>
-            <div v-if="item['ref'] === 'attributes'">
-              <v-list-tile v-for="(subItem,j) in attributes" :key="`attributes-${j}`">
-                <v-list-tile-content>
-                  <span v-if="subItem.type === 'add-form'" style="width:100%" class="pb-2">
-                    <v-select max-height="400" :items="attributeList" v-model="subItem.value" label="You can add more" :hint="attributeHint" persistent-hint autocomplete single-line></v-select>
+                    <v-btn icon v-if="property.edit.active" @click="property.edit.active = false; property.value.current = property.value.previous">
+                      <v-icon color="error">close</v-icon>
+                    </v-btn>
                   </span>
-                  <span v-else>
-                    <v-list-tile-title>{{ subItem.value }}</v-list-tile-title>
-                  </span>
-                </v-list-tile-content>
-                <v-list-tile-action class="pb-2">
-                  <v-btn icon class="mx-0" v-if="subItem.addable" @click="addAttribute(subItem)">
-                    <v-icon color="accept">add</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
+                </v-subheader>
+                <span v-if="!property.isEditable || !property.edit.active" class="body-1 pl-3">
+                  {{ property.value.current }}
+                </span>
+                <span v-else>
+                  <v-text-field v-if="property.edit.kind === 'text'" class="pt-0 px-3" v-model="property.value.current" :mask="property.edit.mask" :counter="property.edit.counter" :rules="property.edit.rules" :multi-line="property.edit.isMultiline" :error-messages="property.error" single-line autofocus return-masked-value />
+                  <v-radio-group v-else-if="property.edit.kind === 'radio'" v-model="property.value.current" :error-messages="property.error" class="pt-0 px-3" row>
+                    <v-radio v-for="(gender, i) in genderList" :key="`gender-${i}`" :label="gender.title" :value="gender.value"></v-radio>
+                  </v-radio-group>
+                </span>
+              </div>
+            </v-container>
+          </v-list-group>
+          <v-list-group v-model="attributes.active" :prepend-icon="attributes.icon" no-action>
+            <v-list-tile slot="activator">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ attributes.title }} </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-container pt-0 px-5>
+              <v-select v-model="attributes.values" @input="updateAttributes" :items="allAttributes" label="Your attributes" :error-messages="attributes.error" :disabled="!isMyProfile" :hint="attributes.hint" persistent-hint chips deletable-chips multiple autocomplete />
               </v-list-tile>
-            </div>
-            <div v-if="item['ref'] === 'favorites'">
-              <v-list-tile v-for="(subItem,j) in favorites" :key="`favorites-${j}`">
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </div>
-            <div v-if="item['ref'] === 'publishes'">
-              <v-list-tile v-for="(subItem,j) in publishes" :key="`publishes-${j}`">
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ subItem.title }}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </div>
+            </v-container>
+          </v-list-group>
+          <v-list-group v-model="favorites.active" :prepend-icon="favorites.icon" no-action>
+            <v-list-tile slot="activator">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ favorites.title }} </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile v-for="(favorite, i) in favorites.values" :key="`favorites-${i}`">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ favorite }} </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+          <v-list-group v-model="publishes.active" :prepend-icon="publishes.icon" no-action>
+            <v-list-tile slot="activator">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ publishes.title }} </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile v-for="(publish, i) in publishes.values" :key="`favorites-${i}`">
+              <v-list-tile-content>
+                <v-list-tile-title>{{ publish }} </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
           </v-list-group>
         </v-list>
       </v-card>
@@ -89,46 +92,43 @@
 </template>
 
 <script>
+/* eslint no-param-reassign: ["error", { "props": false }] */
+  import { mapGetters } from 'vuex';
   import defaultUserImage from '../assets/user-default.jpg';
   import attrList from '../assets/attributes';
 
   export default {
     data() {
       return {
-        dialog: false,
-        user: null,
-        profile: [],
-        attributes: [
-          {
-            type: 'add-form',
-            addable: true
-          }
-        ],
-        favorites: [],
-        publishes: [],
-        items: [
-          {
-            action: 'person',
-            title: 'Profile Information',
-            ref: 'profile',
-            active: true
-          },
-          {
-            action: 'fitness_center',
-            title: 'Attributes and Skills',
-            ref: 'attributes'
-          },
-          {
-            action: 'favorite',
-            title: 'My Interests',
-            ref: 'favorites'
-          },
-          {
-            action: 'home',
-            title: 'My Publishes',
-            ref: 'publishes'
-          }
-        ],
+        isMyProfile: false,
+        image: null,
+        profile: {
+          active: true,
+          icon: 'person',
+          title: 'Profile Information',
+          properties: []
+        },
+        attributes: {
+          active: false,
+          icon: 'fitness_center',
+          title: 'Attributes and Skills',
+          error: [],
+          hint: '',
+          lastUpdate: null,
+          values: []
+        },
+        favorites: {
+          active: false,
+          icon: 'favorite',
+          title: 'Interests',
+          values: []
+        },
+        publishes: {
+          active: false,
+          icon: 'home',
+          title: 'Publishes',
+          values: []
+        },
         genderList: [
           {
             title: 'Male',
@@ -139,157 +139,193 @@
             value: 'female'
           }
         ],
-        attributeList: null,
-        attributeHint: ''
+        allAttributes: attrList
       };
     },
     methods: {
-      editItem(item) {
-        // eslint-disable-next-line
-        console.log('editted!');
-        if (item.prev != item.value) {
-          const payload = item.getPayload();
-          this.$store
-            .dispatch('updateUser', payload)
-            .then(() => {
-              item.prev = item.value;
-            })
-            .catch(error => {
-              item.value = item.prev;
-              console.log(error); // show an error message
-            });
-        }
-      },
-      removeItem(i, j) {
-        this.items[i].items.splice(j, 1);
-      },
-      addAttribute(item) {
-        this.attributeHint = '';
-        if (!item.value) {
-          return;
-        } else if (
-          this.attributes.some((e, i) => e.value === item.value && i > 0)
-        ) {
-          this.attributeHint = 'already added';
+      editProperty(property) {
+        if (property.value.current === property.value.previous) {
+          property.edit.active = false;
           return;
         }
-        this.attributes.splice(1, 0, {
-          title: '',
-          value: item.value,
-          removable: true
+        this.$store
+          .dispatch('updateUser', property.getPayload())
+          .then(() => {
+            property.error = [];
+            property.value.previous = property.value.current;
+            property.edit.active = false;
+          })
+          .catch((error) => {
+            property.value.current = property.value.previous;
+            property.error = 'An error occured!';
+            // eslint-disable-next-line
+            console.log(error); // show an error message
+          });
+      },
+      updateAttributes(value) {
+        this.attributes.hint = 'Updating attributes...';
+        const lastUpdate = Date.now();
+        this.attributes.lastUpdate = lastUpdate;
+        setTimeout(() => {
+          if (lastUpdate === this.attributes.lastUpdate) {
+            this.$store
+              .dispatch('updateUser', { hobbies: value })
+              .then(() => {
+                this.attributes.error = [];
+                this.attributes.hint = 'Saved!';
+              })
+              .catch(() => {
+                this.attributes.error = 'An error occured!';
+              });
+          }
+        }, 2000);
+      },
+      initProfile(user) {
+        this.profile.properties.push({
+          title: 'E-mail',
+          value: {
+            current: user.email
+          },
+          icon: 'email',
+          error: [],
+          isEditable: false
         });
-        // eslint-disable-next-line
-        item.value = '';
+        this.profile.properties.push({
+          title: 'Name',
+          value: {
+            current: `${user.firstName} ${user.lastName}`,
+            previous: `${user.firstName} ${user.lastName}`
+          },
+          icon: 'face',
+          error: [],
+          isEditable: this.isMyProfile,
+          edit: {
+            active: false,
+            kind: 'text',
+            rules: [v => v.length <= 25 || ''],
+            counter: 25
+          },
+          getPayload() {
+            const name = this.value.current.split(' ');
+            return {
+              firstName: name.shift(),
+              lastName: name.join(' ')
+            };
+          }
+        });
+        this.profile.properties.push({
+          title: 'Birthday date',
+          value: {
+            current: '2018-03-02',
+            previous: '2018-03-02'
+          },
+          icon: 'event',
+          error: [],
+          isEditable: this.isMyProfile,
+          edit: {
+            active: false,
+            kind: 'text',
+            mask: '####-##-##'
+          },
+          getPayload() {
+            return {
+              birthdate: new Date(this.value.current).getTime()
+            };
+          }
+        });
+        this.profile.properties.push({
+          title: 'Gender',
+          value: {
+            current: user.gender,
+            previous: user.gender
+          },
+          icon: 'wc',
+          error: [],
+          isEditable: this.isMyProfile,
+          edit: {
+            active: false,
+            kind: 'radio'
+          },
+          getPayload() {
+            return {
+              gender: this.value.current
+            };
+          }
+        });
+        this.profile.properties.push({
+          title: 'Phone',
+          value: {
+            current: user.mobilePhone,
+            previous: user.mobilePhone
+          },
+          icon: 'phone',
+          error: [],
+          isEditable: this.isMyProfile,
+          edit: {
+            active: false,
+            kind: 'text',
+            mask: '##########'
+          },
+          getPayload() {
+            return {
+              mobilePhone: this.value.current
+            };
+          }
+        });
+        this.profile.properties.push({
+          title: 'About',
+          value: {
+            current: user.about,
+            previous: user.about
+          },
+          icon: 'dehaze',
+          error: [],
+          isEditable: this.isMyProfile,
+          edit: {
+            active: false,
+            kind: 'text',
+            isMultiline: true,
+            rules: [v => v.length <= 147 || ''],
+            counter: 147
+          },
+          getPayload() {
+            return {
+              about: this.value.current
+            };
+          }
+        });
+        this.attributes.values = user.hobbies;
+        this.favorites.values = user._interestedApartments;
+        this.publishes.values = user._publishedApartments;
+        this.image = user.image ? user.image : defaultUserImage;
       }
     },
     computed: {
-      image() {
-        return this.user && this.user.image ? this.user.image : defaultUserImage;
+      ...mapGetters(['getUser']),
+      title() {
+        return (
+          this.profile.properties[1] && this.profile.properties[1].value.current
+        );
       }
-    },
-    created() {
-      this.attributeList = attrList.map(x => x.name);
     },
     mounted() {
-      this.user = this.$store.getters.getUser;
-      this.profile.push({
-        title: 'E-mail',
-        value: this.user.email,
-        editable: false
-      });
-      this.profile.push({
-        title: 'Name',
-        value: `${this.user.firstName} ${this.user.lastName}`,
-        prev: `${this.user.firstName} ${this.user.lastName}`,
-        editable: true,
-        editKind: 'text',
-        editMode: false,
-        getPayload: function() {
-          const name = this.value.split(' ');
-          return {
-            firstName: name.shift(),
-            lastName: name.join(' ')
-          };
-        },
-        rules: [v => v.length <= 25 || ''],
-        counter: 25
-      });
-      this.profile.push({
-        title: 'Birthday date',
-        label: '####-##-##',
-        mask: '####-##-##',
-        value: '2018-03-02',
-        prev: '2018-03-02',
-        editable: true,
-        editKind: 'text',
-        editMode: false,
-        getPayload: function() {
-          return {
-            birthdate: new Date(this.value).getTime()
-          };
-        }
-      });
-      this.profile.push({
-        title: 'Gender',
-        value: this.user.gender,
-        prev: this.user.gender,
-        editable: true,
-        editKind: 'radio',
-        editMode: false,
-        getPayload: function() {
-          return {
-            gender: this.value
-          };
-        }
-      });
-      this.profile.push({
-        title: 'Phone',
-        value: this.user.mobilePhone,
-        prev: this.user.mobilePhone,
-        editable: true,
-        editKind: 'text',
-        mask: '##########',
-        editMode: false,
-        getPayload: function() {
-          return {
-            mobilePhone: this.value
-          };
-        }
-      });
-      this.profile.push({
-        title: 'About',
-        value: this.user.about,
-        prev: this.user.about,
-        editable: true,
-        editKind: 'text',
-        editMode: false,
-        getPayload: function() {
-          return {
-            about: this.value
-          };
-        },
-        rules: [v => v.length <= 147 || ''],
-        counter: 147,
-        multi: true
-      });
-      for (let i = 0; i < this.user.hobbies.length; i += 1) {
-        this.attributes.push({
-          title: '',
-          value: this.user.hobbies[i],
-          removable: true
-        });
-      }
-      for (let i = 0; i < this.user._interestedApartments.length; i += 1) {
-        this.favorites.push({
-          title: this.user._interestedApartments[i],
-          value: ''
-        });
-      }
-      for (let i = 0; i < this.user._publishedApartments.length; i += 1) {
-        this.publishes.push({
-          title: this.user._publishedApartments[i],
-          value: ''
-        });
+      const id = this.$route.params.id;
+      if (!id) {
+        const user = this.$store.getters.getUser;
+        this.isMyProfile = true;
+        this.initProfile(user);
+      } else {
+        this.$store.commit('showLoading');
+        this.$store
+          .dispatch('fetchUser', { id })
+          .then((users) => {
+            this.isMyProfile = this.getUser._id === id;
+            this.initProfile(users[id]);
+          })
+          .catch(() => {
+            this.$router.push({ name: 'AppMain' });
+          })
+          .then(() => this.$store.commit('hideLoading'));
       }
     }
   };

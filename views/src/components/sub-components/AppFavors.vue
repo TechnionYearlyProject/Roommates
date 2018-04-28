@@ -22,6 +22,7 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
     import userDefault from '../../assets/user-default.jpg';
 
     export default {
@@ -38,12 +39,18 @@
         };
       },
       methods: {
+        ...mapGetters(['isVerified']),
         hasFavors() {
           return this.favors.length > 0;
         },
-        goToProfile() {
-          this.$router.push({ name: 'AppUserProfile' }); // , params: {} },);
+        goToProfile(favor) {
+          this.$router.push({ name: 'AppUserProfile', params: { id: favor } });
         }
+      },
+      mounted() {
+        //   if (this.isVerified) {
+        //       this.store.dispatch('getSortedFavors')
+        //   }
       }
     };
 </script>

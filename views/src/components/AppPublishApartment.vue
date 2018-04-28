@@ -3,7 +3,7 @@
     <v-stepper v-model="e6" vertical>
       <h3 class="headline secondary--text ma-4">Advertise</h3>
       <v-divider></v-divider>
-      <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="rules1">
+      <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="step1Rules">
         Main details
         <small>The most important stuff!</small>
       </v-stepper-step>
@@ -163,7 +163,6 @@
 </template>
 
 <script>
-  import { mapMutations } from 'vuex';
   import vueSlider from 'vue-slider-component';
   import AppCalendarForm from './sub-components/AppCalendarForm';
   import AppUploader from './sub-components/AppUploader';
@@ -224,20 +223,23 @@
         if (this.$refs.form.validate()) {
           try {
             this.$store.commit('showLoading');
-            const apartment = await this.$store.dispatch('publishApartment', this.payload);
+            const apartment = await this.$store.dispatch(
+              'publishApartment',
+              this.payload
+            );
             this.$router.push({ name: 'AppMain' });
-            await this.$store.dispatch('searchApartments', {  id: apartment._id });
+            await this.$store.dispatch('searchApartments', { id: apartment._id });
           } catch (error) {
+            // eslint-disable-next-line
             console.log(error);
           } finally {
-            this.$store.commit('hideLoading')
+            this.$store.commit('hideLoading');
           }
           this.$store
             .dispatch('publishApartment', this.payload)
-            .then(apartment => {
-
-            })
-            .catch(error => {
+            .then(() => {})
+            .catch((error) => {
+              // eslint-disable-next-line
               console.log(error);
             })
             .then(() => this.$store.commit('hideLoading'));
@@ -266,15 +268,16 @@
       }
     },
     computed: {
-      rules1() {
-        return this.e6 === 1
-          ? [() => true]
-          : [
-              () => this.payload.address.city !== null,
-              () => this.payload.address.street !== null,
-              () => this.payload.address.number !== null,
-              () => this.payload.price !== null
-            ];
+      step1Rules() {
+        if (this.e6 === 1) {
+          return [() => true];
+        }
+        return [
+          () => this.payload.address.city !== null,
+          () => this.payload.address.street !== null,
+          () => this.payload.address.number !== null,
+          () => this.payload.price !== null
+        ];
       }
     },
     watch: {

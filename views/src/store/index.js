@@ -76,7 +76,7 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 12/04/18
-     * @param: payload: object of {email, password}
+     * @param: payload: object of {email, password}.
      */
     login({ commit, getters }, payload) {
       return axios.post('http://localhost:3000/users/login', payload
@@ -100,7 +100,7 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 13/04/18
-     * @param: payload: object of {email, password, firstName, lastName, birthdate, gender}
+     * @param: payload: object of {email, password, firstName, lastName, birthdate, gender}.
      */
     register({ commit, getters }, payload) {
       return axios.post('http://localhost:3000/users', payload
@@ -113,7 +113,7 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 13/04/18
-     * @param: payload: object of {email,password}
+     * @param: payload: object of {email,password}.
      */
     sendVerificationMail(context, payload) {
       return axios.post('http://localhost:3000/users/verify', payload);
@@ -121,7 +121,7 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 19/04/18
-     * @param: payload: object of {email}
+     * @param: payload: object of {email}.
      */
     sendResetMail(context, payload) {
       return axios.post('http://localhost:3000/users/reset', payload);
@@ -129,7 +129,7 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 16/04/18
-     * @param: payload: object of {email,password}
+     * @param: payload: object of {email,password}.
      */
     verifyAccount({ commit, getters }, jwt) {
       if (getters.isVerified) {
@@ -145,7 +145,7 @@ export default new Vuex.Store({
      * @author: Alon Talmor
      * @date: 20/04/18
      * @param: jwt: jwt token
-     * @param: payload: object of {email,password}
+     * @param: payload: object of {email,password}.
      */
     resetPassword({ commit, getters }, { jwt, payload }) {
       return axios.patch(`http://localhost:3000/users/reset/${jwt}`, payload)
@@ -158,7 +158,8 @@ export default new Vuex.Store({
      * @author: Alon Talmor
      * @date: 18/04/18
      * @param: params: object of {id, address, price, radius, roommates, floor, entranceDate,tags} -
-     * filter of the apartments list (the properties are optional). Empty object {} will return all apartments
+     * filter of the apartments list (the properties are optional).
+     * Empty object {} will return all apartments.
      */
     searchApartments({ commit, getters }, params) {
       return axios.get('http://localhost:3000/apartments', { params })
@@ -170,7 +171,7 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 19/04/18
-     * @param: params: object of {id} - the id of the apartment to favor
+     * @param: params: object of {id} - the id of the apartment to favor.
      */
     favor(context, params) {
       return axios.put(`http://localhost:3000/apartments/${params.id}/interested`)
@@ -183,8 +184,8 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 23/04/18
-     * @param: params: object of {id} - the id of the apartment
-     * @param: payload: object of {text} - the text of the comment
+     * @param: params: object of {id} - the id of the apartment.
+     * @param: payload: object of {text} - the text of the comment.
      */
     addApartmentComment(context, { params, payload }) {
       return axios.put(`http://localhost:3000/apartments/${params.id}/comment`, payload)
@@ -199,7 +200,7 @@ export default new Vuex.Store({
      * @date: 24/04/18
      * @param: payload: object of {address:{state, city, street, number, apartmentNumber},
      * price, entranceDate, requiredRoommates, totalRoommates, floor, totalFloors,
-     * numberOfRooms, area, description, tags} - the details of the new apartment
+     * numberOfRooms, area, description, tags} - the details of the new apartment.
      */
     publishApartment(context, payload) {
       return axios.post('http://localhost:3000/apartments', payload)
@@ -211,13 +212,27 @@ export default new Vuex.Store({
     },
     /**
      * @author: Alon Talmor
+     * @date: 28/04/18
+     * @param: params: object of {id} where id can be a String or an Array of ids.
+     */
+    fetchUser(context, params) {
+      return axios.get('http://localhost:3000/users', { params })
+      .then((response) => {
+        // eslint-disable-next-line
+        console.log(response.data);
+        return response.data.users;
+      });
+    },
+    /**
+     * @author: Alon Talmor
      * @date: 27/04/18
      * @param: payload: object of {firstName, lastName, birthdate, gender, mobilePhone,
-     * about, image, hobbies, _interestedApartments} - the properties to update
+     * about, image, hobbies, _interestedApartments} - the properties to update.
      */
     updateUser({ commit }, payload) {
       return axios.patch('http://localhost:3000/users/self', payload)
       .then((response) => {
+        // eslint-disable-next-line
         console.log(response.data);
         commit('setUser', response.data.user);
       });

@@ -49,7 +49,7 @@ const router = new Router({
       component: AppResetPassword,
     },
     {
-      path: '/user_profile',
+      path: '/user_profile/:id?',
       name: 'AppUserProfile',
       component: AppUserProfile,
       meta: {
