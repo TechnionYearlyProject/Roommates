@@ -24,6 +24,7 @@ const { logInfo } = require('./services/logger/logger');
 const { ObjectID } = require('mongodb');
 const httpLogger = require('./services/logger/http-logger');
 const { notifyUsers } = require('./services/notifications-system/notifier');
+const {convertArrayToJsonMap} = require('./helpers/arrayFunctions');
 const userVerificator = require('./services/user-verification/user-verificator');
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
@@ -474,19 +475,26 @@ app.get('/users/tags', async (req, res) => {
 });
 
 /**
- * Get user details for the given id
  *
- * @param {String} id
+ * @updatedBy: Or Abramovich
+ * @date: 04/18
+ * 
+ * Get user details for the given id - the roue supports a single id parameter or multiple values.
+ *
+ * @returns {JSON} a JSON map that its properties are the ids and the value for each one is the relevant user document. 
+ *
  */
 app.get('/users/:id', async (req, res) => {
   try {
-    const { id } = req.params;
+    const {id} = req.params;
+    const ids = id.toString().split(',');
 
-    const user = await User.findById(id);
-    if (!user) {
+    const users = convertArrayToJsonMap(await User.find({"_id" : {"$in" : Array.from([].concat(ids), x => new ObjectID(x))}}), '_id');
+    if (Object.keys(users).length != ids.length) {
       return res.status(NOT_FOUND).send();
     }
-    return res.send({ user });
+
+    return res.send({users: users});
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }

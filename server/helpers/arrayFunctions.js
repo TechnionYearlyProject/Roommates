@@ -97,11 +97,35 @@ const unionArrays = (arrayA, arrayB) => {
   return res;
 };
 
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Creates a json with the format key:value from an array where the value is the original elemnt in the array and the key
+ * is the value of a given property of the element in the array
+ *
+ * @param {Array} array:  the array to be converted into a JSON map
+ * @param {String} elementKeyPropertyName: the property of the array elements that its value will be the key in the JSON map.
+ *
+ * @returns a JSON map which is a JSON format string tht its properties are the keys.
+ */
+const convertArrayToJsonMap = (array, elementKeyPropertyName) =>{
+  var res = {};
+  array.forEach(function(element){
+  Object.assign(res, {
+      [element[elementKeyPropertyName]]: element
+    });
+  });
+  return res;
+}
+
 module.exports = {
   findMatchingValuesInArrays,
   containsElementWithProperty,
   sortArrayASC,
   getIndexOfValue,
   getIndexOfFirstElementMatchKey,
-  unionArrays
+  unionArrays,
+  convertArrayToJsonMap
 };
