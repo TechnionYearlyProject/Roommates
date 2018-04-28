@@ -17,8 +17,10 @@ const { Apartment } = require('../../server/models/apartment');
 const { Review } = require('../../server/models/review');
 const { getSupportedTags } = require('../../server/models/tag');
 const { getSupportedHobbies } = require('../../server/models/hobbie');
-const { getVisitStatusCodes, getVisitStatusOnCreate, getVisitStatusOnCancelation,
-  getVisitStatusOnChange, getVisitStatusChangeActions } = require('../../server/models/visit');
+const {
+ getVisitStatusCodes, getVisitStatusOnCreate, getVisitStatusOnCancelation,
+  getVisitStatusOnChange, getVisitStatusChangeActions 
+} = require('../../server/models/visit');
 
 const {
   apartment1User1VisitId,
@@ -213,7 +215,6 @@ describe('Server Tests', () => {
   });
 
   describe('PUT /apartments/:id/subscription', () => {
-
     it('should return 404 when invalid id', (done) => {
       const id = new ObjectID();
       request(app)
@@ -272,7 +273,6 @@ describe('Server Tests', () => {
           }
         });
     }).timeout(5000);
-
   });
 
   describe('PATCH /users/notifications/:id', () => {
@@ -628,7 +628,6 @@ describe('Server Tests', () => {
 
 
   describe('PATCH /apartments/:id/visit/:visitId', () => {
-
     it('should not edit a visit - user is not relevant to the visit', (done) => {
       const apartmentId = apartments[0]._id.toHexString();
       const visitId = apartment1User1VisitId.toHexString();
@@ -706,11 +705,9 @@ describe('Server Tests', () => {
             }).catch((e) => done(e));
         });
     });
-
   });
 
   describe('PUT /apartments/:id/visit', () => {
-
     it('should not add a visit - visit scheduled to the past', (done) => {
       const apartmentId = apartments[1]._id.toHexString();
       request(app)
@@ -794,7 +791,7 @@ describe('Server Tests', () => {
             .put(`/apartments/${apartmentId}/visit`)
             .set(XAUTH, users[1].tokens[0].token)
             .send({ schedTo: new Date('1-1-2028').getTime() })
-            .expect(BAD_REQUEST)
+            .expect(BAD_REQUEST);
         })
         .end((err) => {
           if (err) {
@@ -1450,12 +1447,13 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('#GET /users/:id', () => {
+  describe('#GET /users', () => {
     it('should find single existing user by id', (done) => {
       const id = users[1]._id.toHexString();
 
       request(app)
-        .get(`/users/${id}`)
+        .get('/users')
+        .query({ id })
         .expect(OK)
         .expect((res) => {
           const expected = User.toJSON(users[1]);
@@ -1466,9 +1464,11 @@ describe('Server Tests', () => {
     });
 
     it('should find multiple existing user by id', (done) => {
-     var id = [users[0]._id.toHexString(), users[1]._id.toHexString() ];
+      const id = [users[0]._id.toHexString(), users[1]._id.toHexString()];
+    
       request(app)
-        .get(`/users/${id}`)
+        .get('/users')
+        .query({ id })
         .expect(OK)
         .expect(async (res) => {
           const user1 = JSON.stringify(await User.findById(users[0]._id.toHexString()));
@@ -1479,11 +1479,12 @@ describe('Server Tests', () => {
         .end(done);
     });
 
-    it('should not find multiple users by id where one doesnt exist', (done) => {
-     var id = [users[0]._id.toHexString(), new ObjectID() ];
+    it('should not find multiple users by id where one doesn\'t exist', (done) => {
+      const id = [users[0]._id.toHexString(), new ObjectID().toHexString()];
       request(app)
-        .get(`/users/${id}`)
-        .expect(NOT_FOUND)
+        .get('/users')
+        .query({ id })
+        .expect(BAD_REQUEST)
         .end(done);
     });
 
@@ -1491,17 +1492,19 @@ describe('Server Tests', () => {
       const id = '1234';
 
       request(app)
-        .get(`/users/${id}`)
+        .get('/users')
+        .query({ id })
         .expect(BAD_REQUEST)
         .end(done);
     });
 
     it('should not find nonexistent user', (done) => {
-      const id = new ObjectID();
+      const id = new ObjectID().toHexString();
 
       request(app)
-        .get(`/users/${id}`)
-        .expect(NOT_FOUND)
+        .get('/users')
+        .query({ id })
+        .expect(BAD_REQUEST)
         .end(done);
     });
   });
@@ -1773,7 +1776,7 @@ describe('Server Tests', () => {
     });
   });
 
-  /** Alon Talmor: this route is deprecated 
+  /** Alon Talmor: this route is deprecated
   describe('GET /users/reset/:token', () => {
     // Prepare the token for the tests.
     let hashedPassword = null;
@@ -1949,9 +1952,7 @@ describe('Server Tests', () => {
             }).catch((e) => done(e));
         });
     });
-
   });
-
 
 
   describe('GET *', () => {

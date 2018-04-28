@@ -81,15 +81,15 @@ const getIndexOfFirstElementMatchKey = (array, key, value) => {
  */
 const unionArrays = (arrayA, arrayB) => {
   var res = arrayA.slice();
-  
-  arrayB.forEach(function(bElement){
+
+  arrayB.forEach(function (bElement) {
     var contains = false;
-    arrayA.forEach(function(aElement){
-      if(aElement.equals(bElement)){
+    arrayA.forEach(function (aElement) {
+      if (aElement.equals(bElement)) {
         contains = true;
-      } 
+      }
     });
-    if(!contains){
+    if (!contains) {
       res.push(bElement);
     }
   });
@@ -110,15 +110,15 @@ const unionArrays = (arrayA, arrayB) => {
  *
  * @returns a JSON map which is a JSON format string tht its properties are the keys.
  */
-const convertArrayToJsonMap = (array, elementKeyPropertyName) =>{
-  var res = {};
-  array.forEach(function(element){
-  Object.assign(res, {
+const convertArrayToJsonMap = (array, elementKeyPropertyName) => {
+  const res = {};
+  array.forEach((element) => {
+    Object.assign(res, {
       [element[elementKeyPropertyName]]: element
     });
   });
   return res;
-}
+};
 
 module.exports = {
   findMatchingValuesInArrays,
