@@ -208,6 +208,19 @@ export default new Vuex.Store({
         console.log(response.data);
         return response.data.apartment;
       });
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 27/04/18
+     * @param: payload: object of {firstName, lastName, birthdate, gender, mobilePhone,
+     * about, image, hobbies, _interestedApartments} - the properties to update
+     */
+    updateUser({ commit }, payload) {
+      return axios.patch('http://localhost:3000/users/self', payload)
+      .then((response) => {
+        console.log(response.data);
+        commit('setUser', response.data.user);
+      });
     }
   },
   plugins: [vuexPersistence.plugin]

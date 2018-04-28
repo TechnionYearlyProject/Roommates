@@ -53,19 +53,19 @@ const apartment1 = new Apartment({
   totalRoommates: 3,
   _notificationSubscribers: [user2Id],
   visits: [{
-       _id: apartment1User1VisitId,
-       _askedBy: user1Id,
-       createdAt: new Date('1-1-2018').getTime(),
-       scheduledTo:  new Date('1-1-2019').getTime(), 
-       status: visit.getVisitStatusOnCreate()
-    },
-    {
-       _id: apartment1User2VisitId,
-       _askedBy: user2Id,
-       createdAt: new Date('1-1-2018').getTime(),
-       scheduledTo:  new Date('1-1-2019').getTime(), 
-       status: visit.getVisitStatusOnCreate()
-    }
+    _id: apartment1User1VisitId,
+    _askedBy: user1Id,
+    createdAt: new Date('1-1-2018').getTime(),
+    scheduledTo: new Date('1-1-2019').getTime(),
+    status: visit.getVisitStatusOnCreate()
+  },
+  {
+    _id: apartment1User2VisitId,
+    _askedBy: user2Id,
+    createdAt: new Date('1-1-2018').getTime(),
+    scheduledTo: new Date('1-1-2019').getTime(),
+    status: visit.getVisitStatusOnCreate()
+  }
   ],
   //comments
 });
@@ -268,14 +268,14 @@ const review1 = {
   street: 'shalom Aleichem',
   city: 'haifa',
   state: 'israel',
-  geolocation: [35.020568, 32.776515],//[32.7824885, 35.0177497],
-  ratedCharacteristics:{
+  geolocation: [35.020568, 32.776515], // [32.7824885, 35.0177497],
+  ratedCharacteristics: {
     parking: 3,
-    publicTransport:  3,
-    noise:  3,
-    commercialServices:  3,
-    upkeep:  3,
-    generalRating:  3
+    publicTransport: 3,
+    noise: 3,
+    commercialServices: 3,
+    upkeep: 3,
+    generalRating: 3
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking'
@@ -288,19 +288,19 @@ const review2 = {
   street: 'malal street',
   city: 'haifa',
   state: 'israel',
-  geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
-  ratedCharacteristics:{
+  geolocation: [35.020568, 32.776515], // [32.7793633, 35.0157763],
+  ratedCharacteristics: {
     parking: 1,
-    publicTransport:  1,
-    noise:  1,
-    commercialServices:  1,
-    upkeep:  1,
-    generalRating:  1
+    publicTransport: 1,
+    noise: 1,
+    commercialServices: 1,
+    upkeep: 1,
+    generalRating: 1
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking what so ever'
 };
-  
+
 const notPublishedReview1 = {
   // _id: review2Id,
   // _createdBy: new ObjectID(),
@@ -308,18 +308,18 @@ const notPublishedReview1 = {
   street: 'derech ruppin',
   city: 'jerusalem',
   state: 'israel',
-  // geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
-  ratedCharacteristics:{
+  // geolocation: [35.020568, 32.776515], // [32.7793633, 35.0157763],
+  ratedCharacteristics: {
     parking: 4,
-    publicTransport:  4,
-    noise:  4,
-    commercialServices:  4,
-    upkeep:  4,
-    generalRating:  4,
+    publicTransport: 4,
+    noise: 4,
+    commercialServices: 4,
+    upkeep: 4,
+    generalRating: 4,
   },
   Pros: 'looks good,smells nice but so odd',
   Cons: 'no parks and no parking what so ever'
-}
+};
 
 const notPublishedReview2 = {
   // _id: review2Id,
@@ -328,18 +328,18 @@ const notPublishedReview2 = {
   street: 'malal street',
   city: 'haifa',
   state: 'israel',
-  // geolocation: [35.020568, 32.776515],//[32.7793633, 35.0157763],
-  ratedCharacteristics:{
+  // geolocation: [35.020568, 32.776515], // [32.7793633, 35.0157763],
+  ratedCharacteristics: {
     parking: 2,
-    publicTransport:  1,
-    noise:  1,
-    commercialServices:  5,
-    upkeep:  1,
-    generalRating:  3,
+    publicTransport: 1,
+    noise: 1,
+    commercialServices: 5,
+    upkeep: 1,
+    generalRating: 3,
   },
   Pros: 'looks good,smells nice but so odd',
   Cons: 'no parks and no parking what so ever'
-}
+};
 
 const apartments = [
   apartment1,

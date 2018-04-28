@@ -2,7 +2,7 @@
   <v-layout row warp pt-0>
     <v-flex xs12 sm12 md6 offset-md3 :class="{'my-5': $vuetify.breakpoint.mdAndUp}">
       <v-card>
-        <v-card-media :src="user.image? user.image : defaultImage" height="300px">
+        <v-card-media :src="image" height="300px">
           <v-layout column class="media">
             <v-card-title>
               <v-spacer></v-spacer>
@@ -40,7 +40,7 @@
                     <v-icon color="accept">edit</v-icon>
                   </v-btn>
                   <div v-if="subItem.editable && subItem.editMode">
-                    <v-btn icon class="mx-0" @click="subItem.editMode = false;subItem.prev = subItem.value;editItem(subItem);">
+                    <v-btn icon class="mx-0" @click="subItem.editMode = false;editItem(subItem)">
                       <v-icon color="accept">check</v-icon>
                     </v-btn>
                     <v-btn icon class="mx-0" @click="subItem.editMode = false;subItem.value = subItem.prev;">
@@ -61,7 +61,7 @@
                   </span>
                 </v-list-tile-content>
                 <v-list-tile-action class="pb-2">
-                  <v-btn icon class="mx-0" v-if="subItem.addable" @click="addItem(subItem)">
+                  <v-btn icon class="mx-0" v-if="subItem.addable" @click="addAttribute(subItem)">
                     <v-icon color="accept">add</v-icon>
                   </v-btn>
                 </v-list-tile-action>
@@ -96,6 +96,7 @@
     data() {
       return {
         dialog: false,
+        user: null,
         profile: [],
         attributes: [
           {
@@ -128,22 +129,6 @@
             ref: 'publishes'
           }
         ],
-        user: {
-          _id: '5ac646c9859c292104f0b23c',
-          email: 'alontalmor@gmail.com',
-          firstName: 'Alon',
-          birthdate: 1049902707763.0,
-          gender: 'male',
-          isVerified: true,
-          _interestedApartments: [123, 321],
-          _publishedApartments: [123, 321],
-          hobbies: [1, 2, 3, 4, 5, 6, 7, 8],
-          about: 'Hi, how are you? This is a test',
-          image: '',
-          mobilePhone: '97211111111',
-          lastName: 'Talmor'
-        },
-        defaultImage: defaultUserImage,
         genderList: [
           {
             title: 'Male',
@@ -159,14 +144,26 @@
       };
     },
     methods: {
-      editItem() {
-        // eslint-disable-next-line 
+      editItem(item) {
+        // eslint-disable-next-line
         console.log('editted!');
+        if (item.prev != item.value) {
+          const payload = item.getPayload();
+          this.$store
+            .dispatch('updateUser', payload)
+            .then(() => {
+              item.prev = item.value;
+            })
+            .catch(error => {
+              item.value = item.prev;
+              console.log(error); // show an error message
+            });
+        }
       },
       removeItem(i, j) {
         this.items[i].items.splice(j, 1);
       },
-      addItem(item) {
+      addAttribute(item) {
         this.attributeHint = '';
         if (!item.value) {
           return;
@@ -185,8 +182,16 @@
         item.value = '';
       }
     },
+    computed: {
+      image() {
+        return this.user && this.user.image ? this.user.image : defaultUserImage;
+      }
+    },
     created() {
       this.attributeList = attrList.map(x => x.name);
+    },
+    mounted() {
+      this.user = this.$store.getters.getUser;
       this.profile.push({
         title: 'E-mail',
         value: this.user.email,
@@ -199,6 +204,13 @@
         editable: true,
         editKind: 'text',
         editMode: false,
+        getPayload: function() {
+          const name = this.value.split(' ');
+          return {
+            firstName: name.shift(),
+            lastName: name.join(' ')
+          };
+        },
         rules: [v => v.length <= 25 || ''],
         counter: 25
       });
@@ -210,7 +222,12 @@
         prev: '2018-03-02',
         editable: true,
         editKind: 'text',
-        editMode: false
+        editMode: false,
+        getPayload: function() {
+          return {
+            birthdate: new Date(this.value).getTime()
+          };
+        }
       });
       this.profile.push({
         title: 'Gender',
@@ -218,7 +235,12 @@
         prev: this.user.gender,
         editable: true,
         editKind: 'radio',
-        editMode: false
+        editMode: false,
+        getPayload: function() {
+          return {
+            gender: this.value
+          };
+        }
       });
       this.profile.push({
         title: 'Phone',
@@ -227,7 +249,12 @@
         editable: true,
         editKind: 'text',
         mask: '##########',
-        editMode: false
+        editMode: false,
+        getPayload: function() {
+          return {
+            mobilePhone: this.value
+          };
+        }
       });
       this.profile.push({
         title: 'About',
@@ -236,6 +263,11 @@
         editable: true,
         editKind: 'text',
         editMode: false,
+        getPayload: function() {
+          return {
+            about: this.value
+          };
+        },
         rules: [v => v.length <= 147 || ''],
         counter: 147,
         multi: true
