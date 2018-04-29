@@ -29,24 +29,20 @@ io.listen(process.env.WEB_SOCKETS_PORT, function(){
  * @author: Or Abramovich
  * @date: 04/18
  *
- * The supported types that the client can ask to join. On any join request the user has to specify a property of "type" with one of the following values.
- * JOIN_PRIVATE - the user ask to open a communication channel (room) available only to him. Only one room is available for each user so there
- * is no meaning to send multiple joins with the JOIN_PRIVATE type.
- *
- */
-const SocketJoinTypesEnum = {
-  JOIN_PRIVATE: 1,
-};
-/**
- * @author: Or Abramovich
- * @date: 04/18
- *
  * The supported types of messages sent by the server.
+ * Type: JOIN - a message that allocates a new dedicated room which serves as a communication channel available only to the user who raised the join request. 
  * Type: NOTIFICATION - a message contains data in format of notification schema and used to notify the user about changes he is subscribed to.
+ * Type: NOTIFICATION_READ - a message contains data in format of notification schema which sent by the user to signal that he has just read it.
+ * Type: CHAT_MSG - 	a message contains data in format of chat message schema and used to pass private messages  between users.
+ * Type: CHAT_MSG_READ - a message contains data in format of chat message schema which sent by the user to signal that he has just read it.
  *
  */
-const SocketMsgTypesEnum = {
-  NOTIFICATION: 1,
+const SocketMsgTypes = {
+  JOIN: 'join',
+  NOTIFICATION: 'notification',
+  NOTIFICATION_READ: 'notification_read',
+  CHAT_MSG: 'chat_message',
+  CHAT_MSG_READ: 'chat_message_read',
 };
 /**
  * @author: Or Abramovich
@@ -64,14 +60,15 @@ io.use(socketioJwt.authorize({
  * @author: Or Abramovich
  * @date: 04/18
  *
- * Define the connection and join messages callback.
+ * Defines the connection and different messaages callbacks.
  * 
  * @param {Socket} socket: web socket that raised the connection request.
  *
  */
-io.sockets.on('connection', function (socket) { 
-  socket.on('join', function (data) {
- 	  establishRoomsWithUser(socket.decoded_token._id, data, socket);
+io.sockets.on('connection', function (socket) {
+  //Establishes a new dedicated room which serves as a communication channel available only to the user 
+  socket.on(SocketMsgTypes.JOIN, function (data) {
+ 	  establishRoomForUser(socket.decoded_token._id, socket);
   });
 });
 
@@ -86,36 +83,9 @@ io.sockets.on('connection', function (socket) {
  * @param {Socket} socket: web socket that raised the join request.
  *
  */
-const joinPrivateRoom = (_userId, socket) => {
+const establishRoomForUser = (_userId, socket) => {
   try{
     socket.join(_userId);
-  }catch(e){
-    logError(e.toString());
-  }
-}
-/**
- * @author: Or Abramovich
- * @date: 04/18
- *
- * The function joins the socket to the relevant room which serves as a communication channel available to the user according to the join request
- * parameters.
- * 
- * @param {JSON} params: the parameters sent by the client socket in the join message. A must property is the type of the requested room -
- * is it a private room or group. 
- * 
- * @param {Socket} socket: web socket that raised the join request.
- *
- */
-const establishRoomsWithUser = (_userId, params, socket) => {
-  try{
-  	switch(params.type){
-  		case SocketJoinTypesEnum.JOIN_PRIVATE:
-  			joinPrivateRoom(_userId, socket);
-  		break;
-  		default:
-  			console.log("Not supported");
-  		break;
-  	}
   }catch(e){
     logError(e.toString());
   }
@@ -141,5 +111,5 @@ const sendUserRealTimeMsg = (_userId, msgType, text) => {
 
 module.exports = {
   sendUserRealTimeMsg,
-  SocketMsgTypesEnum
+  SocketMsgTypes
 };

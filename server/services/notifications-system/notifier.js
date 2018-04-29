@@ -9,7 +9,7 @@
 const {shouldNotificationsBeAgregated} = require('../../logic/notificationsAggregationPolicy');
 const {buildNotificationJSON} = require('../../models/notification');
 const {User} = require('../../models/user');
-const {sendUserRealTimeMsg, SocketMsgTypesEnum} = require('../../socketsServer');
+const {sendUserRealTimeMsg, SocketMsgTypes} = require('../../socketsServer');
 const _ = require('lodash');
 
 /**
@@ -79,7 +79,7 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
  * 
  */
 const sendUserRealTimeNotification = (userId, notification) => {
-	sendUserRealTimeMsg(userId, SocketMsgTypesEnum.NOTIFICATION, JSON.stringify(notification));
+	sendUserRealTimeMsg(userId, SocketMsgTypes.NOTIFICATION, JSON.stringify(notification));
 }
 
 
