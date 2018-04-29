@@ -4,10 +4,12 @@ const { ObjectID } = require('mongodb');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const GROUP_STATUS_PENDING = 1;
-const GROUP_STATUS_DECLINED = 2;
-const GROUP_STATUS_ACCEPTED = 3;
-const GROUP_STATUS_COMPLETED = 4;
+const GroupStatusEnum = {
+    GROUP_STATUS_PENDING: 1,
+    GROUP_STATUS_DECLINED: 2,
+    GROUP_STATUS_ACCEPTED: 3,
+    GROUP_STATUS_COMPLETED: 4
+};
 
 const groupStatusCodes = [
     {
@@ -52,6 +54,31 @@ const visitStatusChangeLogic = [
     },
 ];
 
+
+const GroupSchema = new Schema({
+    _creator: {
+        type: [ mongoose.Schema.Types.ObjectId],
+        required: true
+    },
+    _members: {
+        type: [Number],
+        required: true
+    },
+    _apartment: {
+        type: [ mongoose.Schema.Types.ObjectId],
+        required: true
+    },
+    createdAt: {
+        type: Number,
+        required: true
+    },
+    status: {
+        type: groupStatusCodes,
+        required: true
+    },
+});
+
+
 //checks that the given value represents a supported group status id
 const isSupportedGroupStatusID = (value) => {
     return arrayFunctions.containsElementWithProperty(groupStatusCodes, '_id', value);
@@ -60,6 +87,17 @@ const isSupportedGroupStatusID = (value) => {
 //returns all supported group codes
 const getGroupStatusCodes = () => groupStatusCodes;
 
-const GroupSchema = new Schema({
+const getGroupCreatorID = (group) => group._creator;
 
-});
+const getGroupMemberIDs = (group) => group._members;
+
+
+
+module.exports = {
+    GroupSchema,
+    GroupStatusEnum,
+    isSupportedGroupStatusID,
+    getGroupStatusCodes,
+    getGroupCreatorID,
+    getGroupMemberIDs,
+};
