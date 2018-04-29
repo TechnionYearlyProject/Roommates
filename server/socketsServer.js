@@ -11,8 +11,11 @@
 const io = require('socket.io')();
 const socketioJwt   = require("socketio-jwt");
 
-const { logInfo, logError } = require('./services/logger/logger');
+const { ObjectID } = require('mongodb');
 
+
+const { logInfo, logError } = require('./services/logger/logger');
+const { User } = require('./models/user');
 
  /**
  * @author: Or Abramovich
@@ -69,6 +72,13 @@ io.sockets.on('connection', function (socket) {
   //Establishes a new dedicated room which serves as a communication channel available only to the user 
   socket.on(SocketMsgTypes.JOIN, function (data) {
  	  establishRoomForUser(socket.decoded_token._id, socket);
+  });
+  //Marks the notification as read and saves it in the user document
+  socket.on(SocketMsgTypes.NOTIFICATION_READ, function (notification) {
+ 	  User.findById(new ObjectID(socket.decoded_token._id)).then((user) => {
+ 	  	notification.wasRead = true;
+ 	  	user.saveUpdatedNotification(notification._id, notification);
+ 	  });
   });
 });
 
