@@ -61,7 +61,8 @@ describe('Notifier Tests', () => {
           });
         });
       }).catch((e) => done(e));;
-    });
+    }).timeout(5000);
+
 
     it('should notify single user with aggregation', (done) => {
       const notificationType = NotificationModule.NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT;
