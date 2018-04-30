@@ -763,6 +763,11 @@ app.post('/reviews', authenticate, async (req, res) => {
 
 
     const review = await new Review(reviewData).save();
+    await User.findByIdAndUpdate(req.user._id, { $push: { _givenReviews : review._id } })
+      .catch((err) => {
+        Review.findByIdAndRemove(review._id);
+        throw err;
+      });
     return res.send({ review });
   } catch (err) {
     return res.status(BAD_REQUEST).send(errors.unknownError);
@@ -819,6 +824,41 @@ app.get('/reviews/:long/:lat', async (req, res) => {
     res.status(BAD_REQUEST).send(err);
   }
 });
+
+
+/**
+ * Update review. The patching user has to be authenticated and the giver of the review.
+ *
+ *
+ * @param {String} Pros
+ * @param {String} Cons
+ * @param {[Number]} ratedCharacteristics
+ * @param {String} street
+ * @param {String} city
+ * @param {String} state
+ */
+
+app.patch('/reviews/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!(req.user.isReviewOwner(id))) {
+      return res.status(UNAUTHORIZED).send();
+    }
+    const reviewData = _.pick(req.body,
+      [
+        'ratedCharacteristics',
+        'Pros',
+        'Cons'
+      ]);
+
+    const review = await Review.findByIdAndUpdate(id, { $set: reviewData }, { new: true, runValidators: true });
+
+    res.send({ review });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(errors.unknownError);
+  }
+});
+
 
 /**
  *

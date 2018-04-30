@@ -1589,7 +1589,7 @@ describe('Server Tests', () => {
       user.email = users[1].email;
       user._id = users[1]._id;
       user._publishedApartments = users[1]._publishedApartments;
-
+      user._givenReviews = users[1]._givenReviews;
       request(app)
         .patch('/users/self')
         .set(XAUTH, users[1].tokens[0].token)
@@ -1903,6 +1903,32 @@ describe('Server Tests', () => {
         });
     }).timeout(5000);
 
+    it('should add review Id to user\'s given reviews', (done) => {
+      request(app)
+        .post('/reviews')
+        .set(XAUTH, users[1].tokens[0].token)
+        .send(notPublishedReview1)
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const user = await User.findById(users[1]._id);
+            const review = await Review.findOne({ Pros: notPublishedReview1.Pros });
+            expect(user._givenReviews[0]).toEqual(reviews[1]._id.toHexString());
+            expect(user._givenReviews[1]).toEqual(review._id.toHexString());
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    });
+
+
+
+
     it('should not create a new review in an adjacent location by same user', (done) => {
       const review = Object.assign({}, notPublishedReview2);
       request(app)
@@ -1950,6 +1976,77 @@ describe('Server Tests', () => {
               expect(result.length).toBe(0);
               done();
             }).catch((e) => done(e));
+        });
+    });
+  });
+  describe('PATCH /reviews/:id', () => {
+    it('should not edit review - non existing one', (done) => {
+      const nonExistingId = new ObjectID();
+      request(app)
+        .patch(`/reviews/${nonExistingId}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({})
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should not edit review - user is not the owner', (done) => {
+      const reviewID = reviews[0]._id;
+      request(app)
+        .patch(`/reviews/${reviewID}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({})
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+
+    it('should not edit review - value is illegal - invalid price value', (done) => {
+      const reviewId = reviews[1]._id.toHexString();
+      const rated = {
+        parking: -1,
+        publicTransport: 0,
+        noise: 0,
+        commercialServices: 0,
+        upkeep: 0,
+        generalRating: 0,
+      };
+      request(app)
+        .patch(`/reviews/${reviewId}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ ratedCharacteristics: rated })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+
+    it('should edit review', (done) => {
+      const reviewId = reviews[1]._id.toHexString();
+      const rated = {
+        parking: 1,
+        publicTransport: 2,
+        noise: 3,
+        commercialServices: 4,
+        upkeep: 5,
+        generalRating: 3,
+      };
+      request(app)
+        .patch(`/reviews/${reviewId}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ ratedCharacteristics: rated })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.review.ratedCharacteristics).toMatchObject(rated);
+        })
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+          try {
+            const review = await Review.findById(reviewId);
+            expect(review.ratedCharacteristics).toMatchObject(rated);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
         });
     });
   });

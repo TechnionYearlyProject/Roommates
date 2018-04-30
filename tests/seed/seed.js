@@ -130,6 +130,7 @@ const user1 = {
   image: '',
   about: '',
   hobbies: [1, 2, 3],
+  _givenReviews: [review1Id.toHexString()],
   notifications: [
     {
       notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
@@ -162,6 +163,7 @@ const user2 = {
   about: '',
   hobbies: [1, 4, 5, 6],
   _publishedApartments: [apartment1Id.toHexString()],
+  _givenReviews: [review2Id.toHexString()],
   _interestedApartments: [apartment2Id.toHexString()],
   tokens: [{
     access: XAUTH,
@@ -191,7 +193,8 @@ const user3 = {
   mobilePhone: '',
   image: '',
   about: '',
-  hobbies: [7, 8, 9]
+  hobbies: [7, 8, 9],
+  _givenReviews: [],
 };
 
 const user4 = {
@@ -205,6 +208,7 @@ const user4 = {
   mobilePhone: '0541234567',
   about: 'I\'m user number 4',
   _publishedApartments: [],
+  _givenReviews: [],
   _interestedApartments: [],
   image: '',
   hobbies: [4, 5, 7]
@@ -222,6 +226,7 @@ const user5 = {
   about: '',
   gender: 'female',
   _publishedApartments: [],
+  _givenReviews: [],
   _interestedApartments: []
 };
 
@@ -237,6 +242,7 @@ const user6 = {
   about: '',
   gender: 'male',
   _publishedApartments: [apartment1Id.toHexString(), apartment2Id.toHexString()],
+  _givenReviews: [],
   _interestedApartments: [apartment1Id.toHexString()]
 };
 

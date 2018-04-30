@@ -45,22 +45,34 @@ const ReviewSchema = new mongoose.Schema({
     },
     ratedCharacteristics:{
         parking: {
-            type: Number
+            type: Number,
+            min: 0,
+            max:5
         },
         publicTransport:  {
-            type: Number
+            type: Number,
+            min: 0,
+            max:5
         },
         noise:  {
-            type: Number
+            type: Number,
+            min: 0,
+            max:5
         },
         commercialServices:  {
-            type: Number
+            type: Number,
+            min: 0,
+            max:5
         },
         upkeep:  {
-            type: Number
+            type: Number,
+            min: 0,
+            max:5
         },
         generalRating:  {
-            type: Number
+            type: Number,
+            min: 0,
+            max:5
         }
     },
     Pros: {

@@ -71,6 +71,10 @@ const UserSchema = new mongoose.Schema({
   _publishedApartments: [{
     type: String
   }],
+  _givenReviews: [{
+    type: String
+  }],
+    efault:[],
   _interestedApartments: [{
     type: String
   }],
@@ -371,6 +375,18 @@ UserSchema.methods.isOwner = function (apartmentId) {
 
   return arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId) > -1;
 };
+
+/**
+ *
+ * @param {any} reviewID
+ * @returns true if the user is the owner of the specified review, otherwise false.
+ */
+UserSchema.methods.isReviewOwner = function (reviewID) {
+  const user = this;
+
+  return arrayFunctions.getIndexOfValue(user._givenReviews, reviewID) > -1;
+};
+
 
 /**
  * remove an apartment from the user's published apartments.
