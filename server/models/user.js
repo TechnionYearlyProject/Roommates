@@ -404,6 +404,22 @@ UserSchema.methods.removeApartment = function (apartmentId) {
 
   return user.save();
 };
+/**
+ * remove an review from the user's given reviews.
+ *
+ * @param {String} reviewId
+ * @returns Promise object.
+ */
+UserSchema.methods.removeReview = function (reviewId) {
+  const user = this;
+
+  const indexOfVal = arrayFunctions.getIndexOfValue(user._givenReviews, reviewId);
+  if (indexOfVal > -1) {
+    user._givenReviews.splice(indexOfVal, 1);
+  }
+
+  return user.save();
+};
 
 /**
  * add a new apartment to the interested apartments list of the user.

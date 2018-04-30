@@ -965,6 +965,31 @@ app.put('/apartments/:id/visit/', authenticate, async (req, res) => {
     return res.status(BAD_REQUEST).send(err);
   }
 });
+
+
+/**
+ * Deletes a specific review.  The removing user has to be the giver of the review.
+ *
+ * @param {String} id
+ */
+app.delete('/reviews/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!(req.user.isReviewOwner(id))) {
+      return res.status(UNAUTHORIZED).send();
+    }
+
+    await req.user.removeReview(id);
+    await Review.findByIdAndRemove(id);
+
+    return res.status(OK).send();
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
+
+
 /**
  * @author: Alon Talmor
  * @date: 28/3/18

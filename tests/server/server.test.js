@@ -2051,6 +2051,54 @@ describe('Server Tests', () => {
     });
   });
 
+  
+  describe('DELETE /reviews', () => {
+    it('should not delete review - apartment doesnt review', (done) => {
+      const id = new ObjectID().toHexString();
+
+      request(app)
+        .delete(`/reviews/${id}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(UNAUTHORIZED)
+        .end(done);
+    }).timeout(5000);
+
+    it('should not delete review - user did not give the review', (done) => {
+      const id = reviews[0]._id.toHexString();
+
+      request(app)
+        .delete(`/reviews/${id}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(UNAUTHORIZED)
+        .end(done);
+    }).timeout(5000);
+
+    it('should delete review from user and DB', (done) => {
+      const id = reviews[1]._id.toHexString();
+
+      request(app)
+        .delete(`/reviews/${id}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const counter = await Review.count({ _id: id });
+            const user = await User.findById(users[1]._id);
+            expect(counter).toBe(0);
+            expect(user.isReviewOwner(id)).toBe(false);
+
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    }).timeout(5000);
+  });
+
 
   describe('GET *', () => {
     it('should return 404 on invalid route requests', (done) => {
