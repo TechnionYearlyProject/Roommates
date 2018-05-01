@@ -200,8 +200,8 @@ const buildNotificationJSON = (notificationType, createdBy, wasRead, notifiedObj
  *
  * Updates the given notification with the values taken from the json
  *
- * @param {Notification} curNotificationJson: the notifcation that you would like to modify its read flag.
- * @param {JSON} updateJson: a json containing the updated values with the same property names
+ * @param {Notification} curNotificationJson: the notifcation that you would like to modify its date.
+ * @param {JSON} updateJson: a json containing the updated values with the same property names.
  *
  * @returns {Notificaiton} with the modified data.
  */
@@ -213,7 +213,21 @@ const updateNotificationByJson = (curNotificationJson, updateJson) => {
   });
   return curNotificationJson;
 };
-
+/**
+ * @author: Or Abramovich
+ * @date: 04/18
+ *
+ * Sets the read status property of a notification.
+ *
+ * @param {Notification} notification: the notifcation that you would like to modify its read flag.
+ * @param {Boolean} newReadState: the new value should be assigned to the read flag which indicates whether the notifcation was read by the user.
+ *
+ * @returns {Notificaiton} with the modified data.
+ */
+ const setNotificationReadState = (notification, newReadState) => {
+    notification.wasRead = newReadState;
+    return notification;
+ }
 
 
 module.exports = {
@@ -226,5 +240,6 @@ module.exports = {
   wasNotificationRead,
   addAggregationDataInNotification,
   buildNotificationJSON,
-  updateNotificationByJson
+  updateNotificationByJson,
+  setNotificationReadState
 };
