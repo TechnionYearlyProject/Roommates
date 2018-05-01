@@ -79,6 +79,7 @@ const supportedHobbies = [
  */
 const getSupportedHobbies = () => supportedHobbies;
 
+
 /**
  * check if a hobby has a property with the specified value.
  *

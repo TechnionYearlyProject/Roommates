@@ -69,6 +69,13 @@ const UserSchema = new mongoose.Schema({
       message: '{VALUE} is not a supported hobbie'
     }
   }],
+  blockers: [{
+    type: Number,
+    validate: {
+      validator: (value) => isSupportedHobbieId(value),
+      message: '{VALUE} is not a supported hobbie'
+    }
+  }],
   _publishedApartments: [{
     type: String
   }],
