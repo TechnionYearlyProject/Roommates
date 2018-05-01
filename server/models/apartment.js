@@ -537,7 +537,7 @@ ApartmentSchema.methods.saveNewVisit = function (_askedBy, createdAt, scheduledT
 ApartmentSchema.methods.updateVisitProps = function (_visitID, _offeringUserID, propNames, propValues) {
   const apartment = this;
  
-  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID);
+  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID.toString());
   if(visitIndex < 0){
      return Promise.reject();
   }
@@ -624,7 +624,7 @@ ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
 ApartmentSchema.methods.getVisitDataById = function (_visitID) {
   const apartment = this;
   
-  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID);
+  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID.toString());
   
   if(visitIndex < 0){
      return {};

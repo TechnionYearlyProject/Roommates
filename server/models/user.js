@@ -3,6 +3,7 @@ const _ = require('lodash');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { ObjectID } = require('mongodb');
 
 const { isSupportedHobbieId } = require('./hobbie');
 const { NotificationSchema, addAggregationDataInNotification } = require('./notification');
@@ -527,7 +528,7 @@ UserSchema.methods.saveNewNotification = function (notification) {
 UserSchema.methods.saveAggregationDataInNotification = function (_notificationId, newNotifiedObjectIdsArr, newCreateByIdsArray, newCreationDate) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
   if (notificationIndex < 0) {
     return Promise.reject();
@@ -552,16 +553,13 @@ UserSchema.methods.saveAggregationDataInNotification = function (_notificationId
 UserSchema.methods.saveUpdatedNotification = function (_notificationId, newNotification) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
-
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
   if (notificationIndex < 0) {
     return Promise.reject();
   }
 
-  newNotification._id = _notificationId;
-
+  newNotification._id = new ObjectID(_notificationId);
   user.notifications[notificationIndex] = newNotification;
-
   return user.save();
 };
 /**
@@ -590,7 +588,7 @@ UserSchema.methods.getNotifications = function () {
 UserSchema.methods.getNotificationById = function (_notificationId) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
   return user.notifications[notificationIndex];
 };
