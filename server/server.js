@@ -491,9 +491,9 @@ app.get('/users', async (req, res) => {
   try {
     const ids = _.castArray(req.query.id);
     let users = await User.find({ _id: { $in: ids } });
-    if (users.length !== ids.length) { // if some ids were not found
-      return res.status(BAD_REQUEST).send();
-    }
+    // if (users.length !== ids.length) { // if some ids were not found
+    //   return res.status(BAD_REQUEST).send();
+    // }
     users = convertArrayToJsonMap(users, '_id');
 
     return res.send({ users });

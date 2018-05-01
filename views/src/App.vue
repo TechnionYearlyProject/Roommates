@@ -4,7 +4,7 @@
     <v-content>
       <!-- <v-container fluid> -->
       <app-loader :loading="getLoadingStatus" />
-      <router-view/>
+      <router-view :key="$route.fullPath"/>
       <app-snackbar :text="getSnackbarText" />
       <!-- </v-container> -->
     </v-content>

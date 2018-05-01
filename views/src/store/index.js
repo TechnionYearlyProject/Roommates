@@ -236,7 +236,7 @@ export default new Vuex.Store({
         console.log(response.data);
         commit('setUser', response.data.user);
       });
-    }
+    },
   },
   plugins: [vuexPersistence.plugin]
 });
