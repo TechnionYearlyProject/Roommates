@@ -1,17 +1,15 @@
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { ObjectID } = require('mongodb');
 
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const GroupStatusEnum = {
-    GROUP_STATUS_PENDING: 1,
-    GROUP_STATUS_DECLINED: 2,
-    GROUP_STATUS_ACCEPTED: 3,
-    GROUP_STATUS_COMPLETED: 4
-};
+const GROUP_STATUS_PENDING = 1;
+const GROUP_STATUS_DECLINED = 2;
+const GROUP_STATUS_ACCEPTED = 3;
+const GROUP_STATUS_COMPLETED = 4;
 
-const groupStatusCodes = [
+const GroupStatusCodes = [
     {
         _id: GROUP_STATUS_PENDING,
         name: 'PENDING FOR PARTICIPANTS RESPONSES'
@@ -55,17 +53,18 @@ const visitStatusChangeLogic = [
 ];
 
 
+
 const GroupSchema = new Schema({
-    _creator: {
-        type: [ mongoose.Schema.Types.ObjectId],
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
-    _members: {
-        type: [Number],
+    members: {
+        type: [mongoose.Schema.Types.ObjectId],
         required: true
     },
-    _apartment: {
-        type: [ mongoose.Schema.Types.ObjectId],
+    apartment: {
+        type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     createdAt: {
@@ -73,29 +72,35 @@ const GroupSchema = new Schema({
         required: true
     },
     status: {
-        type: groupStatusCodes,
+        type: Number,
+        validate: {
+            validator: (value) => isSupportedGroupStatusID(value),
+            message: '{VALUE} is not a supported group status Id'
+        },
         required: true
     },
 });
 
 
+
+
 //checks that the given value represents a supported group status id
 const isSupportedGroupStatusID = (value) => {
-    return arrayFunctions.containsElementWithProperty(groupStatusCodes, '_id', value);
+    return arrayFunctions.containsElementWithProperty(GroupStatusCodes, '_id', value);
 };
 
 //returns all supported group codes
 const getGroupStatusCodes = () => groupStatusCodes;
 
-const getGroupCreatorID = (group) => group._creator;
+const getGroupCreatorID = (group) => group.creator;
 
-const getGroupMemberIDs = (group) => group._members;
+const getGroupMemberIDs = (group) => group.members;
 
 
 
 module.exports = {
     GroupSchema,
-    GroupStatusEnum,
+    GroupStatusCodes,
     isSupportedGroupStatusID,
     getGroupStatusCodes,
     getGroupCreatorID,

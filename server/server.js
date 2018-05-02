@@ -255,6 +255,34 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
   }
 });
 
+
+/**
+ * Get a group matching to the logged-in user.
+ *
+ * @param {String} id
+ */
+app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const apartment = await Apartment.findById(id);
+        if (!apartment) {
+            return res.status(NOT_FOUND).send();
+        }
+        const roommates = apartment.requiredRoommates;
+
+        const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+
+        // get the group
+        const group =  _interested.slice(0, roommates - 2);
+        // group.unshift(req.user.email);
+
+        return res.send({ group });
+    } catch (err) {
+        return res.status(BAD_REQUEST).send(err);
+    }
+});
+
 /**
  * Toggle the interested state of the logged-in user.
  *
