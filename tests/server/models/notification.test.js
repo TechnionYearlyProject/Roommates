@@ -278,6 +278,39 @@ describe('Notification Tests', () => {
     });
   });
 
+  describe('#setNotificationReadState', () => {
+    it('should change notification read status to true', (done) => {
+      const notificationExample = {
+        notificationType: 1,
+       _createdBy: new ObjectID(),
+        wasRead: false,
+        _notifiedObjectsIds: [new ObjectID()],
+      };
+
+     notification = NotificationModule.setNotificationReadState(notificationExample, true);
+      
+      expect(notification.wasRead).toBe(true);
+
+      done();
+    });
+
+    it('should change notification read status to false', (done) => {
+     
+      const notificationExample = {
+        notificationType: 1,
+       _createdBy: new ObjectID(),
+        wasRead: true,
+        _notifiedObjectsIds: [new ObjectID()]
+      };
+
+      notification = NotificationModule.setNotificationReadState(notificationExample, false);
+
+      expect(notification.wasRead).toBe(false);
+
+      done();
+    });
+  });
+
   describe('#updateNotificationByJson', () => {
     it('should change partial fields (some others are not supported)', (done) => {
       const newDate = new Date().getTime();
