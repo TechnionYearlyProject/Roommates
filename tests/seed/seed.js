@@ -25,6 +25,8 @@ const review2Id = new ObjectID();
 const apartment1User1VisitId = new ObjectID();
 const apartment1User2VisitId = new ObjectID();
 
+const user1Notification1Id = new ObjectID();
+
 const apartment1 = new Apartment({
   _id: apartment1Id,
   _createdBy: new ObjectID(),
@@ -133,6 +135,7 @@ const user1 = {
   _givenReviews: [review1Id.toHexString()],
   notifications: [
     {
+      _id: user1Notification1Id,
       notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
       _createdBy: new ObjectID(),
       wasRead: false,
@@ -143,6 +146,14 @@ const user1 = {
       notificationType: NotificationsTypesEnum.USER_LIKED_APARTMENT,
       _createdBy: new ObjectID(),
       wasRead: true,
+      _notifiedObjectsIds: [new ObjectID()],
+      createdAt: new Date().getTime()
+    },
+    {
+      _id: new ObjectID(),
+      notificationType: NotificationsTypesEnum.APARTMENT_WAS_MODIFIED,
+      _createdBy: new ObjectID(),
+      wasRead: false,
       _notifiedObjectsIds: [new ObjectID()],
       createdAt: new Date().getTime()
     },
@@ -408,6 +419,7 @@ const populateReviews = (done) => {
 module.exports = {
   apartment1User2VisitId,
   apartment1User1VisitId,
+  user1Notification1Id,
   apartments,
   users,
   reviews,
