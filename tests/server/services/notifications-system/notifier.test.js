@@ -17,18 +17,18 @@ describe('Notifier Tests', () => {
 
   describe('#notifyUsers', () => {
     it('should notify single user with no aggregation', (done) => {
-  		const notificationType = NotificationModule.NotificationsTypesEnum.APARTMENT_WAS_MODIFIED;
+  		const notificationType = NotificationModule.NotificationsTypesEnum.USER_LIKED_APARTMENT;
   		const createdBy = new ObjectID();
   		const notifiedObjectsIds = [new ObjectID()];
       const newDate = new Date().getTime();
     	Notificator.notifyUsers(notificationType, createdBy, [users[0]._id], notifiedObjectsIds, false, newDate).then((promises) =>{
         Promise.all(promises).then((res) => {
           User.findById(users[0]._id).then((user)=> {
-            expect(user.notifications.length).toBe(3);
-            expect(user.notifications[2].notificationType).toBe(notificationType);
-            expect(user.notifications[2]._createdBy[0].equals(createdBy)).toBe(true);
-            expect(user.notifications[2]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
-            expect(user.notifications[2].createdAt).toBe(newDate);
+            expect(user.notifications.length).toBe(4);
+            expect(user.notifications[3].notificationType).toBe(notificationType);
+            expect(user.notifications[3]._createdBy[0].equals(createdBy)).toBe(true);
+            expect(user.notifications[3]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+            expect(user.notifications[3].createdAt).toBe(newDate);
 
             done();
           });
@@ -45,11 +45,11 @@ describe('Notifier Tests', () => {
       Notificator.notifyUsers(notificationType, createdBy, [users[0]._id, users[1]._id], notifiedObjectsIds, false, newDate).then((promises) =>{
         Promise.all(promises).then((res) => {
           User.findById(users[0]._id).then((user)=> {
-            expect(user.notifications.length).toBe(3);
-            expect(user.notifications[2].notificationType).toBe(notificationType);
-            expect(user.notifications[2]._createdBy[0].equals(createdBy)).toBe(true);
-            expect(user.notifications[2]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
-            expect(user.notifications[2].createdAt).toBe(newDate);
+            expect(user.notifications.length).toBe(4);
+            expect(user.notifications[3].notificationType).toBe(notificationType);
+            expect(user.notifications[3]._createdBy[0].equals(createdBy)).toBe(true);
+            expect(user.notifications[3]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+            expect(user.notifications[3].createdAt).toBe(newDate);
             User.findById(users[1]._id).then((userB)=> {
               expect(userB.notifications.length).toBe(2);
               expect(userB.notifications[1].notificationType).toBe(notificationType);
@@ -65,21 +65,21 @@ describe('Notifier Tests', () => {
 
 
     it('should notify single user with aggregation', (done) => {
-      const notificationType = NotificationModule.NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT;
+      const notificationType = NotificationModule.NotificationsTypesEnum.APARTMENT_WAS_MODIFIED;
       const createdBy = new ObjectID();
-      const notifiedObjectsIds = [new ObjectID(users[0].notifications[0]._notifiedObjectsIds[0])];
+      const notifiedObjectsIds = [new ObjectID(users[0].notifications[2]._notifiedObjectsIds[0])];
       const newDate = new Date().getTime();
 
       Notificator.notifyUsers(notificationType, createdBy, [users[0]._id], notifiedObjectsIds, false, newDate).then((promises) =>{
         Promise.all(promises).then((res) => {
           User.findById(users[0]._id).then((user)=> {
-            expect(user.notifications.length).toBe(2);
-            expect(user.notifications[0].notificationType).toBe(notificationType);
-            expect(user.notifications[0]._createdBy.length).toBe(2);
-            expect(user.notifications[0]._createdBy[1].equals(createdBy)).toBe(true);
-            expect(user.notifications[0]._notifiedObjectsIds.length).toBe(1);
-            expect(user.notifications[0]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
-            expect(user.notifications[0].createdAt).toBe(newDate);
+            expect(user.notifications.length).toBe(3);
+            expect(user.notifications[2].notificationType).toBe(notificationType);
+            expect(user.notifications[2]._createdBy.length).toBe(2);
+            expect(user.notifications[2]._createdBy[1].equals(createdBy)).toBe(true);
+            expect(user.notifications[2]._notifiedObjectsIds.length).toBe(1);
+            expect(user.notifications[2]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+            expect(user.notifications[2].createdAt).toBe(newDate);
             done();
           });
         });

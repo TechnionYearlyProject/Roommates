@@ -3,6 +3,7 @@ const _ = require('lodash');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { ObjectID } = require('mongodb');
 
 const { isSupportedHobbieId } = require('./hobbie');
 const {
@@ -34,7 +35,7 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     min: new Date('1900-01-01').getTime(),
     validate: {
-      validator: value => value <= Date.now() - 15 * 365 * 24 * 60 * 60 * 1000,
+      validator: value => value <= Date.now() - (15 * 365 * 24 * 60 * 60 * 1000),
       message: 'birthdate: {VALUE} is more than maximum allowed value'
     },
     required: true
@@ -94,7 +95,13 @@ const UserSchema = new mongoose.Schema({
       type: String
     }
   ],
-
+  blockers: [{
+    type: Number,
+    validate: {
+      validator: (value) => isSupportedHobbieId(value),
+      message: '{VALUE} is not a supported hobbie'
+    }
+  }],
   email: {
     type: String,
     minlength: 5,
@@ -566,11 +573,7 @@ UserSchema.methods.saveAggregationDataInNotification = function (
 ) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(
-    user.notifications,
-    '_id',
-    _notificationId
-  );
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
   if (notificationIndex < 0) {
     return Promise.reject();
@@ -603,20 +606,13 @@ UserSchema.methods.saveUpdatedNotification = function (
 ) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(
-    user.notifications,
-    '_id',
-    _notificationId
-  );
-
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
   if (notificationIndex < 0) {
     return Promise.reject();
   }
 
-  newNotification._id = _notificationId;
-
+  newNotification._id = new ObjectID(_notificationId);
   user.notifications[notificationIndex] = newNotification;
-
   return user.save();
 };
 /**
@@ -645,11 +641,7 @@ UserSchema.methods.getNotifications = function () {
 UserSchema.methods.getNotificationById = function (_notificationId) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(
-    user.notifications,
-    '_id',
-    _notificationId
-  );
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
   return user.notifications[notificationIndex];
 };

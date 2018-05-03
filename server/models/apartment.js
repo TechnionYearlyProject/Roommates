@@ -584,14 +584,10 @@ ApartmentSchema.methods.updateVisitProps = function (
   propValues
 ) {
   const apartment = this;
-
-  const visitIndex = getIndexOfFirstElementMatchKey(
-    apartment.visits,
-    '_id',
-    _visitID
-  );
-  if (visitIndex < 0) {
-    return Promise.reject();
+ 
+  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID.toString());
+  if(visitIndex < 0){
+     return Promise.reject();
   }
 
   if (
@@ -699,15 +695,11 @@ ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
  */
 ApartmentSchema.methods.getVisitDataById = function (_visitID) {
   const apartment = this;
-
-  const visitIndex = getIndexOfFirstElementMatchKey(
-    apartment.visits,
-    '_id',
-    _visitID
-  );
-
-  if (visitIndex < 0) {
-    return {};
+  
+  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID.toString());
+  
+  if(visitIndex < 0){
+     return {};
   }
 
   return apartment.visits[visitIndex];
