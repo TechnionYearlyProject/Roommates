@@ -64,100 +64,100 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
-    import AppMainSearchForm from './sub-components/AppMainSearchForm';
-    import AppApartmentAd from './AppApartmentAd';
-    import AppDrawer from './AppDrawer';
-    import cityImage from '../assets/city-image.jpg';
+import { mapGetters, mapMutations } from 'vuex';
+import AppMainSearchForm from './sub-components/AppMainSearchForm';
+import AppApartmentAd from './AppApartmentAd';
+import AppDrawer from './AppDrawer';
+import cityImage from '../assets/city-image.jpg';
 
-    export default {
-      data() {
-        return {
-          // apartments: null,
-          scrollOptions: {
-            duration: 500,
-            offset: 10,
-            easing: 'easeInOutCubic'
-          },
-          image: cityImage,
-          loading: false,
-          dialog: false,
-          sortOptions: [
-            {
-              title: 'Price',
-              direction: null,
-              icon: 'toll',
-              compareFunction: (x, y) => x.price - y.price
-            },
-            {
-              title: 'Entrance date',
-              direction: null,
-              icon: 'event',
-              compareFunction: (x, y) => x.entranceDate - y.entranceDate
-            },
-            {
-              title: 'Interest',
-              direction: null,
-              icon: 'favorite',
-              compareFunction: (x, y) => x._interested.length - y._interested.length
-            }
-          ]
-        };
+export default {
+  data() {
+    return {
+      // apartments: null,
+      scrollOptions: {
+        duration: 500,
+        offset: 10,
+        easing: 'easeInOutCubic',
       },
-      computed: {
-        ...mapGetters({ apartments: 'getApartments' })
-      },
-      methods: {
-        ...mapMutations(['setApartments']),
-        search(filters) {
-          this.setApartments([]);
-          this.loading = true;
-          this.$store
-            .dispatch('searchApartments', filters)
-            .catch(error =>
-              // eslint-disable-next-line
-              console.log(error)
-            )
-            .then(() => {
-              this.loading = false;
-            });
+      image: cityImage,
+      loading: false,
+      dialog: false,
+      sortOptions: [
+        {
+          title: 'Price',
+          direction: null,
+          icon: 'toll',
+          compareFunction: (x, y) => x.price - y.price,
         },
-        async sort(sortOption) {
-          this.loading = true;
-          await new Promise((resolve) => {
-            const preserveOrder = (x, y) =>
-              this.apartments.indexOf(x._id) - this.apartments.indexOf(y._id);
-            if (sortOption.direction === null || sortOption.direction === 'down') {
-              this.apartments.sort(
-                (x, y) => sortOption.compareFunction(x, y) || preserveOrder(x, y)
-              );
-              sortOption.direction = 'up';
-            } else {
-              this.apartments.sort(
-                (x, y) => sortOption.compareFunction(y, x) || preserveOrder(x, y)
-              );
-              sortOption.direction = 'down';
-            }
-            resolve();
-          });
-          this.loading = false;
-        }
-      },
-      beforeMount() {
-        if (this.$route.query.id) {
-          this.search({ id: this.$route.query.id });
-        } else if (!this.apartments) {
-          this.search({});
-        }
-      },
-      components: {
-        AppMainSearchForm,
-        AppApartmentAd,
-        AppDrawer
-      }
+        {
+          title: 'Entrance date',
+          direction: null,
+          icon: 'event',
+          compareFunction: (x, y) => x.entranceDate - y.entranceDate,
+        },
+        {
+          title: 'Interest',
+          direction: null,
+          icon: 'favorite',
+          compareFunction: (x, y) =>
+            x._interested.length - y._interested.length,
+        },
+      ],
     };
+  },
+  computed: {
+    ...mapGetters({ apartments: 'getApartments' }),
+  },
+  methods: {
+    ...mapMutations(['setApartments']),
+    search(filters) {
+      this.setApartments([]);
+      this.loading = true;
+      this.$store
+        .dispatch('searchApartments', filters)
+        .catch(error =>
+          // eslint-disable-next-line
+          console.log(error)
+        )
+        .then(() => {
+          this.loading = false;
+        });
+    },
+    async sort(sortOption) {
+      this.loading = true;
+      await new Promise(resolve => {
+        const preserveOrder = (x, y) =>
+          this.apartments.indexOf(x._id) - this.apartments.indexOf(y._id);
+        if (sortOption.direction === null || sortOption.direction === 'down') {
+          this.apartments.sort(
+            (x, y) => sortOption.compareFunction(x, y) || preserveOrder(x, y)
+          );
+          sortOption.direction = 'up';
+        } else {
+          this.apartments.sort(
+            (x, y) => sortOption.compareFunction(y, x) || preserveOrder(x, y)
+          );
+          sortOption.direction = 'down';
+        }
+        resolve();
+      });
+      this.loading = false;
+    },
+  },
+  beforeMount() {
+    if (this.$route.query.id) {
+      this.search({ id: this.$route.query.id });
+    } else if (!this.apartments) {
+      this.search({});
+    }
+  },
+  components: {
+    AppMainSearchForm,
+    AppApartmentAd,
+    AppDrawer,
+  },
+};
 </script>
 
 <style >
-
 </style>

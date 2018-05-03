@@ -1,326 +1,423 @@
 <template>
-    <v-card>
-        <v-card-media :src="image" height="200px">
-            <v-container fill-height fluid>
-                <v-layout fill-height>
-                    <v-btn icon @click.native="previousImage" color="white" :disabled="apartment.images.length <= 1">
-                        <v-icon>keyboard_arrow_left</v-icon>
-                    </v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn icon @click.native="nextImage" color="white" :disabled="apartment.images.length <= 1">
-                        <v-icon>keyboard_arrow_right</v-icon>
-                    </v-btn>
-                </v-layout>
-            </v-container>
-        </v-card-media>
-        <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
+  <v-card>
+    <v-card-media :src="image" height="200px">
+      <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-btn icon @click.native="previousImage" color="white" :disabled="apartment.images.length <= 1">
+            <v-icon>keyboard_arrow_left</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn icon @click.native="nextImage" color="white" :disabled="apartment.images.length <= 1">
+            <v-icon>keyboard_arrow_right</v-icon>
+          </v-btn>
+        </v-layout>
+      </v-container>
+    </v-card-media>
+    <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
 
-        <v-card-actions class="pt-4">
+    <v-card-actions class="pt-4">
 
-            <v-flex>
-                <span class="caption">
-                    <span class="body-2">published:</span>
-                    <span class="body-1">{{ new Date(apartment.createdAt).toDateString() }}</span>
-                </span>
-            </v-flex>
-            <v-spacer></v-spacer>
-            <v-tooltip top slot="activator">
-                <v-btn icon slot="activator" :class="fav ? 'red--text' : ''" @click.native="favorite">
-                    <v-icon>favorite</v-icon>
-                </v-btn>
-                <span>{{ interestedMessage }}</span>
-            </v-tooltip>
-            <v-menu offset-x :close-on-content-click="false" :nudge-width="245" lazy>
-                <v-tooltip top slot="activator">
-                    <v-btn icon slot="activator" @click.native="getPublisher">
-                        <v-icon>account_box</v-icon>
-                    </v-btn>
-                    <span>Publisher profile</span>
+      <v-flex>
+        <span class="caption">
+          <span class="body-2">published:</span>
+          <span class="body-1">{{ new Date(apartment.createdAt).toDateString() }}</span>
+        </span>
+      </v-flex>
+      <v-spacer></v-spacer>
+      <v-tooltip top slot="activator">
+        <v-btn icon slot="activator" :class="fav ? 'red--text' : ''" @click.native="favorite">
+          <v-icon>favorite</v-icon>
+        </v-btn>
+        <span>{{ interestedMessage }}</span>
+      </v-tooltip>
+      <v-menu offset-x :close-on-content-click="false" :nudge-width="245" lazy>
+        <v-tooltip top slot="activator">
+          <v-btn icon slot="activator" @click.native="getPublisher">
+            <v-icon>account_box</v-icon>
+          </v-btn>
+          <span>Publisher profile</span>
+        </v-tooltip>
+        <v-card>
+          <v-list>
+            <v-list-tile avatar>
+              <v-list-tile-avatar>
+                <app-avatar img="" name="publisherName" :size="40"></app-avatar>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>publisher name</v-list-tile-title>
+                <v-list-tile-sub-title>rating</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+          <v-divider></v-divider>
+          <v-list>
+            <v-list-tile>
+              <v-icon class="pr-1">email</v-icon>
+              <v-list-tile-title>
+                <small>E-mail</small>
+              </v-list-tile-title>
+              <v-list-tile-title>8742458</v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile>
+              <v-icon class="pr-1">phone</v-icon>
+              <v-list-tile-title>
+                <small>Phone</small>
+              </v-list-tile-title>
+              <v-list-tile-title>+972-8711111</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+          <v-divider inset></v-divider>
+          <v-card-actions>
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-switch color="purple"></v-switch>
+              </v-list-tile-action>
+              <v-list-tile-title>Enable notifications</v-list-tile-title>
+            </v-list-tile>
+          </v-card-actions>
+        </v-card>
+      </v-menu>
+      <v-menu offset-y :nudge-bottom="15" bottom :close-on-content-click="false" max-width="340" lazy>
+        <v-tooltip top slot="activator">
+          <v-btn icon slot="activator">
+            <v-icon>share</v-icon>
+          </v-btn>
+          <span>Share</span>
+        </v-tooltip>
+        <v-card>
+          <v-container grid-list-sm pa-2>
+            <v-layout wrap row>
+              <v-flex xs10>
+                <v-text-field ref="apartmentLink" v-model="share.url" hide-details readonly class="pl-2"/>
+              </v-flex>
+              <v-flex xs2 class="text-xs-center">
+                <v-tooltip top slot="activator" :color="clipboard.color" :close-delay="clipboard.closeDelay">
+                  <v-btn color="success" slot="activator" class="mt-2" style="min-width: 0;width:40px" @click="copyToClipboard">
+                    <v-icon color="white-text">content_copy</v-icon>
+                  </v-btn>
+                  <div class="text-xs-center">{{ clipboard.text }}</div>
                 </v-tooltip>
-                <v-card>
-                    <v-list>
-                        <v-list-tile avatar>
-                            <v-list-tile-avatar>
-                                <app-avatar img="" name="publisherName" :size="40"></app-avatar>
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title>publisher name</v-list-tile-title>
-                                <v-list-tile-sub-title>rating</v-list-tile-sub-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </v-list>
-                    <v-divider></v-divider>
-                    <v-list>
-                        <v-list-tile>
-                            <v-icon class="pr-1">email</v-icon>
-                            <v-list-tile-title>
-                                <small>E-mail</small>
-                            </v-list-tile-title>
-                            <v-list-tile-title>8742458</v-list-tile-title>
-                        </v-list-tile>
-                        <v-list-tile>
-                            <v-icon class="pr-1">phone</v-icon>
-                            <v-list-tile-title>
-                                <small>Phone</small>
-                            </v-list-tile-title>
-                            <v-list-tile-title>+972-8711111</v-list-tile-title>
-                        </v-list-tile>
-                    </v-list>
-                    <v-divider inset></v-divider>
-                    <v-card-actions>
-                        <v-list-tile>
-                            <v-list-tile-action>
-                                <v-switch color="purple"></v-switch>
-                            </v-list-tile-action>
-                            <v-list-tile-title>Enable notifications</v-list-tile-title>
-                        </v-list-tile>
-                    </v-card-actions>
-                </v-card>
-            </v-menu>
-
-            <v-tooltip top>
-                <v-btn icon slot="activator">
-                    <v-icon>share</v-icon>
-                </v-btn>
-                <span>Share</span>
-            </v-tooltip>
-        </v-card-actions>
-        <v-card-actions class="subheading">
-            <v-btn icon @click.native="openMap" class="pink--text mb-1">
-                <v-icon>place</v-icon>
-            </v-btn>
-            {{ apartment.location.address.street.capitalize()}} {{ apartment.location.address.number}}, {{ apartment.location.address.city.capitalize()}}
-            <v-spacer></v-spacer>
-            ${{ apartment.price }}
-
-            <v-spacer></v-spacer>
-            <v-btn icon @click.native="expandDetails">
-                <v-icon>{{ expended ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
-            </v-btn>
-
-        </v-card-actions>
-
-        <v-slide-y-transition mode="out-in">
-
-            <v-card-text ref="details" v-show="expended" class="pt-0">
-                <v-divider class="mb-3"></v-divider>
-                <transition name="slide-x-transition" mode="out-in" v-if="show">
-                    <div v-if="show === 'apartmentDetails'" ref='cardDetails' key="apartmentDetails">
-                        <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
-                        <v-card class="mt-3">
-                            <v-card-title>
-                                <h4>Attributes</h4>
-                            </v-card-title>
-                            <v-divider></v-divider>
-                            <v-list dense>
-                                <v-list-tile v-for="(attribute,i) in attributes" :key="`attribute-${i}`">
-                                    <v-list-tile-content>{{ attribute.label }}</v-list-tile-content>
-                                    <v-list-tile-content class="align-end">{{ apartment[attribute.ref] || '-' }}</v-list-tile-content>
-                                </v-list-tile>
-                            </v-list>
-                            <v-divider></v-divider>
-                        </v-card>
-                        <v-layout row wrap py-3>
-                            <v-flex xs3 v-for="(tag,i) in apartment.tags" :key="`tag-${i}`" mx-auto>
-                                <div class="text-xs-center">
-                                    <v-icon>{{ tags[tag].vicon }}</v-icon><br>
-                                    <small>{{ tags[tag].name }}</small>
-                                </div>
-
-                            </v-flex>
-                        </v-layout>
-
-                        <v-card v-if="apartment.description">
-                            <v-card-title>
-                                <h4>About</h4>
-                            </v-card-title>
-                            <v-divider></v-divider>
-                            <v-card-text>
-                                <i>{{ apartment.description }}</i>
-                            </v-card-text>
-                        </v-card>
-                    </div>
-
-                    <div v-else-if="show === 'comments'" :style="{'height': detailsHeight}" key="comments">
-                        <app-comments :comments="apartment.comments" :onComment="addComment"></app-comments>
-                    </div>
-
-                    <div v-else-if="show === 'favors'" :style="{'height': detailsHeight}" key="favors">
-                        <app-favors :favors="apartment._interested"></app-favors>
-                    </div>
-                </transition>
+              </v-flex>
+              <v-flex xs12 py-2>
                 <v-divider/>
-                <v-breadcrumbs divider="/">
-                    <v-breadcrumbs-item v-if="show !== 'apartmentDetails'" @click.native="showApartmentDetails">
-                        &larr; Go back
-                    </v-breadcrumbs-item>
-                    <v-breadcrumbs-item v-if="show !== 'favors'" :disabled="false" v-show="true" @click.native="showFavores">
-                        {{ apartment._interested.length }} interested
-                    </v-breadcrumbs-item>
-                    <v-breadcrumbs-item v-if="show !== 'comments'" @click.native="showComments">
-                        {{ apartment.comments.length }} comments
-                    </v-breadcrumbs-item>
-                    <v-breadcrumbs-item :disabled="false" v-show="true" to="#">
-                        reviews
-                    </v-breadcrumbs-item>
-                </v-breadcrumbs>
-            </v-card-text>
-        </v-slide-y-transition>
+              </v-flex>
+              <v-flex>
+                <v-layout justify-center wrap row justify-space-around>
+              <social-sharing v-for="(network, i) in share.networks" :key="`network-${i}`" :url="share.url" :title="share.title" :description="share.description" :quote="share.quote" inline-template>
+                    <network :network="network.name" style="cursor:pointer">
+                      <v-icon large :color="network.color">{{ network.icon }}</v-icon>
+                    </network>
+              </social-sharing>
+</v-layout>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card>
+      </v-menu>
+    </v-card-actions>
+    <v-card-actions class="subheading">
+      <v-btn icon @click.native="openMap" class="pink--text mb-1">
+        <v-icon>place</v-icon>
+      </v-btn>
+      {{ getAddress() }}
+      <v-spacer></v-spacer>
+      ${{ apartment.price }}
 
-    </v-card>
+      <v-spacer></v-spacer>
+      <v-btn icon @click.native="expandDetails">
+        <v-icon>{{ expended ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}</v-icon>
+      </v-btn>
+
+    </v-card-actions>
+
+    <v-slide-y-transition mode="out-in">
+
+      <v-card-text ref="details" v-show="expended" class="pt-0">
+        <v-divider class="mb-3"></v-divider>
+        <transition name="slide-x-transition" mode="out-in" v-if="show">
+          <div v-if="show === 'apartmentDetails'" ref='cardDetails' key="apartmentDetails">
+            <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
+            <v-card class="mt-3">
+              <v-card-title>
+                <h4>Attributes</h4>
+              </v-card-title>
+              <v-divider></v-divider>
+              <v-list dense>
+                <v-list-tile v-for="(attribute,i) in attributes" :key="`attribute-${i}`">
+                  <v-list-tile-content>{{ attribute.label }}</v-list-tile-content>
+                  <v-list-tile-content class="align-end">{{ apartment[attribute.ref] || '-' }}</v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+              <v-divider></v-divider>
+            </v-card>
+            <v-layout row wrap py-3>
+              <v-flex xs3 v-for="(tag,i) in apartment.tags" :key="`tag-${i}`" mx-auto>
+                <div class="text-xs-center">
+                  <v-icon>{{ tags[tag].vicon }}</v-icon><br>
+                  <small>{{ tags[tag].name }}</small>
+                </div>
+
+              </v-flex>
+            </v-layout>
+
+            <v-card v-if="apartment.description">
+              <v-card-title>
+                <h4>About</h4>
+              </v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>
+                <i>{{ apartment.description }}</i>
+              </v-card-text>
+            </v-card>
+          </div>
+
+          <div v-else-if="show === 'comments'" :style="{'height': detailsHeight}" key="comments">
+            <app-comments :comments="apartment.comments" :onComment="addComment"></app-comments>
+          </div>
+
+          <div v-else-if="show === 'favors'" :style="{'height': detailsHeight}" key="favors">
+            <app-favors :favors="apartment._interested"></app-favors>
+          </div>
+        </transition>
+        <v-divider/>
+        <v-breadcrumbs divider="/">
+          <v-breadcrumbs-item v-if="show !== 'apartmentDetails'" @click.native="showApartmentDetails">
+            &larr; Go back
+          </v-breadcrumbs-item>
+          <v-breadcrumbs-item v-if="show !== 'favors'" :disabled="false" v-show="true" @click.native="showFavores">
+            {{ apartment._interested.length }} interested
+          </v-breadcrumbs-item>
+          <v-breadcrumbs-item v-if="show !== 'comments'" @click.native="showComments">
+            {{ apartment.comments.length }} comments
+          </v-breadcrumbs-item>
+          <v-breadcrumbs-item :disabled="false" v-show="true" to="#">
+            reviews
+          </v-breadcrumbs-item>
+        </v-breadcrumbs>
+      </v-card-text>
+    </v-slide-y-transition>
+
+  </v-card>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
-    import defaultApartmentImage from '../assets/apartment-defalut.jpg';
-    import tagsList from '../assets/tags';
-    import AppAvatar from './sub-components/AppAvatar';
-    import AppMap from './sub-components/AppMap';
-    import AppComments from './sub-components/AppComments';
-    import AppFavors from './sub-components/AppFavors';
+  import { mapGetters } from 'vuex';
+  import defaultApartmentImage from '../assets/apartment-defalut.jpg';
+  import tagsList from '../assets/tags';
+  import AppAvatar from './sub-components/AppAvatar';
+  import AppMap from './sub-components/AppMap';
+  import AppComments from './sub-components/AppComments';
+  import AppFavors from './sub-components/AppFavors';
 
-    export default {
-      props: ['apartment'],
-      data() {
-        return {
-          attributes: [
-            {
-              label: 'required roommates',
-              ref: 'requiredRoommates'
-            },
-            {
-              label: 'total roommates',
-              ref: 'totalRoommates' // change model from currentlyNumberOfRoommates -> totalRoommates
-            },
-            {
-              label: 'floor',
-              ref: 'floor'
-            },
-            {
-              label: 'total floors',
-              ref: 'totalFloors'
-            },
-            {
-              label: 'rooms number',
-              ref: 'numberOfRooms'
-            },
-            {
-              label: 'area (square meter)',
-              ref: 'area'
-            }
-          ],
-          expended: false,
-          show: 'apartmentDetails',
-          fav: false,
-          showMap: false,
-          tags: tagsList,
-          defaultImage: defaultApartmentImage,
-          imageNumber: 0,
-          interestedMessage: "I'm interested!",
-          e1: 'recent'
-        };
-      },
-      methods: {
-        favorite() {
-          if (!this.isAuthenticated) {
-            this.interestedMessage = 'Please login first';
-          } else if (!this.isVerified) {
-            this.interestedMessage = 'Please verify account';
-          } else {
-            this.fav = !this.fav;
-            this.$store
-              .dispatch('favor', { id: this.apartment._id })
-              .then((apartment) => {
-                this.apartment._interested = apartment._interested;
-              })
-              .catch((error) => {
-                // eslint-disable-next-line
-                console.log(error);
-                this.fav = !this.fav;
-              });
+  export default {
+    props: ['apartment'],
+    data() {
+      return {
+        attributes: [
+          {
+            label: 'required roommates',
+            ref: 'requiredRoommates'
+          },
+          {
+            label: 'total roommates',
+            ref: 'totalRoommates' // change model from currentlyNumberOfRoommates -> totalRoommates
+          },
+          {
+            label: 'floor',
+            ref: 'floor'
+          },
+          {
+            label: 'total floors',
+            ref: 'totalFloors'
+          },
+          {
+            label: 'rooms number',
+            ref: 'numberOfRooms'
+          },
+          {
+            label: 'area (square meter)',
+            ref: 'area'
           }
-        },
-        getPublisher() {
-          // eslint-disable-next-line
-          console.log('fetch publisher');
-        },
-        nextImage() {
-          this.imageNumber =
-            this.imageNumber >= this.apartment.images.length - 1
-              ? 0
-              : this.imageNumber + 1;
-        },
-        previousImage() {
-          this.imageNumber =
-            this.imageNumber <= 0
-              ? this.apartment.images.length - 1
-              : this.imageNumber - 1;
-        },
-        openMap() {
-          this.showMap = true;
-        },
-        expandDetails() {
-          if (this.expended) {
-            this.expended = false;
-          } else {
-            this.expended = true;
-          }
-        },
-        showApartmentDetails() {
-          this.show = 'apartmentDetails';
-          this.goToTopOfAdd();
-        },
-        showFavores() {
-          this.show = 'favors';
-          this.goToTopOfAdd();
-        },
-        showComments() {
-          this.show = 'comments';
-          this.goToTopOfAdd();
-        },
-        addComment(comment) {
-          return this.$store.dispatch('addApartmentComment', {
-            params: {
-              id: this.apartment._id
+        ],
+        share: {
+          url: null,
+          title: null,
+          description: null,
+          quote: null,
+          networks: [
+            {
+              name: 'email',
+              icon: 'mdi-email',
+              color: 'lime darken-4'
             },
-            payload: {
-              text: comment.text
+            {
+              name: 'facebook',
+              icon: 'mdi-facebook-box',
+              color: 'blue darken-3'
+            },
+            {
+              name: 'googleplus',
+              icon: 'mdi-google-plus-box',
+              color: 'red darken-1'
+            },
+            {
+              name: 'twitter',
+              icon: 'mdi-twitter-box',
+              color: 'light-blue'
+            },
+            {
+              name: 'whatsapp',
+              icon: 'mdi-whatsapp',
+              color: 'teal darken-1'
             }
-          });
+          ]
         },
-        goToTopOfAdd() {
-          this.$vuetify.goTo(this.$refs.details, {
-            duration: 1100,
-            offset: -200,
-            easing: 'easeInOutCubic'
-          });
-        }
-      },
-      computed: {
-        ...mapGetters(['isAuthenticated', 'isVerified']),
-        image() {
-          return this.apartment.images[0]
-            ? this.apartment.images[this.imageNumber]
-            : this.defaultImage;
+        expended: false,
+        show: 'apartmentDetails',
+        fav: false,
+        showMap: false,
+        tags: tagsList,
+        defaultImage: defaultApartmentImage,
+        imageNumber: 0,
+        interestedMessage: "I'm interested!",
+        clipboard: {
+          color: undefined,
+          text: 'Copy link',
+          closeDelay: 200,
+          lastCopyTime: 0
         },
-        detailsHeight() {
-          return `${this.$refs.cardDetails.clientHeight}px`;
+        e1: 'recent'
+      };
+    },
+    methods: {
+      getAddress() {
+        return `${this.apartment.location.address.street.capitalize()} ${
+          this.apartment.location.address.number
+        }, ${this.apartment.location.address.city.capitalize()}`;
+      },
+      favorite() {
+        if (!this.isAuthenticated) {
+          this.interestedMessage = 'Please login first';
+        } else if (!this.isVerified) {
+          this.interestedMessage = 'Please verify account';
+        } else {
+          this.fav = !this.fav;
+          this.$store
+            .dispatch('favor', { id: this.apartment._id })
+            .then(apartment => {
+              this.apartment._interested = apartment._interested;
+            })
+            .catch(error => {
+              // eslint-disable-next-line
+              console.log(error);
+              this.fav = !this.fav;
+            });
         }
       },
-      components: {
-        AppAvatar,
-        AppMap,
-        AppComments,
-        AppFavors
+      getPublisher() {
+        // eslint-disable-next-line
+        console.log('fetch publisher');
       },
-      mounted() {
-        if (this.isAuthenticated) {
-          this.fav = this.apartment._interested.includes(
-            this.$store.getters.getUser._id
-          );
+      nextImage() {
+        this.imageNumber =
+          this.imageNumber >= this.apartment.images.length - 1
+            ? 0
+            : this.imageNumber + 1;
+      },
+      previousImage() {
+        this.imageNumber =
+          this.imageNumber <= 0
+            ? this.apartment.images.length - 1
+            : this.imageNumber - 1;
+      },
+      openMap() {
+        this.showMap = true;
+      },
+      expandDetails() {
+        if (this.expended) {
+          this.expended = false;
+        } else {
+          this.expended = true;
         }
+      },
+      showApartmentDetails() {
+        this.show = 'apartmentDetails';
+        this.goToTopOfAdd();
+      },
+      showFavores() {
+        this.show = 'favors';
+        this.goToTopOfAdd();
+      },
+      showComments() {
+        this.show = 'comments';
+        this.goToTopOfAdd();
+      },
+      addComment(comment) {
+        return this.$store.dispatch('addApartmentComment', {
+          params: {
+            id: this.apartment._id
+          },
+          payload: {
+            text: comment.text
+          }
+        });
+      },
+      goToTopOfAdd() {
+        this.$vuetify.goTo(this.$refs.details, {
+          duration: 1100,
+          offset: -200,
+          easing: 'easeInOutCubic'
+        });
+      },
+      copyToClipboard() {
+        this.$refs.apartmentLink.$refs.input.select();
+        const cp = document.execCommand('copy');
+        this.clipboard.text = 'Copied!';
+        this.clipboard.color = 'success';
+        this.clipboard.closeDelay = 3000;
+        const lastCopyTime = Date.now();
+        this.clipboard.lastCopyTime = lastCopyTime;
+        setInterval(() => {
+          if(lastCopyTime === this.clipboard.lastCopyTime) {
+            this.clipboard.text = 'Copy link';
+            this.clipboard.color = undefined;
+            this.clipboard.closeDelay = 200;
+          }
+        }, 5000);
       }
-    };
+    },
+    computed: {
+      ...mapGetters(['isAuthenticated', 'isVerified']),
+      image() {
+        return this.apartment.images[0]
+          ? this.apartment.images[this.imageNumber]
+          : this.defaultImage;
+      },
+      detailsHeight() {
+        return `${this.$refs.cardDetails.clientHeight}px`;
+      }
+    },
+    components: {
+      AppAvatar,
+      AppMap,
+      AppComments,
+      AppFavors
+    },
+    mounted() {
+      if (this.isAuthenticated) {
+        this.fav = this.apartment._interested.includes(
+          this.$store.getters.getUser._id
+        );
+      }
+      this.share.url = `https://localhost:8080/${this.apartment._id}`;
+      this.share.title = 'Sharing this apartment I found on Roommates with you';
+      this.share.description = `Located in ${this.getAddress()}, price: ${
+        this.apartment.price
+      }`;
+      this.share.quote =
+        'This is an apartment that I thought might interest you.';
+    }
+  };
 </script>
 
 <style scoped>

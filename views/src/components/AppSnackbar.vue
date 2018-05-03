@@ -6,38 +6,37 @@
 </template>
 
 <script>
-    export default {
-      props: {
-        text: {
-          type: String,
-          default: ''
-        },
-        timeout: {
-          type: Number,
-          default: 10000
-        },
-        'multi-line': {
-          type: Boolean,
-          default: false
-        },
-        vertical: {
-          type: Boolean,
-          default: false
-        }
-      },
-      data() {
-        return {
-          active: false
-        };
-      },
-      watch: {
-        text() {
-          this.active = this.text !== '';
-        }
-      }
+export default {
+  props: {
+    text: {
+      type: String,
+      default: '',
+    },
+    timeout: {
+      type: Number,
+      default: 10000,
+    },
+    'multi-line': {
+      type: Boolean,
+      default: false,
+    },
+    vertical: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      active: false,
     };
+  },
+  watch: {
+    text() {
+      this.active = this.text !== '';
+    },
+  },
+};
 </script>
 
 <style>
-
 </style>

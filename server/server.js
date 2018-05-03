@@ -2,7 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const _ = require('lodash');
 const {
-  BAD_REQUEST, NOT_FOUND, UNAUTHORIZED, FORBIDDEN, OK
+  BAD_REQUEST,
+  NOT_FOUND,
+  UNAUTHORIZED,
+  OK
 } = require('http-status');
 require('./server-config');
 require('./db/mongoose');
@@ -14,12 +17,20 @@ const geoLocation = require('./services/geoLocation/geoLocation');
 const { Apartment } = require('./models/apartment');
 const { Review } = require('./models/review');
 const { User } = require('./models/user');
-const { XAUTH, XEXPIRATION } = require('./constants');
+const { XAUTH } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
-const { getVisitStatusCodes, canModifyVisit, canAddVisit, getVisitStatusChangeActions } = require('./models/visit');
-const { NotificationsTypesEnum, updateNotificationByJson } = require('./models/notification');
+const {
+  getVisitStatusCodes,
+  canModifyVisit,
+  canAddVisit,
+  getVisitStatusChangeActions
+} = require('./models/visit');
+const {
+  NotificationsTypesEnum,
+  updateNotificationByJson
+} = require('./models/notification');
 const { logInfo } = require('./services/logger/logger');
 const { ObjectID } = require('mongodb');
 const httpLogger = require('./services/logger/http-logger');
@@ -29,14 +40,16 @@ const userVerificator = require('./services/user-verification/user-verificator')
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
 
-
 const app = express();
 
 app.use(httpLogger.logResponseBodyOnError);
-app.use(bodyParser.json({ limit: '5mb' }));
+app.use(
+  bodyParser.json({
+    limit: '5mb'
+  })
+);
 useCors(app);
 useVue(app);
-
 
 /**
  * Add a new apartemnt. The posting user has to be authenticated.
@@ -58,41 +71,52 @@ useVue(app);
  */
 app.post('/apartments', authenticate, async (req, res) => {
   try {
-    const address = _.pick(req.body.address, ['state', 'city', 'street', 'number']);
+    const address = _.pick(req.body.address, [
+      'state',
+      'city',
+      'street',
+      'number'
+    ]);
     const location = {
       address,
-      geolocation: await geoLocation.getGeoLocationCoords(`${address.street} ${address.number} ${address.city} ${address.state}`)
+      geolocation: await geoLocation.getGeoLocationCoords(
+        `${address.street} ${address.number} ${address.city} ${address.state}`
+      )
     };
     if (!location.geolocation) {
       return res.status(BAD_REQUEST).send(errors.invalidLocation);
     }
 
-    const apartmentData = _.pick(req.body,
-      [
-        'price',
-        'entranceDate',
-        'images',
-        'description',
-        'tags',
-        'requiredRoommates',
-        'totalRoommates',
-        'numberOfRooms',
-        'floor',
-        'totalFloors',
-        'area'
-      ]);
+    const apartmentData = _.pick(req.body, [
+      'price',
+      'entranceDate',
+      'images',
+      'description',
+      'tags',
+      'requiredRoommates',
+      'totalRoommates',
+      'numberOfRooms',
+      'floor',
+      'totalFloors',
+      'area'
+    ]);
     apartmentData._createdBy = req.user._id;
     apartmentData._notificationSubscribers = [req.user._id];
     apartmentData.createdAt = Date.now();
     apartmentData.location = location;
 
     const apartment = await new Apartment(apartmentData).save();
-    await User.findByIdAndUpdate(req.user._id, { $push: { _publishedApartments: apartment._id } })
-      .catch((err) => {
-        Apartment.findByIdAndRemove(apartment._id);
-        throw err;
-      });
-    return res.send({ apartment });
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        _publishedApartments: apartment._id
+      }
+    }).catch(err => {
+      Apartment.findByIdAndRemove(apartment._id);
+      throw err;
+    });
+    return res.send({
+      apartment
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
@@ -119,31 +143,48 @@ app.patch('/apartments/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!(req.user.isOwner(id))) {
+    if (!req.user.isOwner(id)) {
       return res.status(UNAUTHORIZED).send();
     }
 
-    const apartmentData = _.pick(req.body,
-      [
-        'title',
-        'price',
-        'entranceDate',
-        'images',
-        'description',
-        'tags',
-        'requiredRoommates',
-        'totalRoommates',
-        'numberOfRooms',
-        'floor',
-        'totalFloors',
-        'area'
-      ]);
+    const apartmentData = _.pick(req.body, [
+      'title',
+      'price',
+      'entranceDate',
+      'images',
+      'description',
+      'tags',
+      'requiredRoommates',
+      'totalRoommates',
+      'numberOfRooms',
+      'floor',
+      'totalFloors',
+      'area'
+    ]);
 
-    const apartment = await Apartment.findByIdAndUpdate(id, { $set: apartmentData }, { new: true, runValidators: true });
+    const apartment = await Apartment.findByIdAndUpdate(
+      id,
+      {
+        $set: apartmentData
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
 
-    notifyUsers(NotificationsTypesEnum.APARTMENT_WAS_MODIFIED, req.user._id, apartment._notificationSubscribers, [id], false, new Date().getTime());
+    notifyUsers(
+      NotificationsTypesEnum.APARTMENT_WAS_MODIFIED,
+      req.user._id,
+      apartment._notificationSubscribers,
+      [id],
+      false,
+      new Date().getTime()
+    );
 
-    res.send({ apartment });
+    res.send({
+      apartment
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
@@ -154,7 +195,9 @@ app.patch('/apartments/:id', authenticate, async (req, res) => {
  */
 app.get('/apartments/tags', async (req, res) => {
   try {
-    res.send({ tags: getSupportedTags() });
+    res.send({
+      tags: getSupportedTags()
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -182,29 +225,30 @@ app.get('/apartments/tags', async (req, res) => {
  */
 app.get('/apartments', async (req, res) => {
   try {
-    const query = _.pick(req.query,
-      [
-        'id', // String of a legal ObjectID
-        'createdBy', // String of a legal ObjectID
-        // 'minPrice',
-        // 'maxPrice',
-        'entranceDate', // A value which can be converted into Date
-        // 'minEntranceDate',
-        // 'latestEntranceDate',
-        'address', // String of the full address
-        'radius', // Number, which indicates the range from the address or geolocation
-        // 'minRoommates',
-        // 'maxRoommates',
-        'price', // Array of 2 Numbers, which indicates the price range
-        'roommates', // Array of 2 Numbers, which indicates the roommates range
-        'floor', // Array of 2 Numbers, which indicates the floor range
-        'tags', // Array of the tags Numbers (ids)
-        'geolocation' // Array of 2 numbers: ['longitude','latitude']
-        // 'longitude',
-        // 'latitude'
-      ]);
+    const query = _.pick(req.query, [
+      'id', // String of a legal ObjectID
+      'createdBy', // String of a legal ObjectID
+      // 'minPrice',
+      // 'maxPrice',
+      'entranceDate', // A value which can be converted into Date
+      // 'minEntranceDate',
+      // 'latestEntranceDate',
+      'address', // String of the full address
+      'radius', // Number, which indicates the range from the address or geolocation
+      // 'minRoommates',
+      // 'maxRoommates',
+      'price', // Array of 2 Numbers, which indicates the price range
+      'roommates', // Array of 2 Numbers, which indicates the roommates range
+      'floor', // Array of 2 Numbers, which indicates the floor range
+      'tags', // Array of the tags Numbers (ids)
+      'geolocation' // Array of 2 numbers: ['longitude','latitude']
+      // 'longitude',
+      // 'latitude'
+    ]);
     const apartments = await Apartment.findByProperties(query);
-    res.send({ apartments });
+    res.send({
+      apartments
+    });
     // let tags;
     // if (body.tags && Array.isArray(body.tags)) {
     //   tags = body.tags.map(tagName => getSupportedTags().filter(t => t.name === tagName)[0]._id);
@@ -247,9 +291,13 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
       return res.status(NOT_FOUND).send();
     }
 
-    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+    const _interested = await req.user.getBestMatchingUsers(
+      apartment._interested
+    );
 
-    return res.send({ _interested });
+    return res.send({
+      _interested
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -275,10 +323,19 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     } else {
       await apartment.addInterestedUser(req.user._id);
       await req.user.addInterestInApartment(id);
-      notifyUsers(NotificationsTypesEnum.USER_LIKED_APARTMENT, req.user._id, apartment._notificationSubscribers, [id], false, new Date().getTime());
+      notifyUsers(
+        NotificationsTypesEnum.USER_LIKED_APARTMENT,
+        req.user._id,
+        apartment._notificationSubscribers,
+        [id],
+        false,
+        new Date().getTime()
+      );
     }
 
-    return res.status(OK).send({ apartment });
+    return res.status(OK).send({
+      apartment
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -308,7 +365,9 @@ app.put('/apartments/:id/subscription', authenticate, async (req, res) => {
       await apartment.saveSubscriber(req.user._id);
     }
 
-    return res.status(OK).send({ apartment });
+    return res.status(OK).send({
+      apartment
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -331,11 +390,20 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
 
     await apartment.addComment(req.user._id, body.text, Date.now());
 
-    notifyUsers(NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT, req.user._id, apartment._notificationSubscribers, [id], false, new Date().getTime());
+    notifyUsers(
+      NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+      req.user._id,
+      apartment._notificationSubscribers,
+      [id],
+      false,
+      new Date().getTime()
+    );
 
     const { comments } = apartment;
 
-    return res.send({ comments });
+    return res.send({
+      comments
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -350,7 +418,7 @@ app.delete('/apartments/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!(req.user.isOwner(id))) {
+    if (!req.user.isOwner(id)) {
       return res.status(UNAUTHORIZED).send();
     }
 
@@ -375,40 +443,41 @@ app.delete('/apartments/:id', authenticate, async (req, res) => {
  */
 app.post('/users', async (req, res) => {
   try {
-    const body = _.pick(req.body,
-      [
-        'email',
-        'password',
-        'firstName',
-        'lastName',
-        'birthdate',
-        'gender'
-      ]);
+    const body = _.pick(req.body, [
+      'email',
+      'password',
+      'firstName',
+      'lastName',
+      'birthdate',
+      'gender'
+    ]);
 
     const user = new User(body);
     await user.register();
     /**
-	* @updatedBy: Alon Talmor
+     * @updatedBy: Alon Talmor
      * @date: 13/04/18
      * Do not send verification mail!
-	 * If you want the verification mail to be sent, use the route:
-	 * POST /users/verify
-	*/
+     * If you want the verification mail to be sent, use the route:
+     * POST /users/verify
+     */
     //userVerificator.sendVerificationEmail(user);
 
     /**
      * @updatedBy: Alon Talmor
      * @date: 16/4/18
      * generate an authentication token to start a session between the 2 ends.
-    */
+     */
     const token = user.generateAuthenticationToken();
-    res.header(XAUTH, token).send({ user });
+    res.header(XAUTH, token).send({
+      user
+    });
 
     /**
      * @updatedBy: Alon Talmor
      * @date: 18/04/18
      * Expiration time is now a part of the authentication code instead of a separate property.
-      
+
     res.header(XEXPIRATION, ticket.expiration);
     res.send({ user });
     */
@@ -440,7 +509,9 @@ app.post('/users/login', async (req, res) => {
 	 */
     user.removeExpiredTokens();
     const token = await user.generateAuthenticationToken();
-    res.header(XAUTH, token).send({ user });
+    res.header(XAUTH, token).send({
+      user
+    });
 
     /**
      * @updatedBy: Alon Talmor
@@ -459,7 +530,9 @@ app.post('/users/login', async (req, res) => {
  *
  */
 app.get('/users/self', authenticate, (req, res) => {
-  res.send({ self: req.user });
+  res.send({
+    self: req.user
+  });
 });
 
 /**
@@ -468,7 +541,9 @@ app.get('/users/self', authenticate, (req, res) => {
  */
 app.get('/users/tags', async (req, res) => {
   try {
-    res.send({ tags: getSupportedHobbies() });
+    res.send({
+      tags: getSupportedHobbies()
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -490,13 +565,26 @@ app.get('/users/tags', async (req, res) => {
 app.get('/users', async (req, res) => {
   try {
     const ids = _.castArray(req.query.id);
-    let users = await User.find({ _id: { $in: ids } });
+    let users = await User.find({
+      _id: {
+        $in: ids
+      }
+    });
+
+    /**
+     * @updatedBy: Alon Talmor
+     * @date: 01/05/18
+     * don't return an error in case some ids are missing
+     * (since users might have been deleted or other causes...).
+     */
     // if (users.length !== ids.length) { // if some ids were not found
     //   return res.status(BAD_REQUEST).send();
     // }
     users = convertArrayToJsonMap(users, '_id');
 
-    return res.send({ users });
+    return res.send({
+      users
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -516,7 +604,9 @@ app.get('/users/:id/interested', async (req, res) => {
       return res.status(NOT_FOUND).send();
     }
     const interested = await Apartment.findAllByIds(user._interestedApartments);
-    return res.send({ interested });
+    return res.send({
+      interested
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -536,7 +626,9 @@ app.get('/users/:id/published', async (req, res) => {
       return res.status(NOT_FOUND).send();
     }
     const published = await Apartment.findAllByIds(user._publishedApartments);
-    return res.send({ published });
+    return res.send({
+      published
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -548,22 +640,32 @@ app.get('/users/:id/published', async (req, res) => {
  */
 app.patch('/users/self', authenticate, async (req, res) => {
   try {
-    const body = _.pick(req.body,
-      [
-        'firstName',
-        'lastName',
-        'birthdate',
-        'gender',
-        'mobilePhone',
-        'about',
-        'image',
-        'hobbies',
-        // '_publishedApartments',
-        '_interestedApartments'
-      ]);
+    const body = _.pick(req.body, [
+      'firstName',
+      'lastName',
+      'birthdate',
+      'gender',
+      'mobilePhone',
+      'about',
+      'image',
+      'hobbies',
+      // '_publishedApartments',
+      '_interestedApartments'
+    ]);
 
-    const user = await User.findByIdAndUpdate(req.user._id, { $set: body }, { new: true, runValidators: true });
-    res.send({ user });
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      {
+        $set: body
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
+    res.send({
+      user
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -582,7 +684,9 @@ app.patch('/users/self', authenticate, async (req, res) => {
 app.patch('/users/verify/:token', async (req, res) => {
   try {
     const user = await userVerificator.verifyUser(req.params.token);
-    res.send({ user });
+    res.send({
+      user
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -626,7 +730,9 @@ app.post('/users/verify', async (req, res) => {
  */
 app.post('/users/reset', async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({
+      email: req.body.email
+    });
     passwordReset.sendResetPasswordMail(user);
     res.send('forgot email was sent');
   } catch (err) {
@@ -679,12 +785,16 @@ app.get('/users/reset/:token', (req, res) => {
  */
 app.patch('/users/reset/:token', async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({
+      email: req.body.email
+    });
     passwordReset.verifyResetToken(user, req.params.token);
     await user.resetPassword(req.body.password);
 
     //TODO: disable using this same link after password change.
-    res.send({ user });
+    res.send({
+      user
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -693,7 +803,7 @@ app.patch('/users/reset/:token', async (req, res) => {
  * @author: Or Abramovich
  * @date: 04/18
  *
- * Update fields of the registered user notification. 
+ * Update fields of the registered user notification.
  * Currently suppports only wasRead flag (a flag indicates whether the notified person read the notification).
  *
  * @param {ObjectID} notification id that has to be cahnged.
@@ -705,24 +815,25 @@ app.patch('/users/notifications/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
-    const notificationData = _.pick(req.body,
-      [
-        'wasRead'
-      ]);
+    const notificationData = _.pick(req.body, ['wasRead']);
 
-    const curNotification = JSON.parse(JSON.stringify(req.user.getNotificationById(id)));
-    const newNotification = updateNotificationByJson(curNotification, notificationData);
+    const curNotification = JSON.parse(
+      JSON.stringify(req.user.getNotificationById(id))
+    );
+    const newNotification = updateNotificationByJson(
+      curNotification,
+      notificationData
+    );
 
     const user = await req.user.saveUpdatedNotification(id, newNotification);
 
-    res.send({ user });
-
+    res.send({
+      user
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
-
-
 
 /**
  * Add a new review. The posting user has to be authenticated.
@@ -735,40 +846,46 @@ app.patch('/users/notifications/:id', authenticate, async (req, res) => {
  * @param {String} state
  */
 
-
-
 app.post('/reviews', authenticate, async (req, res) => {
   try {
-    const reviewData = _.pick(req.body,
-      [
-        'street',
-        'city',
-        'state',
-        'ratedCharacteristics',
-        'Pros',
-        'Cons'
-      ]);
-    reviewData.geolocation = await geoLocation.getGeoLocationCoords(`${reviewData.street} ${reviewData.city} ${reviewData.state}`);
+    const reviewData = _.pick(req.body, [
+      'street',
+      'city',
+      'state',
+      'ratedCharacteristics',
+      'Pros',
+      'Cons'
+    ]);
+    reviewData.geolocation = await geoLocation.getGeoLocationCoords(
+      `${reviewData.street} ${reviewData.city} ${reviewData.state}`
+    );
     reviewData._createdBy = req.user._id;
     reviewData.createdAt = Date.now();
 
-    Review.findInRange(reviewData.geolocation[0], reviewData.geolocation[1], 1)
-      .then((result) => {
-        result.forEach((review) => {
-          if (review._createdBy.equals(reviewData._createdBy)) {
-            return res.status(BAD_REQUEST).send(errors.multiRating);
-          }
-        });
+    Review.findInRange(
+      reviewData.geolocation[0],
+      reviewData.geolocation[1],
+      1
+    ).then(result => {
+      result.forEach(review => {
+        if (review._createdBy.equals(reviewData._createdBy)) {
+          return res.status(BAD_REQUEST).send(errors.multiRating);
+        }
       });
-
+    });
 
     const review = await new Review(reviewData).save();
-    await User.findByIdAndUpdate(req.user._id, { $push: { _givenReviews : review._id } })
-      .catch((err) => {
-        Review.findByIdAndRemove(review._id);
-        throw err;
-      });
-    return res.send({ review });
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        _givenReviews: review._id
+      }
+    }).catch(err => {
+      Review.findByIdAndRemove(review._id);
+      throw err;
+    });
+    return res.send({
+      review
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
@@ -779,52 +896,56 @@ app.post('/reviews', authenticate, async (req, res) => {
  */
 app.get('/reviews/:long/:lat', async (req, res) => {
   try {
-
-    var r = {
+    const r = {
       ratedCharacteristics: {
         parking: 0,
         publicTransport: 0,
         noise: 0,
         commercialServices: 0,
         upkeep: 0,
-        generalRating: 0,
+        generalRating: 0
       },
       Pros: [],
       Cons: [],
       numberOfRaters: 0
-    }
-    var count = 0;
-    Review.findInRange(req.params.long, req.params.lat, 1)
-      .then((result) => {
-        for (let index = 0; index < result.length; index++) {
-          const element = result[index];
-          count++;
-          r.ratedCharacteristics.parking += element.ratedCharacteristics.parking;
-          r.ratedCharacteristics.publicTransport += element.ratedCharacteristics.publicTransport;
-          r.ratedCharacteristics.noise += element.ratedCharacteristics.noise;
-          r.ratedCharacteristics.commercialServices += element.ratedCharacteristics.commercialServices;
-          r.ratedCharacteristics.upkeep += element.ratedCharacteristics.upkeep;
-          r.ratedCharacteristics.generalRating += element.ratedCharacteristics.generalRating;
-          r.Pros.push(element.Pros);
-          r.Cons.push(element.Cons);
-        };
-        if (count == 0) {
-          return res.send({ r });
-        }
-        r.ratedCharacteristics.parking /= count;
-        r.ratedCharacteristics.publicTransport /= count;
-        r.ratedCharacteristics.noisecount;
-        r.ratedCharacteristics.commercialServicescount;
-        r.ratedCharacteristics.upkeepcount;
-        r.ratedCharacteristics.generalRatingcount;
-        r.numberOfRaters = count;
-        return res.send({ result });
+    };
+    let count = 0;
+    Review.findInRange(req.params.long, req.params.lat, 1).then(result => {
+      for (let index = 0; index < result.length; index++) {
+        const element = result[index];
+        count++;
+        r.ratedCharacteristics.parking += element.ratedCharacteristics.parking;
+        r.ratedCharacteristics.publicTransport +=
+          element.ratedCharacteristics.publicTransport;
+        r.ratedCharacteristics.noise += element.ratedCharacteristics.noise;
+        r.ratedCharacteristics.commercialServices +=
+          element.ratedCharacteristics.commercialServices;
+        r.ratedCharacteristics.upkeep += element.ratedCharacteristics.upkeep;
+        r.ratedCharacteristics.generalRating +=
+          element.ratedCharacteristics.generalRating;
+        r.Pros.push(element.Pros);
+        r.Cons.push(element.Cons);
+      }
+      if (count == 0) {
+        return res.send({
+          r
+        });
+      }
+      r.ratedCharacteristics.parking /= count;
+      r.ratedCharacteristics.publicTransport /= count;
+      r.ratedCharacteristics.noisecount;
+      r.ratedCharacteristics.commercialServicescount;
+      r.ratedCharacteristics.upkeepcount;
+      r.ratedCharacteristics.generalRatingcount;
+      r.numberOfRaters = count;
+      return res.send({
+        result
       });
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
 });
-
 
 /**
  * Update review. The patching user has to be authenticated and the giver of the review.
@@ -841,24 +962,33 @@ app.get('/reviews/:long/:lat', async (req, res) => {
 app.patch('/reviews/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
-    if (!(req.user.isReviewOwner(id))) {
+    if (!req.user.isReviewOwner(id)) {
       return res.status(UNAUTHORIZED).send();
     }
-    const reviewData = _.pick(req.body,
-      [
-        'ratedCharacteristics',
-        'Pros',
-        'Cons'
-      ]);
+    const reviewData = _.pick(req.body, [
+      'ratedCharacteristics',
+      'Pros',
+      'Cons'
+    ]);
 
-    const review = await Review.findByIdAndUpdate(id, { $set: reviewData }, { new: true, runValidators: true });
+    const review = await Review.findByIdAndUpdate(
+      id,
+      {
+        $set: reviewData
+      },
+      {
+        new: true,
+        runValidators: true
+      }
+    );
 
-    res.send({ review });
+    res.send({
+      review
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
-
 
 /**
  *
@@ -870,7 +1000,9 @@ app.patch('/reviews/:id', authenticate, async (req, res) => {
  */
 app.get('/apartments/visit/statuses', async (req, res) => {
   try {
-    res.send({ statuses: getVisitStatusCodes() });
+    res.send({
+      statuses: getVisitStatusCodes()
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -880,13 +1012,15 @@ app.get('/apartments/visit/statuses', async (req, res) => {
  * @author: Or Abramovich
  * @date: 04/18
  *
- * Returns the entire list of supported visit status changes based on the business logic. 
- * i.e. the returened JSON describes the possible "movements" of the visit status. 
+ * Returns the entire list of supported visit status changes based on the business logic.
+ * i.e. the returened JSON describes the possible "movements" of the visit status.
  *
  */
 app.get('/apartments/visit/actions', async (req, res) => {
   try {
-    res.send({ statuses: getVisitStatusChangeActions() });
+    res.send({
+      statuses: getVisitStatusChangeActions()
+    });
   } catch (err) {
     res.status(BAD_REQUEST).send(err);
   }
@@ -896,7 +1030,7 @@ app.get('/apartments/visit/actions', async (req, res) => {
  * @author: Or Abramovich
  * @date: 04/18
  *
- * Modifies an existing visit with the given ID in the given apartment. 
+ * Modifies an existing visit with the given ID in the given apartment.
  * The user who request the modification must be authenticated.
  *
  * Parameters of the route:
@@ -907,7 +1041,6 @@ app.get('/apartments/visit/actions', async (req, res) => {
  */
 app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
   try {
-
     const body = _.pick(req.body, ['schedTo', 'status']);
     const { id, visitId } = req.params;
 
@@ -918,13 +1051,22 @@ app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
 
     const visitData = apartment.getVisitDataById(visitId);
 
-    if (!canModifyVisit(apartment._createdBy, visitData._askedBy, req.user._id)) {
+    if (
+      !canModifyVisit(apartment._createdBy, visitData._askedBy, req.user._id)
+    ) {
       return res.status(UNAUTHORIZED).send();
     }
 
-    await apartment.updateVisit(visitId, req.user._id, body.status, body.schedTo);
+    await apartment.updateVisit(
+      visitId,
+      req.user._id,
+      body.status,
+      body.schedTo
+    );
 
-    return res.send({ apartment });
+    return res.send({
+      apartment
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
@@ -935,7 +1077,7 @@ app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
  * @author: Or Abramovich
  * @date: 04/18
  *
- * Adds a new visit to the given apartment. 
+ * Adds a new visit to the given apartment.
  * The user who request it must be authenticated.
  *
  * Parameters of the route:
@@ -960,12 +1102,13 @@ app.put('/apartments/:id/visit/', authenticate, async (req, res) => {
 
     await apartment.addNewVisit(req.user._id, body.schedTo);
 
-    return res.send({ apartment });
+    return res.send({
+      apartment
+    });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
   }
 });
-
 
 /**
  * Deletes a specific review.  The removing user has to be the giver of the review.
@@ -976,7 +1119,7 @@ app.delete('/reviews/:id', authenticate, async (req, res) => {
   try {
     const { id } = req.params;
 
-    if (!(req.user.isReviewOwner(id))) {
+    if (!req.user.isReviewOwner(id)) {
       return res.status(UNAUTHORIZED).send();
     }
 
@@ -988,7 +1131,6 @@ app.delete('/reviews/:id', authenticate, async (req, res) => {
     return res.status(BAD_REQUEST).send(err);
   }
 });
-
 
 /**
  * @author: Alon Talmor

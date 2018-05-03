@@ -17,12 +17,12 @@ const router = new Router({
     // {
     //   path: '/test',
     //   name: 'HelloWorld',
-    //   component: HelloWorld,
+    //   component: HelloWorld
     // },
     {
       path: '/',
       name: 'AppMain',
-      component: AppMain,
+      component: AppMain
     },
     {
       path: '/identification',
@@ -46,7 +46,7 @@ const router = new Router({
       path: '/reset_password/:token?',
       name: 'AppResetPassword',
       alias: '/users/reset-password/:token',
-      component: AppResetPassword,
+      component: AppResetPassword
     },
     {
       path: '/user_profile/:id?',
@@ -63,11 +63,11 @@ const router = new Router({
       meta: {
         requiresVerify: true
       }
-    },
+    }
   ],
   scrollBehavior() {
     return { x: 0, y: 0 };
-  },
+  }
 });
 
 router.beforeEach((to, from, next) => {
@@ -75,7 +75,11 @@ router.beforeEach((to, from, next) => {
     next({ name: 'AppIdentification' });
   } else if (to.matched.some(record => record.meta.rejectsAuth) && store.getters.isAuthenticated) {
     next({ name: 'AppMain' });
-  } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isAuthenticated) { // eslint-disable-line 
+  } else if (
+    to.matched.some(record => record.meta.requiresVerify) &&
+    !store.getters.isAuthenticated
+  ) {
+    // eslint-disable-line
     next({ name: 'AppIdentification' });
   } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isVerified) {
     next({ name: 'AppVerification' });

@@ -61,54 +61,53 @@
 </template>
 
 <script>
-    import { mapGetters, mapMutations } from 'vuex';
-    import AppAvatar from './sub-components/AppAvatar';
+import { mapGetters, mapMutations } from 'vuex';
+import AppAvatar from './sub-components/AppAvatar';
 
-    export default {
-      data() {
-        return {
-          menuItems: [
-            {
-              title: 'Profile',
-              icon: 'account_box',
-              to: 'AppUserProfile',
-              do: () => {}
-            },
-            {
-              title: 'Account',
-              icon: 'settings',
-              to: 'AppResetPassword',
-              do: () => {}
-            },
-            {
-              title: 'Logout',
-              icon: 'exit_to_app',
-              to: 'AppMain',
-              do: () => this.$store.dispatch('logout')
-            }
-          ]
-        };
-      },
-      methods: {
-        ...mapMutations(['toggleDrawer']),
-        toggleSearchMenu() {
-          if (this.$route.name === 'AppMain') {
-            this.toggleDrawer();
-          } else {
-            this.toggleDrawer(true);
-            this.$router.push({ name: 'AppMain' });
-          }
-        }
-      },
-      computed: {
-        ...mapGetters(['isAuthenticated', 'isVerified'])
-      },
-      components: {
-        AppAvatar
-      }
+export default {
+  data() {
+    return {
+      menuItems: [
+        {
+          title: 'Profile',
+          icon: 'account_box',
+          to: 'AppUserProfile',
+          do: () => {},
+        },
+        {
+          title: 'Account',
+          icon: 'settings',
+          to: 'AppResetPassword',
+          do: () => {},
+        },
+        {
+          title: 'Logout',
+          icon: 'exit_to_app',
+          to: 'AppMain',
+          do: () => this.$store.dispatch('logout'),
+        },
+      ],
     };
+  },
+  methods: {
+    ...mapMutations(['toggleDrawer']),
+    toggleSearchMenu() {
+      if (this.$route.name === 'AppMain') {
+        this.toggleDrawer();
+      } else {
+        this.toggleDrawer(true);
+        this.$router.push({ name: 'AppMain' });
+      }
+    },
+  },
+  computed: {
+    ...mapGetters(['isAuthenticated', 'isVerified']),
+  },
+  components: {
+    AppAvatar,
+  },
+};
 </script>
 
 <style>
-
 </style>

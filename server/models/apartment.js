@@ -4,10 +4,12 @@ const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
 const { removeFalsyProps } = require('../helpers/removeFalsyProps');
 const { isSupportedTagId } = require('./tag');
-const { getIndexOfValue, getIndexOfFirstElementMatchKey } = require('../helpers/arrayFunctions');
+const {
+  getIndexOfValue,
+  getIndexOfFirstElementMatchKey
+} = require('../helpers/arrayFunctions');
 const { ObjectID } = require('mongodb');
 const visit = require('./visit');
-
 
 const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -23,10 +25,12 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     required: true
   },
-  _interested: [{
-    type: String,
-    ref: 'User'
-  }],
+  _interested: [
+    {
+      type: String,
+      ref: 'User'
+    }
+  ],
   entranceDate: {
     type: Number,
     required: true
@@ -95,21 +99,25 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     max: 1000
   },
-  images: [{
-    type: String,
-    default: ''
-  }],
+  images: [
+    {
+      type: String,
+      default: ''
+    }
+  ],
   description: {
     type: String,
     default: ''
   },
-  tags: [{
-    type: Number,
-    validate: {
-      validator: (value) => isSupportedTagId(value),
-      message: '{VALUE} is not a supported tag'
+  tags: [
+    {
+      type: Number,
+      validate: {
+        validator: value => isSupportedTagId(value),
+        message: '{VALUE} is not a supported tag'
+      }
     }
-  }],
+  ],
   requiredRoommates: {
     type: Number,
     min: 1,
@@ -121,51 +129,55 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     max: 11
   },
-  comments: [{
-    _createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    createdAt: {
-      type: Number,
-      required: true
-    },
-    text: {
-      type: String,
-      minlength: 10,
-      maxlength: 1000,
-      required: true
+  comments: [
+    {
+      _createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+      },
+      createdAt: {
+        type: Number,
+        required: true
+      },
+      text: {
+        type: String,
+        minlength: 10,
+        maxlength: 1000,
+        required: true
+      }
     }
-  }],
+  ],
   _notificationSubscribers: {
-    type: [mongoose.Schema.Types.ObjectId],
+    type: [mongoose.Schema.Types.ObjectId]
   },
-  visits: [{
-    _askedBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true
-    },
-    createdAt: {
-      type: Number,
-      required: true,
-    },
-    scheduledTo: {
-      type: Number,
-      required: true,
-      validate: {
-        validator: (value) => value > Date.now(),
-        message: '{VALUE} is not a future date'
-      }
-    },
-    status: {
-      type: Number,
-      required: true,
-      validate: {
-        validator: (value) => visit.isSupportedVisitStatusID(value),
-        message: '{VALUE} is not a valid visit status'
+  visits: [
+    {
+      _askedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+      },
+      createdAt: {
+        type: Number,
+        required: true
+      },
+      scheduledTo: {
+        type: Number,
+        required: true,
+        validate: {
+          validator: value => value > Date.now(),
+          message: '{VALUE} is not a future date'
+        }
+      },
+      status: {
+        type: Number,
+        required: true,
+        validate: {
+          validator: value => visit.isSupportedVisitStatusID(value),
+          message: '{VALUE} is not a valid visit status'
+        }
       }
     }
-   }],
+  ]
 });
 
 /**
@@ -181,10 +193,7 @@ const getGeoWithinObj = (coords, radius) => {
   const kmToRadians = radius / EARTH_RADIUS_IN_KM;
   return {
     $geoWithin: {
-      $centerSphere: [
-        coords,
-        kmToRadians
-      ]
+      $centerSphere: [coords, kmToRadians]
     }
   };
 };
@@ -241,35 +250,47 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   const Apartment = this;
 
   const query = {};
-  if (p.id && ObjectID.isValid(p.id)) { // id
+  if (p.id && ObjectID.isValid(p.id)) {
+    // id
     query._id = p.id;
   }
-  if (p.createdBy && ObjectID.isValid(p.createdBy)) { // createdBy
+  if (p.createdBy && ObjectID.isValid(p.createdBy)) {
+    // createdBy
     query._createdBy = p.createdBy;
   }
-  if (p.entranceDate) { // entranceDate
+  if (p.entranceDate) {
+    // entranceDate
     query.entranceDate = { $lte: new Date(p.entranceDate).getTime() };
   }
   const radius = +p.radius || 5; //km //address + geolocation + radius
-  if (p.geolocation) { // find by geolocation first
+  if (p.geolocation) {
+    // find by geolocation first
     query['location.geolocation'] = getGeoWithinObj(p.geolocation, radius);
-  } else if (p.address) { // find by address if geolocation is not defined
+  } else if (p.address) {
+    // find by address if geolocation is not defined
     const geolocation = await geoLocation.getGeoLocationCoords(p.address);
     if (!geolocation) {
-      return new Promise((resolve) => resolve([]));
+      return new Promise(resolve => resolve([]));
     }
     query['location.geolocation'] = getGeoWithinObj(geolocation, radius);
   }
-  if (p.price && Array.isArray(p.price)) { // price
+  if (p.price && Array.isArray(p.price)) {
+    // price
     query.price = removeFalsyProps({ $gte: p.price[0], $lte: p.price[1] });
   }
-  if (p.roommates && Array.isArray(p.roommates)) { // roommates
-    query.totalRoommates = removeFalsyProps({ $gte: p.roommates[0], $lte: p.roommates[1] });
+  if (p.roommates && Array.isArray(p.roommates)) {
+    // roommates
+    query.totalRoommates = removeFalsyProps({
+      $gte: p.roommates[0],
+      $lte: p.roommates[1]
+    });
   }
-  if (p.floor && Array.isArray(p.floor)) { // floor
+  if (p.floor && Array.isArray(p.floor)) {
+    // floor
     query.floor = removeFalsyProps({ $gte: p.floor[0], $lte: p.floor[1] });
   }
-  if (p.tags && Array.isArray(p.tags)) { // tags
+  if (p.tags && Array.isArray(p.tags)) {
+    // tags
     query.tags = { $all: p.tags };
   }
   return Apartment.find(query);
@@ -306,7 +327,6 @@ ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
   return apartment.save();
 };
 
-
 /**
  * add an interested user to the apartment's interested list.
  *
@@ -317,10 +337,9 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-  
+
   return apartment.save();
 };
-
 
 /**
  * remove the interested user from the apartment's interested list.
@@ -331,14 +350,16 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
 ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   const apartment = this;
 
-  const interestedIDIndex = getIndexOfValue(apartment._interested, _interestedID);
+  const interestedIDIndex = getIndexOfValue(
+    apartment._interested,
+    _interestedID
+  );
   if (interestedIDIndex > -1) {
     apartment._interested.splice(interestedIDIndex, 1);
   }
 
   return apartment.save();
 };
-
 
 /**
  * check if the user is interested in the apartment.
@@ -349,9 +370,12 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
 ApartmentSchema.methods.isUserInterested = function (_interestedID) {
   const apartment = this;
 
-  const interestedIDIndex = getIndexOfValue(apartment._interested, _interestedID);
+  const interestedIDIndex = getIndexOfValue(
+    apartment._interested,
+    _interestedID
+  );
 
-  return (interestedIDIndex > -1);
+  return interestedIDIndex > -1;
 };
 /**
  *
@@ -367,15 +391,14 @@ ApartmentSchema.methods.isUserInterested = function (_interestedID) {
 ApartmentSchema.methods.getIndexOfSubscriberUser = function (_subscriberID) {
   const apartment = this;
 
-  var index = -1;
+  let index = -1;
 
-  for (var i = 0; i < apartment._notificationSubscribers.length; i++) {
-    if (apartment._notificationSubscribers[i].equals(_subscriberID))
-      index = i;
+  for (let i = 0; i < apartment._notificationSubscribers.length; i++) {
+    if (apartment._notificationSubscribers[i].equals(_subscriberID)) index = i;
   }
 
   return index;
-}
+};
 /**
  *
  * @author: Or Abramovich
@@ -442,12 +465,12 @@ ApartmentSchema.methods.deleteSubscriber = function (_subscriberID) {
  * Check whether the given user ID is the owner of the apartment
  *
  * @param {ObjectID} _userID: the ID of the user to check
- * 
+ *
  * @returns {Boolean} indicating whether the given ID is the owner of the apartment.
  */
 ApartmentSchema.methods.isOwner = function (_userID) {
   const apartment = this;
-  
+
   return _userID.equals(apartment._createdBy);
 };
 /**
@@ -465,12 +488,18 @@ ApartmentSchema.methods.isOwner = function (_userID) {
 ApartmentSchema.methods.addNewVisit = function (_visitorID, schedTo) {
   const apartment = this;
 
-  if(apartment.isFutureVisitPlanned(_visitorID, Date.now()) || !visit.canAddVisit(apartment.isOwner(_visitorID))){
+  if (
+    apartment.isFutureVisitPlanned(_visitorID, Date.now()) ||
+    !visit.canAddVisit(apartment.isOwner(_visitorID))
+  ) {
     return Promise.reject();
   }
-  else{
-    return apartment.saveNewVisit(_visitorID, Date.now(), schedTo, visit.getVisitStatusOnCreate());
-  }
+  return apartment.saveNewVisit(
+    _visitorID,
+    Date.now(),
+    schedTo,
+    visit.getVisitStatusOnCreate()
+  );
 };
 
 /**
@@ -487,11 +516,20 @@ ApartmentSchema.methods.addNewVisit = function (_visitorID, schedTo) {
  *
  * @returns {Promise} that resolved once the visit was modified.
  */
-ApartmentSchema.methods.updateVisit = function (_visitID, _offeringUserID, targetStatus, schedTo) {
+ApartmentSchema.methods.updateVisit = function (
+  _visitID,
+  _offeringUserID,
+  targetStatus,
+  schedTo
+) {
   const apartment = this;
 
-  return apartment.updateVisitProps(_visitID, _offeringUserID, ['scheduledTo', 'status'], [schedTo, targetStatus]);
- 
+  return apartment.updateVisitProps(
+    _visitID,
+    _offeringUserID,
+    ['scheduledTo', 'status'],
+    [schedTo, targetStatus]
+  );
 };
 
 /**
@@ -499,7 +537,7 @@ ApartmentSchema.methods.updateVisit = function (_visitID, _offeringUserID, targe
  * @author: Or Abramovich
  * @date: 04/18
  *
- * Adds a new visit request to the apartment. 
+ * Adds a new visit request to the apartment.
  *
  * @param {ObjectId} _visitorID: the ID of the user who would like to visit in the apartment.
  * @param {Number} createdAt: time representing the creartion of the visit request.
@@ -508,9 +546,14 @@ ApartmentSchema.methods.updateVisit = function (_visitID, _offeringUserID, targe
  *
  * @returns {Promise} that resolved once the visit was added.
  */
-ApartmentSchema.methods.saveNewVisit = function (_askedBy, createdAt, scheduledTo, status) {
+ApartmentSchema.methods.saveNewVisit = function (
+  _askedBy,
+  createdAt,
+  scheduledTo,
+  status
+) {
   const apartment = this;
-      
+
   apartment.visits.push({
     _askedBy,
     createdAt,
@@ -529,27 +572,43 @@ ApartmentSchema.methods.saveNewVisit = function (_askedBy, createdAt, scheduledT
  *
  * @param {ObjectId} _visitID: the ID of the visit document.
  * @param {ObjectId} _offeringUserID: the ID of the user who triggered the visit modification.
- * @param {Array} propNames: an array of the visit properties names to be modified. 
+ * @param {Array} propNames: an array of the visit properties names to be modified.
  * @param {Array} propValues: an array of the new data to be set - the value at pos i is for property i in the propNames array.
  *
  * @returns Promise object that resolved once the visit was modified.
  */
-ApartmentSchema.methods.updateVisitProps = function (_visitID, _offeringUserID, propNames, propValues) {
+ApartmentSchema.methods.updateVisitProps = function (
+  _visitID,
+  _offeringUserID,
+  propNames,
+  propValues
+) {
   const apartment = this;
- 
-  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID);
-  if(visitIndex < 0){
-     return Promise.reject();
-  }
-  
-  if(!apartment.isLegalVisitChange(apartment.visits[visitIndex], _offeringUserID, propNames, propValues)){
+
+  const visitIndex = getIndexOfFirstElementMatchKey(
+    apartment.visits,
+    '_id',
+    _visitID
+  );
+  if (visitIndex < 0) {
     return Promise.reject();
   }
-  
-  for(let i=0;i<propNames.length;i++){
-     apartment.visits[visitIndex][propNames[i]] = propValues[i];
+
+  if (
+    !apartment.isLegalVisitChange(
+      apartment.visits[visitIndex],
+      _offeringUserID,
+      propNames,
+      propValues
+    )
+  ) {
+    return Promise.reject();
   }
-  
+
+  for (let i = 0; i < propNames.length; i++) {
+    apartment.visits[visitIndex][propNames[i]] = propValues[i];
+  }
+
   return apartment.save();
 };
 /**
@@ -561,24 +620,40 @@ ApartmentSchema.methods.updateVisitProps = function (_visitID, _offeringUserID, 
  *
  * @param {Object} visitData: the relevant visit document.
  * @param {ObjectId} _offeringUserID: the ID of the user who would like to change the visit.
- * @param {Array} propNames: an array of the visit properties names to be modified. 
+ * @param {Array} propNames: an array of the visit properties names to be modified.
  * @param {Array} propValues: an array of the new data to be set - the value at pos i is for property i in the propNames array.
  *
  * @returns {Boolean} indicating whether the change is valid.
  */
-ApartmentSchema.methods.isLegalVisitChange = function (visitData, _offeringUserID, propNames, propValues) {
+ApartmentSchema.methods.isLegalVisitChange = function (
+  visitData,
+  _offeringUserID,
+  propNames,
+  propValues
+) {
   const apartment = this;
 
-  if(!visit.canModifyVisit(apartment._createdBy, visitData._askedBy, _offeringUserID)){
+  if (
+    !visit.canModifyVisit(
+      apartment._createdBy,
+      visitData._askedBy,
+      _offeringUserID
+    )
+  ) {
     return false;
   }
 
-  for(let i=0;i<propNames.length;i++){
-      switch (propNames[i]){
-        case 'status':
-          if(!visit.isValidVisitStatusChange(visitData.status, propValues[i], apartment.isOwner(_offeringUserID)))
-            return false;
-      }
+  for (let i = 0; i < propNames.length; i++) {
+    switch (propNames[i]) {
+      case 'status':
+        if (
+          !visit.isValidVisitStatusChange(
+            visitData.status,
+            propValues[i],
+            apartment.isOwner(_offeringUserID)
+          )
+        ) { return false; }
+    }
   }
 
   return true;
@@ -593,18 +668,19 @@ ApartmentSchema.methods.isLegalVisitChange = function (visitData, _offeringUserI
  *
  * @param {ObjectId} _userID: the ID of the user you would like to check his vistis.
  * @param {Number} date: the base date that any following date is considered as future.
- * 
+ *
  * @returns {Boolean} indicating whether there is a furture visit for the user (i.e. which is planned to be after the given date).
  */
 ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
   const apartment = this;
 
-  var futureVisitExist = false;
-  apartment.visits.forEach(function(visitData) {
-    if(visitData._askedBy.equals(_userID) && 
-      visitData.status != visit.getVisitStatusOnCancelation() && 
-      visitData.scheduledTo > date)
-      futureVisitExist = true;
+  let futureVisitExist = false;
+  apartment.visits.forEach((visitData) => {
+    if (
+      visitData._askedBy.equals(_userID) &&
+      visitData.status != visit.getVisitStatusOnCancelation() &&
+      visitData.scheduledTo > date
+    ) { futureVisitExist = true; }
   });
 
   return futureVisitExist;
@@ -618,16 +694,20 @@ ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
  * Gets the visit document with the given ID
  *
  * @param {ObjectID} _visitID: the requested visit document ID.
- * 
+ *
  * @returns {Object} comtaining the visit schema.
  */
 ApartmentSchema.methods.getVisitDataById = function (_visitID) {
   const apartment = this;
-  
-  const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID);
-  
-  if(visitIndex < 0){
-     return {};
+
+  const visitIndex = getIndexOfFirstElementMatchKey(
+    apartment.visits,
+    '_id',
+    _visitID
+  );
+
+  if (visitIndex < 0) {
+    return {};
   }
 
   return apartment.visits[visitIndex];

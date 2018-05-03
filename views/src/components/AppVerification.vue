@@ -38,67 +38,68 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        payload: {
-          email: null,
-          password: null
-        },
-        resendButtonText: 'resend verification link',
-        showPassword: false,
-        emailSent: false
-      };
+export default {
+  data() {
+    return {
+      payload: {
+        email: null,
+        password: null,
+      },
+      resendButtonText: 'resend verification link',
+      showPassword: false,
+      emailSent: false,
+    };
+  },
+  methods: {
+    showSentSnackbar() {
+      this.$store.commit(
+        'showSnackbar',
+        'Verification mail was sent, please check your mailbox'
+      );
     },
-    methods: {
-      showSentSnackbar() {
-        this.$store.commit(
-          'showSnackbar',
-          'Verification mail was sent, please check your mailbox'
-        );
-      },
-      showVerifiedSnackbar(user) {
-        this.$store.commit(
-          'showSnackbar',
-          `Thank you ${user.firstName}, your account is now verified!`
-        );
-      },
-      showFailureSnackbar() {
-        this.$store.commit(
-          'showSnackbar',
-          'Oops.. something didn\'t go well, please retry again or contact us'
-        );
-      },
-      sendVerificationMail() {
-        this.$store
-          .dispatch('sendVerificationMail', this.payload)
-          .then(() => {
-            this.emailSent = true;
-            this.showSentSnackbar();
-          })
-          .catch(() => {
-            this.showFailureSnackbar();
-          });
-      },
-      verifyAccount() {
-        this.$store.commit('showLoading');
-        this.$store.dispatch('verifyAccount', this.$route.params.token)
-        .then((user) => {
+    showVerifiedSnackbar(user) {
+      this.$store.commit(
+        'showSnackbar',
+        `Thank you ${user.firstName}, your account is now verified!`
+      );
+    },
+    showFailureSnackbar() {
+      this.$store.commit(
+        'showSnackbar',
+        "Oops.. something didn't go well, please retry again or contact us"
+      );
+    },
+    sendVerificationMail() {
+      this.$store
+        .dispatch('sendVerificationMail', this.payload)
+        .then(() => {
+          this.emailSent = true;
+          this.showSentSnackbar();
+        })
+        .catch(() => {
+          this.showFailureSnackbar();
+        });
+    },
+    verifyAccount() {
+      this.$store.commit('showLoading');
+      this.$store
+        .dispatch('verifyAccount', this.$route.params.token)
+        .then(user => {
           this.$router.push({ name: 'AppMain' });
           this.showVerifiedSnackbar(user);
-        }).catch(() => this.showFailureSnackbar())
+        })
+        .catch(() => this.showFailureSnackbar())
         .then(() => this.$store.commit('hideLoading'));
-      }
     },
-    mounted() {
-      this.payload.email = this.$store.getters.getUser.email;
-      if (this.$route.params.token) {
-        this.verifyAccount();
-      }
+  },
+  mounted() {
+    this.payload.email = this.$store.getters.getUser.email;
+    if (this.$route.params.token) {
+      this.verifyAccount();
     }
-  };
+  },
+};
 </script>
 
 <style>
-
 </style>

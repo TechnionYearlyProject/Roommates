@@ -5,19 +5,25 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const { isSupportedHobbieId } = require('./hobbie');
-const { NotificationSchema, addAggregationDataInNotification } = require('./notification');
+const {
+  NotificationSchema,
+  addAggregationDataInNotification
+} = require('./notification');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH, XAUTH_EXPIRATION_TIME } = require('../constants');
-const { invalidCredentials, emailInUse, PasswordResetFailure } = require('../errors');
-
+const {
+  invalidCredentials,
+  emailInUse,
+  PasswordResetFailure
+} = require('../errors');
 
 const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
     minlength: 2,
     trim: true,
-    required: true,
+    required: true
   },
   lastName: {
     type: String,
@@ -28,7 +34,7 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     min: new Date('1900-01-01').getTime(),
     validate: {
-      validator: (value) => value <= Date.now() - (15 * 365 * 24 * 60 * 60 * 1000),
+      validator: value => value <= Date.now() - 15 * 365 * 24 * 60 * 60 * 1000,
       message: 'birthdate: {VALUE} is more than maximum allowed value'
     },
     required: true
@@ -43,7 +49,8 @@ const UserSchema = new mongoose.Schema({
     type: String,
     trim: true,
     validate: {
-      validator: (value) => validator.isMobilePhone(value, 'he-IL') || value === '',
+      validator: value =>
+        validator.isMobilePhone(value, 'he-IL') || value === '',
       message: '{VALUE} is not a valid mobile phone number'
     },
     default: ''
@@ -52,7 +59,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     trim: true,
     validate: {
-      validator: (value) => validator.isURL(value) || value === '',
+      validator: value => validator.isURL(value) || value === '',
       message: '{VALUE} is not a valid URL'
     },
     default: '' //TODO:put url to some anonymous image
@@ -61,30 +68,40 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  hobbies: [{
-    type: Number,
-    validate: {
-      validator: (value) => isSupportedHobbieId(value),
-      message: '{VALUE} is not a supported hobbie'
+  hobbies: [
+    {
+      type: Number,
+      validate: {
+        validator: value => isSupportedHobbieId(value),
+        message: '{VALUE} is not a supported hobbie'
+      }
     }
-  }],
-  _publishedApartments: [{
-    type: String
-  }],
-  _givenReviews: [{
-    type: String
-  }],
-    efault:[],
-  _interestedApartments: [{
-    type: String
-  }],
+  ],
+  _publishedApartments: [
+    {
+      type: String
+    }
+  ],
+
+  _givenReviews: [
+    {
+      type: String
+    }
+  ],
+  default: [],
+  _interestedApartments: [
+    {
+      type: String
+    }
+  ],
+
   email: {
     type: String,
     minlength: 5,
     trim: true,
     unique: true,
     validate: {
-      validator: (value) => validator.isEmail(value),
+      validator: value => validator.isEmail(value),
       message: '{VALUE} is not a valid email'
     },
     required: true
@@ -98,17 +115,19 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  tokens: [{
-    access: {
-      type: String,
-      required: true
-    },
-    token: {
-      type: String,
-      required: true
+  tokens: [
+    {
+      access: {
+        type: String,
+        required: true
+      },
+      token: {
+        type: String,
+        required: true
+      }
     }
-  }],
-  notifications: [NotificationSchema],
+  ],
+  notifications: [NotificationSchema]
 });
 
 /**
@@ -143,7 +162,7 @@ UserSchema.pre('save', function (next) {
 UserSchema.statics.findByCredentials = function (email, password) {
   const User = this;
 
-  return User.findOne({ email }).then((user) => {
+  return User.findOne({ email }).then(user => {
     if (!user) {
       return Promise.reject(invalidCredentials);
     }
@@ -172,7 +191,8 @@ UserSchema.statics.findByToken = function (token) {
 
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
-  } catch (error) { // may fail if token is expired or token is invalid
+  } catch (error) {
+    // may fail if token is expired or token is invalid
     return Promise.reject();
   }
 
@@ -192,22 +212,21 @@ UserSchema.statics.findByToken = function (token) {
  * @returns Object with the public properties of the user
  */
 UserSchema.statics.toJSON = function (user) {
-  return _.pick(user,
-    [
-      '_id',
-      'email',
-      'isVerified',
-      'firstName',
-      'lastName',
-      'birthdate',
-      'gender',
-      'mobilePhone',
-      'image',
-      'about',
-      'hobbies',
-      '_publishedApartments',
-      '_interestedApartments'
-    ]);
+  return _.pick(user, [
+    '_id',
+    'email',
+    'isVerified',
+    'firstName',
+    'lastName',
+    'birthdate',
+    'gender',
+    'mobilePhone',
+    'image',
+    'about',
+    'hobbies',
+    '_publishedApartments',
+    '_interestedApartments'
+  ]);
 };
 
 /**
@@ -288,21 +307,22 @@ UserSchema.methods.generateAuthenticationToken = function () {
   const user = this;
 
   const access = XAUTH;
-  const token = jwt.sign(
-    {
-      _id: user._id.toHexString(),
-      access
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: XAUTH_EXPIRATION_TIME
-    }
-  ).toString();
+  const token = jwt
+    .sign(
+      {
+        _id: user._id.toHexString(),
+        access
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: XAUTH_EXPIRATION_TIME
+      }
+    )
+    .toString();
 
   user.tokens.push({ access, token });
 
-  return user.save()
-    .then(() => token);
+  return user.save().then(() => token);
 };
 
 /**
@@ -326,10 +346,9 @@ UserSchema.methods.generateAuthenticationToken = function () {
 UserSchema.methods.register = function () {
   const user = this;
 
-  return user.save()
-    .catch((error) => {
-      throw emailInUse;
-    });
+  return user.save().catch(error => {
+    throw emailInUse;
+  });
 };
 
 /**
@@ -360,8 +379,11 @@ UserSchema.methods.getBestMatchingUsers = function (userIds) {
 
   return User.find({
     _id: { $in: userIds }
-  }).then((users) =>
-    arrayFunctions.sortArrayASC(users, (curUser) => -1 * user.getMatchingResult(curUser))
+  }).then(users =>
+    arrayFunctions.sortArrayASC(
+      users,
+      curUser => -1 * user.getMatchingResult(curUser)
+    )
   );
 };
 
@@ -373,7 +395,9 @@ UserSchema.methods.getBestMatchingUsers = function (userIds) {
 UserSchema.methods.isOwner = function (apartmentId) {
   const user = this;
 
-  return arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId) > -1;
+  return (
+    arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId) > -1
+  );
 };
 
 /**
@@ -387,7 +411,6 @@ UserSchema.methods.isReviewOwner = function (reviewID) {
   return arrayFunctions.getIndexOfValue(user._givenReviews, reviewID) > -1;
 };
 
-
 /**
  * remove an apartment from the user's published apartments.
  *
@@ -397,7 +420,10 @@ UserSchema.methods.isReviewOwner = function (reviewID) {
 UserSchema.methods.removeApartment = function (apartmentId) {
   const user = this;
 
-  const indexOfVal = arrayFunctions.getIndexOfValue(user._publishedApartments, apartmentId);
+  const indexOfVal = arrayFunctions.getIndexOfValue(
+    user._publishedApartments,
+    apartmentId
+  );
   if (indexOfVal > -1) {
     user._publishedApartments.splice(indexOfVal, 1);
   }
@@ -413,7 +439,10 @@ UserSchema.methods.removeApartment = function (apartmentId) {
 UserSchema.methods.removeReview = function (reviewId) {
   const user = this;
 
-  const indexOfVal = arrayFunctions.getIndexOfValue(user._givenReviews, reviewId);
+  const indexOfVal = arrayFunctions.getIndexOfValue(
+    user._givenReviews,
+    reviewId
+  );
   if (indexOfVal > -1) {
     user._givenReviews.splice(indexOfVal, 1);
   }
@@ -444,8 +473,11 @@ UserSchema.methods.addInterestInApartment = function (_apartmentID) {
 UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
   const user = this;
 
-  const interestedIDIndex = arrayFunctions.getIndexOfValue(user._interestedApartments, _apartmentID);
-  return (interestedIDIndex > -1);
+  const interestedIDIndex = arrayFunctions.getIndexOfValue(
+    user._interestedApartments,
+    _apartmentID
+  );
+  return interestedIDIndex > -1;
 };
 
 /**
@@ -457,7 +489,10 @@ UserSchema.methods.isInterestedInApartment = function (_apartmentID) {
 UserSchema.methods.removeInterestInApartment = function (_apartmentID) {
   const user = this;
 
-  const interestedIDIndex = arrayFunctions.getIndexOfValue(user._interestedApartments, _apartmentID);
+  const interestedIDIndex = arrayFunctions.getIndexOfValue(
+    user._interestedApartments,
+    _apartmentID
+  );
   if (interestedIDIndex > -1) {
     user._interestedApartments.splice(interestedIDIndex, 1);
   }
@@ -482,15 +517,14 @@ UserSchema.methods.removeInterestInApartment = function (_apartmentID) {
  */
 UserSchema.methods.resetPassword = function (newPassword) {
   const user = this;
-  return bcrypt.compare(newPassword, user.password)
-    .then((passwordsEqual) => {
-      if (passwordsEqual) {
-        throw PasswordResetFailure;
-      }
-      user.password = newPassword;
-      user.tokens = []; // Clear all previous generated tokens list (because password has changed)
-      return user.save(); // It is important to use the "save" function here for password encryption
-    });
+  return bcrypt.compare(newPassword, user.password).then(passwordsEqual => {
+    if (passwordsEqual) {
+      throw PasswordResetFailure;
+    }
+    user.password = newPassword;
+    user.tokens = []; // Clear all previous generated tokens list (because password has changed)
+    return user.save(); // It is important to use the "save" function here for password encryption
+  });
 };
 /**
  *
@@ -524,16 +558,30 @@ UserSchema.methods.saveNewNotification = function (notification) {
  *
  * @returns {Promise} that resolved once the user document is updated in DB with the new data of the notification.
  */
-UserSchema.methods.saveAggregationDataInNotification = function (_notificationId, newNotifiedObjectIdsArr, newCreateByIdsArray, newCreationDate) {
+UserSchema.methods.saveAggregationDataInNotification = function (
+  _notificationId,
+  newNotifiedObjectIdsArr,
+  newCreateByIdsArray,
+  newCreationDate
+) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(
+    user.notifications,
+    '_id',
+    _notificationId
+  );
 
   if (notificationIndex < 0) {
     return Promise.reject();
   }
 
-  user.notifications[notificationIndex] = addAggregationDataInNotification(user.notifications[notificationIndex], newNotifiedObjectIdsArr, newCreateByIdsArray, newCreationDate);
+  user.notifications[notificationIndex] = addAggregationDataInNotification(
+    user.notifications[notificationIndex],
+    newNotifiedObjectIdsArr,
+    newCreateByIdsArray,
+    newCreationDate
+  );
 
   return user.save();
 };
@@ -549,10 +597,17 @@ UserSchema.methods.saveAggregationDataInNotification = function (_notificationId
  *
  * @returns {Promise} that resolved once the user document is updated in DB with the new data of the notification.
  */
-UserSchema.methods.saveUpdatedNotification = function (_notificationId, newNotification) {
+UserSchema.methods.saveUpdatedNotification = function (
+  _notificationId,
+  newNotification
+) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(
+    user.notifications,
+    '_id',
+    _notificationId
+  );
 
   if (notificationIndex < 0) {
     return Promise.reject();
@@ -585,12 +640,16 @@ UserSchema.methods.getNotifications = function () {
  *
  * Returns the notification with the given ID.
  *
- * @returns {Notification} 
+ * @returns {Notification}
  */
 UserSchema.methods.getNotificationById = function (_notificationId) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId);
+  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(
+    user.notifications,
+    '_id',
+    _notificationId
+  );
 
   return user.notifications[notificationIndex];
 };

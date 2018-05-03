@@ -3,8 +3,10 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
+import '@mdi/font/css/materialdesignicons.min.css';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
+import SocialSharing from 'vue-social-sharing';
 import App from './App';
 import router from './router';
 import './assets/stringAssets';
@@ -21,11 +23,12 @@ Vue.use(Vuetify, {
     success: '#4CAF50',
     warning: '#FFC107',
     accept: '#009688',
-    cancel: '#E91E63',
+    cancel: '#E91E63'
   }
 });
 Vue.use(VueAxios, axios);
 Vue.use(GoogleMaps);
+Vue.use(SocialSharing);
 
 Vue.config.productionTip = false;
 
@@ -34,5 +37,5 @@ new Vue({
   router,
   store,
   components: { App },
-  template: '<App/>',
+  template: '<App/>'
 });

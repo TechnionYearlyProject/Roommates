@@ -13,34 +13,34 @@
 </template>
 
 <script>
-  import { mapGetters, mapMutations } from 'vuex';
-  import AppToolbar from './components/AppToolbar';
-  import AppLoader from './components/AppLoader';
-  import AppSnackbar from './components/AppSnackbar';
-  import AppFooter from './components/AppFooter';
+import { mapGetters, mapMutations } from 'vuex';
+import AppToolbar from './components/AppToolbar';
+import AppLoader from './components/AppLoader';
+import AppSnackbar from './components/AppSnackbar';
+import AppFooter from './components/AppFooter';
 
-  export default {
-    computed: {
-      ...mapGetters(['getLoadingStatus', 'getSnackbarText', 'isAuthenticated'])
-    },
-    components: {
-      AppToolbar,
-      AppLoader,
-      AppSnackbar,
-      AppFooter
-    },
-    name: 'App',
-    methods: {
-      ...mapMutations(['toggleDrawer', 'startSession']),
-      loadInitialState() {
-        // this.toggleDrawer(this.$vuetify.breakpoint.mdAndUp);
-        if (this.isAuthenticated) {
-          this.startSession();
-        }
+export default {
+  computed: {
+    ...mapGetters(['getLoadingStatus', 'getSnackbarText', 'isAuthenticated']),
+  },
+  components: {
+    AppToolbar,
+    AppLoader,
+    AppSnackbar,
+    AppFooter,
+  },
+  name: 'App',
+  methods: {
+    ...mapMutations(['toggleDrawer', 'startSession']),
+    loadInitialState() {
+      // this.toggleDrawer(this.$vuetify.breakpoint.mdAndUp);
+      if (this.isAuthenticated) {
+        this.startSession();
       }
     },
-    created() {
-      this.loadInitialState();
-    }
-  };
+  },
+  created() {
+    this.loadInitialState();
+  },
+};
 </script>
