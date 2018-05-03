@@ -37,14 +37,15 @@
           </v-btn>
           <span>Publisher profile</span>
         </v-tooltip>
-        <v-card>
+        <v-card :width="400" style="min-height:60px">
+          <div v-if="fetchedPublisher">
           <v-list>
             <v-list-tile avatar>
               <v-list-tile-avatar>
-                <app-avatar img="" name="publisherName" :size="40"></app-avatar>
+                <app-avatar img="" :name="publisher.firstName" :size="40"></app-avatar>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title>publisher name</v-list-tile-title>
+                <v-list-tile-title>{{ publisher.firstName.capitalize() }} {{ publisher.lastName.capitalize() }}</v-list-tile-title>
                 <v-list-tile-sub-title>rating</v-list-tile-sub-title>
               </v-list-tile-content>
             </v-list-tile>
@@ -56,14 +57,14 @@
               <v-list-tile-title>
                 <small>E-mail</small>
               </v-list-tile-title>
-              <v-list-tile-title>8742458</v-list-tile-title>
+              <v-list-tile-title>{{ publisher.email }}</v-list-tile-title>
             </v-list-tile>
             <v-list-tile>
               <v-icon class="pr-1">phone</v-icon>
               <v-list-tile-title>
                 <small>Phone</small>
               </v-list-tile-title>
-              <v-list-tile-title>+972-8711111</v-list-tile-title>
+              <v-list-tile-title>{{ publisher.mobilePhone }}</v-list-tile-title>
             </v-list-tile>
           </v-list>
           <v-divider inset></v-divider>
@@ -75,6 +76,10 @@
               <v-list-tile-title>Enable notifications</v-list-tile-title>
             </v-list-tile>
           </v-card-actions>
+          </div>
+          <div v-else class="text-xs-center mt-3">
+            <v-progress-circular indeterminate color="purple"></v-progress-circular>
+          </div>
         </v-card>
       </v-menu>
       <v-menu offset-y :nudge-bottom="15" bottom :close-on-content-click="false" max-width="340" lazy>
@@ -88,7 +93,7 @@
           <v-container grid-list-sm pa-2>
             <v-layout wrap row>
               <v-flex xs10>
-                <v-text-field ref="apartmentLink" v-model="share.url" hide-details readonly class="pl-2"/>
+                <v-text-field ref="apartmentLink" v-model="share.url" hide-details readonly class="pl-2" />
               </v-flex>
               <v-flex xs2 class="text-xs-center">
                 <v-tooltip top slot="activator" :color="clipboard.color" :close-delay="clipboard.closeDelay">
@@ -103,12 +108,12 @@
               </v-flex>
               <v-flex>
                 <v-layout justify-center wrap row justify-space-around>
-              <social-sharing v-for="(network, i) in share.networks" :key="`network-${i}`" :url="share.url" :title="share.title" :description="share.description" :quote="share.quote" inline-template>
+                  <social-sharing v-for="(network, i) in share.networks" :key="`network-${i}`" :url="share.url" :title="share.title" :description="share.description" :quote="share.quote" inline-template>
                     <network :network="network.name" style="cursor:pointer">
                       <v-icon large :color="network.color">{{ network.icon }}</v-icon>
                     </network>
-              </social-sharing>
-</v-layout>
+                  </social-sharing>
+                </v-layout>
               </v-flex>
             </v-layout>
           </v-container>
@@ -286,7 +291,9 @@
           closeDelay: 200,
           lastCopyTime: 0
         },
-        e1: 'recent'
+        e1: 'recent',
+        fetchedPublisher: false,
+        publisher: null
       };
     },
     methods: {
@@ -315,8 +322,22 @@
         }
       },
       getPublisher() {
-        // eslint-disable-next-line
-        console.log('fetch publisher');
+        if (!this.fetchedPublisher) {
+          const id = this.apartment._createdBy;
+          this.$store.dispatch('fetchUser', { id }).then(users => {
+            if (users[id]) {
+              this.publisher = users[id];
+            } else {
+              this.publisher = {
+                firstName: 'Some',
+                lastName: 'User',
+                email: 'user@example.com',
+                mobilePhone: '+972-8711111'
+              };
+            }
+            this.fetchedPublisher = true;
+          });
+        }
       },
       nextImage() {
         this.imageNumber =
@@ -378,7 +399,7 @@
         const lastCopyTime = Date.now();
         this.clipboard.lastCopyTime = lastCopyTime;
         setInterval(() => {
-          if(lastCopyTime === this.clipboard.lastCopyTime) {
+          if (lastCopyTime === this.clipboard.lastCopyTime) {
             this.clipboard.text = 'Copy link';
             this.clipboard.color = undefined;
             this.clipboard.closeDelay = 200;
