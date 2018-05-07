@@ -64,7 +64,7 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
 		 	promises.push(findUserByIdPromise);
 		}
 	 });
-	 return Promise.all(promises);
+	 return promises;
 };
 
 module.exports = {
