@@ -137,24 +137,23 @@ const user1 = {
     {
       _id: user1Notification1Id,
       notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
-      _createdBy: new ObjectID(),
+      _createdBy: [new ObjectID().toHexString()],
       wasRead: false,
-      _notifiedObjectsIds: [new ObjectID()],
+      _notifiedObjectsIds: [new ObjectID().toHexString()],
       createdAt: new Date().getTime()
     },
     {
       notificationType: NotificationsTypesEnum.USER_LIKED_APARTMENT,
-      _createdBy: new ObjectID(),
+      _createdBy: [new ObjectID().toHexString()],
       wasRead: true,
-      _notifiedObjectsIds: [new ObjectID()],
+      _notifiedObjectsIds: [new ObjectID().toHexString()],
       createdAt: new Date().getTime()
     },
     {
-      _id: new ObjectID(),
       notificationType: NotificationsTypesEnum.APARTMENT_WAS_MODIFIED,
-      _createdBy: new ObjectID(),
+      _createdBy: [new ObjectID().toHexString()],
       wasRead: false,
-      _notifiedObjectsIds: [new ObjectID()],
+      _notifiedObjectsIds: [new ObjectID().toHexString()],
       createdAt: new Date().getTime()
     },
   ],
@@ -183,11 +182,11 @@ const user2 = {
   }],
   notifications: [
     {
-      _id: new ObjectID(),
+      _id: new ObjectID().toHexString(),
       notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
-      _createdBy: new ObjectID(),
+      _createdBy: [new ObjectID().toHexString()],
       wasRead: false,
-      _notifiedObjectsIds: [new ObjectID()],
+      _notifiedObjectsIds: [new ObjectID().toHexString()],
       createdAt: new Date().getTime()
     },
   ],

@@ -232,7 +232,8 @@ UserSchema.statics.toJSON = function (user) {
     'about',
     'hobbies',
     '_publishedApartments',
-    '_interestedApartments'
+    '_interestedApartments',
+    'notifications'
   ]);
 };
 
