@@ -87,6 +87,10 @@ const ReviewSchema = new mongoose.Schema({
         maxlength: 1000,
         required: true
     },
+    relevent:{
+        type: Boolean,
+        default: true
+    }
 });
 
 /**
