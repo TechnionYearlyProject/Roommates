@@ -15,14 +15,50 @@ const {
 describe('Notifier Tests', () => {
   beforeEach(populateUsers);
 
+
   describe('#notifyUsers', () => {
+
+
+    it('should notify multiple user with no aggregation (one of them - doesnt exist and on of them - read)', (done) => {
+      const notificationType = NotificationModule.NotificationsTypesEnum.USER_LIKED_APARTMENT;
+      const createdBy = new ObjectID();
+      const notifiedObjectsIds = [new ObjectID()];
+      const newDate = new Date().getTime();
+
+      var promises = Notificator.notifyUsers(notificationType, createdBy, [users[0]._id, users[1]._id], notifiedObjectsIds, false, newDate);
+   
+      Promise.all(promises).then((results) => {
+       Promise.all(results).then((res) => {
+            User.findById(users[0]._id).then((user)=> {
+              expect(user.notifications.length).toBe(4);
+              expect(user.notifications[3].notificationType).toBe(notificationType);
+              expect(user.notifications[3]._createdBy[0].equals(createdBy)).toBe(true);
+              expect(user.notifications[3]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+              expect(user.notifications[3].createdAt).toBe(newDate);
+              User.findById(users[1]._id).then((userB)=> {
+                expect(userB.notifications.length).toBe(2);
+                expect(userB.notifications[1].notificationType).toBe(notificationType);
+                expect(userB.notifications[1]._createdBy[0].equals(createdBy)).toBe(true);
+                expect(userB.notifications[1]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
+                expect(userB.notifications[1].createdAt).toBe(newDate);
+                done();
+              });
+            });
+       });
+      }).catch((e)=>{done(e)});
+
+
+    }).timeout(5000);
+
     it('should notify single user with no aggregation', (done) => {
   		const notificationType = NotificationModule.NotificationsTypesEnum.USER_LIKED_APARTMENT;
   		const createdBy = new ObjectID();
   		const notifiedObjectsIds = [new ObjectID()];
       const newDate = new Date().getTime();
-    	Notificator.notifyUsers(notificationType, createdBy, [users[0]._id], notifiedObjectsIds, false, newDate).then((promises) =>{
-        Promise.all(promises).then((res) => {
+
+      var promises = Notificator.notifyUsers(notificationType, createdBy, [users[0]._id], notifiedObjectsIds, false, newDate);
+      Promise.all(promises).then((results) => {
+        Promise.all(results).then((res) => {
           User.findById(users[0]._id).then((user)=> {
             expect(user.notifications.length).toBe(4);
             expect(user.notifications[3].notificationType).toBe(notificationType);
@@ -36,32 +72,6 @@ describe('Notifier Tests', () => {
       }).catch((e) => done(e));;
     });
 
-    it('should notify multiple user with no aggregation (one of them - doesnt exist and on of them - read)', (done) => {
-      const notificationType = NotificationModule.NotificationsTypesEnum.USER_LIKED_APARTMENT;
-      const createdBy = new ObjectID();
-      const notifiedObjectsIds = [new ObjectID()];
-      const newDate = new Date().getTime();
-
-      Notificator.notifyUsers(notificationType, createdBy, [users[0]._id, users[1]._id], notifiedObjectsIds, false, newDate).then((promises) =>{
-        Promise.all(promises).then((res) => {
-          User.findById(users[0]._id).then((user)=> {
-            expect(user.notifications.length).toBe(4);
-            expect(user.notifications[3].notificationType).toBe(notificationType);
-            expect(user.notifications[3]._createdBy[0].equals(createdBy)).toBe(true);
-            expect(user.notifications[3]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
-            expect(user.notifications[3].createdAt).toBe(newDate);
-            User.findById(users[1]._id).then((userB)=> {
-              expect(userB.notifications.length).toBe(2);
-              expect(userB.notifications[1].notificationType).toBe(notificationType);
-              expect(userB.notifications[1]._createdBy[0].equals(createdBy)).toBe(true);
-              expect(userB.notifications[1]._notifiedObjectsIds[0].equals(notifiedObjectsIds[0])).toBe(true);
-              expect(userB.notifications[1].createdAt).toBe(newDate);
-              done();
-            });
-          });
-        });
-      }).catch((e) => done(e));;
-    }).timeout(5000);
 
 
     it('should notify single user with aggregation', (done) => {
@@ -70,8 +80,9 @@ describe('Notifier Tests', () => {
       const notifiedObjectsIds = [new ObjectID(users[0].notifications[2]._notifiedObjectsIds[0])];
       const newDate = new Date().getTime();
 
-      Notificator.notifyUsers(notificationType, createdBy, [users[0]._id], notifiedObjectsIds, false, newDate).then((promises) =>{
-        Promise.all(promises).then((res) => {
+      var promises = Notificator.notifyUsers(notificationType, createdBy, [users[0]._id], notifiedObjectsIds, false, newDate);
+      Promise.all(promises).then((results) => {
+        Promise.all(results).then((res) => {
           User.findById(users[0]._id).then((user)=> {
             expect(user.notifications.length).toBe(3);
             expect(user.notifications[2].notificationType).toBe(notificationType);
@@ -92,15 +103,18 @@ describe('Notifier Tests', () => {
       const notifiedObjectsIds = [new ObjectID()];
       const newDate = new Date().getTime();
 
-      Notificator.notifyUsers(notificationType, createdBy, [createdBy], notifiedObjectsIds, false, newDate).then((promises) =>{
-        Promise.all(promises).then((res) => {
+      var promises = Notificator.notifyUsers(notificationType, createdBy, [createdBy], notifiedObjectsIds, false, newDate);
+      Promise.all(promises).then((results) => {
+        Promise.all(results).then((res) => {
           User.findById(createdBy).then((user)=> {
             done();
           });
         });
-      }).catch((e) => done(e));;
+      }).catch((e) => done(e));
     });
+
   });
+
 });
 
 
