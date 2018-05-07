@@ -228,6 +228,19 @@ export default new Vuex.Store({
     },
     /**
      * @author: Alon Talmor
+     * @date: 07/05/18
+     * required authentication.
+     */
+    fetchSelf(context, params) {
+      return axios.get('http://localhost:3000/users/self')
+      .then((response) => {
+        // eslint-disable-next-line
+        console.log(response.data);
+        return response.data.users;
+      });
+    },
+    /**
+     * @author: Alon Talmor
      * @date: 27/04/18
      * @param: payload: object of {firstName, lastName, birthdate, gender, mobilePhone,
      * about, image, hobbies, _interestedApartments} - the properties to update.
@@ -237,7 +250,8 @@ export default new Vuex.Store({
       .then((response) => {
         // eslint-disable-next-line
         console.log(response.data);
-        commit('setUser', response.data.user);
+        commit('setUser', response.data.self);
+        return getters.getUser;
       });
     },
   },

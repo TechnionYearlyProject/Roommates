@@ -7,7 +7,7 @@
                     <v-flex text-xs-left xs12 pb-3>
                         <h3 :class="$vuetify.breakpoint.mdAndDown? 'display-2' : 'display-4'">FIND YOUR DREAM</h3>
                     </v-flex>
-                    <v-flex text-xs-center text-xs-top align xs12>
+                    <v-flex text-xs-right text-xs-top align xs12>
                         <h3 :class="$vuetify.breakpoint.mdAndDown? 'display-2' : 'display-4'">APARTMENT HERE &#10083;</h3>
                     </v-flex>
                 </v-layout>

@@ -11,8 +11,7 @@ const io = require('socket.io')();
 const socketioJwt = require('socketio-jwt');
 
 const { markNotificationAsRead } = require('./logic/socketsServerHandlers');
-const { logInfo, logError } = require('./services/logger/logger');
-
+const { logInfo, logError, logDebug } = require('./services/logger/logger');
 
 /**
  * @author: Or Abramovich
@@ -58,12 +57,14 @@ const SocketMsgTypes = {
  *
  *
  */
+/*
 io.use(
   socketioJwt.authorize({
     secret: process.env.JWT_SECRET,
-    handshake: true
+    // handshake: true
   })
 );
+*/
 /**
  * @author: Or Abramovich
  * @date: 04/18
@@ -73,16 +74,25 @@ io.use(
  * @param {Socket} socket: web socket that raised the connection request.
  *
  */
-io.sockets.on('connection', function (socket) {
-  //Establishes a new dedicated room which serves as a communication channel available only to the user 
-  socket.on(SocketMsgTypes.JOIN, function (data) {
- 	establishRoomForUser(socket.decoded_token._id, socket);
+io.sockets
+  .on(
+    'connection',
+    socketioJwt.authorize({
+      secret: process.env.JWT_SECRET,
+      timeout: 15000
+    })
+  )
+  .on('authenticated', function(socket) {
+    //Establishes a new dedicated room which serves as a communication channel available only to the user
+    socket.on(SocketMsgTypes.JOIN, function(data) {
+      logDebug('someone connected');
+      establishRoomForUser(socket.decoded_token._id, socket);
+    });
+    //Marks the notification as read and saves it in the user document
+    socket.on(SocketMsgTypes.NOTIFICATION_READ, function(notification) {
+      markNotificationAsRead(socket.decoded_token._id, notification);
+    });
   });
-  //Marks the notification as read and saves it in the user document
-  socket.on(SocketMsgTypes.NOTIFICATION_READ, function (notification) {
-  	markNotificationAsRead(socket.decoded_token._id, notification);
-  });
-});
 
 /**
  * @author: Or Abramovich
@@ -116,25 +126,31 @@ const establishRoomForUser = (_userId, socket) => {
  *
  */
 const sendUserRealTimeMsg = (_userId, msgType, text) => {
-	io.sockets.in(_userId).emit(msgType, text);
-}
+  console.log(
+    'sending notification to ' + _userId + ' of type ' + msgType + ' ' + text
+  );
+  io.sockets.in(_userId).emit(msgType, text);
+};
 /**
  * @author: Or Abramovich
  * @date: 04/18
  *
  * The function send a specific user a notification msg. The message his sent to his private room i.e. it can be seen
  * only by him.
- * 
+ *
  * @param {ObjectID} _userId: the id of the user who is going to get the notification
  * @param {Notification} notification: the notification object to be sent to the user.
- * 
+ *
  *
  */
 const sendUserRealTimeNotification = (_userId, notification) => {
-  sendUserRealTimeMsg(_userId, SocketMsgTypes.NOTIFICATION, JSON.stringify(notification));
-}
-
+  sendUserRealTimeMsg(
+    _userId,
+    SocketMsgTypes.NOTIFICATION,
+    JSON.stringify(notification)
+  );
+};
 
 module.exports = {
-  sendUserRealTimeNotification,
+  sendUserRealTimeNotification
 };

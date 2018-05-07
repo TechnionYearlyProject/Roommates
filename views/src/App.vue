@@ -36,6 +36,7 @@ export default {
       // this.toggleDrawer(this.$vuetify.breakpoint.mdAndUp);
       if (this.isAuthenticated) {
         this.startSession();
+        this.$store.dispatch('fetchSelf');
       }
     },
   },
