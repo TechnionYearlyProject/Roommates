@@ -235,14 +235,6 @@
           } finally {
             this.$store.commit('hideLoading');
           }
-          this.$store
-            .dispatch('publishApartment', this.payload)
-            .then(() => {})
-            .catch((error) => {
-              // eslint-disable-next-line
-              console.log(error);
-            })
-            .then(() => this.$store.commit('hideLoading'));
         }
       },
       setAddress(data) {
