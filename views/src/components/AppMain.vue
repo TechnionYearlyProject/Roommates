@@ -19,11 +19,11 @@
 
         <v-container>
             <v-card style="margin-top:-104px; min-height: 500px;">
-                <v-toolbar class="mb-1" card prominent color="secondary lighten-3">
+                <v-toolbar class="mb-1" card prominent color="secondary lighten-3" extension-height="35px">
                     <v-toolbar-title class="body-2">
                         <v-icon>sort</v-icon>Sort</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-breadcrumbs large>
+                    <v-breadcrumbs large :slot="$vuetify.breakpoint.xsOnly ? 'extension' : undefined" justify-center class="ml-3">
                         <v-breadcrumbs-item v-for="sortOption in sortOptions" :key="sortOption.title" :disabled="loading" @click.native="sort(sortOption)" style="cursor: pointer;">
                             <span class="black--text">{{ sortOption.title }}</span>
                             <span style="width: 15px">

@@ -42,7 +42,8 @@
                         </span>
                     </span>
                 </v-btn>
-                <v-menu offset-y nudge-left="25" attach open-on-hover>
+                <app-notifications/>
+                <v-menu offset-y bottom left attach>
                     <v-btn flat slot="activator">
                         <app-avatar image='' name='alon'></app-avatar>
                     </v-btn>
@@ -63,6 +64,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import AppAvatar from './sub-components/AppAvatar';
+import AppNotifications from './sub-components/AppNotifications';
 
 export default {
   data() {
@@ -105,6 +107,7 @@ export default {
   },
   components: {
     AppAvatar,
+    AppNotifications
   },
 };
 </script>

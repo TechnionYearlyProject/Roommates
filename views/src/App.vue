@@ -39,8 +39,14 @@ export default {
       }
     },
   },
+  beforeCreate() {
+    this.$store.commit('showLoading');
+  },
   created() {
     this.loadInitialState();
   },
+  mounted() {
+    this.$store.commit('hideLoading');
+  }
 };
 </script>

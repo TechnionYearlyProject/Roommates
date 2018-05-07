@@ -42,6 +42,9 @@ export default new Vuex.Store({
     },
     getDrawerStatus(state) {
       return state.drawer;
+    },
+    getToken(state) {
+      return state.sessionToken;
     }
   },
   mutations: {

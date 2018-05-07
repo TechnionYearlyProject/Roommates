@@ -12,6 +12,7 @@ import router from './router';
 import './assets/stringAssets';
 import store from './store';
 import GoogleMaps from './services/google-maps';
+import './sockets';
 
 Vue.use(Vuetify, {
   theme: {
