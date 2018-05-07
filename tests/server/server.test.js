@@ -1484,7 +1484,11 @@ describe('Server Tests', () => {
       request(app)
         .get('/users')
         .query({ id })
-        .expect(BAD_REQUEST)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.users[users[0]._id]._id).toEqual(users[0]._id.toHexString());
+          expect(Object.keys(res.body.users).length).toBe(1);
+        })
         .end(done);
     });
 
@@ -1504,7 +1508,10 @@ describe('Server Tests', () => {
       request(app)
         .get('/users')
         .query({ id })
-        .expect(BAD_REQUEST)
+        .expect(OK)
+        .expect((res) => {
+          expect(Object.keys(res.body.users).length).toBe(0);
+        })
         .end(done);
     });
   });
