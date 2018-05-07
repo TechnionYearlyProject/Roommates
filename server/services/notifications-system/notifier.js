@@ -48,19 +48,17 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
 			 	});
 			 	if(!shouldBeAggregated){
 			 		 const previousNotifications = user.getNotifications().slice();
-			 		 var savePromise = user.saveNewNotification(newNotification).then((updatedUser) => {
+			 		 return user.saveNewNotification(newNotification).then((updatedUser) => {
 			 		 	//send real-time update for the new one
 			 		 	const newNotifications = _.difference(updatedUser.getNotifications(), previousNotifications);
 			 		 	newNotifications.forEach((newNotification) => {
 			 		 		sendUserRealTimeNotification(userId, newNotification);
 			 		 	})
 			 		 }).catch();
-			 		 findUserByIdPromise.resolve(savePromise);
 			 	}else{
-			 		var savePromise =  user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate).then(($) => {
+			 		return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate).then(($) => {
 			 			sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
 			 		}).catch();
-			 		findUserByIdPromise.resolve(savePromise);
 			 	}
 		 	});
 		 	promises.push(findUserByIdPromise);
