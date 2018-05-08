@@ -71,6 +71,26 @@ describe('Server Tests', () => {
         })
         .end(done);
     });
+
+
+    it('should return accurate calculated review for technion with irrelevent review', (done) => {
+      const dor = [34.9948996, 32.8148386];
+      const rated = {
+        parking: (2/1.5),
+        publicTransport: (2/1.5),
+        noise: (2/1.5),
+        commercialServices: (2/1.5),
+        upkeep: (2/1.5),
+        generalRating: (2/1.5),
+      };
+      request(app)
+        .get(`/reviews/${dor[0]}/${dor[1]}`)
+        .expect(OK)
+        .expect((res)=>{
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
+        })
+        .end(done);
+    });
   });
 
   // describe('GET /reviews/:long/:lat', () => {

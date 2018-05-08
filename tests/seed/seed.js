@@ -355,12 +355,12 @@ const irreleventReview = {
   state: 'israel',
   geolocation: [34.9948996, 32.8148386], // [32.7793633, 35.0157763],32.8148386,34.9948996
   ratedCharacteristics: {
-    parking: 1,
-    publicTransport: 1,
-    noise: 1,
-    commercialServices: 1,
-    upkeep: 1,
-    generalRating: 1
+    parking: 2,
+    publicTransport: 2,
+    noise: 2,
+    commercialServices: 2,
+    upkeep: 2,
+    generalRating: 2
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking what so ever',
@@ -461,6 +461,7 @@ const populateReviews = (done) => {
         new Review(reviews[0]).save(),
         new Review(reviews[1]).save(),
         new Review(reviews[2]).save(),
+        new Review(irreleventReview).save(),
       ]))
     .then(() => done())
     .catch(done);
