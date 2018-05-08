@@ -65,6 +65,9 @@ describe('Server Tests', () => {
       request(app)
         .get(`/reviews/${tech[0]}/${tech[1]}`)
         .expect(OK)
+        .expect((res)=>{
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
+        })
         .end(done);
     });
   });

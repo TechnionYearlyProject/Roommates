@@ -960,13 +960,13 @@ app.get('/reviews/:long/:lat', async (req, res) => {
       }
       r.ratedCharacteristics.parking /= count;
       r.ratedCharacteristics.publicTransport /= count;
-      r.ratedCharacteristics.noisecount;
-      r.ratedCharacteristics.commercialServicescount;
-      r.ratedCharacteristics.upkeepcount;
-      r.ratedCharacteristics.generalRatingcount;
+      r.ratedCharacteristics.noise /= count;
+      r.ratedCharacteristics.commercialServices /= count;
+      r.ratedCharacteristics.upkeep /= count;
+      r.ratedCharacteristics.generalRating /= count;
       r.numberOfRaters = count;
       return res.send({
-        result
+        r
       });
     });
   } catch (err) {
