@@ -10,6 +10,7 @@ const {
   NotificationSchema,
   addAggregationDataInNotification
 } = require('./notification');
+const {PrivateMessageSchema} = require('./privateMessage');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH, XAUTH_EXPIRATION_TIME } = require('../constants');
@@ -134,7 +135,20 @@ const UserSchema = new mongoose.Schema({
       }
     }
   ],
-  notifications: [NotificationSchema]
+  notifications: [NotificationSchema],
+  conversations: [
+    {
+      _participants: {
+        type: [mongoose.Schema.Types.ObjectId],
+        required: true,
+        validate: {
+          validator: (value) => value.length >= 2,
+            message: 'a minimum of 2 users for chat is required'
+        }
+      },
+      messages: [PrivateMessageSchema],
+    }
+  ],
 });
 
 /**
