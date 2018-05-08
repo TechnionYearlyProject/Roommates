@@ -1003,7 +1003,8 @@ app.patch('/reviews/:id', authenticate, async (req, res) => {
       'Pros',
       'Cons'
     ]);
-
+    reviewData.relevent = true;
+    reviewData.activatedAt = Date.now();
     const review = await Review.findByIdAndUpdate(
       id,
       {

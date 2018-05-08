@@ -52,46 +52,7 @@ describe('Server Tests', () => {
   // });
 
 
-  describe('GET /reviews/:long/:lat', () => {
-    it('should return accurate calculated review for technion', (done) => {
-      const tech = [35.020568, 32.776515];
-      const rated = {
-        parking: 2,
-        publicTransport: 2,
-        noise: 2,
-        commercialServices: 2,
-        upkeep: 2,
-        generalRating: 2,
-      };
-      request(app)
-        .get(`/reviews/${tech[0]}/${tech[1]}`)
-        .expect(OK)
-        .expect((res)=>{
-          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
-        })
-        .end(done);
-    });
 
-
-    it('should return accurate calculated review for technion with irrelevent review', (done) => {
-      const dor = [34.9948996, 32.8148386];
-      const rated = {
-        parking: (2/1.5),
-        publicTransport: (2/1.5),
-        noise: (2/1.5),
-        commercialServices: (2/1.5),
-        upkeep: (2/1.5),
-        generalRating: (2/1.5),
-      };
-      request(app)
-        .get(`/reviews/${dor[0]}/${dor[1]}`)
-        .expect(OK)
-        .expect((res)=>{
-          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
-        })
-        .end(done);
-    });
-  });
 
   // describe('GET /reviews/:long/:lat', () => {
   //   it('should return accurate calculated review for technion', (done)=>{
@@ -1949,7 +1910,7 @@ describe('Server Tests', () => {
             const user = await User.findById(users[1]._id);
             const review = await Review.findOne({ Pros: notPublishedReview1.Pros });
             expect(user._givenReviews[0]).toEqual(reviews[1]._id.toHexString());
-            expect(user._givenReviews[1]).toEqual(reviews[2]._id.toHexString());
+            expect(user._givenReviews[1]).toEqual(reviews[3]._id.toHexString());
             expect(user._givenReviews[2]).toEqual(review._id.toHexString());
             return done();
           } catch (e) {
@@ -2081,8 +2042,76 @@ describe('Server Tests', () => {
           }
         });
     });
+
+
+
+    it('should reactivate a irrlevent review', (done) => {
+      const reviewId = reviews[3]._id.toHexString();
+      request(app)
+        .patch(`/reviews/${reviewId}`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.review.relevent).toBeTruthy();
+        })
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+          try {
+            const review = await Review.findById(reviewId);
+            expect(review.relevent).toBeTruthy();
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    });
+
   });
 
+
+  describe('GET /reviews/:long/:lat', () => {
+    it('should return accurate calculated review for technion', (done) => {
+      const tech = coords.technionIsrael;
+      const rated = {
+        parking: 2,
+        publicTransport: 2,
+        noise: 2,
+        commercialServices: 2,
+        upkeep: 2,
+        generalRating: 2,
+      };
+      request(app)
+        .get(`/reviews/${tech[0]}/${tech[1]}`)
+        .expect(OK)
+        .expect((res)=>{
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
+        })
+        .end(done);
+    });
+
+
+    it('should return accurate calculated review for technion with irrelevent review', (done) => {
+      const dor = coords.dor;
+      const rated = {
+        parking: (2/1.5),
+        publicTransport: (2/1.5),
+        noise: (2/1.5),
+        commercialServices: (2/1.5),
+        upkeep: (2/1.5),
+        generalRating: (2/1.5),
+      };
+      request(app)
+        .get(`/reviews/${dor[0]}/${dor[1]}`)
+        .expect(OK)
+        .expect((res)=>{
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
+        })
+        .end(done);
+    });
+  });
+  
   
   describe('DELETE /reviews', () => {
     it('should not delete review - apartment doesnt review', (done) => {

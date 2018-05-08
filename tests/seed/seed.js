@@ -175,7 +175,7 @@ const user2 = {
   about: '',
   hobbies: [1, 4, 5, 6],
   _publishedApartments: [apartment1Id.toHexString()],
-  _givenReviews: [review2Id.toHexString(),review3Id.toHexString()],
+  _givenReviews: [review2Id.toHexString(),irreleventReviewId.toHexString()],
   _interestedApartments: [apartment2Id.toHexString()],
   tokens: [{
     access: XAUTH,
@@ -206,7 +206,7 @@ const user3 = {
   image: '',
   about: '',
   hobbies: [7, 8, 9],
-  _givenReviews: [irreleventReviewId.toHexString()],
+  _givenReviews: [review3Id.toHexString()],
 };
 
 const user4 = {
@@ -347,7 +347,7 @@ const review3 = {
 
 const irreleventReview = {
   _id: irreleventReviewId,
-  _createdBy: user3Id,
+  _createdBy: user2Id,
   createdAt: Date.now(),
   activatedAt: Date.now(),
   street: 'dor',
@@ -424,12 +424,14 @@ const users = [
 const reviews = [
   review1,
   review2,
-  review3
+  review3,
+  irreleventReview
 ];
 
 const coords = {
   andalusiaSpain: [-3.222444, 37.916345],
-  technionIsrael: [35.020568, 32.776515]
+  technionIsrael: [35.020568, 32.776515],
+  dor: [34.9948996, 32.8148386]
 };
 
 const populateUsers = (done) => {
