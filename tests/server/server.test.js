@@ -35,6 +35,7 @@ const {
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
+  irreleventReview,
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,
@@ -1928,7 +1929,8 @@ describe('Server Tests', () => {
             const user = await User.findById(users[1]._id);
             const review = await Review.findOne({ Pros: notPublishedReview1.Pros });
             expect(user._givenReviews[0]).toEqual(reviews[1]._id.toHexString());
-            expect(user._givenReviews[1]).toEqual(review._id.toHexString());
+            expect(user._givenReviews[1]).toEqual(reviews[2]._id.toHexString());
+            expect(user._givenReviews[2]).toEqual(review._id.toHexString());
             return done();
           } catch (e) {
             return done(e);

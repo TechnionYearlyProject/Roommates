@@ -14,6 +14,9 @@ const ReviewSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    activatedAt: {
+        type: Number,
+    },
     street: {
         type: String,
         minlength: 2,
