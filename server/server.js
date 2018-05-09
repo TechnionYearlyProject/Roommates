@@ -937,19 +937,25 @@ app.get('/reviews/:long/:lat', async (req, res) => {
       numberOfRaters: 0
     };
     let count = 0;
+    let p = 0;
     Review.findInRange(req.params.long, req.params.lat, 1).then(result => {
       for (let index = 0; index < result.length; index++) {
         const element = result[index];
-        count++;
-        r.ratedCharacteristics.parking += element.ratedCharacteristics.parking;
+        if(element.relevent){
+          p = 1;
+        }else{
+          p = 0.5;
+        }
+        count+=p;
+        r.ratedCharacteristics.parking += (element.ratedCharacteristics.parking*p);
         r.ratedCharacteristics.publicTransport +=
-          element.ratedCharacteristics.publicTransport;
-        r.ratedCharacteristics.noise += element.ratedCharacteristics.noise;
+          (element.ratedCharacteristics.publicTransport*p);
+        r.ratedCharacteristics.noise += (element.ratedCharacteristics.noise*p);
         r.ratedCharacteristics.commercialServices +=
-          element.ratedCharacteristics.commercialServices;
-        r.ratedCharacteristics.upkeep += element.ratedCharacteristics.upkeep;
+          (element.ratedCharacteristics.commercialServices*p);
+        r.ratedCharacteristics.upkeep += (element.ratedCharacteristics.upkeep*p);
         r.ratedCharacteristics.generalRating +=
-          element.ratedCharacteristics.generalRating;
+          (element.ratedCharacteristics.generalRating*p);
         r.Pros.push(element.Pros);
         r.Cons.push(element.Cons);
       }
@@ -960,13 +966,13 @@ app.get('/reviews/:long/:lat', async (req, res) => {
       }
       r.ratedCharacteristics.parking /= count;
       r.ratedCharacteristics.publicTransport /= count;
-      r.ratedCharacteristics.noisecount;
-      r.ratedCharacteristics.commercialServicescount;
-      r.ratedCharacteristics.upkeepcount;
-      r.ratedCharacteristics.generalRatingcount;
+      r.ratedCharacteristics.noise /= count;
+      r.ratedCharacteristics.commercialServices /= count;
+      r.ratedCharacteristics.upkeep /= count;
+      r.ratedCharacteristics.generalRating /= count;
       r.numberOfRaters = count;
       return res.send({
-        result
+        r
       });
     });
   } catch (err) {
@@ -997,7 +1003,8 @@ app.patch('/reviews/:id', authenticate, async (req, res) => {
       'Pros',
       'Cons'
     ]);
-
+    reviewData.relevent = true;
+    reviewData.activatedAt = Date.now();
     const review = await Review.findByIdAndUpdate(
       id,
       {

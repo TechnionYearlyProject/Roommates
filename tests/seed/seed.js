@@ -21,6 +21,8 @@ const apartment2Id = new ObjectID();
 
 const review1Id = new ObjectID();
 const review2Id = new ObjectID();
+const review3Id = new ObjectID();
+const irreleventReviewId = new ObjectID();
 
 const apartment1User1VisitId = new ObjectID();
 const apartment1User2VisitId = new ObjectID();
@@ -173,7 +175,7 @@ const user2 = {
   about: '',
   hobbies: [1, 4, 5, 6],
   _publishedApartments: [apartment1Id.toHexString()],
-  _givenReviews: [review2Id.toHexString()],
+  _givenReviews: [review2Id.toHexString(),irreleventReviewId.toHexString()],
   _interestedApartments: [apartment2Id.toHexString()],
   tokens: [{
     access: XAUTH,
@@ -204,7 +206,7 @@ const user3 = {
   image: '',
   about: '',
   hobbies: [7, 8, 9],
-  _givenReviews: [],
+  _givenReviews: [review3Id.toHexString()],
 };
 
 const user4 = {
@@ -281,6 +283,7 @@ const review1 = {
   _id: review1Id,
   _createdBy: user1Id,
   createdAt: Date.now(),
+  activatedAt: Date.now(),
   street: 'shalom Aleichem',
   city: 'haifa',
   state: 'israel',
@@ -294,13 +297,15 @@ const review1 = {
     generalRating: 3
   },
   Pros: 'looks good,smells nice',
-  Cons: 'no parks and no parking'
+  Cons: 'no parks and no parking',
+  relevent:true
 };
 
 const review2 = {
   _id: review2Id,
   _createdBy: user2Id,
   createdAt: Date.now(),
+  activatedAt: Date.now(),
   street: 'malal street',
   city: 'haifa',
   state: 'israel',
@@ -314,7 +319,52 @@ const review2 = {
     generalRating: 1
   },
   Pros: 'looks good,smells nice',
-  Cons: 'no parks and no parking what so ever'
+  Cons: 'no parks and no parking what so ever',
+  relevent:true
+};
+
+const review3 = {
+  _id: review3Id,
+  _createdBy: user2Id,
+  createdAt: Date.now(),
+  activatedAt: Date.now(),
+  street: 'dor',
+  city: 'haifa',
+  state: 'israel',
+  geolocation: [34.9948996, 32.8148386], // [32.7793633, 35.0157763],32.8148386,34.9948996
+  ratedCharacteristics: {
+    parking: 1,
+    publicTransport: 1,
+    noise: 1,
+    commercialServices: 1,
+    upkeep: 1,
+    generalRating: 1
+  },
+  Pros: 'looks good,smells nice',
+  Cons: 'no parks and no parking what so ever',
+  relevent:true
+};
+
+const irreleventReview = {
+  _id: irreleventReviewId,
+  _createdBy: user2Id,
+  createdAt: Date.now(),
+  activatedAt: Date.now(),
+  street: 'dor',
+  city: 'haifa',
+  state: 'israel',
+  geolocation: [34.9948996, 32.8148386], // [32.7793633, 35.0157763],32.8148386,34.9948996
+  ratedCharacteristics: {
+    parking: 2,
+    publicTransport: 2,
+    noise: 2,
+    commercialServices: 2,
+    upkeep: 2,
+    generalRating: 2
+  },
+  Pros: 'looks good,smells nice',
+  Cons: 'no parks and no parking what so ever',
+  relevent:false
 };
 
 const notPublishedReview1 = {
@@ -373,12 +423,15 @@ const users = [
 
 const reviews = [
   review1,
-  review2
+  review2,
+  review3,
+  irreleventReview
 ];
 
 const coords = {
   andalusiaSpain: [-3.222444, 37.916345],
-  technionIsrael: [35.020568, 32.776515]
+  technionIsrael: [35.020568, 32.776515],
+  dor: [34.9948996, 32.8148386]
 };
 
 const populateUsers = (done) => {
@@ -409,7 +462,8 @@ const populateReviews = (done) => {
       Promise.all([
         new Review(reviews[0]).save(),
         new Review(reviews[1]).save(),
-
+        new Review(reviews[2]).save(),
+        new Review(irreleventReview).save(),
       ]))
     .then(() => done())
     .catch(done);
@@ -429,6 +483,7 @@ module.exports = {
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
+  irreleventReview,
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,
