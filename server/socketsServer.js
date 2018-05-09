@@ -147,7 +147,7 @@ const sendUserRealTimeNotification = (_userId, notification) => {
   sendUserRealTimeMsg(
     _userId,
     SocketMsgTypes.NOTIFICATION,
-    JSON.stringify(notification)
+    notification
   );
 };
 

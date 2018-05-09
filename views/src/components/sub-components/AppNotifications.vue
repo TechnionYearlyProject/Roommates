@@ -12,37 +12,46 @@
                 </span>
             </span>
         </v-btn>
-        <v-list light>
-            <v-list-tile-title class="body-2 pl-3" style="line-height: 20px;">
+        <v-card light style="width: 250px">
+            <div class="body-2 pl-3 py-3" style="line-height: 20px;">
                 Notifications
-            </v-list-tile-title>
-            <v-divider light/>
-            <div style="max-height:350px; overflow-y: auto;">
-                <template v-for="(notification, i) in notifications">
-                    <v-list-tile :key="`notification-${i}`" :class="{grey: notification.wasRead, 'lighten-3': notification.wasRead}">
-                        <v-list-tile-action>
-                            <v-icon v-show="!notification.wasRead" color="success">fiber_new</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>{{ notification.notificationType }}</v-list-tile-title>
-                            <v-list-tile-sub-title>{{ notification._notifiedObjectsIds }}</v-list-tile-sub-title>
-                        </v-list-tile-content>
-                        <v-list-tile-action class="pl-3" style="align-items:flex-start">
-                            <v-list-tile-action-text>{{ notification.createdAt }}</v-list-tile-action-text>
-                        </v-list-tile-action>
-                    </v-list-tile>
-                    <v-divider light :key="`divider-${i}`" />
-                </template>
             </div>
-            <v-list-tile-title class="text-xs-center" style="line-height: 32px;">
+            <v-divider light/>
+            <v-list light three-line>
+                <div v-if="notifications.length > 0" style="max-height:350px; overflow-y: auto;">
+                    <template v-for="(notification, i) in notifications">
+                        <v-list-tile :key="`notification-${i}`" :class="{grey: notification.wasRead, 'lighten-3': notification.wasRead}">
+                            <v-list-tile-action>
+                                <v-icon :color="notification.wasRead? 'grey' : 'pink'">{{ getNotificationIcon(notification) }}</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-layout row wrap align-center style="flex: 0 1 auto;">
+                                    <v-flex xs12>
+                                        <div class="body-1 my-1">{{ getNotificationTitle(notification) }}</div>
+                                    </v-flex>
+                                    <v-flex xs12>
+                                        <div class="body-2 my-1">{{ getNotificationSubtitle(notification) }}</div>
+                                    </v-flex>
+                                </v-layout>
+                            </v-list-tile-content>
+                            <v-list-tile-action class="pl-3" style="align-items:flex-start">
+                                <div class="caption">{{ new Date(notification.createdAt).toLocaleDateString() }}</div>
+                            </v-list-tile-action>
+                        </v-list-tile>
+                        <v-divider light :key="`divider-${i}`" />
+                    </template>
+                </div>
+                <div class="text-xs-center body-1 grey--text my-3" v-else>No notifications</div>
+            </v-list>
+            <div v-if="notifications.length > 0" class="text-xs-center" style="line-height: 32px;">
                 <a class="primary--text text--darken-1">See More</a>
-            </v-list-tile-title>
-        </v-list>
+            </div>
+        </v-card>
     </v-menu>
 </template>
 
 <script>
-import socketio from 'socket.io-client';
+    import socketio from 'socket.io-client';
 
     export default {
       props: {
@@ -53,10 +62,34 @@ import socketio from 'socket.io-client';
       },
       data() {
         return {
-          notifications: [
-          ],
-          unreadNotificationNum: 0,
+          notifications: [],
+          unreadNotificationNum: 0
         };
+      },
+      methods: {
+        getNotificationIcon(n) {
+          let icon = '';
+          switch (n.notificationType) {
+            case 2:
+              icon = 'favorite';
+              break;
+            default:
+          }
+          return icon;
+        },
+        getNotificationTitle(n) {
+          let title = '';
+          switch (n.notificationType) {
+            case 2:
+              title = 'New Interests!';
+              break;
+            default:
+          }
+          return title;
+        },
+        getNotificationSubtitle(n) {
+          return `${n._notifiedObjectsIds.length} people`;
+        }
       },
       computed: {
         notificationsIcon() {
@@ -67,31 +100,32 @@ import socketio from 'socket.io-client';
         }
       },
       created() {
-          for (let i = 0; i < this.notifications.length; i += 1) {
-            if (this.notifications[i].wasRead === false) {
-              this.unreadNotificationNum += 1;
-            }
-          }
-      },
-      sockets: {
-          connect() {
-              if(this.$store.getters.isAuthenticated) {
-                this.$socket.emit('authenticate', { token : this.$store.getters.getToken })
-                .on('authenticated', () => {
-                    this.$socket.emit('join');
-                    console.log('authorized');
-                })
-                .on('unauthorized', function(msg) {
-                    console.log('not authorized');
-                });
-              }
-            },
-          notification(message) {
-              this.notifications.push(message);
-              this.unreadNotificationNum +=1;
-              console.log(message);
+        for (let i = 0; i < this.notifications.length; i += 1) {
+          if (this.notifications[i].wasRead === false) {
+            this.unreadNotificationNum += 1;
           }
         }
+      },
+      sockets: {
+        connect() {
+          if (this.$store.getters.isAuthenticated) {
+            this.$socket
+              .emit('authenticate', { token: this.$store.getters.getToken })
+              .on('authenticated', () => {
+                this.$socket.emit('join');
+                console.log('authorized');
+              })
+              .on('unauthorized', function(msg) {
+                console.log('not authorized');
+              });
+          }
+        },
+        notification(message) {
+          this.notifications.push(message);
+          this.unreadNotificationNum += 1;
+          console.log(message);
+        }
+      }
     };
 </script>
 

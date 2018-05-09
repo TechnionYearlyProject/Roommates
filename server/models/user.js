@@ -548,7 +548,7 @@ UserSchema.methods.resetPassword = function (newPassword) {
 UserSchema.methods.saveNewNotification = function (notification) {
   const user = this;
 
-  user.notifications.push(notification);
+  user.notifications.unshift(notification);
 
   return user.save();
 };

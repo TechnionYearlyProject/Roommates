@@ -2,23 +2,31 @@
  * @author: Or Abramovich
  * @date: 04/18
  *
- * The following service is responsible to send the notification updates to the relevant users. 
+ * The following service is responsible to send the notification updates to the relevant users.
  * The service checks for aggregation possibility according to the aggregation policy
  *
  */
-const {shouldNotificationsBeAgregated} = require('../../logic/notificationsAggregationPolicy');
-const {buildNotificationJSON} = require('../../models/notification');
-const {User} = require('../../models/user');
-const {sendUserRealTimeNotification} = require('../../socketsServer');
+const {
+  shouldNotificationsBeAgregated
+} = require('../../logic/notificationsAggregationPolicy');
+const {
+  buildNotificationJSON
+} = require('../../models/notification');
+const {
+  User
+} = require('../../models/user');
+const {
+  sendUserRealTimeNotification
+} = require('../../socketsServer');
 const _ = require('lodash');
 
 /**
  * @author: Or Abramovich
  * @date: 04/18
  *
- * Generates the notification object and send it notification to the relevant users. The notification might be added as a new one 
+ * Generates the notification object and send it notification to the relevant users. The notification might be added as a new one
  * or will be aggregated with another one (depends on the aggregation policy).
- * 
+ *
  * @param {Number} notificationType: describes the nature of the notification - what the user is notified about.
  * @param {objectID} fromId: the user id that triggered the notification (who did the action that caused the notification).
  * @param {array of objectID} toIdsArray: an array of users ids that have to be notified
@@ -28,50 +36,45 @@ const _ = require('lodash');
  *
  * @returns {Promise} which returns a promise (on resolve). The first promise is resolved once the function finds the user to be notified.
  * and the second one is resolved once the user DB document is updated with the notification.
- * 
+ *
  */
 const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr, wasRead, creationDate) => {
-	 var promises = [];
-	 const newNotification = buildNotificationJSON(notificationType, fromId, wasRead, notifiedObjectIdsArr, creationDate);
-	 toIdsArray.forEach(function(userId) {
-	 	if(!userId.equals(fromId)){ //don't notify the user on his own changes
-		 	var findUserByIdPromise = User.findById(userId);
-		  	findUserByIdPromise.then((user) => {
-			  	const userNotifications = user.getNotifications();
-			  	var shouldBeAggregated = false;
-			  	var aggregateWithId;
-			  	userNotifications.forEach(function(curNotification) {
-			  		if(shouldNotificationsBeAgregated(curNotification, newNotification)){
-			  			aggregateWithId = curNotification._id;
-			  			shouldBeAggregated = true;
-			  		}
-			 	});
-			 	if(!shouldBeAggregated){
-			 		 const previousNotifications = user.getNotifications().slice();
-			 		 return user.saveNewNotification(newNotification).then((updatedUser) => {
-			 		 	//send real-time update for the new one
-			 		 	const newNotifications = _.difference(updatedUser.getNotifications(), previousNotifications);
-			 		 	newNotifications.forEach((newNotification) => {
-			 		 		sendUserRealTimeNotification(userId, newNotification);
-			 		 	})
-			 		 }).catch();
-			 	}else{
-			 		return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate).then(($) => {
-			 			sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
-			 		}).catch();
-			 	}
-		 	});
-		 	promises.push(findUserByIdPromise);
+  const promises = [];
+  const newNotification = buildNotificationJSON(notificationType, fromId, wasRead, notifiedObjectIdsArr, creationDate);
+  toIdsArray.forEach((userId) => {
+		if (!userId.equals(fromId)) { //don't notify the user on his own changes
+			const findUserByIdPromise = User.findById(userId);
+			findUserByIdPromise.then((user) => {
+				const userNotifications = user.getNotifications();
+				let shouldBeAggregated = false;
+				let aggregateWithId;
+				userNotifications.forEach(function (curNotification) {
+					if (shouldNotificationsBeAgregated(curNotification, newNotification)) {
+						aggregateWithId = curNotification._id;
+						shouldBeAggregated = true;
+					}
+				});
+				if (!shouldBeAggregated) {
+					const previousNotifications = user.getNotifications().slice();
+					return user.saveNewNotification(newNotification).then((updatedUser) => {
+						//send real-time update for the new one
+						const newNotifications = _.difference(updatedUser.getNotifications(), previousNotifications);
+						newNotifications.forEach((newNotification) => {
+							sendUserRealTimeNotification(userId, newNotification);
+						})
+					}).catch();
+				} else {
+					return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate).then(($) => {
+						sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
+					}).catch();
+				}
+			});
+			promises.push(findUserByIdPromise);
 		}
-	 });
-	 return promises;
+	});
+  return promises;
 };
 
 module.exports = {
   notifyUsers
 };
-
-
-
-
-
