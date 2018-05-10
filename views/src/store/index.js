@@ -54,6 +54,9 @@ export default new Vuex.Store({
     setApartments(state, apartments) {
       state.apartments = apartments;
     },
+    setNotifications(state, notifications) {
+      state.user.notifications = notifications;
+    },
     showLoading(state) {
       state.loading = true;
     },
@@ -78,14 +81,31 @@ export default new Vuex.Store({
   actions: {
     /**
      * @author: Alon Talmor
+     * @date: 10/05/18
+     * connect to socket server
+     */
+    socket_createConnection ({ getters }) {
+      this._vm.$socket
+          .emit('authenticate', { token: getters.getToken })
+          .on('authenticated', () => {
+            this._vm.$socket.emit('join');
+            console.log('[authorized] connected to socket server');
+          })
+          .on('unauthorized', (message) => {
+            console.log(`[unauthorized] socket server connection refused\n${message}`);
+          });
+    },
+    /**
+     * @author: Alon Talmor
      * @date: 12/04/18
      * @param: payload: object of {email, password}.
      */
-    login({ commit, getters }, payload) {
+    login({ commit, getters, dispatch }, payload) {
       return axios.post('http://localhost:3000/users/login', payload
       ).then((response) => {
         commit('startSession', response.headers['x-auth']);
         commit('setUser', response.data.user);
+        dispatch('socket_createConnection');
         return getters.getUser;
       });
     },
@@ -105,11 +125,12 @@ export default new Vuex.Store({
      * @date: 13/04/18
      * @param: payload: object of {email, password, firstName, lastName, birthdate, gender}.
      */
-    register({ commit, getters }, payload) {
+    register({ commit, getters, dispatch }, payload) {
       return axios.post('http://localhost:3000/users', payload
       ).then((response) => {
         commit('startSession', response.headers['x-auth']);
         commit('setUser', response.data.user);
+        dispatch('socket_createConnection');
         return getters.getUser;
       });
     },
@@ -221,8 +242,6 @@ export default new Vuex.Store({
     fetchUser(context, params) {
       return axios.get('http://localhost:3000/users', { params })
       .then((response) => {
-        // eslint-disable-next-line
-        console.log(response.data);
         return response.data.users;
       });
     },
@@ -231,12 +250,13 @@ export default new Vuex.Store({
      * @date: 07/05/18
      * required authentication.
      */
-    fetchSelf(context, params) {
+    fetchSelf({ commit }, params) {
       return axios.get('http://localhost:3000/users/self')
       .then((response) => {
         // eslint-disable-next-line
         console.log(response.data);
-        return response.data.users;
+        commit('setUser', response.data.self);
+        return response.data.self;
       });
     },
     /**
@@ -254,6 +274,21 @@ export default new Vuex.Store({
         return getters.getUser;
       });
     },
+    /**
+     * @author: Alon Talmor
+     * @date: 10/05/18
+     * @param: params: object of {id} - the id of the notification
+     * @param: payload object of {wasRead} - the notification new read state.
+     */
+    updateNotification(context, { params, payload }) {
+      return axios.patch(`http://localhost:3000/users/notifications/${params.id}`, payload)
+      then((response) => {
+        // eslint-disable-next-line
+        console.log(response.data);
+        commit('setNotifications', response.data.user.notifications)
+        return response.data.user.notifications;
+      })
+    }
   },
   plugins: [vuexPersistence.plugin]
 });

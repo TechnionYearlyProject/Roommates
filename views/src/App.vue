@@ -35,8 +35,15 @@ export default {
     loadInitialState() {
       // this.toggleDrawer(this.$vuetify.breakpoint.mdAndUp);
       if (this.isAuthenticated) {
-        this.startSession();
-        this.$store.dispatch('fetchSelf');
+        this.startSession(); // need to set up the session first
+        this.$store.dispatch('fetchSelf')
+        .then(() => {
+          this.$store.dispatch('socket_createConnection');
+        })
+        .catch(() => { // if the server failed to fetch the user it means that he is no longer authorized
+          this.$store.commit('setUser', null);
+          this.$store.commit('endSession');
+        });
       }
     },
   },

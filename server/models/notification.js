@@ -14,8 +14,9 @@
  */
 
 const _ = require('lodash');
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+const mongoose = require('mongoose');
+
+const Schema = mongoose.Schema;
 
 const arrayFunctions = require('../helpers/arrayFunctions');
 
@@ -27,30 +28,30 @@ const NotificationsTypesEnum = {
 };
 
 const NotificationSchema = new mongoose.Schema({
-    notificationType: {
-      type: Number,
-      required: true,
-      validate: {
+  notificationType: {
+    type: Number,
+    required: true,
+    validate: {
       validator: (value) => isSupportedNotificationType(value),
-        message: '{VALUE} is not a supported notification type'
-      }
-    },
-    _createdBy: {
-      type: [ mongoose.Schema.Types.ObjectId],
-      required: true
-    },
-    wasRead: {
-      type: Boolean,
-      default: false
-    },
-    _notifiedObjectsIds: {
-      type: [mongoose.Schema.Types.ObjectId],
-      required: true
-    },
-    createdAt: {
-      type: Number,
-      required: true
-    },
+      message: '{VALUE} is not a supported notification type'
+    }
+  },
+  _createdBy: {
+    type: [mongoose.Schema.Types.ObjectId],
+    required: true
+  },
+  wasRead: {
+    type: Boolean,
+    default: false
+  },
+  _notifiedObjectsIds: {
+    type: [mongoose.Schema.Types.ObjectId],
+    required: true
+  },
+  createdAt: {
+    type: Number,
+    required: true
+  },
 });
 
 
@@ -128,8 +129,8 @@ const containsNotifiedObjectIDs = (notification, _notifiedObjectIDsArr) => {
  * @returns {Notification} which is same to the given one but with the additionals notified ids.
  */
 const addNotifiedIdsToNotification = (notification, notifiedObjectsIdsArray) => {
-	notification._notifiedObjectsIds = arrayFunctions.unionArrays(notification._notifiedObjectsIds, notifiedObjectsIdsArray);
-	return notification;
+  notification._notifiedObjectsIds = arrayFunctions.unionArrays(notification._notifiedObjectsIds, notifiedObjectsIdsArray);
+  return notification;
 };
 /**
  * @author: Or Abramovich
@@ -145,8 +146,8 @@ const addNotifiedIdsToNotification = (notification, notifiedObjectsIdsArray) => 
  * @returns {Notification} which is same to the given one but with the additionals create by ids.
  */
 const addCreatedByIdsToNotification = (notification, createdByIdsArray) => {
-	notification._createdBy = arrayFunctions.unionArrays(notification._createdBy, createdByIdsArray);
-	return notification;
+  notification._createdBy = arrayFunctions.unionArrays(notification._createdBy, createdByIdsArray);
+  return notification;
 };
 /**
  * @author: Or Abramovich
@@ -166,10 +167,10 @@ const addCreatedByIdsToNotification = (notification, createdByIdsArray) => {
  * @returns {Notification} which is same to the given one but with the aggregated data i.e additionals created by and notified ids.
  */
 const addAggregationDataInNotification = (notification, notifiedObjectsIdsArray, newCreateByIdsArray, newCreationDate) => {
-	notification = addNotifiedIdsToNotification(notification, notifiedObjectsIdsArray);
-	notification = addCreatedByIdsToNotification(notification,newCreateByIdsArray);
+  notification = addNotifiedIdsToNotification(notification, notifiedObjectsIdsArray);
+  notification = addCreatedByIdsToNotification(notification, newCreateByIdsArray);
   notification.createdAt = newCreationDate;
-	return notification;
+  return notification;
 }
 /**
  * @author: Or Abramovich
@@ -186,13 +187,13 @@ const addAggregationDataInNotification = (notification, notifiedObjectsIdsArray,
  * @returns {JSON} which encloses all above information which is equivalent to the notification document except that id doesn't have an _id property. 
  */
 const buildNotificationJSON = (notificationType, createdBy, wasRead, notifiedObjectsIds, creationDate) => {
-	return {
-		notificationType: notificationType,
-		_createdBy: createdBy,
-		wasRead: wasRead,
-		_notifiedObjectsIds: notifiedObjectsIds,
+  return {
+    notificationType: notificationType,
+    _createdBy: createdBy,
+    wasRead: wasRead,
+    _notifiedObjectsIds: notifiedObjectsIds,
     createdAt: creationDate
-	};
+  };
 };
 /**
  * @author: Or Abramovich
@@ -206,10 +207,10 @@ const buildNotificationJSON = (notificationType, createdBy, wasRead, notifiedObj
  * @returns {Notificaiton} with the modified data.
  */
 const updateNotificationByJson = (curNotificationJson, updateJson) => {
-  Object.keys(updateJson).forEach(function(key) {
-    if(curNotificationJson.hasOwnProperty(key)){
+  Object.keys(updateJson).forEach(function (key) {
+    if (curNotificationJson.hasOwnProperty(key)) {
       curNotificationJson[key] = updateJson[key];
-    }    
+    }
   });
   return curNotificationJson;
 };
@@ -224,10 +225,10 @@ const updateNotificationByJson = (curNotificationJson, updateJson) => {
  *
  * @returns {Notificaiton} with the modified data.
  */
- const setNotificationReadState = (notification, newReadState) => {
-    notification.wasRead = newReadState;
-    return notification;
- }
+const setNotificationReadState = (notification, newReadState) => {
+  notification.wasRead = newReadState;
+  return notification;
+}
 
 
 module.exports = {

@@ -121,7 +121,7 @@
         </v-btn>
       </v-stepper-content>
 
-      <v-stepper-step ref="step3" step="3" :complete="e6 > 3">Select an ad format and name ad unit</v-stepper-step>
+      <v-stepper-step ref="step3" step="3" :complete="e6 > 3">Select the asset's special attributes</v-stepper-step>
       <v-stepper-content step="3">
         <v-card :color="color" class="mb-1" height="auto">
           <template>
