@@ -10,7 +10,7 @@ const {
   NotificationSchema,
   addAggregationDataInNotification
 } = require('./notification');
-const {PrivateMessageSchema} = require('./privateMessage');
+const {PrivateMessageSchema, wasPrivateMessageWrittenByParticipants, setPrivateMessageReadState, getPrivateMessageCreationTime} = require('./privateMessage');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH, XAUTH_EXPIRATION_TIME } = require('../constants');
@@ -659,6 +659,235 @@ UserSchema.methods.getNotificationById = function (_notificationId) {
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
   return user.notifications[notificationIndex];
+};
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////Conversation Related Functionalities/////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Saves a new conversation to the user's document for persistency. If conversation exists - messages are added to the conversation
+ *
+ * @param {Array of ObjectID} _participants: The ids of the users who are part of the conversation. 
+ * @param {Array of privateMessage} messages: the messages exchanged in the conversation.
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB with the new conversation.
+ */
+UserSchema.methods.inseryOrUpdateConversation = function (_participants, messages) {
+  const user = this;
+
+  //Make sure this user is part of the participants:
+  if(arrayFunctions.unionArrays(_participants, [new ObjectID(user._id)]).length != _participants.length){
+    return Promise.reject();
+  }
+
+  //Make sure every message was sent by a participant
+  var messagesBelongToConversation = true;
+  messages.forEach((message) =>{
+    if(!wasPrivateMessageWrittenByParticipants(message, _participants)){
+      messagesBelongToConversation = false;
+    }
+  })
+
+  if(!messagesBelongToConversation){
+    return Promise.reject();
+  }
+
+  //if conversation exists - messages are added to the conversation
+  const conversationIndex = user.getConversationIndexWithParticipants(_participants);
+  if(conversationIndex > -1){
+      messages.forEach((message) =>{
+       user.conversations[conversationIndex].messages.push(message);
+     });
+  }
+  else{
+    const newConversation = {
+      _participants: _participants,
+      messages: messages
+    }
+    user.conversations.push(newConversation);
+  }
+
+  return user.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Saves the given message in the given conversation
+ *
+ * @param {ObjectID} _conversationId: The id of the conversation the message should be saved in
+ * @param {privateMessage} message: the message to be added to the conversation.
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB with the new message.
+ */
+ 
+UserSchema.methods.addNewMessageToConversation = function (_conversationId, message) {
+  const user = this;
+
+  const conversationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.conversations, '_id', _conversationId.toString());
+  if(conversationIndex < 0){
+    return Promise.reject();
+  }
+
+  //Make sure message belongs to the conversation
+  if(!wasPrivateMessageWrittenByParticipants(message, user.conversations[conversationIndex]._participants)){
+      return Promise.reject();
+  }
+
+  user.conversations[conversationIndex].messages.push(message);
+
+  return user.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Removes a given conversation from the user document
+ *
+ * @param {Array of ObjectID} _participants: The ids of the users who are part of the conversation. 
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB.
+ */
+ 
+UserSchema.methods.removeConversation = function (_participants) {
+  const user = this;
+
+  const conversationIndex = user.getConversationIndexWithParticipants(_participants);
+  if(conversationIndex < 0){
+    return Promise.reject();
+  }
+  
+  user.conversations.splice(conversationIndex, 1);
+
+  return user.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Check whether there is a conversation with the given participants
+ *
+ * @param {Array of ObjectID} _participants: The ids of the users who are part of the conversation. 
+ *
+ * @returns {Boolean} indicating where there is a conversation with the given participants.
+ */
+ 
+UserSchema.methods.isConversationWithParticipantsExist = function (_participants) {
+  const user = this;
+
+  return user.getConversationIndexWithParticipants(_participants) > -1;
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Returns the index of the conversation with the given participants
+ *
+ * @param {Array of ObjectID} _participants: The ids of the users who are part of the conversation. 
+ *
+ * @returns {Number} indicating the index of the conversation with the given participants or -1 if not exists.
+ */
+UserSchema.methods.getConversationIndexWithParticipants = function (_participants) {
+  const user = this;
+
+  for(var i=0;i<user.conversations.length;i++){
+    var conversation = user.conversations[i];
+    if((_participants.length == conversation._participants.length) && 
+       (arrayFunctions.unionArrays(conversation._participants, _participants).length == _participants.length))
+        return i;
+  }
+  return -1;
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Marks all messages that created bfore the given time as read.
+ *
+ * @param {Array of ObjectID} _participants: The ids of the users who are part of the conversation. 
+ * @param {Number} lastSeenTime: all messages that created before lastSeenTime will be set to read.
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB.
+ */
+UserSchema.methods.markConversationMessagesAsReadByTime = function (_participants, lastSeenTime) {
+  const user = this;
+
+  const conversationIndex = user.getConversationIndexWithParticipants(_participants);
+  if(conversationIndex < 0){
+    return Promise.reject();
+  }
+
+  for(var i=0;i< user.conversations[conversationIndex].messages.length; i++){
+    var message = user.conversations[conversationIndex].messages[i];
+    if(getPrivateMessageCreationTime(message) <= lastSeenTime){
+      user.conversations[conversationIndex].messages[i] = setPrivateMessageReadState(user.conversations[conversationIndex].messages[i], true);
+    }
+  }
+
+  return user.save();
+};
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Returns the entire message according to the given id
+ *
+ * @param {Array of ObjectID} _participants: The ids of the users who are part of the conversation. 
+ * @param {ObjectID} _messageId: message id to be considered as read
+ *
+ * @returns {Private Message} object that holds message data or null if such message doesn't exist
+ */
+UserSchema.methods.getPrivateMessageById = function (_participants, _messageId) {
+
+  const user = this;
+
+  const conversationIndex = user.getConversationIndexWithParticipants(_participants);
+  if(conversationIndex < 0){
+    return null;
+  }
+
+  for(var i=0;i< user.conversations[conversationIndex].messages.length; i++){
+    var message = user.conversations[conversationIndex].messages[i];
+    if(message._id.equals(_messageId)){
+     return message;
+    }
+  }
+  return null;
+};
+
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Marks the given message (and all previous one) as read
+ *
+ * @param {Array of ObjectID} _participants: The ids of the users who are part of the conversation. 
+ * @param {ObjectID} _messageId: message id to be considered as read
+ *
+ * @returns {Promise} that resolved once the user document is updated in DB.
+ */
+UserSchema.methods.markMessagesAsReadByLastMessage = function (_participants, _messageId) {
+  const user = this;
+
+  var message = user.getPrivateMessageById(_participants, _messageId);
+
+  if(message == null){
+    return Promise.reject();
+  }
+
+  return user.markConversationMessagesAsReadByTime(_participants, getPrivateMessageCreationTime(message));
 };
 
 const User = mongoose.model('User', UserSchema);
