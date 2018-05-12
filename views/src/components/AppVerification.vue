@@ -84,7 +84,7 @@ export default {
       this.$store.commit('showLoading');
       this.$store
         .dispatch('verifyAccount', this.$route.params.token)
-        .then(user => {
+        .then((user) => {
           this.$router.push({ name: 'AppMain' });
           this.showVerifiedSnackbar(user);
         })

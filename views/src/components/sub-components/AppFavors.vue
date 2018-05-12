@@ -67,7 +67,7 @@
             return 'User';
           } else if (this.isMyFavor(favor)) {
             return 'You';
-          } else {
+          } else { // eslint-disable-line
             return `${this.usersList[favor].firstName} ${
               this.usersList[favor].lastName
             }`;

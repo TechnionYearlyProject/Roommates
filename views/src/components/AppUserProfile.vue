@@ -155,7 +155,7 @@ export default {
           property.value.previous = property.value.current;
           property.edit.active = false;
         })
-        .catch(error => {
+        .catch((error) => {
           property.value.current = property.value.previous;
           property.error = 'An error occured!';
           // eslint-disable-next-line
@@ -318,7 +318,7 @@ export default {
       this.$store.commit('showLoading');
       this.$store
         .dispatch('fetchUser', { id })
-        .then(users => {
+        .then((users) => {
           this.isMyProfile = this.isAuthenticated && this.getUser._id === id;
           this.initProfile(users[id]);
         })

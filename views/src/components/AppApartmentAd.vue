@@ -311,10 +311,10 @@
           this.fav = !this.fav;
           this.$store
             .dispatch('favor', { id: this.apartment._id })
-            .then(apartment => {
+            .then((apartment) => {
               this.apartment._interested = apartment._interested;
             })
-            .catch(error => {
+            .catch((error) => {
               // eslint-disable-next-line
               console.log(error);
               this.fav = !this.fav;
@@ -324,7 +324,7 @@
       getPublisher() {
         if (!this.fetchedPublisher) {
           const id = this.apartment._createdBy;
-          this.$store.dispatch('fetchUser', { id }).then(users => {
+          this.$store.dispatch('fetchUser', { id }).then((users) => {
             if (users[id]) {
               this.publisher = users[id];
             } else {
@@ -392,7 +392,7 @@
       },
       copyToClipboard() {
         this.$refs.apartmentLink.$refs.input.select();
-        const cp = document.execCommand('copy');
+        document.execCommand('copy');
         this.clipboard.text = 'Copied!';
         this.clipboard.color = 'success';
         this.clipboard.closeDelay = 3000;

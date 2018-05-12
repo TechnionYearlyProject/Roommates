@@ -125,7 +125,7 @@ export default {
     },
     async sort(sortOption) {
       this.loading = true;
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         const preserveOrder = (x, y) =>
           this.apartments.indexOf(x._id) - this.apartments.indexOf(y._id);
         if (sortOption.direction === null || sortOption.direction === 'down') {

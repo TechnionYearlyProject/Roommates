@@ -84,14 +84,16 @@ export default new Vuex.Store({
      * @date: 10/05/18
      * connect to socket server
      */
-    socket_createConnection ({ getters }) {
+    socket_createConnection({ getters }) {
       this._vm.$socket
           .emit('authenticate', { token: getters.getToken })
           .on('authenticated', () => {
             this._vm.$socket.emit('join');
+            // eslint-disable-next-line 
             console.log('[authorized] connected to socket server');
           })
           .on('unauthorized', (message) => {
+            // eslint-disable-next-line 
             console.log(`[unauthorized] socket server connection refused\n${message}`);
           });
     },
@@ -241,16 +243,14 @@ export default new Vuex.Store({
      */
     fetchUser(context, params) {
       return axios.get('http://localhost:3000/users', { params })
-      .then((response) => {
-        return response.data.users;
-      });
+      .then(response => response.data.users);
     },
     /**
      * @author: Alon Talmor
      * @date: 07/05/18
      * required authentication.
      */
-    fetchSelf({ commit }, params) {
+    fetchSelf({ commit }) {
       return axios.get('http://localhost:3000/users/self')
       .then((response) => {
         // eslint-disable-next-line
@@ -270,8 +270,8 @@ export default new Vuex.Store({
       .then((response) => {
         // eslint-disable-next-line
         console.log(response.data);
-        commit('setUser', response.data.self);
-        return getters.getUser;
+        commit('setUser', response.data.user);
+        return response.data.user;
       });
     },
     /**
@@ -280,14 +280,14 @@ export default new Vuex.Store({
      * @param: params: object of {id} - the id of the notification
      * @param: payload object of {wasRead} - the notification new read state.
      */
-    updateNotification(context, { params, payload }) {
+    updateNotification({ commit }, { params, payload }) {
       return axios.patch(`http://localhost:3000/users/notifications/${params.id}`, payload)
-      then((response) => {
+      .then((response) => {
         // eslint-disable-next-line
         console.log(response.data);
-        commit('setNotifications', response.data.user.notifications)
+        commit('setNotifications', response.data.user.notifications);
         return response.data.user.notifications;
-      })
+      });
     }
   },
   plugins: [vuexPersistence.plugin]

@@ -133,7 +133,7 @@
           return 'User';
         } else if (this.isMyComments(comment)) {
           return 'You';
-        } else {
+        } else { // eslint-disable-line
           return `${this.usersList[comment._createdBy].firstName} ${
                 this.usersList[comment._createdBy].lastName}`;
         }

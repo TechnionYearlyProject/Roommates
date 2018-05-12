@@ -7,18 +7,18 @@ import AppResetPassword from '@/components/AppResetPassword';
 import AppUserProfile from '@/components/AppUserProfile';
 import AppPublishApartment from '@/components/AppPublishApartment';
 import store from '../store';
-import HelloWorld from '@/components/HelloWorld';
+// import HelloWorld from '@/components/HelloWorld';
 
 Vue.use(Router);
 
 const router = new Router({
   mode: 'history',
   routes: [
-    {
-      path: '/test',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },
+    // {
+    //   path: '/test',
+    //   name: 'HelloWorld',
+    //   component: HelloWorld
+    // },
     {
       path: '/',
       name: 'AppMain',
@@ -75,11 +75,7 @@ router.beforeEach((to, from, next) => {
     next({ name: 'AppIdentification' });
   } else if (to.matched.some(record => record.meta.rejectsAuth) && store.getters.isAuthenticated) {
     next({ name: 'AppMain' });
-  } else if (
-    to.matched.some(record => record.meta.requiresVerify) &&
-    !store.getters.isAuthenticated
-  ) {
-    // eslint-disable-line
+  } else if ( to.matched.some(record => record.meta.requiresVerify) && !store.getters.isAuthenticated) { // eslint-disable-line
     next({ name: 'AppIdentification' });
   } else if (to.matched.some(record => record.meta.requiresVerify) && !store.getters.isVerified) {
     next({ name: 'AppVerification' });
