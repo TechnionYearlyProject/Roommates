@@ -147,23 +147,16 @@ ReviewSchema.statics.findInRange = function (centerLong, centerLat) {
 ReviewSchema.methods.updateRelevency = async function () {
     var review = this;
     var years = Math.round((Date.now()-review.activatedAt)/(1000*60*60*24*365));
-    // console.log(review);
-    // console.log(years);
     if(years == 0){
-        // console.log("no need to update");
         return;
     }
     if(years == 1){
-        // console.log("review is a year old");
         if(review.relevent){
-            // console.log("need to update");
             review.relevent = false; 
             return review.save();      
         }
         return;
     }
-    // console.log("review is over 2 years old");
-    // console.log("need to remove review");
     await Review.findByIdAndRemove(review._id);User.findById(review._createdBy).then(result =>{
         result.removeReview(review._id);
     });
