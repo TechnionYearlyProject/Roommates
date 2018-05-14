@@ -889,17 +889,14 @@ app.post('/reviews', authenticate, async (req, res) => {
     reviewData._createdBy = req.user._id;
     reviewData.createdAt = Date.now();
 
-    Review.findInRange(
+    const reviewsInRange = await Review.findInRange(
       reviewData.geolocation[0],
       reviewData.geolocation[1],
       1
-    ).then(result => {
-      result.forEach(review => {
-        if (review._createdBy.equals(reviewData._createdBy)) {
-          return res.status(BAD_REQUEST).send(errors.multiRating);
-        }
-      });
-    });
+    );
+    if (reviewsInRange.some(review => review._createdBy.equals(reviewData._createdBy))) {
+      return res.status(BAD_REQUEST).send(errors.multiRating);
+    }
 
     const review = await new Review(reviewData).save();
     await User.findByIdAndUpdate(req.user._id, {

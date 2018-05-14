@@ -1,14 +1,23 @@
 const mongoose = require('mongoose');
+const _ = require('lodash');
 
-const { EARTH_RADIUS_IN_KM } = require('../constants');
+const {
+  EARTH_RADIUS_IN_KM
+} = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
-const { removeFalsyProps } = require('../helpers/removeFalsyProps');
-const { isSupportedTagId } = require('./tag');
+const {
+  removeFalsyProps
+} = require('../helpers/removeFalsyProps');
+const {
+  isSupportedTagId
+} = require('./tag');
 const {
   getIndexOfValue,
   getIndexOfFirstElementMatchKey
 } = require('../helpers/arrayFunctions');
-const { ObjectID } = require('mongodb');
+const {
+  ObjectID
+} = require('mongodb');
 const visit = require('./visit');
 
 const ApartmentSchema = new mongoose.Schema({
@@ -25,12 +34,10 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     required: true
   },
-  _interested: [
-    {
-      type: String,
-      ref: 'User'
-    }
-  ],
+  _interested: [{
+    type: String,
+    ref: 'User'
+  }],
   entranceDate: {
     type: Number,
     required: true
@@ -99,25 +106,21 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     max: 1000
   },
-  images: [
-    {
-      type: String,
-      default: ''
-    }
-  ],
+  images: [{
+    type: String,
+    default: ''
+  }],
   description: {
     type: String,
     default: ''
   },
-  tags: [
-    {
-      type: Number,
-      validate: {
-        validator: value => isSupportedTagId(value),
-        message: '{VALUE} is not a supported tag'
-      }
+  tags: [{
+    type: Number,
+    validate: {
+      validator: value => isSupportedTagId(value),
+      message: '{VALUE} is not a supported tag'
     }
-  ],
+  }],
   requiredRoommates: {
     type: Number,
     min: 1,
@@ -129,55 +132,51 @@ const ApartmentSchema = new mongoose.Schema({
     min: 0,
     max: 11
   },
-  comments: [
-    {
-      _createdBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-      },
-      createdAt: {
-        type: Number,
-        required: true
-      },
-      text: {
-        type: String,
-        minlength: 10,
-        maxlength: 1000,
-        required: true
-      }
+  comments: [{
+    _createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
+    createdAt: {
+      type: Number,
+      required: true
+    },
+    text: {
+      type: String,
+      minlength: 10,
+      maxlength: 1000,
+      required: true
     }
-  ],
+  }],
   _notificationSubscribers: {
     type: [mongoose.Schema.Types.ObjectId]
   },
-  visits: [
-    {
-      _askedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-      },
-      createdAt: {
-        type: Number,
-        required: true
-      },
-      scheduledTo: {
-        type: Number,
-        required: true,
-        validate: {
-          validator: value => value > Date.now(),
-          message: '{VALUE} is not a future date'
-        }
-      },
-      status: {
-        type: Number,
-        required: true,
-        validate: {
-          validator: value => visit.isSupportedVisitStatusID(value),
-          message: '{VALUE} is not a valid visit status'
-        }
+  visits: [{
+    _askedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true
+    },
+    createdAt: {
+      type: Number,
+      required: true
+    },
+    scheduledTo: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: value => value > Date.now(),
+        message: '{VALUE} is not a future date'
+      }
+    },
+    status: {
+      type: Number,
+      required: true,
+      validate: {
+        validator: value => visit.isSupportedVisitStatusID(value),
+        message: '{VALUE} is not a valid visit status'
       }
     }
-  ]
+  }]
 });
 
 /**
@@ -224,7 +223,11 @@ ApartmentSchema.statics.findInRange = function (centerLong, centerLat, radius) {
 ApartmentSchema.statics.findAllByIds = function (listIds) {
   const Apartment = this;
 
-  return Apartment.find({ _id: { $in: listIds } });
+  return Apartment.find({
+    _id: {
+      $in: listIds
+    }
+  });
 };
 
 /**
@@ -234,7 +237,7 @@ ApartmentSchema.statics.findAllByIds = function (listIds) {
  * The function now supports the new schema by which is should fetch all relevant apartments.
  * receives an object which contains all the properties to filter by.
  * properties are:
- * @prop: id - should be a String of a legal ObjectID
+ * @prop: id - should be a String or a List of a legal ObjectID
  * @prop: createdBy, - should be a String of a legal ObjectID
  * @prop: entranceDate - A value which can be converted into Date
  * @prop: address - String of the full address
@@ -245,14 +248,21 @@ ApartmentSchema.statics.findAllByIds = function (listIds) {
  * @prop: tags - Array of the tags Numbers (ids)
  * @prop: geolocation - Array of 2 numbers: ['longitude','latitude']
  * @returns Promise Object with a list of all relevant apartments.
+ * 
+ * @updatedBy: Alon Talmor
+ * @date: 14/05/18
+ * Allow id to be a List of ids or a String of one id.
  */
 ApartmentSchema.statics.findByProperties = async function (p) {
   const Apartment = this;
 
   const query = {};
-  if (p.id && ObjectID.isValid(p.id)) {
+  if (p.id && (_.isArray(p.id) || ObjectID.isValid(p.id))) {
     // id
-    query._id = p.id;
+    const ids = _.castArray(p.id);
+    query._id = {
+      $in: ids
+    };
   }
   if (p.createdBy && ObjectID.isValid(p.createdBy)) {
     // createdBy
@@ -260,7 +270,9 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   }
   if (p.entranceDate) {
     // entranceDate
-    query.entranceDate = { $lte: new Date(p.entranceDate).getTime() };
+    query.entranceDate = {
+      $lte: new Date(p.entranceDate).getTime()
+    };
   }
   const radius = +p.radius || 5; //km //address + geolocation + radius
   if (p.geolocation) {
@@ -276,7 +288,10 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   }
   if (p.price && Array.isArray(p.price)) {
     // price
-    query.price = removeFalsyProps({ $gte: p.price[0], $lte: p.price[1] });
+    query.price = removeFalsyProps({
+      $gte: p.price[0],
+      $lte: p.price[1]
+    });
   }
   if (p.roommates && Array.isArray(p.roommates)) {
     // roommates
@@ -287,11 +302,16 @@ ApartmentSchema.statics.findByProperties = async function (p) {
   }
   if (p.floor && Array.isArray(p.floor)) {
     // floor
-    query.floor = removeFalsyProps({ $gte: p.floor[0], $lte: p.floor[1] });
+    query.floor = removeFalsyProps({
+      $gte: p.floor[0],
+      $lte: p.floor[1]
+    });
   }
   if (p.tags && Array.isArray(p.tags)) {
     // tags
-    query.tags = { $all: p.tags };
+    query.tags = {
+      $all: p.tags
+    };
   }
   return Apartment.find(query);
 };
@@ -303,7 +323,9 @@ ApartmentSchema.statics.findByProperties = async function (p) {
 ApartmentSchema.methods.getAddressString = function () {
   const apartment = this;
 
-  const { address } = apartment.location;
+  const {
+    address
+  } = apartment.location;
   return `${address.number} ${address.street} ${address.city} ${address.state}`;
 };
 
@@ -526,9 +548,7 @@ ApartmentSchema.methods.updateVisit = function (
 
   return apartment.updateVisitProps(
     _visitID,
-    _offeringUserID,
-    ['scheduledTo', 'status'],
-    [schedTo, targetStatus]
+    _offeringUserID, ['scheduledTo', 'status'], [schedTo, targetStatus]
   );
 };
 
@@ -584,20 +604,18 @@ ApartmentSchema.methods.updateVisitProps = function (
   propValues
 ) {
   const apartment = this;
- 
+
   const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID.toString());
-  if(visitIndex < 0){
-     return Promise.reject();
+  if (visitIndex < 0) {
+    return Promise.reject();
   }
 
-  if (
-    !apartment.isLegalVisitChange(
+  if (!apartment.isLegalVisitChange(
       apartment.visits[visitIndex],
       _offeringUserID,
       propNames,
       propValues
-    )
-  ) {
+    )) {
     return Promise.reject();
   }
 
@@ -629,26 +647,24 @@ ApartmentSchema.methods.isLegalVisitChange = function (
 ) {
   const apartment = this;
 
-  if (
-    !visit.canModifyVisit(
+  if (!visit.canModifyVisit(
       apartment._createdBy,
       visitData._askedBy,
       _offeringUserID
-    )
-  ) {
+    )) {
     return false;
   }
 
   for (let i = 0; i < propNames.length; i++) {
     switch (propNames[i]) {
       case 'status':
-        if (
-          !visit.isValidVisitStatusChange(
+        if (!visit.isValidVisitStatusChange(
             visitData.status,
             propValues[i],
             apartment.isOwner(_offeringUserID)
-          )
-        ) { return false; }
+          )) {
+          return false;
+        }
     }
   }
 
@@ -676,7 +692,9 @@ ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
       visitData._askedBy.equals(_userID) &&
       visitData.status != visit.getVisitStatusOnCancelation() &&
       visitData.scheduledTo > date
-    ) { futureVisitExist = true; }
+    ) {
+      futureVisitExist = true;
+    }
   });
 
   return futureVisitExist;
@@ -695,11 +713,11 @@ ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
  */
 ApartmentSchema.methods.getVisitDataById = function (_visitID) {
   const apartment = this;
-  
+
   const visitIndex = getIndexOfFirstElementMatchKey(apartment.visits, '_id', _visitID.toString());
-  
-  if(visitIndex < 0){
-     return {};
+
+  if (visitIndex < 0) {
+    return {};
   }
 
   return apartment.visits[visitIndex];

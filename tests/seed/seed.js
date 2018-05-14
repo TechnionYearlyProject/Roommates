@@ -298,7 +298,7 @@ const review1 = {
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking',
-  relevent:true
+  relevent: true
 };
 
 const review2 = {
@@ -342,7 +342,7 @@ const review3 = {
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking what so ever',
-  relevent:true
+  relevent: true
 };
 
 const irreleventReview = {
@@ -364,7 +364,7 @@ const irreleventReview = {
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking what so ever',
-  relevent:false
+  relevent: false
 };
 
 const notPublishedReview1 = {

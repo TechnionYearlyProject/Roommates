@@ -42,7 +42,7 @@ const {
   getForgotPasswordToken
 } = require('../seed/seed');
 
-describe('Server Tests', () => {
+describe('#Server Tests', () => {
   beforeEach(populateUsers);
   beforeEach(populateApartments);
   beforeEach(populateReviews);
@@ -54,7 +54,7 @@ describe('Server Tests', () => {
 
 
 
-  // describe('GET /reviews/:long/:lat', () => {
+  // describe('#GET /reviews/:long/:lat', () => {
   //   it('should return accurate calculated review for technion', (done)=>{
 
   //     request(app)
@@ -64,7 +64,7 @@ describe('Server Tests', () => {
   //   });
   // });
 
-  describe('POST /apartments', () => {
+  describe('#POST /apartments', () => {
     it('should create a new apartment', (done) => {
       const apartment = Object.assign({}, notPublishedApartment);
 
@@ -199,7 +199,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('PUT /apartments/:id/subscription', () => {
+  describe('#PUT /apartments/:id/subscription', () => {
     it('should return 404 when invalid id', (done) => {
       const id = new ObjectID();
       request(app)
@@ -260,7 +260,7 @@ describe('Server Tests', () => {
     }).timeout(5000);
   });
 
-  describe('PATCH /users/notifications/:id', () => {
+  describe('#PATCH /users/notifications/:id', () => {
     it('should not edit notification - non existing one', (done) => {
       const nonExistingId = new ObjectID();
       request(app)
@@ -294,7 +294,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('PUT /apartments/:id/comment', () => {
+  describe('#PUT /apartments/:id/comment', () => {
     it('should add a new comment', (done) => {
       const id = apartments[1]._id;
       const text = 'Nice apartment!';
@@ -355,7 +355,7 @@ describe('Server Tests', () => {
   });
 
 
-  describe('PUT /apartments/:id/interested', () => {
+  describe('#PUT /apartments/:id/interested', () => {
     it('should return 404 when invalid id', (done) => {
       const id = new ObjectID();
       request(app)
@@ -420,7 +420,7 @@ describe('Server Tests', () => {
     }).timeout(5000);
   });
 
-  describe('PATCH /apartments/:id', () => {
+  describe('#PATCH /apartments/:id', () => {
     it('should not edit apartment - non existing one', (done) => {
       const nonExistingId = new ObjectID();
       request(app)
@@ -486,7 +486,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('GET /apartments/:id/interested', () => {
+  describe('#GET /apartments/:id/interested', () => {
     it('should not get interested - unregistered user', (done) => {
       const id = apartments[1]._id;
       request(app)
@@ -540,7 +540,7 @@ describe('Server Tests', () => {
     }).timeout(5000);
   });
 
-  describe('DELETE /apartments', () => {
+  describe('#DELETE /apartments', () => {
     it('should not delete aprtment - apartment doesnt exist', (done) => {
       const id = new ObjectID().toHexString();
 
@@ -587,7 +587,7 @@ describe('Server Tests', () => {
     }).timeout(5000);
   });
 
-  describe('GET /apartments/visit/statuses', () => {
+  describe('#GET /apartments/visit/statuses', () => {
     it('should get all apartment visit statuses', (done) => {
       request(app)
         .get('/apartments/visit/statuses')
@@ -599,7 +599,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('GET /apartments/visit/actions', () => {
+  describe('#GET /apartments/visit/actions', () => {
     it('should get all apartment visit statuses change actions', (done) => {
       request(app)
         .get('/apartments/visit/actions')
@@ -612,7 +612,7 @@ describe('Server Tests', () => {
   });
 
 
-  describe('PATCH /apartments/:id/visit/:visitId', () => {
+  describe('#PATCH /apartments/:id/visit/:visitId', () => {
     it('should not edit a visit - user is not relevant to the visit', (done) => {
       const apartmentId = apartments[0]._id.toHexString();
       const visitId = apartment1User1VisitId.toHexString();
@@ -692,7 +692,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('PUT /apartments/:id/visit', () => {
+  describe('#PUT /apartments/:id/visit', () => {
     it('should not add a visit - visit scheduled to the past', (done) => {
       const apartmentId = apartments[1]._id.toHexString();
       request(app)
@@ -795,7 +795,7 @@ describe('Server Tests', () => {
   });
 
 
-  describe('GET /apartments/tags', () => {
+  describe('#GET /apartments/tags', () => {
     it('should get all apartment tags', (done) => {
       request(app)
         .get('/apartments/tags')
@@ -818,6 +818,21 @@ describe('Server Tests', () => {
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
           expect(res.body.apartments[0]._id).toBe(id);
+        })
+        .end(done);
+    });
+
+    it('should find apartment by list of ids', (done) => {
+      const id = [apartments[0]._id.toHexString(), apartments[1]._id.toHexString()];
+
+      request(app)
+        .get('/apartments')
+        .query({ id })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.apartments.length).toBe(2);
+          expect(res.body.apartments[0]._id).toBe(id[0]);
+          expect(res.body.apartments[1]._id).toBe(id[1]);
         })
         .end(done);
     });
@@ -1390,7 +1405,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('GET /users/tags', () => {
+  describe('#GET /users/tags', () => {
     it('should get all user tags', (done) => {
       request(app)
         .get('/users/tags')
@@ -1501,7 +1516,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('GET /users/:id/interested', () => {
+  describe('#GET /users/:id/interested', () => {
     it('should return all interested apartments', (done) => {
       const id = users[5]._id.toHexString();
       request(app)
@@ -1537,7 +1552,7 @@ describe('Server Tests', () => {
   });
 
 
-  describe('GET /users/:id/published', () => {
+  describe('#GET /users/:id/published', () => {
     it('should return all published apartments', (done) => {
       const id = users[5]._id.toHexString();
 
@@ -1575,7 +1590,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('PATCH /users/self', () => {
+  describe('#PATCH /users/self', () => {
     it('should update user', (done) => {
       const user = Object.assign({}, users[3]);
       user.email = users[1].email;
@@ -1678,7 +1693,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('PATCH /users/verify/:token', () => {
+  describe('#PATCH /users/verify/:token', () => {
     it('should verify the user', (done) => {
       request(app)
         .patch(`/users/verify/${user2VerificationToken}`)
@@ -1703,7 +1718,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('POST /users/verify', () => {
+  describe('#POST /users/verify', () => {
     it('should send verification mail', (done) => {
       request(app)
         .post('/users/verify')
@@ -1746,7 +1761,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('POST /users/reset', () => {
+  describe('#POST /users/reset', () => {
     it('should send email when authenticated', (done) => {
       request(app)
         .post('/users/reset')
@@ -1769,7 +1784,7 @@ describe('Server Tests', () => {
   });
 
   /** Alon Talmor: this route is deprecated
-  describe('GET /users/reset/:token', () => {
+  describe('#GET /users/reset/:token', () => {
     // Prepare the token for the tests.
     let hashedPassword = null;
     let user2ForgotPasswordToken = null;
@@ -1800,7 +1815,7 @@ describe('Server Tests', () => {
     });
   });*/
 
-  describe('PATCH /users/reset/:token', () => {
+  describe('#PATCH /users/reset/:token', () => {
     // Prepare the token for the tests.
     let hashedPassword = null;
     let user2ForgotPasswordToken = null;
@@ -1871,7 +1886,7 @@ describe('Server Tests', () => {
     });
   });
 
-  describe('POST /reviews', () => {
+  describe('#POST /reviews', () => {
     it('should create a new review', (done) => {
       const review = Object.assign({}, notPublishedReview1);
 
@@ -1919,9 +1934,6 @@ describe('Server Tests', () => {
         });
     });
 
-
-
-
     it('should not create a new review in an adjacent location by same user', (done) => {
       const review = Object.assign({}, notPublishedReview2);
       request(app)
@@ -1935,13 +1947,13 @@ describe('Server Tests', () => {
           }
           return Review.find({ Pros: review.Pros })
             .then((result) => {
-              expect(result.length).toBe(1);
+              expect(result.length).toBe(0); // the review should not have been added
               done();
             }).catch((e) => done(e));
         });
     }).timeout(5000);
 
-    it('should not create review to unautherized user', (done) => {
+    it('should not create review to unauthorized user', (done) => {
       request(app)
         .post('/reviews')
         .set(XAUTH, '1234')
@@ -1972,7 +1984,7 @@ describe('Server Tests', () => {
         });
     });
   });
-  describe('PATCH /reviews/:id', () => {
+  describe('#PATCH /reviews/:id', () => {
     it('should not edit review - non existing one', (done) => {
       const nonExistingId = new ObjectID();
       request(app)
@@ -2043,9 +2055,7 @@ describe('Server Tests', () => {
         });
     });
 
-
-
-    it('should reactivate a irrlevent review', (done) => {
+    it('should reactivate a irrelevant review', (done) => {
       const reviewId = reviews[3]._id.toHexString();
       request(app)
         .patch(`/reviews/${reviewId}`)
@@ -2071,7 +2081,7 @@ describe('Server Tests', () => {
   });
 
 
-  describe('GET /reviews/:long/:lat', () => {
+  describe('#GET /reviews/:long/:lat', () => {
     it('should return accurate calculated review for technion', (done) => {
       const tech = coords.technionIsrael;
       const rated = {
@@ -2085,7 +2095,7 @@ describe('Server Tests', () => {
       request(app)
         .get(`/reviews/${tech[0]}/${tech[1]}`)
         .expect(OK)
-        .expect((res)=>{
+        .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
         })
         .end(done);
@@ -2093,7 +2103,7 @@ describe('Server Tests', () => {
 
 
     it('should return accurate calculated review for technion with irrelevent review', (done) => {
-      const dor = coords.dor;
+      const { dor } = coords;
       const rated = {
         parking: (2/1.5),
         publicTransport: (2/1.5),
@@ -2111,9 +2121,8 @@ describe('Server Tests', () => {
         .end(done);
     });
   });
-  
-  
-  describe('DELETE /reviews', () => {
+
+  describe('#DELETE /reviews', () => {
     it('should not delete review - apartment doesnt review', (done) => {
       const id = new ObjectID().toHexString();
 
@@ -2161,7 +2170,7 @@ describe('Server Tests', () => {
   });
 
 
-  describe('GET *', () => {
+  describe('#GET *', () => {
     it('should return 404 on invalid route requests', (done) => {
       request(app)
         .get('/bad/path')
