@@ -934,7 +934,7 @@ app.get('/reviews/:long/:lat', async (req, res) => {
       numberOfRaters: 0
     };
     
-    //cleen up protocol is here:
+    //clean up protocol is here:
     //check all reviews in the vacinty before calculation
     //this has to happen before the calculation so we use the "await"
     await Review.findInRange(req.params.long, req.params.lat, 1).then(async result => {

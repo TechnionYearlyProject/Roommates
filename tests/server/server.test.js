@@ -54,7 +54,6 @@ describe('#Server Tests', () => {
 
 
 
-<<<<<<< HEAD
   // describe('#GET /reviews/:long/:lat', () => {
   //   it('should return accurate calculated review for technion', (done)=>{
 
@@ -64,8 +63,6 @@ describe('#Server Tests', () => {
   //     .end(done);
   //   });
   // });
-=======
->>>>>>> 9acc3ed6ddbb34d7eefdb11decceabbfb0dae20b
 
   describe('#POST /apartments', () => {
     it('should create a new apartment', (done) => {
