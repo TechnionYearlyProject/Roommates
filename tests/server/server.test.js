@@ -54,15 +54,31 @@ describe('Server Tests', () => {
 
 
 
-  // describe('GET /reviews/:long/:lat', () => {
-  //   it('should return accurate calculated review for technion', (done)=>{
+  describe('GET /reviews/:long/:lat cleen up protocol', () => {
+    it('should return the new accurate review after updating old reviews', (done) => {
+      const westWall = coords.westWall;
+      const rated = {
+        parking: 2,
+        publicTransport: 2,
+        noise: 2,
+        commercialServices: 2,
+        upkeep: 2,
+        generalRating: 2,
+      };
+      request(app)
+        .get(`/reviews/${westWall[0]}/${westWall[1]}`)
+        .expect(OK)
+        .expect((res)=>{
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
+          expect(res.body.r.numberOfRaters).toEqual(2);
+        })
+        .end(done);
+    });
 
-  //     request(app)
-  //     .get(`/reviews/${tech[0]}/${tech[1]}`)
-  //     .expect(OK)
-  //     .end(done);
-  //   });
-  // });
+
+
+  });
+
 
   describe('POST /apartments', () => {
     it('should create a new apartment', (done) => {
@@ -958,7 +974,7 @@ describe('Server Tests', () => {
           expect(res.body.apartments[0].location.address).toEqual(apartments[0].location.address);
         })
         .end(done);
-    });
+    }).timeout(5000);
 
     it('should not find apartment by invalid address', (done) => {
       const address = 'antartica';
@@ -971,7 +987,7 @@ describe('Server Tests', () => {
           expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
-    });
+    }).timeout(5000);
 
     it('should find apartment by coords', (done) => {
       const latitude = 32.7831797;
@@ -1970,7 +1986,7 @@ describe('Server Tests', () => {
               done();
             }).catch((e) => done(e));
         });
-    });
+    }).timeout(5000);
   });
   describe('PATCH /reviews/:id', () => {
     it('should not edit review - non existing one', (done) => {
