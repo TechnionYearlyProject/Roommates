@@ -10,8 +10,9 @@
 const io = require('socket.io')();
 const socketioJwt = require('socketio-jwt');
 
-const { markNotificationAsRead } = require('./logic/socketsServerHandlers');
+const { markNotificationAsRead, handleNewPrivateMessage, handleReadPrivateMessage } = require('./logic/socketsServerHandlers');
 const { logInfo, logError, logDebug } = require('./services/logger/logger');
+const { buildPrivateMessageJSON } = require('./models/privateMessage');
 
 /**
  * @author: Or Abramovich
@@ -92,6 +93,20 @@ io.sockets
     socket.on(SocketMsgTypes.NOTIFICATION_READ, function(notification) {
       markNotificationAsRead(socket.decoded_token._id, notification);
     });
+    //Sends a private message to the receiver and stores it in the DB.
+    socket.on(SocketMsgTypes.CHAT_MSG, function (messageData) {
+    	const message = buildPrivateMessageJSON(new ObjectID(socket.decoded_token._id), new Date().getTime(), messageData.content, false);
+    	message[_id] = new ObjectID(); //the message id should be the same for both sides! (the sender and the reciever.)
+    	handleNewPrivateMessage(socket.decoded_token._id, messageData.to, message).then((res)=>{
+      		sendUserRealTimePrivateMessage(messageData.to, message);
+    	})
+  	});
+    //Updates that the message was read in the users (sender & receiver) documents and send it to the other user
+	socket.on(SocketMsgTypes.CHAT_MSG_READ, function (messageData) {
+	    handleReadPrivateMessage(socket.decoded_token._id, messageData.to, messageData._id).then((res)=>{
+	      sendUserRealTimeReadPrivateMessage(messageData.to, messageData);
+	    })
+  	});
   });
 
 /**
@@ -151,6 +166,36 @@ const sendUserRealTimeNotification = (_userId, notification) => {
   );
 };
 
+/**
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * The function send a specific user a chat msg. The message is sent to his private room i.e. it can be seen
+ * only by him.
+ * 
+ * @param {ObjectID} _userId: the id of the user who is going to get the message
+ * @param {Private Message} message: the message object to be sent to the user.
+ * 
+ *
+ */
+const sendUserRealTimePrivateMessage = (_toId, message) => {
+  sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG, JSON.stringify(message));
+}
+/**
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * The function send a specific user a read chat msg signal. The message is sent to his private room i.e. it can be seen
+ * only by him. The message contains the last time the other user seen messages
+ * 
+ * @param {ObjectID} _userId: the id of the user who is going to get the message.
+ * @param {JSON} message: containing the last time the other user seen messages from him.
+ * 
+ *
+ */
+const sendUserRealTimeReadPrivateMessage = (_toId, message) => {
+  sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG_READ, JSON.stringify(message));
+}
 module.exports = {
   sendUserRealTimeNotification
 };

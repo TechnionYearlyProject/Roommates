@@ -933,8 +933,23 @@ app.get('/reviews/:long/:lat', async (req, res) => {
       Cons: [],
       numberOfRaters: 0
     };
-    let count = 0;
-    let p = 0;
+    
+    //cleen up protocol is here:
+    //check all reviews in the vacinty before calculation
+    //this has to happen before the calculation so we use the "await"
+    await Review.findInRange(req.params.long, req.params.lat, 1).then(async result => {
+      for (let index = 0; index < result.length; index++) {
+        var element = result[index];
+        element.updateRelevency();
+        var years = Math.round((Date.now()-element.activatedAt)/(1000*60*60*24*365));
+        if(years >= 2){
+          Review.findByIdAndRemove(element._id);
+        }
+      }
+    });
+    let num = 0;   //actual number of reviews
+    let count = 0;  //relevent review is worth 1 and old review is worth only half
+    let p = 0;      //how much is the current review worth
     Review.findInRange(req.params.long, req.params.lat, 1).then(result => {
       for (let index = 0; index < result.length; index++) {
         const element = result[index];
@@ -944,6 +959,7 @@ app.get('/reviews/:long/:lat', async (req, res) => {
           p = 0.5;
         }
         count+=p;
+        num++;
         r.ratedCharacteristics.parking += (element.ratedCharacteristics.parking*p);
         r.ratedCharacteristics.publicTransport +=
           (element.ratedCharacteristics.publicTransport*p);
@@ -961,13 +977,15 @@ app.get('/reviews/:long/:lat', async (req, res) => {
           r
         });
       }
+      //basicly calculating a sort of avarge where 2/3 of the power goes to relevent reviews
+      // and a third goes to the old reviews
       r.ratedCharacteristics.parking /= count;
       r.ratedCharacteristics.publicTransport /= count;
       r.ratedCharacteristics.noise /= count;
       r.ratedCharacteristics.commercialServices /= count;
       r.ratedCharacteristics.upkeep /= count;
       r.ratedCharacteristics.generalRating /= count;
-      r.numberOfRaters = count;
+      r.numberOfRaters = num;
       return res.send({
         r
       });

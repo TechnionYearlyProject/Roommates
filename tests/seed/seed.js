@@ -23,6 +23,9 @@ const review1Id = new ObjectID();
 const review2Id = new ObjectID();
 const review3Id = new ObjectID();
 const irreleventReviewId = new ObjectID();
+const releventReviewId = new ObjectID();
+const shouldUpdateToIrreleventReviewId = new ObjectID();
+const shouldRemoveIrreleventReviewId = new ObjectID();
 
 const apartment1User1VisitId = new ObjectID();
 const apartment1User2VisitId = new ObjectID();
@@ -220,7 +223,7 @@ const user4 = {
   mobilePhone: '0541234567',
   about: 'I\'m user number 4',
   _publishedApartments: [],
-  _givenReviews: [],
+  _givenReviews: [releventReviewId.toHexString(),shouldUpdateToIrreleventReviewId.toHexString(),shouldRemoveIrreleventReviewId.toHexString()],
   _interestedApartments: [],
   image: '',
   hobbies: [4, 5, 7]
@@ -367,6 +370,73 @@ const irreleventReview = {
   relevent: false
 };
 
+const releventReview= {
+  _id: releventReviewId,
+  _createdBy: user4Id,
+  createdAt: Date.now(),
+  activatedAt: Date.now(),
+  street: 'west wall',
+  city: 'jerusalem',
+  state: 'israel',
+  geolocation: [35.2340603,31.7765232],
+  ratedCharacteristics: {
+    parking: 2,
+    publicTransport: 2,
+    noise: 2,
+    commercialServices: 2,
+    upkeep: 2,
+    generalRating: 2
+  },
+  Pros: 'such a special place',
+  Cons: 'dont understand how to get to the top',
+  relevent:true
+};
+
+const shouldUpdateToIrreleventReview= {
+  _id: shouldUpdateToIrreleventReviewId,
+  _createdBy: user4Id,
+  createdAt: Date.now(),
+  activatedAt: Date.now()-(1000*60*60*24*400),  //make it a year old
+  street: 'west wall',
+  city: 'jerusalem',
+  state: 'israel',
+  geolocation: [35.2340603,31.7765232],
+  ratedCharacteristics: {
+    parking: 2,
+    publicTransport: 2,
+    noise: 2,
+    commercialServices: 2,
+    upkeep: 2,
+    generalRating: 2
+  },
+  Pros: 'such an amazing place',
+  Cons: 'feels a bit unsafe',
+  relevent:true
+};
+
+const shouldRemoveIrreleventReview= {
+  _id: shouldRemoveIrreleventReviewId,
+  _createdBy: user4Id,
+  createdAt: Date.now(),
+  activatedAt: Date.now()-(1000*60*60*24*365*17),
+  street: 'west wall',
+  city: 'jerusalem',
+  state: 'israel',
+  geolocation: [35.2340603,31.7765232],
+  ratedCharacteristics: {
+    parking: 2,
+    publicTransport: 2,
+    noise: 2,
+    commercialServices: 2,
+    upkeep: 2,
+    generalRating: 2
+  },
+  Pros: 'such an important place',
+  Cons: 'scary to get here',
+  relevent:true
+};
+
+
 const notPublishedReview1 = {
   // _id: review2Id,
   // _createdBy: new ObjectID(),
@@ -425,13 +495,17 @@ const reviews = [
   review1,
   review2,
   review3,
-  irreleventReview
+  irreleventReview,
+  releventReview,
+  shouldUpdateToIrreleventReview,
+  shouldRemoveIrreleventReview
 ];
 
 const coords = {
   andalusiaSpain: [-3.222444, 37.916345],
   technionIsrael: [35.020568, 32.776515],
-  dor: [34.9948996, 32.8148386]
+  dor: [34.9948996, 32.8148386],
+  westWall: [35.2340603,31.7765232]
 };
 
 const populateUsers = (done) => {
@@ -464,6 +538,9 @@ const populateReviews = (done) => {
         new Review(reviews[1]).save(),
         new Review(reviews[2]).save(),
         new Review(irreleventReview).save(),
+        new Review(releventReview).save(),
+        new Review(shouldUpdateToIrreleventReview).save(),
+        new Review(shouldRemoveIrreleventReview).save(),
       ]))
     .then(() => done())
     .catch(done);
@@ -483,6 +560,9 @@ module.exports = {
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
+  shouldRemoveIrreleventReview,
+  shouldUpdateToIrreleventReview,
+  releventReview,
   irreleventReview,
   notRegisteredUser,
   user1VerificationToken,

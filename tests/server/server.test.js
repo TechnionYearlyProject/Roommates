@@ -54,6 +54,7 @@ describe('#Server Tests', () => {
 
 
 
+<<<<<<< HEAD
   // describe('#GET /reviews/:long/:lat', () => {
   //   it('should return accurate calculated review for technion', (done)=>{
 
@@ -63,6 +64,8 @@ describe('#Server Tests', () => {
   //     .end(done);
   //   });
   // });
+=======
+>>>>>>> 9acc3ed6ddbb34d7eefdb11decceabbfb0dae20b
 
   describe('#POST /apartments', () => {
     it('should create a new apartment', (done) => {
@@ -973,7 +976,7 @@ describe('#Server Tests', () => {
           expect(res.body.apartments[0].location.address).toEqual(apartments[0].location.address);
         })
         .end(done);
-    });
+    }).timeout(5000);
 
     it('should not find apartment by invalid address', (done) => {
       const address = 'antartica';
@@ -986,7 +989,7 @@ describe('#Server Tests', () => {
           expect(res.body.apartments.length).toBe(0);
         })
         .end(done);
-    });
+    }).timeout(5000);
 
     it('should find apartment by coords', (done) => {
       const latitude = 32.7831797;
@@ -1982,7 +1985,7 @@ describe('#Server Tests', () => {
               done();
             }).catch((e) => done(e));
         });
-    });
+    }).timeout(5000);
   });
   describe('#PATCH /reviews/:id', () => {
     it('should not edit review - non existing one', (done) => {
@@ -2121,8 +2124,31 @@ describe('#Server Tests', () => {
         .end(done);
     });
   });
+  
+  describe('GET /reviews/:long/:lat', () => {
+    it('should return the new accurate review after updating old reviews', (done) => {
+      const westWall = coords.westWall;
+      const rated = {
+        parking: 2,
+        publicTransport: 2,
+        noise: 2,
+        commercialServices: 2,
+        upkeep: 2,
+        generalRating: 2,
+      };
+      request(app)
+        .get(`/reviews/${westWall[0]}/${westWall[1]}`)
+        .expect(OK)
+        .expect((res)=>{
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
+          expect(res.body.r.numberOfRaters).toEqual(2);
+        })
+        .end(done);
+    });
+  });
 
-  describe('#DELETE /reviews', () => {
+
+  describe('DELETE /reviews', () => {
     it('should not delete review - apartment doesnt review', (done) => {
       const id = new ObjectID().toHexString();
 

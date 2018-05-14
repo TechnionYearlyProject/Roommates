@@ -4,6 +4,7 @@ const { EARTH_RADIUS_IN_KM } = require('../constants');
 const geoLocation = require('../services/geoLocation/geoLocation');
 const { getIndexOfValue } = require('../helpers/arrayFunctions');
 const { ObjectID } = require('mongodb');
+const { User } = require('./user');
 
 const ReviewSchema = new mongoose.Schema({
     _createdBy:{
@@ -118,7 +119,7 @@ const getGeoWithinObj = (coords, radius) => {
 };
 
 /**
- * find all the streets in the geo-circle, which is defined by
+ * find all the reviews in the geo-circle, which is defined by
  * the specified center point and radius.
  *
  * @param {Number} centerLong
@@ -128,13 +129,39 @@ const getGeoWithinObj = (coords, radius) => {
  */
 
 ReviewSchema.statics.findInRange = function (centerLong, centerLat) {
-  const street = this;
+  const review = this;
 
-  return street.find({
+  return review.find({
     'geolocation': getGeoWithinObj([centerLong, centerLat], 1)
   });
 };
 
+
+/**
+ * how many years have passed since last activated
+ * used to determain how relevent is a review
+ * 
+ * @returns number of years since activated
+ */
+
+ReviewSchema.methods.updateRelevency = async function () {
+    var review = this;
+    var years = Math.round((Date.now()-review.activatedAt)/(1000*60*60*24*365));
+    if(years == 0){
+        return;
+    }
+    if(years == 1){
+        if(review.relevent){
+            review.relevent = false; 
+            return review.save();      
+        }
+        return;
+    }
+    await Review.findByIdAndRemove(review._id);User.findById(review._createdBy).then(result =>{
+        result.removeReview(review._id);
+    });
+  };
+  
 
 // /**
 //  * check if the user is interested in the apartment.

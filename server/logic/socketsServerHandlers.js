@@ -32,9 +32,71 @@ const markNotificationAsRead = (_userId, notification) => {
 	 	});
     }catch(e){
     	logError(e.toString());
+    	return Promise.reject();
   	}
 }
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * The function updates both users (sender & receiver) documents in DB with the message.
+ *
+ * @param {String} _senderId: the Id of the user who sent the message.
+ * @param {String} _toId: the Id of the receiver user.
+ * @param {String} content: the content of the message.
+ *
+ * @returns {Promise} that resolved once both users documents are updated in DB with the new data of the message.
+ */
+const handleNewPrivateMessage = (_senderId, _toId, message) => {
+	try{
+		const participants = [new ObjectID(_senderId), new ObjectID(_toId)];
 
+		const senderPromise = User.findById(new ObjectID(_senderId)).then(async (user) => {
+	 	  	await user.inseryOrUpdateConversation(participants, [message]);
+	 	});
+	 	const receiverPromise = User.findById(new ObjectID(_toId)).then(async (user) => {
+	 	  	await user.inseryOrUpdateConversation(participants, [message]);
+	 	});
+
+	 	return Promise.all([senderPromise, receiverPromise]);
+    }catch(e){
+    	logError(e.toString());
+    	return Promise.reject();
+  	}
+}
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * The function updates the read state of the messages in both users (sender & receiver) documents in DB.
+ *
+ * @param {String} _senderId: the Id of the user who sent the read message.
+ * @param {String} _toId: the Id of the user who sent the message.
+ * @param {ObjectId} _lastMessageSeenId: representing the id of the last seen message  (all messages with prior time will be marked as read)
+ *
+ * @returns {Promise} that resolved once both users documents are updated in DB with the new data of the message.
+ */
+const handleReadPrivateMessage = (_senderId, _toId, _lastMessageSeenId) => {
+	try{
+		const participants = [new ObjectID(_senderId), new ObjectID(_toId)];
+
+		const senderPromise = User.findById(new ObjectID(_senderId)).then(async (user) => {
+	 	  	await user.markMessagesAsReadByLastMessage(participants, _lastMessageSeenId);
+	 	});
+	 	const receiverPromise = User.findById(new ObjectID(_toId)).then(async (user) => {
+	 	  	await user.markMessagesAsReadByLastMessage(participants, _lastMessageSeenId);
+	 	});
+
+	 	return Promise.all([senderPromise, receiverPromise]);
+    }catch(e){
+    	logError(e.toString());
+    	return Promise.reject();
+  	}
+}
 module.exports = {
-  markNotificationAsRead
+  markNotificationAsRead,
+  handleNewPrivateMessage,
+  handleReadPrivateMessage
 };

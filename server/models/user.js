@@ -452,6 +452,7 @@ UserSchema.methods.removeApartment = function (apartmentId) {
 
   return user.save();
 };
+
 /**
  * remove an review from the user's given reviews.
  *
