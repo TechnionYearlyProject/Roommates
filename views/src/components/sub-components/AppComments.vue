@@ -129,7 +129,7 @@
         }
       },
       getPublisher(comment) {
-          if (this.isMyComments(comment)) {
+        if (this.isMyComments(comment)) {
           return 'You';
         } else if (!this.usersList[comment._createdBy]) {
           return 'User';
