@@ -32,6 +32,7 @@ const {
   populateApartments,
   populateReviews,
   populateUsers,
+  populateGroups,
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
@@ -46,6 +47,9 @@ describe('#Server Tests', () => {
   beforeEach(populateUsers);
   beforeEach(populateApartments);
   beforeEach(populateReviews);
+
+  //beforeEach(populateGroups);
+
   // beforeEach((done) => {
   //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
   //     done();
@@ -419,6 +423,28 @@ describe('#Server Tests', () => {
         });
     }).timeout(5000);
   });
+
+    describe('/apartments/:id/interested/groups/self/lazy', () => {
+            it('get a group', (done) => {
+                const id = apartments[0]._id;
+                request(app)
+                    .get(`/apartments/${id}/interested/groups/self/lazy`)
+                    .set(XAUTH, users[1].tokens[0].token)
+                    .expect(OK)
+                    .expect((res) => {
+                        expect(res.body.group.length).toBe(apartments[0].totalRoommates);
+                        // expect(res.body.group).includes(users[1]._id.toHexString());
+                        // expect(res.body.group[1]._id).toEqual(users[0]._id.toHexString());
+                    })
+                    .end(async (err) => {
+                        if (err) {
+                            return done(err);
+                        }
+                        return done();
+                    });
+            }).timeout(5000);
+        }
+    );
 
   describe('#PATCH /apartments/:id', () => {
     it('should not edit apartment - non existing one', (done) => {

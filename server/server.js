@@ -304,6 +304,9 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
 
 
 /**
+ * @author: Omri Huller
+ * @date: 05/10
+ *
  * Get a group matching to the logged-in user.
  *
  * @param {String} id
@@ -311,24 +314,33 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
 app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
     try {
         const { id } = req.params;
+        const userId = req.user._id;
 
         const apartment = await Apartment.findById(id);
         if (!apartment) {
             return res.status(NOT_FOUND).send();
         }
-        const roommates = apartment.requiredRoommates;
+        const roommates = apartment.totalRoommates;
 
         const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+        let usersIncluded = false;
 
         // get the group
-        const group =  _interested.slice(0, roommates - 2);
-        // group.unshift(req.user.email);
+        const group =  _interested.slice(0, roommates);
+        for(let u of group){
+            if((u._doc._id.id).equals(userId.id))
+                usersIncluded = true;
+        }
+        if(!usersIncluded)
+            group[roommates - 1] = userId;
 
         return res.send({ group });
+
     } catch (err) {
         return res.status(BAD_REQUEST).send(err);
     }
 });
+
 
 /**
  * Toggle the interested state of the logged-in user.
@@ -367,6 +379,48 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
     return res.status(BAD_REQUEST).send(err);
   }
 });
+
+/**
+ * @author: Omri Huller
+ * @date: 05/10
+ *
+ * Get a group matching to the logged-in user.
+ *
+ * @param {String} id
+ */
+app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+
+        const apartment = await Apartment.findById(id);
+        if (!apartment) {
+            return res.status(NOT_FOUND).send();
+        }
+        const roommates = apartment.totalRoommates;
+
+        const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+        let usersIncluded = false;
+
+        // get the group
+        const group =  _interested.slice(0, roommates);
+        //const group = [ _interested[1], _interested[1], _interested[1]];
+        //if((group.filter(user => (user._id() === userId))).length === 0)
+        for(let u of group){
+            if((u._doc._id.id).equals(userId.id))
+                usersIncluded = true;
+        }
+        if(!usersIncluded)
+            group[roommates - 1] = userId;
+
+        return res.send({ group });
+
+    } catch (err) {
+        return res.status(BAD_REQUEST).send(err);
+    }
+});
+
+
 /**
  * @author: Or Abramovich
  * @date: 04/18

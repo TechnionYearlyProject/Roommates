@@ -486,7 +486,7 @@ const group1 = {
     creator: user1Id,
     members: [user1Id, user2Id, user3Id],
     apartment: [apartment1Id],
-    createdAt: date.getTime(),
+    createdAt: new Date('2018-05-05').getTime(),
     score: 0,
     status: 0, //pending
 };
