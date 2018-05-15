@@ -129,10 +129,10 @@
         }
       },
       getPublisher(comment) {
-        if (!this.usersList[comment._createdBy]) {
-          return 'User';
-        } else if (this.isMyComments(comment)) {
+          if (this.isMyComments(comment)) {
           return 'You';
+        } else if (!this.usersList[comment._createdBy]) {
+          return 'User';
         } else { // eslint-disable-line
           return `${this.usersList[comment._createdBy].firstName} ${
                 this.usersList[comment._createdBy].lastName}`;
