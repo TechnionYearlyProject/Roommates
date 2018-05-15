@@ -6,6 +6,7 @@ const { Apartment } = require('../../server/models/apartment');
 const { Review } = require('../../server/models/review');
 const { User } = require('../../server/models/user');
 const { NotificationsTypesEnum } = require('../../server/models/notification');
+const { Group } = require('../../server/models/group');
 const { XAUTH, VERIFICATION_SECRET, FORGOT_SECRET } = require('../../server/constants');
 const visit = require('../../server/models/visit');
 
@@ -31,6 +32,9 @@ const apartment1User1VisitId = new ObjectID();
 const apartment1User2VisitId = new ObjectID();
 
 const user1Notification1Id = new ObjectID();
+
+const group1Id = new ObjectID();
+const group2Id = new ObjectID();
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
@@ -477,6 +481,26 @@ const notPublishedReview2 = {
   Cons: 'no parks and no parking what so ever'
 };
 
+const group1 = {
+    _id: group1Id,
+    creator: user1Id,
+    members: [user1Id, user2Id, user3Id],
+    apartment: [apartment1Id],
+    createdAt: date.getTime(),
+    score: 0,
+    status: 0, //pending
+};
+
+const group2 = {
+    _id: group1Id,
+    creator: user3Id,
+    members: [user3Id, user2Id],
+    apartment: [apartment2Id],
+    createdAt: new Date('2018-05-05').getTime(),
+    score: 0,
+    status: 1, // canceled
+};
+
 const apartments = [
   apartment1,
   apartment2
@@ -500,6 +524,11 @@ const reviews = [
   shouldUpdateToIrreleventReview,
   shouldRemoveIrreleventReview
 ];
+
+const groups = [
+    group1,
+    group2
+]
 
 const coords = {
   andalusiaSpain: [-3.222444, 37.916345],
@@ -546,6 +575,17 @@ const populateReviews = (done) => {
     .catch(done);
 };
 
+const populateGroups = (done) => {
+    Group.remove({})
+        .then(() =>
+            Promise.all([
+                new Group(groups[0]).save(),
+                new Group(groups[1]).save(),
+            ]))
+        .then(() => done())
+        .catch(done);
+};
+
 module.exports = {
   apartment1User2VisitId,
   apartment1User1VisitId,
@@ -557,6 +597,7 @@ module.exports = {
   populateApartments,
   populateReviews,
   populateUsers,
+  populateGroups,
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
