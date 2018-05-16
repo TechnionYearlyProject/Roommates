@@ -16,7 +16,7 @@ const geoLocation = require('./services/geoLocation/geoLocation');
 const { Apartment } = require('./models/apartment');
 const { Review } = require('./models/review');
 const { User } = require('./models/user');
-const { XAUTH } = require('./constants');
+const { XAUTH, AZURE } = require('./constants');
 const { authenticate } = require('./middleware/authenticate');
 const { getSupportedHobbies } = require('./models/hobbie');
 const { getSupportedTags } = require('./models/tag');
@@ -38,6 +38,7 @@ const { convertArrayToJsonMap } = require('./helpers/arrayFunctions');
 const userVerificator = require('./services/user-verification/user-verificator');
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
+const azureStorage = require('azure-storage');
 
 const app = express();
 
@@ -105,18 +106,35 @@ app.post('/apartments', authenticate, async (req, res) => {
     apartmentData.location = location;
 
     const apartment = await new Apartment(apartmentData).save();
-    await User.findByIdAndUpdate(req.user._id, {
-      $push: {
-        _publishedApartments: apartment._id
-      }
-    }).catch(err => {
-      Apartment.findByIdAndRemove(apartment._id);
-      throw err;
-    });
+
+    await Promise.all([
+        User.findByIdAndUpdate(req.user._id, {
+            $push: {
+                _publishedApartments: apartment._id
+            }
+        }).catch(err => {
+            Apartment.findByIdAndRemove(apartment._id);
+            throw err;
+        }),
+        new Promise(((resolve, reject) => {
+            const SA = AZURE.STORAGE_ACCOUNT;
+            const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
+            blobService.createBlockBlobFromLocalFile(SA.CONTAINERS.APARTMENT_IMAGES, 'myBlob.js', 'server/errors.js', (error, result, response) => {
+                if (error) {
+                  reject(error);
+                }
+                else {
+                  resolve();
+                }
+            });
+        }))
+    ]).catch(err => { throw err });
+
     return res.send({
       apartment
     });
   } catch (err) {
+    console.log(err);
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
