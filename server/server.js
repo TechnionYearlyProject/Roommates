@@ -117,30 +117,30 @@ app.post('/apartments', authenticate, async (req, res) => {
 
     const apartment = await new Apartment(apartmentData).save();
     await Promise.all([
-        User.findByIdAndUpdate(req.user._id, {
-            $push: {
-                _publishedApartments: apartment._id
-            }
-        }).catch(err => {
-            Apartment.findByIdAndRemove(apartment._id);
-            throw err;
-        }),
-        new Promise(async resolve => {
-            const SA = AZURE.STORAGE_ACCOUNT;
-            const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
+      User.findByIdAndUpdate(req.user._id, {
+        $push: {
+          _publishedApartments: apartment._id
+        }
+      }).catch(err => {
+        Apartment.findByIdAndRemove(apartment._id);
+        throw err;
+      }),
+      new Promise(async resolve => {
+        const SA = AZURE.STORAGE_ACCOUNT;
+        const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
 
-            await Promise.all(imagesData.map((image, index) => new Promise((imageResolve, imageReject) => {
-              blobService.createBlockBlobFromText(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${apartmentData.images[index]}`, image.buffer, { contentType: image.type }, error => {
-                if (error) {
-                  imageReject(error);
-                }
-                else {
-                  imageResolve();
-                }
-              });
-            }))).catch(err => { throw err });
-            resolve();
-        })
+        await Promise.all(imagesData.map((image, index) => new Promise((imageResolve, imageReject) => {
+          blobService.createBlockBlobFromText(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${apartmentData.images[index]}`, image.buffer, { contentType: image.type }, error => {
+            if (error) {
+              imageReject(error);
+            }
+            else {
+              imageResolve();
+            }
+          });
+        }))).catch(err => { throw err });
+        resolve();
+      })
     ]).catch(err => { throw err });
 
     return res.send({
@@ -274,9 +274,19 @@ app.get('/apartments', async (req, res) => {
       // 'longitude',
       // 'latitude'
     ]);
+
+    const SA = AZURE.STORAGE_ACCOUNT;
+    const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
+    const imageBaseURL = blobService.getUrl(SA.CONTAINERS.APARTMENT_IMAGES);``
+
     const apartments = await Apartment.findByProperties(query);
+
     res.send({
-      apartments
+      apartments: apartments.map(apartment => {
+        apartment.images = apartment.images.map(image => `${imageBaseURL}/${apartment._id}/${image}`);
+
+        return apartment;
+      })
     });
     // let tags;
     // if (body.tags && Array.isArray(body.tags)) {
