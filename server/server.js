@@ -88,6 +88,7 @@ app.post('/apartments', authenticate, async (req, res) => {
       return res.status(BAD_REQUEST).send(errors.invalidLocation);
     }
 
+    const imagesData = req.body.files || [];
     const apartmentData = _.pick(req.body, [
       'price',
       'entranceDate',
@@ -105,9 +106,16 @@ app.post('/apartments', authenticate, async (req, res) => {
     apartmentData._notificationSubscribers = [req.user._id];
     apartmentData.createdAt = Date.now();
     apartmentData.location = location;
+    apartmentData.images = [];
+    for (let i = 0; i < imagesData.length; i++) {
+      const matches = imagesData[i].imageURL.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      imagesData[i].type = matches[1];
+      imagesData[i].buffer = new Buffer(matches[2], 'base64');
+
+      apartmentData.images[i] = uuid() + '.' + imagesData[i].type.split('/')[1];
+    }
 
     const apartment = await new Apartment(apartmentData).save();
-
     await Promise.all([
         User.findByIdAndUpdate(req.user._id, {
             $push: {
@@ -117,27 +125,28 @@ app.post('/apartments', authenticate, async (req, res) => {
             Apartment.findByIdAndRemove(apartment._id);
             throw err;
         }),
-        new Promise(((resolve, reject) => {
-            const imageName = uuid();
-
+        new Promise(async resolve => {
             const SA = AZURE.STORAGE_ACCOUNT;
             const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
-            blobService.createBlockBlobFromLocalFile(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${imageName}`, 'server/errors.js', (error, result, response) => {
+
+            await Promise.all(imagesData.map((image, index) => new Promise((imageResolve, imageReject) => {
+              blobService.createBlockBlobFromText(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${apartmentData.images[index]}`, image.buffer, { contentType: image.type }, error => {
                 if (error) {
-                  reject(error);
+                  imageReject(error);
                 }
                 else {
-                  resolve();
+                  imageResolve();
                 }
-            });
-        }))
+              });
+            }))).catch(err => { throw err });
+            resolve();
+        })
     ]).catch(err => { throw err });
 
     return res.send({
       apartment
     });
   } catch (err) {
-    console.log(err);
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
