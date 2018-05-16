@@ -39,6 +39,7 @@ const userVerificator = require('./services/user-verification/user-verificator')
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
 const azureStorage = require('azure-storage');
+const uuid = require('uuid/v4');
 
 const app = express();
 
@@ -117,9 +118,11 @@ app.post('/apartments', authenticate, async (req, res) => {
             throw err;
         }),
         new Promise(((resolve, reject) => {
+            const imageName = uuid();
+
             const SA = AZURE.STORAGE_ACCOUNT;
             const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
-            blobService.createBlockBlobFromLocalFile(SA.CONTAINERS.APARTMENT_IMAGES, 'myBlob.js', 'server/errors.js', (error, result, response) => {
+            blobService.createBlockBlobFromLocalFile(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${imageName}`, 'server/errors.js', (error, result, response) => {
                 if (error) {
                   reject(error);
                 }
