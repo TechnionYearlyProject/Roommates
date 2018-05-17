@@ -82,7 +82,7 @@
               abort: false
             };
             this.keys += 1;
-            this.value.unshift(file);
+            this.value.push(file);
             this.$emit('input', this.value);
 
             fileReader.addEventListener('progress', (e) => {
