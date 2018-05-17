@@ -48,7 +48,7 @@
                   <v-subheader v-text="'Entrance date'"></v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-sm2 order-md1>
-                  <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur required />
+                  <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" />
                 </v-flex>
                 <v-flex xs12 sm12 md1 order-md2>
                 </v-flex>
@@ -206,7 +206,7 @@
           ],
           number: [() => !!this.payload.address.number || ''],
           price: [() => !!this.payload.price || ''],
-          entranceDate: !![() => this.payload.entranceDate || '']
+          entranceDate: [() => !!this.payload.entranceDate || '']
         },
         e6: 1,
         color: 'grey lighten-5',
@@ -222,12 +222,12 @@
         if (this.$refs.form.validate()) {
           try {
             this.$store.commit('showLoading');
-            const apartment = await this.$store.dispatch(
-              'publishApartment',
-              this.payload
-            );
-            this.$router.push({ name: 'AppMain' });
-            await this.$store.dispatch('searchApartments', { id: apartment._id });
+            await this.$store.dispatch('publishApartment', this.payload).then(async (apartment) => {
+              this.$router.push({ name: 'AppMain' });
+              await this.$store.dispatch('searchApartments', { id: apartment._id });
+            }).catch((e) => {
+              this.$store.commit('showSnackbar', e.response.data.message);
+            });
           } catch (error) {
             // eslint-disable-next-line
             console.log(error);

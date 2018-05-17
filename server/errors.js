@@ -15,11 +15,11 @@ const Error = function (code, message) {
 };
 
 module.exports = {
-  invalidCredentials: Error(ERR_INVALID_CRADENTIALS, 'Invalid cradentials.'),
+  invalidCredentials: Error(ERR_INVALID_CRADENTIALS, 'Invalid credentials.'),
   emailInUse: Error(ERR_EMAIL_IN_USE, 'Email already in use.'),
   invalidLocation: Error(INVALID_LOCATION, 'Couldn\'t find location.'),
-  unknownError: Error(UNKNOWN_ERROR, 'Uknown error occured.'),
+  unknownError: Error(UNKNOWN_ERROR, 'Unknown error occurred.'),
   unconfirmedUser: Error(UNCONFIRMED_USER, 'Account is not verified.'),
   PasswordResetFailure: Error(PASSWORD_RESET_FAILURE, 'Couldn\'t complete the reset password action.'),
-  multiRating: Error(MULTI_RATING, 'user tried to rste 2 adjacent locations.'),
+  multiRating: Error(MULTI_RATING, 'User tried to rate 2 adjacent locations.'),
 };
