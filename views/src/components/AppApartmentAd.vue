@@ -444,6 +444,8 @@
 <style>
   .card__media__background {
     transition: all 1s ease-in-out;
+      -webkit-background-size: contain !important;
+      background-size: contain !important;
   }
 </style>
 
