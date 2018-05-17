@@ -87,7 +87,7 @@
         return `${Math.floor(time / 86400)} days ago`;
       },
       addComment() {
-        if (this.text.length < this.minLength) {
+        if (!this.text || this.text.length < this.minLength) {
           this.errorMessages = ['Your comment is too short'];
 
           return;
