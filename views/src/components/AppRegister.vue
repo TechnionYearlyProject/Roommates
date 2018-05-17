@@ -117,7 +117,7 @@
     },
     computed: {
       minBirthdayDate() {
-        const date = Date.now() - 18 * 365 * 24 * 60 * 60 * 1000; // 18 years
+        const date = Date.now() - (18 * 365 * 24 * 60 * 60 * 1000); // 18 years
         return new Date(date).toISOString();
       }
     },

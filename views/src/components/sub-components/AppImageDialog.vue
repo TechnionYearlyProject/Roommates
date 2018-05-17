@@ -13,22 +13,22 @@
 </template>
 
 <script>
-import image1 from '../../assets/apartment-defalut.jpg'
-import image2 from '../../assets/user-default.jpg'
+import image1 from '../../assets/apartment-defalut.jpg';
+import image2 from '../../assets/user-default.jpg';
 
 export default {
-    props: {
-        value: {
-            type: Boolean,
-            default: false
-        },
-        images: {
-            type: Array,
-            default: () => [image1, image2],
-            required: true
-        }
+  props: {
+    value: {
+      type: Boolean,
+      default: false
     },
-}
+    images: {
+      type: Array,
+      default: () => [image1, image2],
+      required: true
+    }
+  },
+};
 </script>
 
 <style scoped>

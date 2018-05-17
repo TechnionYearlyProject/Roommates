@@ -65,14 +65,14 @@
         dateUpdate() {
           this.$emit('dateUpdated', this.date);
         },
-        formatDate (date) {
+        formatDate(date) {
           if (!date) {
             return null;
           }
           const [year, month, day] = date.split('-');
           return `${day}/${month}/${year}`;
         },
-        parseDate (date) {
+        parseDate(date) {
           if (!date) {
             return null;
           }
@@ -81,8 +81,8 @@
         }
       },
       watch: {
-        date (val) {
-          this.dateFormatted = this.formatDate(this.date)
+        date() {
+          this.dateFormatted = this.formatDate(this.date);
         }
       },
     };
