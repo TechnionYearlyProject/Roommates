@@ -63,12 +63,12 @@
       hideLoading() {
         this.loading = false;
       },
-      showSnackbar(user) {
+      showSnackbarWelcome(user) {
         if (user.isVerified) {
-          this.$store.commit('showSnackbar', `Welcome back ${user.firstName}`);
+          this.$store.commit('showSnackbarWelcome', `Welcome back ${user.firstName}`);
         } else {
           this.$store.commit(
-            'showSnackbar',
+            'showSnackbarWelcome',
             `Hi ${user.firstName}, you still need to verify your account`
           );
         }
@@ -80,7 +80,7 @@
           .then((user) => {
             this.hideAlert();
             this.$router.push({ name: 'AppMain' });
-            this.showSnackbar(user);
+            this.showSnackbarWelcome(user);
           })
           .catch((err) => this.showBadAlert())
           .then(() => this.hideLoading());

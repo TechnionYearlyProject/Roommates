@@ -90,9 +90,9 @@
       hideLoading() {
         this.loading = false;
       },
-      showSnackbar(user) {
+      showSnackbarWelcome(user) {
         this.$store.commit(
-          'showSnackbar',
+          'showSnackbarWelcome',
           `Welcome ${
             user.firstName
           }! Check your e-mail for the verification link to complete the registration`
@@ -107,7 +107,7 @@
             password: this.payload.password
           });
           this.$router.push({ name: 'AppMain' });
-          this.showSnackbar(user);
+          this.showSnackbarWelcome(user);
         } catch (error) {
           console.log(error);
         } finally {

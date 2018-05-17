@@ -603,7 +603,7 @@ app.post('/users', async (req, res) => {
     res.send({ user });
     */
   } catch (err) {
-    res.status(BAD_REQUEST).send(err);
+    res.status(BAD_REQUEST).send(err.message);
   }
 });
 

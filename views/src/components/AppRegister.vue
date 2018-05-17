@@ -1,5 +1,8 @@
 <template>
   <v-container>
+    <v-alert :type="alert.type" :value="alert.show" transition="scale-transition">
+      {{ alert.message }}
+    </v-alert>
     <v-layout>
       <v-flex>
         <v-form v-model="valid">
@@ -33,14 +36,6 @@
   export default {
     data: () => ({
       valid: true,
-      // payload: {
-      //   email: '',
-      //   password: '',
-      //   firstName: '',
-      //   lastName: '',
-      //   birthdate: '',
-      //   gender: ''
-      // },
       payload: {
         email: 'alontalmor@gmail.com',
         password: '123456',
@@ -79,7 +74,7 @@
       alert: {
         show: false,
         message: '',
-        type: 'info'
+        type: 'error'
       },
       loading: false
     }),
@@ -90,7 +85,7 @@
       hideLoading() {
         this.loading = false;
       },
-      showSnackbar(user) {
+      showSnackbarWelcome(user) {
         this.$store.commit(
           'showSnackbar',
           `Welcome ${
@@ -101,16 +96,20 @@
       async register() {
         try {
           this.showLoading();
-          const user = await this.$store.dispatch('register', this.payload);
-          await this.$store.dispatch('sendVerificationMail', {
-            email: this.payload.email,
-            password: this.payload.password
+          await this.$store.dispatch('register', this.payload).then(async (user) => {
+            await this.$store.dispatch('sendVerificationMail', {
+              email: this.payload.email,
+              password: this.payload.password
+            });
+            this.$router.push({ name: 'AppMain' });
+            this.showSnackbarWelcome(user);
+          }).catch((e) => {
+            this.alert.message = e.response.data;
+            this.alert.show = true;
           });
-          this.$router.push({ name: 'AppMain' });
-          this.showSnackbar(user);
         } catch (error) {
-          // eslint-disable-next-line 
-          console.log(error);
+          this.alert.message = 'Unknown error occurred';
+          this.alert.show = true;
         } finally {
           this.hideLoading();
         }
@@ -122,7 +121,6 @@
   };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
 </style>

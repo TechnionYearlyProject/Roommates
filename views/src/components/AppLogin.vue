@@ -69,7 +69,7 @@
       hideLoading() {
         this.loading = false;
       },
-      showSnackbar(user) {
+      showSnackbarWelcome(user) {
         if (user.isVerified) {
           this.$store.commit('showSnackbar', `Welcome back ${user.firstName}`);
         } else {
@@ -86,7 +86,7 @@
           .then((user) => {
             this.hideAlert();
             this.$router.push({ name: 'AppMain' });
-            this.showSnackbar(user);
+            this.showSnackbarWelcome(user);
           })
           .catch(() => this.showBadAlert())
           .then(() => this.hideLoading());

@@ -47,19 +47,19 @@
     methods: {
       showSentSnackbar() {
         this.$store.commit(
-          'showSnackbar',
+          'showSnackbarWelcome',
           'Verification mail was sent, please check your mailbox'
         );
       },
       showVerifiedSnackbar(user) {
         this.$store.commit(
-          'showSnackbar',
+          'showSnackbarWelcome',
           `Thank you ${user.firstName}, your account is now verified!`
         );
       },
       showFailureSnackbar() {
         this.$store.commit(
-          'showSnackbar',
+          'showSnackbarWelcome',
           'Oops.. something didn\'t go well, please retry again or contact us'
         );
       },
