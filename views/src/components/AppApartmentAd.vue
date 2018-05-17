@@ -441,6 +441,12 @@
   };
 </script>
 
+<style>
+  .card__media__background {
+    transition: all 1s ease-in-out;
+  }
+</style>
+
 <style scoped>
 
 </style>
