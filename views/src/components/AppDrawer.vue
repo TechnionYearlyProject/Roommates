@@ -15,7 +15,7 @@
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title class="grey--text">
-                <div class="text-xs-right">{{ payload.entranceDate || 'not selected' }}</div>
+                <div class="text-xs-right">{{ formatedDate || 'not selected' }}</div>
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
@@ -185,6 +185,13 @@
           return null;
         }
         return { longitude: this.payload.geolocation[0], latitude: this.payload.geolocation[1] };
+      },
+      formatedDate() {
+        if (!this.payload.entranceDate) {
+          return null;
+        }
+        const [year, month] = this.payload.entranceDate.split('-');
+        return `${month}-${year}`;
       }
     },
     mounted() {

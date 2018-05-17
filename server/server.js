@@ -10,16 +10,35 @@ const {
 require('./server-config');
 require('./db/mongoose');
 require('./socketsServer');
-const { useVue } = require('./middleware/vuejs');
-const { useCors } = require('./middleware/cors');
+const {
+  useVue
+} = require('./middleware/vuejs');
+const {
+  useCors
+} = require('./middleware/cors');
 const geoLocation = require('./services/geoLocation/geoLocation');
-const { Apartment } = require('./models/apartment');
-const { Review } = require('./models/review');
-const { User } = require('./models/user');
-const { XAUTH, AZURE } = require('./constants');
-const { authenticate } = require('./middleware/authenticate');
-const { getSupportedHobbies } = require('./models/hobbie');
-const { getSupportedTags } = require('./models/tag');
+const {
+  Apartment
+} = require('./models/apartment');
+const {
+  Review
+} = require('./models/review');
+const {
+  User
+} = require('./models/user');
+const {
+  XAUTH,
+  AZURE
+} = require('./constants');
+const {
+  authenticate
+} = require('./middleware/authenticate');
+const {
+  getSupportedHobbies
+} = require('./models/hobbie');
+const {
+  getSupportedTags
+} = require('./models/tag');
 const {
   getVisitStatusCodes,
   canModifyVisit,
@@ -30,11 +49,16 @@ const {
   NotificationsTypesEnum,
   updateNotificationByJson
 } = require('./models/notification');
-const { logInfo } = require('./services/logger/logger');
-const { ObjectID } = require('mongodb');
+const {
+  logInfo
+} = require('./services/logger/logger');
 const httpLogger = require('./services/logger/http-logger');
-const { notifyUsers } = require('./services/notifications-system/notifier');
-const { convertArrayToJsonMap } = require('./helpers/arrayFunctions');
+const {
+  notifyUsers
+} = require('./services/notifications-system/notifier');
+const {
+  convertArrayToJsonMap
+} = require('./helpers/arrayFunctions');
 const userVerificator = require('./services/user-verification/user-verificator');
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
@@ -112,7 +136,7 @@ app.post('/apartments', authenticate, async (req, res) => {
       imagesData[i].type = matches[1];
       imagesData[i].buffer = new Buffer(matches[2], 'base64');
 
-      apartmentData.images[i] = uuid() + '.' + imagesData[i].type.split('/')[1];
+      apartmentData.images[i] = `${uuid()}.${imagesData[i].type.split('/')[1]}`;
     }
 
     const apartment = await new Apartment(apartmentData).save();
@@ -130,18 +154,23 @@ app.post('/apartments', authenticate, async (req, res) => {
         const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
 
         await Promise.all(imagesData.map((image, index) => new Promise((imageResolve, imageReject) => {
-          blobService.createBlockBlobFromText(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${apartmentData.images[index]}`, image.buffer, { contentType: image.type }, error => {
+          blobService.createBlockBlobFromText(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${apartmentData.images[index]}`, image.buffer, {
+            contentType: image.type
+          }, error => {
             if (error) {
               imageReject(error);
-            }
-            else {
+            } else {
               imageResolve();
             }
           });
-        }))).catch(err => { throw err });
+        }))).catch(err => {
+          throw err;
+        });
         resolve();
       })
-    ]).catch(err => { throw err });
+    ]).catch(err => {
+      throw err;
+    });
 
     return res.send({
       apartment
@@ -170,7 +199,9 @@ app.post('/apartments', authenticate, async (req, res) => {
  */
 app.patch('/apartments/:id', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     if (!req.user.isOwner(id)) {
       return res.status(UNAUTHORIZED).send();
@@ -192,11 +223,9 @@ app.patch('/apartments/:id', authenticate, async (req, res) => {
     ]);
 
     const apartment = await Apartment.findByIdAndUpdate(
-      id,
-      {
+      id, {
         $set: apartmentData
-      },
-      {
+      }, {
         new: true,
         runValidators: true
       }
@@ -205,8 +234,7 @@ app.patch('/apartments/:id', authenticate, async (req, res) => {
     notifyUsers(
       NotificationsTypesEnum.APARTMENT_WAS_MODIFIED,
       req.user._id,
-      apartment._notificationSubscribers,
-      [id],
+      apartment._notificationSubscribers, [id],
       false,
       new Date().getTime()
     );
@@ -277,7 +305,8 @@ app.get('/apartments', async (req, res) => {
 
     const SA = AZURE.STORAGE_ACCOUNT;
     const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
-    const imageBaseURL = blobService.getUrl(SA.CONTAINERS.APARTMENT_IMAGES);``
+    const imageBaseURL = blobService.getUrl(SA.CONTAINERS.APARTMENT_IMAGES);
+    ``
 
     const apartments = await Apartment.findByProperties(query);
 
@@ -323,7 +352,9 @@ app.get('/apartments', async (req, res) => {
  */
 app.get('/apartments/:id/interested', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
@@ -352,33 +383,37 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
  * @param {String} id
  */
 app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user._id;
+  try {
+    const {
+      id
+    } = req.params;
+    const userId = req.user._id;
 
-        const apartment = await Apartment.findById(id);
-        if (!apartment) {
-            return res.status(NOT_FOUND).send();
-        }
-        const roommates = apartment.totalRoommates;
-
-        const _interested = await req.user.getBestMatchingUsers(apartment._interested);
-        let usersIncluded = false;
-
-        // get the group
-        const group =  _interested.slice(0, roommates);
-        for(let u of group){
-            if((u._doc._id.id).equals(userId.id))
-                usersIncluded = true;
-        }
-        if(!usersIncluded)
-            group[roommates - 1] = userId;
-
-        return res.send({ group });
-
-    } catch (err) {
-        return res.status(BAD_REQUEST).send(err);
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
     }
+    const roommates = apartment.totalRoommates;
+
+    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+    let usersIncluded = false;
+
+    // get the group
+    const group = _interested.slice(0, roommates);
+    for (let u of group) {
+      if ((u._doc._id.id).equals(userId.id))
+        usersIncluded = true;
+    }
+    if (!usersIncluded)
+      group[roommates - 1] = userId;
+
+    return res.send({
+      group
+    });
+
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
 });
 
 
@@ -389,7 +424,9 @@ app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req,
  */
 app.put('/apartments/:id/interested', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
@@ -405,8 +442,7 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
       notifyUsers(
         NotificationsTypesEnum.USER_LIKED_APARTMENT,
         req.user._id,
-        apartment._notificationSubscribers,
-        [id],
+        apartment._notificationSubscribers, [id],
         false,
         new Date().getTime()
       );
@@ -429,35 +465,39 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
  * @param {String} id
  */
 app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const userId = req.user._id;
+  try {
+    const {
+      id
+    } = req.params;
+    const userId = req.user._id;
 
-        const apartment = await Apartment.findById(id);
-        if (!apartment) {
-            return res.status(NOT_FOUND).send();
-        }
-        const roommates = apartment.totalRoommates;
-
-        const _interested = await req.user.getBestMatchingUsers(apartment._interested);
-        let usersIncluded = false;
-
-        // get the group
-        const group =  _interested.slice(0, roommates);
-        //const group = [ _interested[1], _interested[1], _interested[1]];
-        //if((group.filter(user => (user._id() === userId))).length === 0)
-        for(let u of group){
-            if((u._doc._id.id).equals(userId.id))
-                usersIncluded = true;
-        }
-        if(!usersIncluded)
-            group[roommates - 1] = userId;
-
-        return res.send({ group });
-
-    } catch (err) {
-        return res.status(BAD_REQUEST).send(err);
+    const apartment = await Apartment.findById(id);
+    if (!apartment) {
+      return res.status(NOT_FOUND).send();
     }
+    const roommates = apartment.totalRoommates;
+
+    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+    let usersIncluded = false;
+
+    // get the group
+    const group = _interested.slice(0, roommates);
+    //const group = [ _interested[1], _interested[1], _interested[1]];
+    //if((group.filter(user => (user._id() === userId))).length === 0)
+    for (let u of group) {
+      if ((u._doc._id.id).equals(userId.id))
+        usersIncluded = true;
+    }
+    if (!usersIncluded)
+      group[roommates - 1] = userId;
+
+    return res.send({
+      group
+    });
+
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
 });
 
 
@@ -473,7 +513,9 @@ app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req,
  */
 app.put('/apartments/:id/subscription', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
@@ -502,7 +544,9 @@ app.put('/apartments/:id/subscription', authenticate, async (req, res) => {
 app.put('/apartments/:id/comment', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['text']);
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
@@ -514,13 +558,14 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
     notifyUsers(
       NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
       req.user._id,
-      apartment._notificationSubscribers,
-      [id],
+      apartment._notificationSubscribers, [id],
       false,
       new Date().getTime()
     );
 
-    const { comments } = apartment;
+    const {
+      comments
+    } = apartment;
 
     return res.send({
       comments
@@ -537,7 +582,9 @@ app.put('/apartments/:id/comment', authenticate, async (req, res) => {
  */
 app.delete('/apartments/:id', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     if (!req.user.isOwner(id)) {
       return res.status(UNAUTHORIZED).send();
@@ -718,7 +765,9 @@ app.get('/users', async (req, res) => {
  */
 app.get('/users/:id/interested', async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     const user = await User.findById(id);
     if (!user) {
@@ -740,7 +789,9 @@ app.get('/users/:id/interested', async (req, res) => {
  */
 app.get('/users/:id/published', async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     const user = await User.findById(id);
     if (!user) {
@@ -775,11 +826,9 @@ app.patch('/users/self', authenticate, async (req, res) => {
     ]);
 
     const user = await User.findByIdAndUpdate(
-      req.user._id,
-      {
+      req.user._id, {
         $set: body
-      },
-      {
+      }, {
         new: true,
         runValidators: true
       }
@@ -934,7 +983,9 @@ app.patch('/users/reset/:token', async (req, res) => {
 
 app.patch('/users/notifications/:id', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     const notificationData = _.pick(req.body, ['wasRead']);
 
@@ -1027,7 +1078,7 @@ app.get('/reviews/:long/:lat', async (req, res) => {
       Cons: [],
       numberOfRaters: 0
     };
-    
+
     //clean up protocol is here:
     //check all reviews in the vacinty before calculation
     //this has to happen before the calculation so we use the "await"
@@ -1035,34 +1086,34 @@ app.get('/reviews/:long/:lat', async (req, res) => {
       for (let index = 0; index < result.length; index++) {
         var element = result[index];
         element.updateRelevency();
-        var years = Math.round((Date.now()-element.activatedAt)/(1000*60*60*24*365));
-        if(years >= 2){
+        var years = Math.round((Date.now() - element.activatedAt) / (1000 * 60 * 60 * 24 * 365));
+        if (years >= 2) {
           Review.findByIdAndRemove(element._id);
         }
       }
     });
-    let num = 0;   //actual number of reviews
-    let count = 0;  //relevent review is worth 1 and old review is worth only half
-    let p = 0;      //how much is the current review worth
+    let num = 0; //actual number of reviews
+    let count = 0; //relevent review is worth 1 and old review is worth only half
+    let p = 0; //how much is the current review worth
     Review.findInRange(req.params.long, req.params.lat, 1).then(result => {
       for (let index = 0; index < result.length; index++) {
         const element = result[index];
-        if(element.relevent){
+        if (element.relevent) {
           p = 1;
-        }else{
+        } else {
           p = 0.5;
         }
-        count+=p;
+        count += p;
         num++;
-        r.ratedCharacteristics.parking += (element.ratedCharacteristics.parking*p);
+        r.ratedCharacteristics.parking += (element.ratedCharacteristics.parking * p);
         r.ratedCharacteristics.publicTransport +=
-          (element.ratedCharacteristics.publicTransport*p);
-        r.ratedCharacteristics.noise += (element.ratedCharacteristics.noise*p);
+          (element.ratedCharacteristics.publicTransport * p);
+        r.ratedCharacteristics.noise += (element.ratedCharacteristics.noise * p);
         r.ratedCharacteristics.commercialServices +=
-          (element.ratedCharacteristics.commercialServices*p);
-        r.ratedCharacteristics.upkeep += (element.ratedCharacteristics.upkeep*p);
+          (element.ratedCharacteristics.commercialServices * p);
+        r.ratedCharacteristics.upkeep += (element.ratedCharacteristics.upkeep * p);
         r.ratedCharacteristics.generalRating +=
-          (element.ratedCharacteristics.generalRating*p);
+          (element.ratedCharacteristics.generalRating * p);
         r.Pros.push(element.Pros);
         r.Cons.push(element.Cons);
       }
@@ -1103,7 +1154,9 @@ app.get('/reviews/:long/:lat', async (req, res) => {
 
 app.patch('/reviews/:id', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
     if (!req.user.isReviewOwner(id)) {
       return res.status(UNAUTHORIZED).send();
     }
@@ -1115,11 +1168,9 @@ app.patch('/reviews/:id', authenticate, async (req, res) => {
     reviewData.relevent = true;
     reviewData.activatedAt = Date.now();
     const review = await Review.findByIdAndUpdate(
-      id,
-      {
+      id, {
         $set: reviewData
-      },
-      {
+      }, {
         new: true,
         runValidators: true
       }
@@ -1185,7 +1236,10 @@ app.get('/apartments/visit/actions', async (req, res) => {
 app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['schedTo', 'status']);
-    const { id, visitId } = req.params;
+    const {
+      id,
+      visitId
+    } = req.params;
 
     const apartment = await Apartment.findById(id);
     if (!apartment) {
@@ -1194,9 +1248,7 @@ app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
 
     const visitData = apartment.getVisitDataById(visitId);
 
-    if (
-      !canModifyVisit(apartment._createdBy, visitData._askedBy, req.user._id)
-    ) {
+    if (!canModifyVisit(apartment._createdBy, visitData._askedBy, req.user._id)) {
       return res.status(UNAUTHORIZED).send();
     }
 
@@ -1231,7 +1283,9 @@ app.patch('/apartments/:id/visit/:visitId', authenticate, async (req, res) => {
 app.put('/apartments/:id/visit/', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['schedTo']);
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
     const visitId = body.visitId;
 
     const apartment = await Apartment.findById(id);
@@ -1260,7 +1314,9 @@ app.put('/apartments/:id/visit/', authenticate, async (req, res) => {
  */
 app.delete('/reviews/:id', authenticate, async (req, res) => {
   try {
-    const { id } = req.params;
+    const {
+      id
+    } = req.params;
 
     if (!req.user.isReviewOwner(id)) {
       return res.status(UNAUTHORIZED).send();

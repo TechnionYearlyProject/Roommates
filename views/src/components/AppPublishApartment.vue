@@ -48,7 +48,12 @@
                   <v-subheader v-text="'Entrance date'"></v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-sm2 order-md1>
-                  <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" />
+                  
+
+
+
+
+                  <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" :min="today" />
                 </v-flex>
                 <v-flex xs12 sm12 md1 order-md2>
                 </v-flex>
@@ -269,6 +274,9 @@
           () => this.payload.address.number !== null,
           () => this.payload.price !== null
         ];
+      },
+      today() {
+        return new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString();
       }
     },
     watch: {
