@@ -48,11 +48,11 @@
                   <v-subheader v-text="'Entrance date'"></v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-sm2 order-md1>
-                  
 
 
 
 
+                  <v-text-field v-model="payload.entranceDate" label="" mask="#######" :rules="rules.entranceDate" required class="hidden"></v-text-field>
                   <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" :min="today" />
                 </v-flex>
                 <v-flex xs12 sm12 md1 order-md2>
@@ -272,7 +272,8 @@
           () => this.payload.address.city !== null,
           () => this.payload.address.street !== null,
           () => this.payload.address.number !== null,
-          () => this.payload.price !== null
+          () => this.payload.price !== null,
+          () => this.payload.entranceDate !== null
         ];
       },
       today() {
@@ -302,7 +303,8 @@
   };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+  .hidden {
+    display: none;
+  }
 </style>
