@@ -50,7 +50,7 @@
       },
       minLength: {
         type: Number,
-        default: 10
+        default: 1
       },
       onComment: {
         type: Function,
@@ -89,6 +89,7 @@
       addComment() {
         if (this.text.length < this.minLength) {
           this.errorMessages = ['Your comment is too short'];
+
           return;
         }
         this.loading = true;
