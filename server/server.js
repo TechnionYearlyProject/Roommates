@@ -64,6 +64,7 @@ const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
 const azureStorage = require('azure-storage');
 const uuid = require('uuid/v4');
+const { ObjectID } = require('mongodb');
 
 const app = express();
 
@@ -1007,6 +1008,30 @@ app.patch('/users/notifications/:id', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * @author: Or Abramovich
+ * @date: 05/18
+ *
+ * Deletes the conversation data in the logged-in user document.
+ *
+ * @param {array of ObjectID} the participants of the conversation to be deleted.
+ *
+ * @returns {JSON} containing the updated user document.
+ */
+app.delete('/users/conversation', authenticate, async (req, res) => {
+  try {
+    const _participants = _.castArray(req.query.id);
+
+    for(var i=0;i<_participants.length;i++){
+      _participants[i] = new ObjectID(_participants[i]);
+    }
+
+    const user = await req.user.removeConversation(_participants);
+    res.send({user});
+  } catch(err){
+    return res.status(BAD_REQUEST).send(errors.unknownError);
+  }
+});
 /**
  * Add a new review. The posting user has to be authenticated.
  *
