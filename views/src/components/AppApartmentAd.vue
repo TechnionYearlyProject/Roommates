@@ -4,11 +4,11 @@
     <v-card-media :src="image" height="200px" @click.native="imageDialog = (apartment.images.length != 0)" :style="{cursor: apartment.images.length != 0 ? 'pointer' : 'auto'}">
       <v-container fill-height fluid>
         <v-layout fill-height>
-          <v-btn icon @click.native="previousImage" color="white" :disabled="apartment.images.length <= 1">
+          <v-btn icon @click.native="previousImage" color="white" :class="{ hidden: apartment.images.length <= 1 }">
             <v-icon>keyboard_arrow_left</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn icon @click.native="nextImage" color="white" :disabled="apartment.images.length <= 1">
+          <v-btn icon @click.native="nextImage" color="white" :class="{ hidden: apartment.images.length <= 1 }">
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-layout>
@@ -342,13 +342,17 @@
           });
         }
       },
-      nextImage() {
+      nextImage(e) {
+        e.stopPropagation();
+
         this.imageNumber =
           this.imageNumber >= this.apartment.images.length - 1
             ? 0
             : this.imageNumber + 1;
       },
-      previousImage() {
+      previousImage(e) {
+        e.stopPropagation();
+
         this.imageNumber =
           this.imageNumber <= 0
             ? this.apartment.images.length - 1
@@ -450,5 +454,9 @@
     transition: all 1s ease-in-out;
       -webkit-background-size: contain !important;
       background-size: contain !important;
+  }
+
+  .hidden {
+    visibility: hidden;
   }
 </style>
