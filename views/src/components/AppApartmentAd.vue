@@ -1,6 +1,7 @@
 <template>
   <v-card>
-    <v-card-media :src="image" height="200px">
+    <app-image-dialog v-model="imageDialog" :images="apartment.images"/>
+    <v-card-media :src="image" height="200px" @click.native="imageDialog = (apartment.images.length != 0)" :style="{cursor: apartment.images.length != 0 ? 'pointer' : 'auto'}">
       <v-container fill-height fluid>
         <v-layout fill-height>
           <v-btn icon @click.native="previousImage" color="white" :disabled="apartment.images.length <= 1">
@@ -213,6 +214,7 @@
   import AppMap from './sub-components/AppMap';
   import AppComments from './sub-components/AppComments';
   import AppFavors from './sub-components/AppFavors';
+  import AppImageDialog from './sub-components/AppImageDialog';
 
   export default {
     props: ['apartment'],
@@ -284,6 +286,7 @@
         tags: tagsList,
         defaultImage: defaultApartmentImage,
         imageNumber: 0,
+        imageDialog: false,
         interestedMessage: "I'm interested!",
         clipboard: {
           color: undefined,
@@ -422,7 +425,8 @@
       AppAvatar,
       AppMap,
       AppComments,
-      AppFavors
+      AppFavors,
+      AppImageDialog
     },
     mounted() {
       if (this.isAuthenticated) {
