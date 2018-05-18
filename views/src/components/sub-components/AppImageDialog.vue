@@ -1,7 +1,7 @@
 <template>
   <v-dialog :value="value" @input="$emit('input', false)" max-width="80vw" lazy>
     <v-carousel :cycle="false" lazy>
-      <v-carousel-item id="jumbotron__image" v-for="(image,i) in images" :src="image" :key="i" ></v-carousel-item>
+      <v-carousel-item v-for="(image,i) in images" :src="image" :key="i" ></v-carousel-item>
     </v-carousel>
     <v-card dark>
       <v-card-actions>
