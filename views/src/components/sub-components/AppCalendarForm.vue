@@ -24,7 +24,9 @@
                             @change="dateUpdate" 
                             no-title 
                             @input="menu = false" 
-                            :max="max"/>
+                            :max="max"
+                            :min="min"
+                            :show-current="showCurrent"/>
   </v-menu>
 </template>
 
@@ -54,6 +56,18 @@
         max: {
           type: String,
           default: undefined
+        },
+        min: {
+          type: String,
+          default: undefined
+        },
+        startDate: {
+          type: String,
+          default: null
+        },
+        showCurrent: {
+          type: [Boolean, String],
+          default: true
         }
       },
       data: () => ({
@@ -63,6 +77,7 @@
       }),
       methods: {
         dateUpdate() {
+          this.dateFormatted = this.formatDate(this.date);
           this.$emit('dateUpdated', this.date);
         },
         formatDate(date) {
@@ -80,11 +95,9 @@
           return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
         }
       },
-      watch: {
-        date() {
-          this.dateFormatted = this.formatDate(this.date);
-        }
-      },
+      created() {
+        this.date = this.startDate;
+      }
     };
 </script>
 

@@ -16,7 +16,7 @@
               <v-text-field label="Last Name" v-model="payload.lastName"></v-text-field>
             </v-flex>
           </v-layout>
-          <app-calendar-form @dateUpdated="payload.birthdate = new Date($event).getTime()" label="Birthday Date" :required="true" :max="maxBirthdayDate" />
+          <app-calendar-form @dateUpdated="payload.birthdate = new Date($event).getTime()" label="Birthday Date" :required="true" :max="maxBirthdayDate" start-date="1992-06-24"/>
           <v-radio-group v-model="payload.gender" row required>
             <v-radio v-for="(gender,i) in genderList" :key="i" :label="gender.title" :value="gender.value"></v-radio>
           </v-radio-group>
