@@ -17,6 +17,9 @@ const { Apartment } = require('../../server/models/apartment');
 const { Review } = require('../../server/models/review');
 const { getSupportedTags } = require('../../server/models/tag');
 const { getSupportedHobbies } = require('../../server/models/hobbie');
+const { buildPrivateMessageJSON } = require('../../server/models/privateMessage');
+
+
 const {
  getVisitStatusCodes, getVisitStatusOnCreate, getVisitStatusOnCancelation,
   getVisitStatusOnChange, getVisitStatusChangeActions 
@@ -1539,6 +1542,37 @@ describe('#Server Tests', () => {
           expect(Object.keys(res.body.users).length).toBe(0);
         })
         .end(done);
+    });
+  });
+
+  describe('#DELETE /users/conversation', () => {
+    it('should delete messages in the conversation', (done) => {
+
+      const _sentBy = users[1]._id;
+      const createdAt = new Date().getTime();
+      const content = "MESSAGE CONTENT";
+      const wasRead = false;
+      const message = buildPrivateMessageJSON(_sentBy, createdAt, content, wasRead);
+
+      var participants = [users[1]._id, users[0]._id];
+      var messages = [message];
+
+      User.findById(users[1]._id).then(user => {
+        user.inseryOrUpdateConversation(participants, messages).then((res) => { 
+          const id = [users[0]._id.toHexString(), users[1]._id.toHexString()];
+          request(app)
+            .delete('/users/conversation')
+            .set(XAUTH, users[1].tokens[0].token)
+            .query({ id })
+            .expect(OK)
+            .expect((res) => {
+              User.findById(users[1]._id).then(user => {
+                expect(user.conversations.length).toBe(0);
+              }).catch(done);
+            })
+            .end(done);
+        }).catch(done);
+      });
     });
   });
 
