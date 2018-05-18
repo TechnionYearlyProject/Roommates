@@ -1,15 +1,15 @@
 <template>
-<v-dialog :value="value" @input="$emit('input', false)" max-width="80vw" lazy persistent>
-      <v-carousel :cycle="false" lazy>
-        <v-carousel-item v-for="(image,i) in images" :src="image" :key="i" ></v-carousel-item>
-      </v-carousel>
-      <v-card dark>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="secondary" flat="flat" @click.native="$emit('input', false)">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  <v-dialog :value="value" @input="$emit('input', false)" max-width="80vw" lazy>
+    <v-carousel :cycle="false" lazy>
+      <v-carousel-item v-for="(image,i) in images" :src="image" :key="i" ></v-carousel-item>
+    </v-carousel>
+    <v-card dark>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="secondary" flat="flat" @click.native="$emit('input', false)">Close</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
@@ -32,11 +32,23 @@ export default {
 </script>
 
 <style scoped>
-.slick-slide {
-   height:200px;
-}
+  .slick-slide {
+    height:200px;
+  }
 
-.slick-slide img {
-   height:200px;
-}
+  .slick-slide img {
+    height:200px;
+  }
+</style>
+
+<style>
+  .jumbotron__image {
+    max-width: 80vw;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .carousel {
+    background-color: rgba(20, 20, 20, 0.7);
+  }
 </style>
