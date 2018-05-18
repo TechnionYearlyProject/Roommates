@@ -38,7 +38,7 @@
           </v-btn>
           <span>Publisher profile</span>
         </v-tooltip>
-        <v-card :width="400" style="min-height:60px">
+        <v-card style="min-height:60px">
           <div v-if="fetchedPublisher">
           <v-list>
             <v-list-tile avatar>
@@ -56,16 +56,16 @@
             <v-list-tile>
               <v-icon class="pr-1">email</v-icon>
               <v-list-tile-title>
-                <small>E-mail</small>
+                <small class="pr-3">E-mail</small>
+                {{ publisher.email }}
               </v-list-tile-title>
-              <v-list-tile-title>{{ publisher.email }}</v-list-tile-title>
             </v-list-tile>
             <v-list-tile>
               <v-icon class="pr-1">phone</v-icon>
               <v-list-tile-title>
-                <small>Phone</small>
+                <small class="pr-3">Phone</small>
+                {{ publisher.mobilePhone || 'No Phone' }}
               </v-list-tile-title>
-              <v-list-tile-title>{{ publisher.mobilePhone }}</v-list-tile-title>
             </v-list-tile>
           </v-list>
           <v-divider inset></v-divider>

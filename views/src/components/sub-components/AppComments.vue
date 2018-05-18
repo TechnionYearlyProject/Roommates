@@ -15,21 +15,31 @@
       </div>
       <v-flex v-else ref="chat" style="overflow-y: auto; height: 100%">
         <transition-group name="scale-transition" tag="v-flex" mode="out-in">
-          <v-flex xs11 v-if="hasComments" v-for="(comment, i) in comments" :key="`comment-${commentsList.length - i}`" :class="{ 'offset-xs1': isMyComments(comment) }">
-            <div class="text-xs-left caption"> {{ formatCommentTime(comment.createdAt) }} </div>
-            <v-card :color="isMyComments(comment) ? myCommentColor : hisCommentColor" class="white--text">
-              <v-card-title>
+          <v-flex xs11 v-if="hasComments" v-for="(comment, i) in comments" :key="`comment-${commentsList.length - i}`">
+            <v-layout align-center fill-height>
+            <v-flex xs10 :order-xs2="isMyComments(comment)">
+              <div class="text-xs-left caption"> {{ formatCommentTime(comment.createdAt) }} </div>
+              <v-card width="100%" :color="isMyComments(comment) ? myCommentColor : hisCommentColor" class="white--text">
+                <v-card-title>
 
-                <div>
-                  <div class="body-2">
-                    {{ getPublisher(comment) }}
+                  <div>
+                    <div class="body-2">
+                      {{ getPublisher(comment) }}
+                    </div>
+                    <div class="body-1">
+                      {{ comment.text }}
+                    </div>
                   </div>
-                  <div class="body-1">
-                    {{ comment.text }}
-                  </div>
-                </div>
-              </v-card-title>
-            </v-card>
+                </v-card-title>
+              </v-card>
+            </v-flex>
+            <v-flex mt-4>
+              <v-tooltip top slot="activator">
+                <app-avatar  slot="activator" :src="getImage(comment)" :name="getPublisher(comment)" :size="40" @click.native="goToProfile(comment)" style="cursor: pointer"/>
+                <span>Go to profile</span>
+              </v-tooltip>
+            </v-flex>
+            </v-layout>
           </v-flex>
         </transition-group>
         <div v-if="!hasComments()" class="text-xs-center">No comments</div>
@@ -40,6 +50,7 @@
 
 <script>
   import { mapGetters } from 'vuex';
+  import AppAvatar from './AppAvatar';
 
   export default {
     props: {
@@ -138,6 +149,16 @@
           return `${this.usersList[comment._createdBy].firstName} ${
                 this.usersList[comment._createdBy].lastName}`;
         }
+      },
+      getImage(comment) {
+        if (!this.usersList[comment._createdBy]) {
+          return null;
+        } else {
+          return this.usersList[comment._createdBy].image;
+        }
+      },
+      goToProfile(comment) {
+          this.$router.push({ name: 'AppUserProfile', params: { id: comment._createdBy } });
       }
     },
     computed: {
@@ -148,6 +169,9 @@
     },
     beforeMount() {
       this.fetchUsers();
+    },
+    components: {
+      AppAvatar
     }
   };
 </script>

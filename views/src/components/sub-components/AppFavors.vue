@@ -13,7 +13,7 @@
                         <v-list-tile-title v-text="getName(favor)"></v-list-tile-title>
                     </v-list-tile-content>
                     <v-list-tile-avatar>
-                        <img :src="userDefaultImage">
+                        <app-avatar :src="getImage(favor)" :name="getName(favor)" :size="40"/>
                     </v-list-tile-avatar>
                 </v-list-tile>
             </transition-group>
@@ -26,7 +26,7 @@
 
 <script>
     import { mapGetters } from 'vuex';
-    import userDefault from '../../assets/user-default.jpg';
+    import AppAvatar from './AppAvatar';
 
     export default {
       props: {
@@ -39,7 +39,6 @@
       data() {
         return {
           usersList: null,
-          userDefaultImage: userDefault
         };
       },
       methods: {
@@ -72,6 +71,13 @@
               this.usersList[favor].lastName
             }`;
           }
+        },
+        getImage(favor) {
+          if(!this.usersList[favor]) {
+            return null;
+          } else {
+            return this.usersList[favor].image;
+          }
         }
       },
       beforeMount() {
@@ -81,6 +87,9 @@
         //   if (this.isVerified) {
         //       this.store.dispatch('getSortedFavors')
         //   }
+      },
+      components: {
+        AppAvatar
       }
     };
 </script>
