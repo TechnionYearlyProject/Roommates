@@ -32,7 +32,7 @@ export default {
 </script>
 
 <style >
-  .jumbotron__image {
+  .carousel .jumbotron__image {
     max-width: 80vw;
     max-height: 100%;
     object-fit: contain;
