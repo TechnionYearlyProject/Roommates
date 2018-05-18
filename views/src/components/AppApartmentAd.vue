@@ -450,13 +450,15 @@
 </script>
 
 <style scoped>
-  .card__media__background {
-    transition: all 1s ease-in-out;
-      -webkit-background-size: contain !important;
-      background-size: contain !important;
-  }
-
   .hidden {
     visibility: hidden;
+  }
+</style>
+
+<style>
+  .card__media__background { /* This should not be scoped */
+    transition: all 1s ease-in-out;
+    -webkit-background-size: contain !important;
+    background-size: contain !important;
   }
 </style>
