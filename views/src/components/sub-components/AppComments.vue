@@ -143,22 +143,24 @@
       getPublisher(comment) {
         if (this.isMyComments(comment)) {
           return 'You';
-        } else if (!this.usersList[comment._createdBy]) {
-          return 'User';
-        } else { // eslint-disable-line
-          return `${this.usersList[comment._createdBy].firstName} ${
-                this.usersList[comment._createdBy].lastName}`;
         }
+
+        if (!this.usersList[comment._createdBy]) {
+          return 'User';
+        }
+
+        return `${this.usersList[comment._createdBy].firstName} ${
+                this.usersList[comment._createdBy].lastName}`;
       },
       getImage(comment) {
         if (!this.usersList[comment._createdBy]) {
           return null;
-        } else {
-          return this.usersList[comment._createdBy].image;
         }
+
+        return this.usersList[comment._createdBy].image;
       },
       goToProfile(comment) {
-          this.$router.push({ name: 'AppUserProfile', params: { id: comment._createdBy } });
+        this.$router.push({ name: 'AppUserProfile', params: { id: comment._createdBy } });
       }
     },
     computed: {

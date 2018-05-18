@@ -73,11 +73,11 @@
           }
         },
         getImage(favor) {
-          if(!this.usersList[favor]) {
+          if (!this.usersList[favor]) {
             return null;
-          } else {
-            return this.usersList[favor].image;
           }
+
+          return this.usersList[favor].image;
         }
       },
       beforeMount() {
