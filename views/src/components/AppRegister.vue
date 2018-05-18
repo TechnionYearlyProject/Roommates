@@ -16,7 +16,7 @@
               <v-text-field label="Last Name" v-model="payload.lastName"></v-text-field>
             </v-flex>
           </v-layout>
-          <app-calendar-form @dateUpdated="payload.birthdate = new Date($event).getTime()" label="Birthday Date" :required="true" :min="minBirthdayDate" />
+          <app-calendar-form @dateUpdated="payload.birthdate = new Date($event).getTime()" label="Birthday Date" :required="true" :max="maxBirthdayDate" />
           <v-radio-group v-model="payload.gender" row required>
             <v-radio v-for="(gender,i) in genderList" :key="i" :label="gender.title" :value="gender.value"></v-radio>
           </v-radio-group>
@@ -116,7 +116,7 @@
       }
     },
     computed: {
-      minBirthdayDate() {
+      maxBirthdayDate() {
         const date = Date.now() - (18 * 365 * 24 * 60 * 60 * 1000); // 18 years
         return new Date(date).toISOString();
       }

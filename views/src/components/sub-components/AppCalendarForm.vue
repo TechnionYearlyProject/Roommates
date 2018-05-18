@@ -24,7 +24,7 @@
                             @change="dateUpdate" 
                             no-title 
                             @input="menu = false" 
-                            :min="min"/>
+                            :max="max"/>
   </v-menu>
 </template>
 
@@ -51,7 +51,7 @@
           type: Array,
           default: () => []
         },
-        min: {
+        max: {
           type: String,
           default: undefined
         }

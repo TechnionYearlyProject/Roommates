@@ -36,7 +36,7 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     min: new Date('1900-01-01').getTime(),
     validate: {
-      validator: value => value <= Date.now() - (15 * 365 * 24 * 60 * 60 * 1000),
+      validator: value => value <= Date.now() - (18 * 365 * 24 * 60 * 60 * 1000), // Users must be at least 18
       message: 'birthdate: {VALUE} is more than maximum allowed value'
     },
     required: true
