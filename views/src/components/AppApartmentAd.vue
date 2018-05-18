@@ -1,14 +1,17 @@
 <template>
   <v-card>
     <app-image-dialog v-model="imageDialog" :images="apartment.images"/>
-    <v-card-media :src="image" height="200px" @click.native="imageDialog = (apartment.images.length != 0)" :style="{cursor: apartment.images.length != 0 ? 'pointer' : 'auto'}">
+    <v-card-media contain height="200px" @click.native="imageDialog = (apartment.images.length != 0)" class="grey lighten-5" :style="{cursor: apartment.images.length != 0 ? 'pointer' : 'auto'}">
+      <v-slide-x-transition>
+        <div :key="image" class="card__media__background" :style="{background: `url(${image}) center center / contain no-repeat`}"></div>
+      </v-slide-x-transition>
       <v-container fill-height fluid>
         <v-layout fill-height>
-          <v-btn icon @click.native="previousImage" color="white" :class="{ hidden: apartment.images.length <= 1 }">
+          <v-btn v-if="apartment.images.length > 0" icon @click.native="previousImage">
             <v-icon>keyboard_arrow_left</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn icon @click.native="nextImage" color="white" :class="{ hidden: apartment.images.length <= 1 }">
+          <v-btn v-if="apartment.images.length > 0" icon @click.native="nextImage">
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-layout>
@@ -448,17 +451,3 @@
     }
   };
 </script>
-
-<style scoped>
-  .hidden {
-    visibility: hidden;
-  }
-</style>
-
-<style>
-  .card__media__background { /* This should not be scoped */
-    transition: all 1s ease-in-out;
-    -webkit-background-size: contain !important;
-    background-size: contain !important;
-  }
-</style>

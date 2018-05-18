@@ -1,7 +1,7 @@
 <template>
   <v-dialog :value="value" @input="$emit('input', false)" max-width="80vw" lazy>
     <v-carousel :cycle="false" lazy>
-      <v-carousel-item v-for="(image,i) in images" :src="image" :key="i" ></v-carousel-item>
+      <v-carousel-item id="jumbotron__image" v-for="(image,i) in images" :src="image" :key="i" ></v-carousel-item>
     </v-carousel>
     <v-card dark>
       <v-card-actions>
@@ -31,17 +31,7 @@ export default {
 };
 </script>
 
-<style scoped>
-  .slick-slide {
-    height:200px;
-  }
-
-  .slick-slide img {
-    height:200px;
-  }
-</style>
-
-<style>
+<style >
   .jumbotron__image {
     max-width: 80vw;
     max-height: 100%;
@@ -49,6 +39,6 @@ export default {
   }
 
   .carousel {
-    background-color: rgba(20, 20, 20, 0.7);
+    background-color: rgba(20, 20, 20, 0.7) !important;
   }
 </style>
