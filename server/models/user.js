@@ -659,6 +659,10 @@ UserSchema.methods.getNotificationById = function (_notificationId) {
 
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
+  if(notificationIndex < 0){
+    return {};
+  }
+
   return user.notifications[notificationIndex];
 };
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
