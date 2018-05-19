@@ -28,7 +28,7 @@ const markNotificationAsRead = (_userId, notification) => {
 	try{
 		return User.findById(new ObjectID(_userId)).then(async (user) => {
 			const updatedNotification = setNotificationReadState(notification,true);
-	 	  	await user.saveUpdatedNotification(updatedNotification._id, updatedNotification);
+	 	  	await user.saveUpdatedNotifications([updatedNotification._id], [updatedNotification]);
 	 	});
     }catch(e){
     	logError(e.toString());

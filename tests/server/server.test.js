@@ -267,21 +267,13 @@ describe('#Server Tests', () => {
     }).timeout(5000);
   });
 
-  describe('#PATCH /users/notifications/:id', () => {
-    it('should not edit notification - non existing one', (done) => {
-      const nonExistingId = new ObjectID();
+  describe('#PATCH /users/notifications', () => {
+    it('should edit notification (part of all user unread notifications)', (done) => {
+      const id = [users[6].notifications[0]._id];
       request(app)
-        .patch(`/users/notifications/${nonExistingId}`)
-        .set(XAUTH, users[1].tokens[0].token)
-        .expect(BAD_REQUEST)
-        .end(done);
-    });
-
-    it('should edit notification', (done) => {
-      const notificationId = users[1].notifications[0]._id;
-      request(app)
-        .patch(`/users/notifications/${notificationId}`)
-        .set(XAUTH, users[1].tokens[0].token)
+        .patch(`/users/notifications`)
+        .set(XAUTH, users[6].tokens[0].token)
+        .query({ id })
         .send({ wasRead: true })
         .expect(OK)
         .end(async (err) => {
@@ -290,9 +282,60 @@ describe('#Server Tests', () => {
           }
 
           try {
-            const user = await User.findById(users[1]._id);
-            expect(user.getNotifications().length).toBe(1);
+            const user = await User.findById(users[6]._id);
+            expect(user.getNotifications().length).toBe(2);
             expect(user.getNotifications()[0].wasRead).toBe(true);
+            expect(user.getNotifications()[1].wasRead).toBe(false);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    });
+
+    it('should edit notification even if some dont exist (part of all user unread notifications)', (done) => {
+      const id = [users[6].notifications[0]._id, new ObjectID().toHexString()];
+      request(app)
+        .patch(`/users/notifications`)
+        .set(XAUTH, users[6].tokens[0].token)
+        .query({ id })
+        .send({ wasRead: true })
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const user = await User.findById(users[6]._id);
+            expect(user.getNotifications().length).toBe(2);
+            expect(user.getNotifications()[0].wasRead).toBe(true);
+            expect(user.getNotifications()[1].wasRead).toBe(false);
+            return done();
+          } catch (e) {
+            return done(e);
+          }
+        });
+    });
+
+    it('should edit multiple notifications', (done) => {
+      const id = [users[6].notifications[0]._id, users[6].notifications[1]._id];
+      request(app)
+        .patch(`/users/notifications`)
+        .set(XAUTH, users[6].tokens[0].token)
+        .query({ id })
+        .send({ wasRead: true })
+        .expect(OK)
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+
+          try {
+            const user = await User.findById(users[6]._id);
+            expect(user.getNotifications().length).toBe(2);
+            expect(user.getNotifications()[0].wasRead).toBe(true);
+            expect(user.getNotifications()[1].wasRead).toBe(true);
             return done();
           } catch (e) {
             return done(e);

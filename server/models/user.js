@@ -611,24 +611,31 @@ UserSchema.methods.saveAggregationDataInNotification = function (
  *
  * Update an existing notification with new data.
  *
- * @param {_notificationId} _notificationId: the notification id that the data has to be added to.
- * @param {Notification} newNotification: the notifcation with the updated data to be stored.
+ * @param {Array of _notificationId} _notificationsId: the ids of the notifications that the data has to be added to.
+ * @param {Array of Notification} newNotifications: the corresponding notifcations with the updated data to be stored.
  *
- * @returns {Promise} that resolved once the user document is updated in DB with the new data of the notification.
+ * @returns {Promise} that resolved once the user document is updated in DB with the new data of the notifications.
  */
-UserSchema.methods.saveUpdatedNotification = function (
-  _notificationId,
-  newNotification
+UserSchema.methods.saveUpdatedNotifications = function (
+  _notificationsId,
+  newNotifications
 ) {
   const user = this;
 
-  const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
-  if (notificationIndex < 0) {
+  if(_notificationsId.length != newNotifications.length){
     return Promise.reject();
   }
 
-  newNotification._id = new ObjectID(_notificationId);
-  user.notifications[notificationIndex] = newNotification;
+  for(var i=0;i<_notificationsId.length;i++){  
+    const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationsId[i].toString());
+    if (notificationIndex < 0) {
+      continue;
+    }
+
+    newNotifications[i]._id = new ObjectID(_notificationsId[i]);
+    user.notifications[notificationIndex] = newNotifications[i];
+  }
+
   return user.save();
 };
 /**

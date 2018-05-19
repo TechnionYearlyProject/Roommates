@@ -980,30 +980,41 @@ app.patch('/users/reset/:token', async (req, res) => {
  * @param {ObjectID} notification id that has to be cahnged.
  *
  * @returns {JSON} containing the updated user document.
+ *
+ * @updatedBy: Or Abramovich
+ * @date: 05/18
+ * Changed the id list to be query instead of params.
  */
 
-app.patch('/users/notifications/:id', authenticate, async (req, res) => {
+app.patch('/users/notifications', authenticate, async (req, res) => {
   try {
-    const {
-      id
-    } = req.params;
-
+    const ids = _.castArray(req.query.id);
     const notificationData = _.pick(req.body, ['wasRead']);
 
-    const curNotification = JSON.parse(
-      JSON.stringify(req.user.getNotificationById(id))
-    );
-    const newNotification = updateNotificationByJson(
-      curNotification,
-      notificationData
-    );
+    var objectIds = []; 
+    var newNotificationsData = [];
 
-    const user = await req.user.saveUpdatedNotification(id, newNotification);
+    ids.forEach((id) =>{
+      const curNotification = JSON.parse(
+        JSON.stringify(req.user.getNotificationById(id))
+      );
+      const newNotification = updateNotificationByJson(
+        curNotification,
+        notificationData
+      );
+
+      objectIds.push(new ObjectID(id));
+      newNotificationsData.push(newNotification);
+    });
+
+
+    const user = await req.user.saveUpdatedNotifications(objectIds, newNotificationsData);
 
     res.send({
       user
     });
   } catch (err) {
+    console.log(err);
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });

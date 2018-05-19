@@ -16,6 +16,7 @@ const user3Id = new ObjectID();
 const user4Id = new ObjectID();
 const user5Id = new ObjectID();
 const user6Id = new ObjectID();
+const user7Id = new ObjectID();
 
 const apartment1Id = new ObjectID();
 const apartment2Id = new ObjectID();
@@ -265,6 +266,44 @@ const user6 = {
   _interestedApartments: [apartment1Id.toHexString()]
 };
 
+const user7 = {
+  _id: user7Id,
+  email: 'user7@gmail.com',
+  password: '654321',
+  isVerified: true,
+  firstName: 'user7_firstName',
+  lastName: 'user7_lastName',
+  birthdate: new Date('1995-04-17').getTime(),
+  gender: 'male',
+  mobilePhone: '',
+  image: '',
+  about: '',
+  hobbies: [1, 4, 5, 6],
+  tokens: [{
+    access: XAUTH,
+    token: jwt.sign({ _id: user7Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString(),
+    expiration: Date.now() + 1000000
+  }],
+  notifications: [
+    {
+      _id: new ObjectID().toHexString(),
+      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+      _createdBy: [new ObjectID().toHexString()],
+      wasRead: false,
+      _notifiedObjectsIds: [new ObjectID().toHexString()],
+      createdAt: new Date().getTime()
+    },
+    {
+      _id: new ObjectID().toHexString(),
+      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+      _createdBy: [new ObjectID().toHexString()],
+      wasRead: false,
+      _notifiedObjectsIds: [new ObjectID().toHexString()],
+      createdAt: new Date().getTime()
+    },
+  ],
+};
+
 const notRegisteredUser = {
   email: 'alon@gmail.com',
   password: '123456',
@@ -276,6 +315,7 @@ const notRegisteredUser = {
 
 const user1VerificationToken = jwt.sign({ id: user1Id }, VERIFICATION_SECRET, { expiresIn: '1h' });
 const user2VerificationToken = jwt.sign({ id: user2Id }, VERIFICATION_SECRET, { expiresIn: '1h' });
+
 const getForgotPasswordToken = (hashedPassword) => jwt.sign(
   {
     id: user2Id,
@@ -512,7 +552,8 @@ const users = [
   user3,
   user4,
   user5,
-  user6
+  user6,
+  user7
 ];
 
 const reviews = [
@@ -546,7 +587,8 @@ const populateUsers = (done) => {
         new User(users[2]).save(),
         new User(users[3]).save(),
         new User(users[4]).save(),
-        new User(users[5]).save()
+        new User(users[5]).save(),
+        new User(users[6]).save()
       ]))
     .then(() => done())
     .catch(done);
