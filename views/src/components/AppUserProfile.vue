@@ -58,7 +58,6 @@
             </v-list-tile>
             <v-container pt-0 px-5>
               <v-select v-model="attributes.values" @input="updateAttributes" :items="allAttributes" label="Your attributes" :error-messages="attributes.error" :disabled="!isMyProfile" :hint="attributes.hint" persistent-hint chips deletable-chips multiple autocomplete />
-              </v-list-tile>
             </v-container>
           </v-list-group>
           <v-list-group v-model="favorites.active" :prepend-icon="favorites.icon" no-action>
