@@ -2,6 +2,6 @@ node_modules/
 .nyc_output/
 .coverage/
 .idea/
+.vscode/
 coverage/
-server/services/mail/mail.json
 server/services/logger/server_logs/*

@@ -1,5 +1,0 @@
-{ 
-    "editor.fontSize": 16,
-    "prettier.singleQuote": true,
-    "vetur.format.defaultFormatter.html": "js-beautify-html"
-}
