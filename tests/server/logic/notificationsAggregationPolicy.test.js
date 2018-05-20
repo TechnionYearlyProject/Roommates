@@ -1,6 +1,6 @@
 const expect = require('expect');
 
-const {shouldNotificationsBeAgregated} = require('../../../server/logic/notificationsAggregationPolicy');
+const {shouldNotificationsBeAggregated} = require('../../../server/logic/notificationsAggregationPolicy');
 const { ObjectID } = require('mongodb');
 
 const notificationAType1AndNotRead = {
@@ -46,29 +46,29 @@ const notificationEType1AndRead = {
 };
 
 describe('Notifications Aggregation Policy Tests', () => {
-  describe('#shouldNotificationsBeAgregated', () => {
+  describe('#shouldNotificationsBeAggregated', () => {
     it('should return false - different notifications types', (done) => {
-      expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationBType2AndNotRead)).toBe(false);
+      expect(shouldNotificationsBeAggregated(notificationAType1AndNotRead, notificationBType2AndNotRead)).toBe(false);
       done();
     });
 
     it('should return false - same type but one of them was read', (done) => {
-      expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationCType1AndRead)).toBe(false);
+      expect(shouldNotificationsBeAggregated(notificationAType1AndNotRead, notificationCType1AndRead)).toBe(false);
       done();
     });
 
     it('should return false - same type and both were not read but different notified ids', (done) => {
-      expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationDType1AndNotRead)).toBe(false);
+      expect(shouldNotificationsBeAggregated(notificationAType1AndNotRead, notificationDType1AndNotRead)).toBe(false);
       done();
     });
 
     it('should return true - same type and both were not read and same notified ID', (done) => {
-      expect(shouldNotificationsBeAgregated(notificationAType1AndNotRead, notificationDType1AndNotReadSameNotifiedObjectLikeA)).toBe(true);
+      expect(shouldNotificationsBeAggregated(notificationAType1AndNotRead, notificationDType1AndNotReadSameNotifiedObjectLikeA)).toBe(true);
       done();
     });
 
     it('should return false - same type but both of them were read', (done) => {
-      expect(shouldNotificationsBeAgregated(notificationCType1AndRead, notificationEType1AndRead)).toBe(false);
+      expect(shouldNotificationsBeAggregated(notificationCType1AndRead, notificationEType1AndRead)).toBe(false);
       done();
     });
   });

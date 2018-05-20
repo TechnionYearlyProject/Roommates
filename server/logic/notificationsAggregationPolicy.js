@@ -22,7 +22,7 @@ const {getNotificationType, wasNotificationRead, containsNotifiedObjectIDs, getN
  *
  * @returns {Boolean} indicating whether both notifications should be aggregated according to the business logic.
  */
-const shouldNotificationsBeAgregated = (notificationToIncludeTheOtherOne, notificationToBeIncluded) => {
+const shouldNotificationsBeAggregated = (notificationToIncludeTheOtherOne, notificationToBeIncluded) => {
 	return (
 		getNotificationType(notificationToIncludeTheOtherOne) == getNotificationType(notificationToBeIncluded)
 		&& containsNotifiedObjectIDs(notificationToIncludeTheOtherOne, getNotifiedObjectsIDs(notificationToBeIncluded))
@@ -32,5 +32,5 @@ const shouldNotificationsBeAgregated = (notificationToIncludeTheOtherOne, notifi
 
 
 module.exports = {
-  shouldNotificationsBeAgregated
+  shouldNotificationsBeAggregated
 };

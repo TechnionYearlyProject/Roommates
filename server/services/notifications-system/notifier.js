@@ -7,7 +7,7 @@
  *
  */
 const {
-  shouldNotificationsBeAgregated
+  shouldNotificationsBeAggregated
 } = require('../../logic/notificationsAggregationPolicy');
 const {
   buildNotificationJSON
@@ -42,36 +42,33 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
   const promises = [];
   const newNotification = buildNotificationJSON(notificationType, fromId, wasRead, notifiedObjectIdsArr, creationDate);
   toIdsArray.forEach((userId) => {
-		if (!userId.equals(fromId)) { //don't notify the user on his own changes
-			const findUserByIdPromise = User.findById(userId);
-			findUserByIdPromise.then((user) => {
-				const userNotifications = user.getNotifications();
-				let shouldBeAggregated = false;
-				let aggregateWithId;
-				userNotifications.forEach(function (curNotification) {
-					if (shouldNotificationsBeAgregated(curNotification, newNotification)) {
-						aggregateWithId = curNotification._id;
-						shouldBeAggregated = true;
-					}
-				});
-				if (!shouldBeAggregated) {
-					const previousNotifications = user.getNotifications().slice();
-					return user.saveNewNotification(newNotification).then((updatedUser) => {
-						//send real-time update for the new one
-						const newNotifications = _.difference(updatedUser.getNotifications(), previousNotifications);
-						newNotifications.forEach((newNotification) => {
-							sendUserRealTimeNotification(userId, newNotification);
-						})
-					}).catch();
-				} else {
-					return user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate).then(($) => {
-						sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
-					}).catch();
-				}
-			});
-			promises.push(findUserByIdPromise);
-		}
-	});
+    if (!userId.equals(fromId)) { //don't notify the user on his own changes
+      const findUserByIdPromise = User.findById(userId);
+      findUserByIdPromise
+        .then(async (user) => {
+          const userNotifications = user.getNotifications();
+          let shouldBeAggregated = false;
+          let aggregateWithId;
+          userNotifications.forEach((curNotification) => {
+            if (shouldNotificationsBeAggregated(curNotification, newNotification)) {
+              aggregateWithId = curNotification._id;
+              shouldBeAggregated = true;
+            }
+          });
+          if (!shouldBeAggregated) {
+            const previousNotifications = user.getNotifications().slice();
+            const updatedUser = await user.saveNewNotification(newNotification);
+            //send real-time update for the new one
+            const newNotifications = _.difference(updatedUser.getNotifications(), previousNotifications);
+            newNotifications.forEach((n) => sendUserRealTimeNotification(userId, n));
+          } else {
+            await user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate);
+            sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
+          }
+        });
+      promises.push(findUserByIdPromise);
+    }
+  });
   return promises;
 };
 

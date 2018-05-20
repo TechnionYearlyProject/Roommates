@@ -141,9 +141,6 @@ const establishRoomForUser = (_userId, socket) => {
  *
  */
 const sendUserRealTimeMsg = (_userId, msgType, text) => {
-  console.log(
-    'sending notification to ' + _userId + ' of type ' + msgType + ' ' + text
-  );
   io.sockets.in(_userId).emit(msgType, text);
 };
 /**

@@ -1,7 +1,9 @@
 const _ = require('lodash');
 const expect = require('expect');
 const request = require('supertest');
-const { ObjectID } = require('mongodb');
+const {
+  ObjectID
+} = require('mongodb');
 // const sleep = require('system-sleep');
 const {
   OK,
@@ -10,19 +12,38 @@ const {
   NOT_FOUND
 } = require('http-status');
 
-const { app } = require('../../server/server');
-const { XAUTH } = require('../../server/constants');
-const { User } = require('../../server/models/user');
-const { Apartment } = require('../../server/models/apartment');
-const { Review } = require('../../server/models/review');
-const { getSupportedTags } = require('../../server/models/tag');
-const { getSupportedHobbies } = require('../../server/models/hobbie');
-const { buildPrivateMessageJSON } = require('../../server/models/privateMessage');
+const {
+  app
+} = require('../../server/server');
+const {
+  XAUTH
+} = require('../../server/constants');
+const {
+  User
+} = require('../../server/models/user');
+const {
+  Apartment
+} = require('../../server/models/apartment');
+const {
+  Review
+} = require('../../server/models/review');
+const {
+  getSupportedTags
+} = require('../../server/models/tag');
+const {
+  getSupportedHobbies
+} = require('../../server/models/hobbie');
+const {
+  buildPrivateMessageJSON
+} = require('../../server/models/privateMessage');
 
 
 const {
- getVisitStatusCodes, getVisitStatusOnCreate, getVisitStatusOnCancelation,
-  getVisitStatusOnChange, getVisitStatusChangeActions 
+  getVisitStatusCodes,
+  getVisitStatusOnCreate,
+  getVisitStatusOnCancelation,
+  getVisitStatusOnChange,
+  getVisitStatusChangeActions
 } = require('../../server/models/visit');
 
 const {
@@ -81,7 +102,9 @@ describe('#Server Tests', () => {
         .send(notPublishedApartment)
         .expect(OK)
         .expect((res) => {
-          apartment.location = { address: apartment.address };
+          apartment.location = {
+            address: apartment.address
+          };
           delete apartment.address;
 
           expect(res.body.apartment).toMatchObject(apartment);
@@ -90,7 +113,9 @@ describe('#Server Tests', () => {
           if (err) {
             return done(err);
           }
-          return Apartment.find({ description: notPublishedApartment.description })
+          return Apartment.find({
+              description: notPublishedApartment.description
+            })
             .then(($) => {
               expect($[0]._createdBy).toEqual(users[1]._id);
               expect($[0].createdAt).toBeTruthy();
@@ -117,7 +142,9 @@ describe('#Server Tests', () => {
 
           try {
             const user = await User.findById(users[1]._id);
-            const apartment = await Apartment.findOne({ description: notPublishedApartment.description });
+            const apartment = await Apartment.findOne({
+              description: notPublishedApartment.description
+            });
             expect(user._publishedApartments[0]).toEqual(apartments[0]._id.toHexString());
             expect(user._publishedApartments[1]).toEqual(apartment._id.toHexString());
             return done();
@@ -150,7 +177,9 @@ describe('#Server Tests', () => {
             return done(err);
           }
 
-          return Apartment.find({ description: apartment.description })
+          return Apartment.find({
+              description: apartment.description
+            })
             .then((result) => {
               expect(result.length).toBe(0);
               done();
@@ -171,7 +200,9 @@ describe('#Server Tests', () => {
             return done(err);
           }
 
-          return Apartment.find({ description: apartment._id })
+          return Apartment.find({
+              description: apartment._id
+            })
             .then((result) => {
               expect(result.length).toBe(0);
               done();
@@ -195,7 +226,9 @@ describe('#Server Tests', () => {
 
           try {
             const user = await User.findById(users[1]._id);
-            const apartment = await Apartment.findOne({ description: notPublishedApartment.description });
+            const apartment = await Apartment.findOne({
+              description: notPublishedApartment.description
+            });
             expect(user._publishedApartments[0]).toEqual(apartments[0]._id.toHexString());
             expect(user._publishedApartments[1]).toEqual(apartment._id.toHexString());
             return done();
@@ -271,10 +304,14 @@ describe('#Server Tests', () => {
     it('should edit notification (part of all user unread notifications)', (done) => {
       const id = [users[6].notifications[0]._id];
       request(app)
-        .patch(`/users/notifications`)
+        .patch('/users/notifications')
         .set(XAUTH, users[6].tokens[0].token)
-        .query({ id })
-        .send({ wasRead: true })
+        .query({
+          id
+        })
+        .send({
+          wasRead: true
+        })
         .expect(OK)
         .end(async (err) => {
           if (err) {
@@ -298,8 +335,12 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/users/notifications`)
         .set(XAUTH, users[6].tokens[0].token)
-        .query({ id })
-        .send({ wasRead: true })
+        .query({
+          id
+        })
+        .send({
+          wasRead: true
+        })
         .expect(OK)
         .end(async (err) => {
           if (err) {
@@ -323,8 +364,12 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/users/notifications`)
         .set(XAUTH, users[6].tokens[0].token)
-        .query({ id })
-        .send({ wasRead: true })
+        .query({
+          id
+        })
+        .send({
+          wasRead: true
+        })
         .expect(OK)
         .end(async (err) => {
           if (err) {
@@ -351,7 +396,9 @@ describe('#Server Tests', () => {
       request(app)
         .put(`/apartments/${id}/comment`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ text })
+        .send({
+          text
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.comments.length).toBe(1);
@@ -377,7 +424,9 @@ describe('#Server Tests', () => {
       request(app)
         .put(`/apartments/${id}/comment`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ text })
+        .send({
+          text
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -387,7 +436,9 @@ describe('#Server Tests', () => {
       const text = 'Wow! Great apartment!';
       request(app)
         .put(`/apartments/${id}/comment`)
-        .send({ text })
+        .send({
+          text
+        })
         .expect(UNAUTHORIZED)
         .end(done);
     });
@@ -398,7 +449,9 @@ describe('#Server Tests', () => {
       request(app)
         .put(`/apartments/${id}/comment`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ text })
+        .send({
+          text
+        })
         .expect(NOT_FOUND)
         .end(done);
     });
@@ -470,27 +523,26 @@ describe('#Server Tests', () => {
     }).timeout(5000);
   });
 
-    describe('/apartments/:id/interested/groups/self/lazy', () => {
-            it('get a group', (done) => {
-                const id = apartments[0]._id;
-                request(app)
-                    .get(`/apartments/${id}/interested/groups/self/lazy`)
-                    .set(XAUTH, users[1].tokens[0].token)
-                    .expect(OK)
-                    .expect((res) => {
-                        expect(res.body.group.length).toBe(apartments[0].totalRoommates);
-                        // expect(res.body.group).includes(users[1]._id.toHexString());
-                        // expect(res.body.group[1]._id).toEqual(users[0]._id.toHexString());
-                    })
-                    .end(async (err) => {
-                        if (err) {
-                            return done(err);
-                        }
-                        return done();
-                    });
-            }).timeout(5000);
-        }
-    );
+  describe('/apartments/:id/interested/groups/self/lazy', () => {
+    it('get a group', (done) => {
+      const id = apartments[0]._id;
+      request(app)
+        .get(`/apartments/${id}/interested/groups/self/lazy`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.group.length).toBe(apartments[0].totalRoommates);
+          // expect(res.body.group).includes(users[1]._id.toHexString());
+          // expect(res.body.group[1]._id).toEqual(users[0]._id.toHexString());
+        })
+        .end(async (err) => {
+          if (err) {
+            return done(err);
+          }
+          return done();
+        });
+    }).timeout(5000);
+  });
 
   describe('#PATCH /apartments/:id', () => {
     it('should not edit apartment - non existing one', (done) => {
@@ -518,7 +570,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/apartments/${apartmentId}`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ price: -1 })
+        .send({
+          price: -1
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -528,7 +582,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/apartments/${apartmentId}`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ floor: 'abc' })
+        .send({
+          floor: 'abc'
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -538,7 +594,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/apartments/${apartmentId}`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ price: 30 })
+        .send({
+          price: 30
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartment.price).toBe(30);
@@ -582,7 +640,9 @@ describe('#Server Tests', () => {
         .get(`/apartments/${id}/interested`)
         .set(XAUTH, users[1].tokens[0].token)
         .expect(OK)
-        .expect((res) => { expect(res.body._interested.length).toBe(0); })
+        .expect((res) => {
+          expect(res.body._interested.length).toBe(0);
+        })
         .end(async (err) => {
           if (err) {
             return done(err);
@@ -646,7 +706,9 @@ describe('#Server Tests', () => {
           }
 
           try {
-            const counter = await Apartment.count({ _id: id });
+            const counter = await Apartment.count({
+              _id: id
+            });
             const user = await User.findById(users[1]._id);
             expect(counter).toBe(0);
             expect(user.isOwner(id)).toBe(false);
@@ -733,7 +795,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/apartments/${apartmentId}/visit/${visitId}`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ schedTo: new Date('1-1-2023').getTime() })
+        .send({
+          schedTo: new Date('1-1-2023').getTime()
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -770,7 +834,9 @@ describe('#Server Tests', () => {
       request(app)
         .put(`/apartments/${apartmentId}/visit`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ schedTo: 10000 })
+        .send({
+          schedTo: 10000
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -779,7 +845,9 @@ describe('#Server Tests', () => {
       const apartmentId = apartments[1]._id.toHexString();
       request(app)
         .put(`/apartments/${apartmentId}/visit`)
-        .send({ schedTo: new Date('1-1-2027').getTime() })
+        .send({
+          schedTo: new Date('1-1-2027').getTime()
+        })
         .expect(UNAUTHORIZED)
         .end(done);
     });
@@ -789,7 +857,9 @@ describe('#Server Tests', () => {
       request(app)
         .put(`/apartments/${apartmentId}/visit`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ schedTo: new Date('1-1-2027').getTime() })
+        .send({
+          schedTo: new Date('1-1-2027').getTime()
+        })
         .expect(NOT_FOUND)
         .end(done);
     });
@@ -809,7 +879,9 @@ describe('#Server Tests', () => {
       request(app)
         .put(`/apartments/${apartmentId}/visit`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ schedTo: new Date('1-1-2027').getTime() })
+        .send({
+          schedTo: new Date('1-1-2027').getTime()
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartment.visits.length).toBe(1);
@@ -837,7 +909,9 @@ describe('#Server Tests', () => {
       request(app)
         .put(`/apartments/${apartmentId}/visit`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ schedTo: new Date('1-1-2027').getTime() })
+        .send({
+          schedTo: new Date('1-1-2027').getTime()
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartment.visits.length).toBe(1);
@@ -847,7 +921,9 @@ describe('#Server Tests', () => {
           request(app)
             .put(`/apartments/${apartmentId}/visit`)
             .set(XAUTH, users[1].tokens[0].token)
-            .send({ schedTo: new Date('1-1-2028').getTime() })
+            .send({
+              schedTo: new Date('1-1-2028').getTime()
+            })
             .expect(BAD_REQUEST);
         })
         .end((err) => {
@@ -885,7 +961,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -899,7 +977,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(2);
@@ -914,7 +994,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect((res) => {
           // the id is ignored, so all apartments are returned (same as query {})
@@ -928,7 +1010,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(0);
@@ -941,7 +1025,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ createdBy })
+        .query({
+          createdBy
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -955,7 +1041,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ createdBy })
+        .query({
+          createdBy
+        })
         .expect(OK)
         .expect((res) => {
           // the owner's id is ignored, so all apartments are returned (same as query {})
@@ -969,7 +1057,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ createdBy })
+        .query({
+          createdBy
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(0);
@@ -983,7 +1073,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ price: [minPrice, maxPrice] })
+        .query({
+          price: [minPrice, maxPrice]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -998,7 +1090,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ price: [minPrice, maxPrice] })
+        .query({
+          price: [minPrice, maxPrice]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(0);
@@ -1010,7 +1104,9 @@ describe('#Server Tests', () => {
       const entranceDate = new Date(apartments[0].entranceDate).toISOString();
       request(app)
         .get('/apartments')
-        .query({ entranceDate })
+        .query({
+          entranceDate
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1024,7 +1120,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ entranceDate })
+        .query({
+          entranceDate
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(0);
@@ -1037,7 +1135,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ address })
+        .query({
+          address
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1052,7 +1152,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ address })
+        .query({
+          address
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(0);
@@ -1066,7 +1168,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ geolocation: [longitude, latitude] })
+        .query({
+          geolocation: [longitude, latitude]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1083,7 +1187,10 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ geolocation: [longitude, latitude], radius })
+        .query({
+          geolocation: [longitude, latitude],
+          radius
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(2); //should find haifa and tel aviv
@@ -1098,7 +1205,10 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ geolocation: [longitude, latitude], radius })
+        .query({
+          geolocation: [longitude, latitude],
+          radius
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1); //should find only haifa
@@ -1112,7 +1222,10 @@ describe('#Server Tests', () => {
       const radius = 3;
       request(app)
         .get('/apartments')
-        .query({ address, radius })
+        .query({
+          address,
+          radius
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1127,7 +1240,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ roommates: [minRoommates, null] })
+        .query({
+          roommates: [minRoommates, null]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1141,7 +1256,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ roommates: [null, maxRoommates] })
+        .query({
+          roommates: [null, maxRoommates]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1156,7 +1273,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ roommates: [minRoommates, maxRoommates] })
+        .query({
+          roommates: [minRoommates, maxRoommates]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1171,7 +1290,9 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/apartments')
-        .query({ roommates: [minRoommates, null] })
+        .query({
+          roommates: [minRoommates, null]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(0);
@@ -1182,7 +1303,9 @@ describe('#Server Tests', () => {
     it('should find apartment with valid tags', (done) => {
       request(app)
         .get('/apartments')
-        .query({ tags: [1, 8] })
+        .query({
+          tags: [1, 8]
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.apartments.length).toBe(1);
@@ -1208,7 +1331,9 @@ describe('#Server Tests', () => {
             return done(err);
           }
 
-          return User.findOne({ email: notRegisteredUser.email })
+          return User.findOne({
+              email: notRegisteredUser.email
+            })
             .then($ => {
               expect($).toBeTruthy();
               expect($._id).toBeTruthy();
@@ -1236,7 +1361,9 @@ describe('#Server Tests', () => {
             return done(err);
           }
 
-          return User.findOne({ email: user.email })
+          return User.findOne({
+              email: user.email
+            })
             .then($ => {
               expect($).toBeTruthy();
               expect($._id).toBeTruthy();
@@ -1407,7 +1534,9 @@ describe('#Server Tests', () => {
             return done(err);
           }
 
-          return User.findOne({ email: notRegisteredUser.email })
+          return User.findOne({
+              email: notRegisteredUser.email
+            })
             .then((savedUser) => {
               expect(savedUser.password).toBeTruthy();
               expect(savedUser.password).not.toBe(notRegisteredUser.password);
@@ -1431,7 +1560,9 @@ describe('#Server Tests', () => {
           if (err) {
             return done(err);
           }
-          return User.findOne({ email: users[0].email })
+          return User.findOne({
+              email: users[0].email
+            })
             .then((user) => {
               expect(user.toObject().tokens[0]).toMatchObject({
                 access: XAUTH,
@@ -1469,7 +1600,9 @@ describe('#Server Tests', () => {
           if (err) {
             return done(err);
           }
-          return User.findOne({ email: users[0].email }).then((user) => {
+          return User.findOne({
+            email: users[0].email
+          }).then((user) => {
             expect(user.tokens.length).toBe(0);
             done();
           }).catch((errr) => done(errr));
@@ -1515,7 +1648,7 @@ describe('#Server Tests', () => {
         .get('/users/self')
         .set(XAUTH, 'C0FFEE')
         .expect(UNAUTHORIZED)
-        .end(done);
+        .end((e) => done(e));
     });
   });
 
@@ -1525,22 +1658,26 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/users')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect((res) => {
           const expected = User.toJSON(users[1]);
           expected._id = expected._id.toHexString();
           expect(res.body.users[expected._id]).toEqual(expected);
         })
-        .end(done);
+        .end((e) => done(e));
     });
 
     it('should find multiple existing user by id', (done) => {
       const id = [users[0]._id.toHexString(), users[1]._id.toHexString()];
-    
+
       request(app)
         .get('/users')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect(async (res) => {
           const user1 = JSON.stringify(await User.findById(users[0]._id.toHexString()));
@@ -1548,20 +1685,22 @@ describe('#Server Tests', () => {
           expect(JSON.stringify(res.body.users[users[0]._id])).toEqual(user1);
           expect(JSON.stringify(res.body.users[users[1]._id])).toEqual(user2);
         })
-        .end(done);
+        .end((e) => done(e));
     });
 
-    it('should not find multiple users by id where one doesn\'t exist', (done) => {
+    it('should only find multiple users that exist', (done) => {
       const id = [users[0]._id.toHexString(), new ObjectID().toHexString()];
       request(app)
         .get('/users')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.users[users[0]._id]._id).toEqual(users[0]._id.toHexString());
           expect(Object.keys(res.body.users).length).toBe(1);
         })
-        .end(done);
+        .end((e) => done(e));
     });
 
     it('should not find user with invalid id', (done) => {
@@ -1569,9 +1708,11 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/users')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(BAD_REQUEST)
-        .end(done);
+        .end((e) => done(e));
     });
 
     it('should not find nonexistent user', (done) => {
@@ -1579,12 +1720,14 @@ describe('#Server Tests', () => {
 
       request(app)
         .get('/users')
-        .query({ id })
+        .query({
+          id
+        })
         .expect(OK)
         .expect((res) => {
           expect(Object.keys(res.body.users).length).toBe(0);
         })
-        .end(done);
+        .end((e) => done(e));
     });
   });
 
@@ -1601,12 +1744,14 @@ describe('#Server Tests', () => {
       var messages = [message];
 
       User.findById(users[1]._id).then(user => {
-        user.inseryOrUpdateConversation(participants, messages).then((res) => { 
+        user.inseryOrUpdateConversation(participants, messages).then((res) => {
           const id = [users[0]._id.toHexString(), users[1]._id.toHexString()];
           request(app)
             .delete('/users/conversation')
             .set(XAUTH, users[1].tokens[0].token)
-            .query({ id })
+            .query({
+              id
+            })
             .expect(OK)
             .expect((res) => {
               User.findById(users[1]._id).then(user => {
@@ -1731,7 +1876,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch('/users/self')
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ email: 'user2@yahoo.com' })
+        .send({
+          email: 'user2@yahoo.com'
+        })
         .expect(OK)
         .expect((res) => {
           const expected = User.toJSON(users[1]);
@@ -1755,7 +1902,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch('/users/self')
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ firstName: 'A' })
+        .send({
+          firstName: 'A'
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -1764,7 +1913,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch('/users/self')
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ birthdate: -2208988800001 })
+        .send({
+          birthdate: -2208988800001
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -1773,7 +1924,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch('/users/self')
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ mobilePhone: -123 })
+        .send({
+          mobilePhone: -123
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -1782,7 +1935,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch('/users/self')
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ gender: 'FakeGender' })
+        .send({
+          gender: 'FakeGender'
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -2002,7 +2157,9 @@ describe('#Server Tests', () => {
           if (err) {
             return done(err);
           }
-          return Review.find({ Pros: notPublishedReview1.Pros })
+          return Review.find({
+              Pros: notPublishedReview1.Pros
+            })
             .then(($) => {
               expect($[0]._createdBy).toEqual(users[1]._id);
               expect($[0].createdAt).toBeTruthy();
@@ -2026,7 +2183,9 @@ describe('#Server Tests', () => {
 
           try {
             const user = await User.findById(users[1]._id);
-            const review = await Review.findOne({ Pros: notPublishedReview1.Pros });
+            const review = await Review.findOne({
+              Pros: notPublishedReview1.Pros
+            });
             expect(user._givenReviews[0]).toEqual(reviews[1]._id.toHexString());
             expect(user._givenReviews[1]).toEqual(reviews[3]._id.toHexString());
             expect(user._givenReviews[2]).toEqual(review._id.toHexString());
@@ -2048,7 +2207,9 @@ describe('#Server Tests', () => {
           if (err) {
             return done(err);
           }
-          return Review.find({ Pros: review.Pros })
+          return Review.find({
+              Pros: review.Pros
+            })
             .then((result) => {
               expect(result.length).toBe(0); // the review should not have been added
               done();
@@ -2079,7 +2240,9 @@ describe('#Server Tests', () => {
             return done(err);
           }
 
-          return Review.find({ Pros: review.Pros })
+          return Review.find({
+              Pros: review.Pros
+            })
             .then((result) => {
               expect(result.length).toBe(0);
               done();
@@ -2121,7 +2284,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/reviews/${reviewId}`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ ratedCharacteristics: rated })
+        .send({
+          ratedCharacteristics: rated
+        })
         .expect(BAD_REQUEST)
         .end(done);
     });
@@ -2139,7 +2304,9 @@ describe('#Server Tests', () => {
       request(app)
         .patch(`/reviews/${reviewId}`)
         .set(XAUTH, users[1].tokens[0].token)
-        .send({ ratedCharacteristics: rated })
+        .send({
+          ratedCharacteristics: rated
+        })
         .expect(OK)
         .expect((res) => {
           expect(res.body.review.ratedCharacteristics).toMatchObject(rated);
@@ -2206,25 +2373,27 @@ describe('#Server Tests', () => {
 
 
     it('should return accurate calculated review for technion with irrelevent review', (done) => {
-      const { dor } = coords;
+      const {
+        dor
+      } = coords;
       const rated = {
-        parking: (2/1.5),
-        publicTransport: (2/1.5),
-        noise: (2/1.5),
-        commercialServices: (2/1.5),
-        upkeep: (2/1.5),
-        generalRating: (2/1.5),
+        parking: (2 / 1.5),
+        publicTransport: (2 / 1.5),
+        noise: (2 / 1.5),
+        commercialServices: (2 / 1.5),
+        upkeep: (2 / 1.5),
+        generalRating: (2 / 1.5),
       };
       request(app)
         .get(`/reviews/${dor[0]}/${dor[1]}`)
         .expect(OK)
-        .expect((res)=>{
+        .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
         })
         .end(done);
     });
   });
-  
+
   describe('GET /reviews/:long/:lat', () => {
     it('should return the new accurate review after updating old reviews', (done) => {
       const westWall = coords.westWall;
@@ -2239,7 +2408,7 @@ describe('#Server Tests', () => {
       request(app)
         .get(`/reviews/${westWall[0]}/${westWall[1]}`)
         .expect(OK)
-        .expect((res)=>{
+        .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
           expect(res.body.r.numberOfRaters).toEqual(2);
         })
@@ -2282,7 +2451,9 @@ describe('#Server Tests', () => {
           }
 
           try {
-            const counter = await Review.count({ _id: id });
+            const counter = await Review.count({
+              _id: id
+            });
             const user = await User.findById(users[1]._id);
             expect(counter).toBe(0);
             expect(user.isReviewOwner(id)).toBe(false);

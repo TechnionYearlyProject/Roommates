@@ -1,18 +1,11 @@
 const expect = require('expect');
-const {
-  ObjectID
-} = require('mongodb');
+const { ObjectID } = require('mongodb');
 
 const Notificator = require('../../../../server/services/notifications-system/notifier');
 const NotificationModule = require('../../../../server/models/notification');
-const {
-  User
-} = require('../../../../server/models/user');
+const { User } = require('../../../../server/models/user');
 
-const {
-  users,
-  populateUsers,
-} = require('../../../seed/seed');
+const { users, populateUsers} = require('../../../seed/seed');
 
 describe('Notifier Tests', () => {
   beforeEach(populateUsers);
