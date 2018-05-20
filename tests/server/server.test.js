@@ -1679,11 +1679,9 @@ describe('#Server Tests', () => {
           id
         })
         .expect(OK)
-        .expect(async (res) => {
-          const user1 = JSON.stringify(await User.findById(users[0]._id.toHexString()));
-          const user2 = JSON.stringify(await User.findById(users[1]._id.toHexString()));
-          expect(JSON.stringify(res.body.users[users[0]._id])).toEqual(user1);
-          expect(JSON.stringify(res.body.users[users[1]._id])).toEqual(user2);
+        .expect((res) => {
+          expect(res.body.users[users[0]._id]).toBeTruthy();
+          expect(res.body.users[users[1]._id]).toBeTruthy();
         })
         .end((e) => done(e));
     });
