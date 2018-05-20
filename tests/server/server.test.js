@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const expect = require('expect');
 const request = require('supertest');
 const {
@@ -56,13 +55,13 @@ const {
   populateApartments,
   populateReviews,
   populateUsers,
-  populateGroups,
+  // populateGroups,
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
-  irreleventReview,
+  // irreleventReview,
   notRegisteredUser,
-  user1VerificationToken,
+  // user1VerificationToken,
   user2VerificationToken,
   getForgotPasswordToken
 } = require('../seed/seed');
@@ -78,9 +77,6 @@ describe('#Server Tests', () => {
   //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
   //     done();
   // });
-
-
-
 
   // describe('#GET /reviews/:long/:lat', () => {
   //   it('should return accurate calculated review for technion', (done)=>{
@@ -114,8 +110,8 @@ describe('#Server Tests', () => {
             return done(err);
           }
           return Apartment.find({
-              description: notPublishedApartment.description
-            })
+            description: notPublishedApartment.description
+          })
             .then(($) => {
               expect($[0]._createdBy).toEqual(users[1]._id);
               expect($[0].createdAt).toBeTruthy();
@@ -178,8 +174,8 @@ describe('#Server Tests', () => {
           }
 
           return Apartment.find({
-              description: apartment.description
-            })
+            description: apartment.description
+          })
             .then((result) => {
               expect(result.length).toBe(0);
               done();
@@ -201,8 +197,8 @@ describe('#Server Tests', () => {
           }
 
           return Apartment.find({
-              description: apartment._id
-            })
+            description: apartment._id
+          })
             .then((result) => {
               expect(result.length).toBe(0);
               done();
@@ -226,11 +222,11 @@ describe('#Server Tests', () => {
 
           try {
             const user = await User.findById(users[1]._id);
-            const apartment = await Apartment.findOne({
+            const $ = await Apartment.findOne({
               description: notPublishedApartment.description
             });
             expect(user._publishedApartments[0]).toEqual(apartments[0]._id.toHexString());
-            expect(user._publishedApartments[1]).toEqual(apartment._id.toHexString());
+            expect(user._publishedApartments[1]).toEqual($._id.toHexString());
             return done();
           } catch (e) {
             return done(e);
@@ -333,7 +329,7 @@ describe('#Server Tests', () => {
     it('should edit notification even if some dont exist (part of all user unread notifications)', (done) => {
       const id = [users[6].notifications[0]._id, new ObjectID().toHexString()];
       request(app)
-        .patch(`/users/notifications`)
+        .patch('/users/notifications')
         .set(XAUTH, users[6].tokens[0].token)
         .query({
           id
@@ -362,7 +358,7 @@ describe('#Server Tests', () => {
     it('should edit multiple notifications', (done) => {
       const id = [users[6].notifications[0]._id, users[6].notifications[1]._id];
       request(app)
-        .patch(`/users/notifications`)
+        .patch('/users/notifications')
         .set(XAUTH, users[6].tokens[0].token)
         .query({
           id
@@ -1332,8 +1328,8 @@ describe('#Server Tests', () => {
           }
 
           return User.findOne({
-              email: notRegisteredUser.email
-            })
+            email: notRegisteredUser.email
+          })
             .then($ => {
               expect($).toBeTruthy();
               expect($._id).toBeTruthy();
@@ -1362,8 +1358,8 @@ describe('#Server Tests', () => {
           }
 
           return User.findOne({
-              email: user.email
-            })
+            email: user.email
+          })
             .then($ => {
               expect($).toBeTruthy();
               expect($._id).toBeTruthy();
@@ -1535,8 +1531,8 @@ describe('#Server Tests', () => {
           }
 
           return User.findOne({
-              email: notRegisteredUser.email
-            })
+            email: notRegisteredUser.email
+          })
             .then((savedUser) => {
               expect(savedUser.password).toBeTruthy();
               expect(savedUser.password).not.toBe(notRegisteredUser.password);
@@ -1561,8 +1557,8 @@ describe('#Server Tests', () => {
             return done(err);
           }
           return User.findOne({
-              email: users[0].email
-            })
+            email: users[0].email
+          })
             .then((user) => {
               expect(user.toObject().tokens[0]).toMatchObject({
                 access: XAUTH,
@@ -1731,18 +1727,17 @@ describe('#Server Tests', () => {
 
   describe('#DELETE /users/conversation', () => {
     it('should delete messages in the conversation', (done) => {
-
       const _sentBy = users[1]._id;
       const createdAt = new Date().getTime();
-      const content = "MESSAGE CONTENT";
+      const content = 'MESSAGE CONTENT';
       const wasRead = false;
       const message = buildPrivateMessageJSON(_sentBy, createdAt, content, wasRead);
 
-      var participants = [users[1]._id, users[0]._id];
-      var messages = [message];
+      const participants = [users[1]._id, users[0]._id];
+      const messages = [message];
 
       User.findById(users[1]._id).then(user => {
-        user.inseryOrUpdateConversation(participants, messages).then((res) => {
+        user.inseryOrUpdateConversation(participants, messages).then(() => {
           const id = [users[0]._id.toHexString(), users[1]._id.toHexString()];
           request(app)
             .delete('/users/conversation')
@@ -1751,9 +1746,9 @@ describe('#Server Tests', () => {
               id
             })
             .expect(OK)
-            .expect((res) => {
-              User.findById(users[1]._id).then(user => {
-                expect(user.conversations.length).toBe(0);
+            .expect(() => {
+              User.findById(users[1]._id).then($ => {
+                expect($.conversations.length).toBe(0);
               }).catch(done);
             })
             .end(done);
@@ -2156,8 +2151,8 @@ describe('#Server Tests', () => {
             return done(err);
           }
           return Review.find({
-              Pros: notPublishedReview1.Pros
-            })
+            Pros: notPublishedReview1.Pros
+          })
             .then(($) => {
               expect($[0]._createdBy).toEqual(users[1]._id);
               expect($[0].createdAt).toBeTruthy();
@@ -2206,8 +2201,8 @@ describe('#Server Tests', () => {
             return done(err);
           }
           return Review.find({
-              Pros: review.Pros
-            })
+            Pros: review.Pros
+          })
             .then((result) => {
               expect(result.length).toBe(0); // the review should not have been added
               done();
@@ -2238,9 +2233,7 @@ describe('#Server Tests', () => {
             return done(err);
           }
 
-          return Review.find({
-              Pros: review.Pros
-            })
+          return Review.find({ Pros: review.Pros })
             .then((result) => {
               expect(result.length).toBe(0);
               done();
@@ -2345,9 +2338,7 @@ describe('#Server Tests', () => {
           }
         });
     });
-
   });
-
 
   describe('#GET /reviews/:long/:lat', () => {
     it('should return accurate calculated review for technion', (done) => {
@@ -2364,7 +2355,7 @@ describe('#Server Tests', () => {
         .get(`/reviews/${tech[0]}/${tech[1]}`)
         .expect(OK)
         .expect((res) => {
-          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
         })
         .end(done);
     });
@@ -2386,7 +2377,7 @@ describe('#Server Tests', () => {
         .get(`/reviews/${dor[0]}/${dor[1]}`)
         .expect(OK)
         .expect((res) => {
-          expect(res.body.r.ratedCharacteristics).toMatchObject(rated)
+          expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
         })
         .end(done);
     });
@@ -2394,7 +2385,9 @@ describe('#Server Tests', () => {
 
   describe('GET /reviews/:long/:lat', () => {
     it('should return the new accurate review after updating old reviews', (done) => {
-      const westWall = coords.westWall;
+      const {
+        westWall
+      } = coords;
       const rated = {
         parking: 2,
         publicTransport: 2,
@@ -2416,7 +2409,7 @@ describe('#Server Tests', () => {
 
 
   describe('DELETE /reviews', () => {
-    it('should not delete review - apartment doesnt review', (done) => {
+    it('should not delete review - apartment doesn\'t review', (done) => {
       const id = new ObjectID().toHexString();
 
       request(app)

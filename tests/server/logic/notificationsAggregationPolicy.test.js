@@ -1,48 +1,52 @@
 const expect = require('expect');
 
-const {shouldNotificationsBeAggregated} = require('../../../server/logic/notificationsAggregationPolicy');
-const { ObjectID } = require('mongodb');
+const {
+  shouldNotificationsBeAggregated
+} = require('../../../server/logic/notificationsAggregationPolicy');
+const {
+  ObjectID
+} = require('mongodb');
 
 const notificationAType1AndNotRead = {
-   notificationType: 1,
-    _createdBy: new ObjectID(),
-    wasRead: false,
-    _notifiedObjectsIds: [new ObjectID()]
+  notificationType: 1,
+  _createdBy: new ObjectID(),
+  wasRead: false,
+  _notifiedObjectsIds: [new ObjectID()]
 };
 
 const notificationBType2AndNotRead = {
-   notificationType: 2,
-    _createdBy: new ObjectID(),
-    wasRead: false,
-    _notifiedObjectsIds: [new ObjectID()]
-}
+  notificationType: 2,
+  _createdBy: new ObjectID(),
+  wasRead: false,
+  _notifiedObjectsIds: [new ObjectID()]
+};
 
 const notificationCType1AndRead = {
-   notificationType: 1,
-    _createdBy: new ObjectID(),
-    wasRead: true,
-    _notifiedObjectsIds: [new ObjectID()]
+  notificationType: 1,
+  _createdBy: new ObjectID(),
+  wasRead: true,
+  _notifiedObjectsIds: [new ObjectID()]
 };
 
 const notificationDType1AndNotRead = {
-   notificationType: 1,
-    _createdBy: new ObjectID(),
-    wasRead: false,
-    _notifiedObjectsIds: [new ObjectID()]
+  notificationType: 1,
+  _createdBy: new ObjectID(),
+  wasRead: false,
+  _notifiedObjectsIds: [new ObjectID()]
 };
 
 const notificationDType1AndNotReadSameNotifiedObjectLikeA = {
-   notificationType: 1,
-    _createdBy: new ObjectID(),
-    wasRead: false,
-    _notifiedObjectsIds: [notificationAType1AndNotRead._notifiedObjectsIds[0]]
+  notificationType: 1,
+  _createdBy: new ObjectID(),
+  wasRead: false,
+  _notifiedObjectsIds: [notificationAType1AndNotRead._notifiedObjectsIds[0]]
 };
 
 const notificationEType1AndRead = {
-   notificationType: 1,
-    _createdBy: new ObjectID(),
-    wasRead: true,
-    _notifiedObjectsIds: [new ObjectID()]
+  notificationType: 1,
+  _createdBy: new ObjectID(),
+  wasRead: true,
+  _notifiedObjectsIds: [new ObjectID()]
 };
 
 describe('Notifications Aggregation Policy Tests', () => {

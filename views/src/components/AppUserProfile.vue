@@ -13,7 +13,7 @@
             </v-card-title>
           </v-layout>
         </v-card-media>
-        <v-list subheader>
+        <v-list subheader two-line>
           <v-list-group v-model="profile.active" :prepend-icon="profile.icon" no-action>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -50,6 +50,7 @@
               </div>
             </v-container>
           </v-list-group>
+
           <v-list-group v-model="attributes.active" :prepend-icon="attributes.icon" no-action>
             <v-list-tile slot="activator">
               <v-list-tile-content>
@@ -60,29 +61,99 @@
               <v-select v-model="attributes.values" @input="updateAttributes" :items="allAttributes" label="Your attributes" :error-messages="attributes.error" :disabled="!isMyProfile" :hint="attributes.hint" persistent-hint chips deletable-chips multiple autocomplete />
             </v-container>
           </v-list-group>
-          <v-list-group v-model="favorites.active" :prepend-icon="favorites.icon" no-action>
+          
+          <!-- Favorite Apartments -->
+          <v-list-group v-model="favorites.active" :prepend-icon="favorites.icon" @click.native="loadFavoriteApartments" lazy>
             <v-list-tile slot="activator">
               <v-list-tile-content>
                 <v-list-tile-title>{{ favorites.title }} </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile v-for="(favorite, i) in favorites.values" :key="`favorites-${i}`">
-              <v-list-tile-content>
-                <v-list-tile-title>{{ favorite }} </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <v-progress-circular v-if="!favorites.loaded" indeterminate color="purple"/>
+            <template v-else v-for="(favorite, i) in favorites.values">
+              <v-list-tile :key="`favorites-${i}`" @click="goToAd(favorite)" avatar>
+                <v-list-tile-action>
+                  <v-icon color="pink" small>favorite</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-avatar :size="50">
+                  <img :src="favorite.images[0] || defaultApartmentImage" >
+                </v-list-tile-avatar>
+                <v-layout wrap row>
+                  <v-flex xs12 md7>
+                    <v-list-tile-content>
+                      <v-list-tile-title>{{ favorite.location.address.street.capitalize() }} {{ favorite.location.address.number }}, {{ favorite.location.address.city.capitalize() }} </v-list-tile-title>
+                      <v-list-tile-sub-title>&#x24;{{ favorite.price }}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </v-flex>
+                  <v-flex hidden-sm-and-down md5>
+                    <v-list-tile-content>
+                      <v-layout wrap row>
+                        <v-flex xs12>
+                            <span class="body-2 pr-1">Entrance Date:</span>
+                            <span class="body-1">{{ new Date(favorite.entranceDate).toLocaleDateString() }}</span>
+                        </v-flex>
+                        <v-flex xs12>
+                            <span class="body-2 pr-4">Interests:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                            <span class="body-1">{{ favorite._interested.length }}</span>
+                        </v-flex>
+                        <v-flex xs12>
+                            <span class="body-2 pr-4">Comments:</span>
+                            <span class="body-1">{{ favorite.comments.length }}</span>
+                        </v-flex>
+                      </v-layout>
+                    </v-list-tile-content>
+                  </v-flex>
+                </v-layout>
+              </v-list-tile>
+              <v-divider v-if="i < favorites.values.length -1" inset :key="`divider-${i}`"/>
+            </template>
           </v-list-group>
-          <v-list-group v-model="publishes.active" :prepend-icon="publishes.icon" no-action>
+          
+          <!-- Published Apartments -->
+          <v-list-group v-model="publishes.active" :prepend-icon="publishes.icon" @click.native="loadPublishedApartments" lazy>
             <v-list-tile slot="activator">
               <v-list-tile-content>
-                <v-list-tile-title>{{ publishes.title }} </v-list-tile-title>
+                <v-list-tile-title>{{ publishes.title }}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile v-for="(publish, i) in publishes.values" :key="`favorites-${i}`">
-              <v-list-tile-content>
-                <v-list-tile-title>{{ publish }} </v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
+            <v-progress-circular v-if="!publishes.loaded" indeterminate color="purple"/>
+            <template v-else v-for="(publish, i) in publishes.values">
+              <v-list-tile :key="`publishes-${i}`" @click="goToAd(publish)">
+                <v-list-tile-action>
+                  <v-icon color="green" small>home</v-icon>
+                </v-list-tile-action>
+                <v-list-tile-avatar :size="50">
+                  <img :src="publish.images[0] || defaultApartmentImage" >
+                </v-list-tile-avatar>
+                <v-layout wrap row>
+                  <v-flex xs12 md7>
+                    <v-list-tile-content>
+                      <v-list-tile-title>{{ publish.location.address.street.capitalize() }} {{ publish.location.address.number }}, {{ publish.location.address.city.capitalize() }} </v-list-tile-title>
+                      <v-list-tile-sub-title>&#x24;{{ publish.price }}</v-list-tile-sub-title>
+                    </v-list-tile-content>
+                  </v-flex>
+                  <v-flex hidden-sm-and-down md5>
+                    <v-list-tile-content>
+                      <v-layout wrap row>
+                        <v-flex xs12>
+                            <span class="body-2 pr-1">Publish Date:</span>
+                            <span class="body-1">{{ new Date(publish.createdAt).toLocaleDateString() }}</span>
+                        </v-flex>
+                        <v-flex xs12>
+                            <span class="body-2 pr-4">Interests:&nbsp;</span>
+                            <span class="body-1">{{ publish._interested.length }}</span>
+                        </v-flex>
+                        <v-flex xs12>
+                            <span class="body-2 pr-3">Comments:</span>
+                            <span class="body-1">{{ publish.comments.length }}</span>
+                        </v-flex>
+                      </v-layout>
+                    </v-list-tile-content>
+                  </v-flex>
+                </v-layout>
+              </v-list-tile>
+              <v-divider v-if="i < publishes.values.length -1" inset :key="`divider-${i}`"/>
+            </template>
           </v-list-group>
         </v-list>
       </v-card>
@@ -94,6 +165,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 import { mapGetters } from 'vuex';
 import defaultUserImage from '../assets/user-default.jpg';
+import defaultApartment from '../assets/apartment-defalut.jpg';
 import attrList from '../assets/attributes';
 
 export default {
@@ -120,12 +192,14 @@ export default {
         active: false,
         icon: 'favorite',
         title: 'Interests',
+        loaded: false,
         values: [],
       },
       publishes: {
         active: false,
         icon: 'home',
         title: 'Publishes',
+        loaded: false,
         values: [],
       },
       genderList: [
@@ -139,9 +213,32 @@ export default {
         },
       ],
       allAttributes: attrList,
+      defaultApartmentImage: defaultApartment
     };
   },
   methods: {
+    loadPublishedApartments() {
+      if (!this.publishes.loaded) {
+        this.$store.dispatch('searchApartments', { id: this.publishes.values })
+          .then((apartments) => {
+            this.publishes.values = apartments;
+            this.publishes.loaded = true;
+          });
+      }
+    },
+    loadFavoriteApartments() {
+      if (!this.favorites.loaded) {
+        this.$store.dispatch('searchApartments', { id: this.favorites.values })
+          .then((apartments) => {
+            this.favorites.values = apartments;
+            this.favorites.loaded = true;
+          });
+      }
+    },
+    goToAd(apartment) {
+      this.$store.commit('setApartments', [apartment]);
+      this.$router.push({ name: 'AppMain' });
+    },
     editProperty(property) {
       if (property.value.current === property.value.previous) {
         property.edit.active = false;

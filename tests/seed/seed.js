@@ -35,7 +35,7 @@ const apartment1User2VisitId = new ObjectID();
 const user1Notification1Id = new ObjectID();
 
 const group1Id = new ObjectID();
-const group2Id = new ObjectID();
+// const group2Id = new ObjectID();
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
@@ -183,7 +183,7 @@ const user2 = {
   about: '',
   hobbies: [1, 4, 5, 6],
   _publishedApartments: [apartment1Id.toHexString()],
-  _givenReviews: [review2Id.toHexString(),irreleventReviewId.toHexString()],
+  _givenReviews: [review2Id.toHexString(), irreleventReviewId.toHexString()],
   _interestedApartments: [apartment2Id.toHexString()],
   tokens: [{
     access: XAUTH,
@@ -228,7 +228,7 @@ const user4 = {
   mobilePhone: '0541234567',
   about: 'I\'m user number 4',
   _publishedApartments: [],
-  _givenReviews: [releventReviewId.toHexString(),shouldUpdateToIrreleventReviewId.toHexString(),shouldRemoveIrreleventReviewId.toHexString()],
+  _givenReviews: [releventReviewId.toHexString(), shouldUpdateToIrreleventReviewId.toHexString(), shouldRemoveIrreleventReviewId.toHexString()],
   _interestedApartments: [],
   image: '',
   hobbies: [4, 5, 7]
@@ -367,7 +367,7 @@ const review2 = {
   },
   Pros: 'looks good,smells nice',
   Cons: 'no parks and no parking what so ever',
-  relevent:true
+  relevent: true
 };
 
 const review3 = {
@@ -414,7 +414,7 @@ const irreleventReview = {
   relevent: false
 };
 
-const releventReview= {
+const releventReview = {
   _id: releventReviewId,
   _createdBy: user4Id,
   createdAt: Date.now(),
@@ -422,7 +422,7 @@ const releventReview= {
   street: 'west wall',
   city: 'jerusalem',
   state: 'israel',
-  geolocation: [35.2340603,31.7765232],
+  geolocation: [35.2340603, 31.7765232],
   ratedCharacteristics: {
     parking: 2,
     publicTransport: 2,
@@ -433,18 +433,18 @@ const releventReview= {
   },
   Pros: 'such a special place',
   Cons: 'dont understand how to get to the top',
-  relevent:true
+  relevent: true
 };
 
-const shouldUpdateToIrreleventReview= {
+const shouldUpdateToIrreleventReview = {
   _id: shouldUpdateToIrreleventReviewId,
   _createdBy: user4Id,
   createdAt: Date.now(),
-  activatedAt: Date.now()-(1000*60*60*24*400),  //make it a year old
+  activatedAt: Date.now() - (1000 * 60 * 60 * 24 * 400),  //make it a year old
   street: 'west wall',
   city: 'jerusalem',
   state: 'israel',
-  geolocation: [35.2340603,31.7765232],
+  geolocation: [35.2340603, 31.7765232],
   ratedCharacteristics: {
     parking: 2,
     publicTransport: 2,
@@ -455,18 +455,18 @@ const shouldUpdateToIrreleventReview= {
   },
   Pros: 'such an amazing place',
   Cons: 'feels a bit unsafe',
-  relevent:true
+  relevent: true
 };
 
-const shouldRemoveIrreleventReview= {
+const shouldRemoveIrreleventReview = {
   _id: shouldRemoveIrreleventReviewId,
   _createdBy: user4Id,
   createdAt: Date.now(),
-  activatedAt: Date.now()-(1000*60*60*24*365*17),
+  activatedAt: Date.now() - (1000 * 60 * 60 * 24 * 365 * 17),
   street: 'west wall',
   city: 'jerusalem',
   state: 'israel',
-  geolocation: [35.2340603,31.7765232],
+  geolocation: [35.2340603, 31.7765232],
   ratedCharacteristics: {
     parking: 2,
     publicTransport: 2,
@@ -477,7 +477,7 @@ const shouldRemoveIrreleventReview= {
   },
   Pros: 'such an important place',
   Cons: 'scary to get here',
-  relevent:true
+  relevent: true
 };
 
 
@@ -522,23 +522,23 @@ const notPublishedReview2 = {
 };
 
 const group1 = {
-    _id: group1Id,
-    creator: user1Id,
-    members: [user1Id, user2Id, user3Id],
-    apartment: [apartment1Id],
-    createdAt: new Date('2018-05-05').getTime(),
-    score: 0,
-    status: 0, //pending
+  _id: group1Id,
+  creator: user1Id,
+  members: [user1Id, user2Id, user3Id],
+  apartment: [apartment1Id],
+  createdAt: new Date('2018-05-05').getTime(),
+  score: 0,
+  status: 0, //pending
 };
 
 const group2 = {
-    _id: group1Id,
-    creator: user3Id,
-    members: [user3Id, user2Id],
-    apartment: [apartment2Id],
-    createdAt: new Date('2018-05-05').getTime(),
-    score: 0,
-    status: 1, // canceled
+  _id: group1Id,
+  creator: user3Id,
+  members: [user3Id, user2Id],
+  apartment: [apartment2Id],
+  createdAt: new Date('2018-05-05').getTime(),
+  score: 0,
+  status: 1, // canceled
 };
 
 const apartments = [
@@ -567,15 +567,15 @@ const reviews = [
 ];
 
 const groups = [
-    group1,
-    group2
-]
+  group1,
+  group2
+];
 
 const coords = {
   andalusiaSpain: [-3.222444, 37.916345],
   technionIsrael: [35.020568, 32.776515],
   dor: [34.9948996, 32.8148386],
-  westWall: [35.2340603,31.7765232]
+  westWall: [35.2340603, 31.7765232]
 };
 
 const populateUsers = (done) => {
@@ -618,14 +618,14 @@ const populateReviews = (done) => {
 };
 
 const populateGroups = (done) => {
-    Group.remove({})
-        .then(() =>
-            Promise.all([
-                new Group(groups[0]).save(),
-                new Group(groups[1]).save(),
-            ]))
-        .then(() => done())
-        .catch(done);
+  Group.remove({})
+    .then(() =>
+      Promise.all([
+        new Group(groups[0]).save(),
+        new Group(groups[1]).save(),
+      ]))
+    .then(() => done())
+    .catch(done);
 };
 
 module.exports = {
