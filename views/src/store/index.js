@@ -277,11 +277,11 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 10/05/18
-     * @param: params: object of {id} - the id of the notification
+     * @param: params: object of {id} where id can be a String or an Array of notification ids.
      * @param: payload object of {wasRead} - the notification new read state.
      */
     updateNotification({ commit }, { params, payload }) {
-      return axios.patch(`http://localhost:3000/users/notifications/${params.id}`, payload)
+      return axios.patch('http://localhost:3000/users/notifications', payload, { params })
       .then((response) => {
         // eslint-disable-next-line
         console.log(response.data);

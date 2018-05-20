@@ -174,22 +174,21 @@
         );
       },
       sendNotificationReadMessage() {
-        setTimeout(() => {
-          for (let i = 0; i < this.unreadNotifications.length; i += 1) {
-            this.$store
-              .dispatch('updateNotification', {
-                params: { id: this.unreadNotifications[i]._id },
-                payload: { wasRead: true }
-              })
-              .then(() => {
-                this.unreadNotifications.splice(i, 1);
-              })
-              .catch((error) => {
-                // eslint-disable-next-line
-                console.log(error);
-              });
-          }
-        }, 5000);
+        if (this.unreadNotifications.length > 0) {
+          const id = this.unreadNotifications.map(n => n._id);
+          this.$store
+            .dispatch('updateNotification', {
+              params: { id },
+              payload: { wasRead: true }
+            })
+            .then(() => {
+              this.unreadNotifications = [];
+            })
+            .catch((error) => {
+              // eslint-disable-next-line
+              console.log(error);
+            });
+        }
       },
       async goToAd(n) {
         this.$store.commit('showLoading');
