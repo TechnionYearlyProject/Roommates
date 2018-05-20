@@ -26,6 +26,7 @@ describe('Notifier Tests', () => {
       Promise.all(promises)
         .then(async () => {
           const user1 = await User.findById(users[0]._id);
+          console.log(user1);
           expect(user1.notifications.length).toBe(4);
           expect(user1.notifications[0].notificationType).toBe(notificationType);
           expect(user1.notifications[0]._createdBy[0].equals(createdBy)).toBe(true);

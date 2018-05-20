@@ -42,32 +42,38 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
   const promises = [];
   const newNotification = buildNotificationJSON(notificationType, fromId, wasRead, notifiedObjectIdsArr, creationDate);
   toIdsArray.forEach((userId) => {
-    if (!userId.equals(fromId)) { //don't notify the user on his own changes
-      const findUserByIdPromise = User.findById(userId);
-      findUserByIdPromise
-        .then(async (user) => {
-          const userNotifications = user.getNotifications();
-          let shouldBeAggregated = false;
-          let aggregateWithId;
-          userNotifications.forEach((curNotification) => {
-            if (shouldNotificationsBeAggregated(curNotification, newNotification)) {
-              aggregateWithId = curNotification._id;
-              shouldBeAggregated = true;
-            }
-          });
-          if (!shouldBeAggregated) {
-            const previousNotifications = user.getNotifications().slice();
-            const updatedUser = await user.saveNewNotification(newNotification);
-            //send real-time update for the new one
-            const newNotifications = _.difference(updatedUser.getNotifications(), previousNotifications);
-            newNotifications.forEach((n) => sendUserRealTimeNotification(userId, n));
-          } else {
-            await user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate);
-            sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
+    const promise = new Promise(async (resolve, reject) => {
+      try {
+        if (userId === fromId) {
+          resolve();
+        }
+        const user = await User.findById(userId);
+        const userNotifications = user.getNotifications();
+        let shouldBeAggregated = false;
+        let aggregateWithId;
+        userNotifications.forEach((curNotification) => {
+          if (shouldNotificationsBeAggregated(curNotification, newNotification)) {
+            aggregateWithId = curNotification._id;
+            shouldBeAggregated = true;
           }
         });
-      promises.push(findUserByIdPromise);
-    }
+        if (!shouldBeAggregated) {
+          const previousNotifications = user.getNotifications().slice();
+          const updatedUser = await user.saveNewNotification(newNotification);
+          const newNotifications = _.difference(updatedUser.getNotifications(), previousNotifications);
+          //send real-time update for the new one
+          newNotifications.forEach((n) => sendUserRealTimeNotification(userId, n));
+        } else {
+          await user.saveAggregationDataInNotification(aggregateWithId, notifiedObjectIdsArr, [fromId], creationDate);
+          //send real-time update for the new one
+          sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
+        }
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+    promises.push(promise);
   });
   return promises;
 };
