@@ -2,35 +2,35 @@ const arrayFunctions = require('../helpers/arrayFunctions');
 
 const supportedTags = [
   {
-    _id: 1,
+    _id: 0,
     name: 'AC'
   },
   {
-    _id: 2,
+    _id: 1,
     name: 'PETS'
   },
   {
-    _id: 3,
+    _id: 2,
     name: 'ELEVATOR'
   },
   {
-    _id: 4,
+    _id: 3,
     name: 'TERRACE'
   },
   {
-    _id: 5,
+    _id: 4,
     name: 'PARKING'
   },
   {
-    _id: 6,
+    _id: 5,
     name: 'STORAGE'
   },
   {
-    _id: 7,
+    _id: 6,
     name: 'KOSHER KITCHEN'
   },
   {
-    _id: 8,
+    _id: 7,
     name: 'FURNISHED'
   },
 ];
