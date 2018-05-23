@@ -69,7 +69,8 @@
                 <v-list-tile-title>{{ favorites.title }} </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-progress-circular v-if="!favorites.loaded" indeterminate color="purple"/>
+            <div v-if="favorites.values.length === 0" class="body-1 pl-3">You have yet to express interest in anything.</div>
+            <v-progress-circular v-else-if="!favorites.loaded" indeterminate color="purple"/>
             <template v-else v-for="(favorite, i) in favorites.values">
               <v-list-tile :key="`favorites-${i}`" @click="goToAd(favorite)" avatar>
                 <v-list-tile-action>
@@ -116,7 +117,8 @@
                 <v-list-tile-title>{{ publishes.title }}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-progress-circular v-if="!publishes.loaded" indeterminate color="purple"/>
+            <div v-if="publishes.values.length === 0" class="body-1 pl-3">You have yet to publish anything.</div>
+            <v-progress-circular v-else-if="!publishes.loaded" indeterminate color="purple"/>
             <template v-else v-for="(publish, i) in publishes.values">
               <v-list-tile :key="`publishes-${i}`" @click="goToAd(publish)">
                 <v-list-tile-action>
@@ -218,7 +220,10 @@ export default {
   },
   methods: {
     loadPublishedApartments() {
-      if (!this.publishes.loaded) {
+      if (this.publishes.values.length === 0) {
+        this.publishes.loaded = true;
+      }
+      else if (!this.publishes.loaded) {
         this.$store.dispatch('searchApartments', { id: this.publishes.values })
           .then((apartments) => {
             this.publishes.values = apartments;
@@ -227,7 +232,10 @@ export default {
       }
     },
     loadFavoriteApartments() {
-      if (!this.favorites.loaded) {
+      if (this.favorites.values.length === 0) {
+        this.favorites.loaded = true;
+      }
+      else if (!this.favorites.loaded) {
         this.$store.dispatch('searchApartments', { id: this.favorites.values })
           .then((apartments) => {
             this.favorites.values = apartments;

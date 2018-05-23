@@ -76,7 +76,7 @@ export default new Vuex.Store({
     endSession(state) {
       state.sessionToken = null;
       axios.defaults.headers.common['x-auth'] = null;
-    },
+    }
   },
   actions: {
     /**
@@ -199,9 +199,15 @@ export default new Vuex.Store({
      * @date: 19/04/18
      * @param: params: object of {id} - the id of the apartment to favor.
      */
-    favor(context, params) {
+    favor({ state }, params) {
       return axios.put(`http://localhost:3000/apartments/${params.id}/interested`)
         .then((response) => {
+          const index = state.user._interestedApartments.indexOf(response.data.apartment._id);
+          if (index >= 0) { //if favor exists it means we need to remove it
+            state.user._interestedApartments.splice(index, 1);
+          } else { //we have just added it
+            state.user._interestedApartments.push(response.data.apartment._id);
+          }
           // eslint-disable-next-line 
           console.log(response.data);
           return response.data.apartment;
@@ -228,9 +234,10 @@ export default new Vuex.Store({
      * price, entranceDate, requiredRoommates, totalRoommates, floor, totalFloors,
      * numberOfRooms, area, description, tags} - the details of the new apartment.
      */
-    publishApartment(context, payload) {
+    publishApartment({ state }, payload) {
       return axios.post('http://localhost:3000/apartments', payload)
       .then((response) => {
+        state.user._publishedApartments.push(response.data.apartment._id);
         // eslint-disable-next-line 
         console.log(response.data);
         return response.data.apartment;
