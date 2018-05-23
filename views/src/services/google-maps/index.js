@@ -81,9 +81,10 @@ export default {
 
             returnData.latitude = place.geometry.location.lat();
             returnData.longitude = place.geometry.location.lng();
-            returnData.full_name = input.value;
+            returnData.full_name = `${returnData.route || ''}${returnData.street_number ? ` ${returnData.street_number}` : ''}`+
+                                   `${returnData.locality? ` ${returnData.locality}` : ''}${returnData.country? `, ${returnData.country}` : ''}`;
             // update autocompleteText then emit change event
-            ref.autocompleteText = input.value;
+            ref.autocompleteText = returnData.full_name;
 
             // return returnData object and PlaceResult object
             ref.$emit('placechanged', returnData, place);
