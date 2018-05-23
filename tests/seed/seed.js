@@ -105,7 +105,7 @@ const apartment2 = new Apartment({
   //area:
   //images:
   //description:
-  tags: [1, 8],
+  tags: [0, 7],
   requiredRoommates: 1,
   totalRoommates: 2,
   //comments
