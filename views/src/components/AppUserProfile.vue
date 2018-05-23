@@ -222,8 +222,7 @@ export default {
     loadPublishedApartments() {
       if (this.publishes.values.length === 0) {
         this.publishes.loaded = true;
-      }
-      else if (!this.publishes.loaded) {
+      } else if (!this.publishes.loaded) {
         this.$store.dispatch('searchApartments', { id: this.publishes.values })
           .then((apartments) => {
             this.publishes.values = apartments;
@@ -234,8 +233,7 @@ export default {
     loadFavoriteApartments() {
       if (this.favorites.values.length === 0) {
         this.favorites.loaded = true;
-      }
-      else if (!this.favorites.loaded) {
+      } else if (!this.favorites.loaded) {
         this.$store.dispatch('searchApartments', { id: this.favorites.values })
           .then((apartments) => {
             this.favorites.values = apartments;
