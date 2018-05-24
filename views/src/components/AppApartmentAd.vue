@@ -46,7 +46,7 @@
           <v-list>
             <v-list-tile avatar>
               <v-list-tile-avatar>
-                <app-avatar img="" :name="publisher.firstName" :size="40"></app-avatar>
+                <app-avatar :image="publisher.image" :name="publisher.firstName" :size="40"></app-avatar>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title>{{ publisher.firstName.capitalize() }} {{ publisher.lastName.capitalize() }}</v-list-tile-title>

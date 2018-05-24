@@ -19,10 +19,10 @@ const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
  * @author: Alon Talmor
  * @date: 24/05/18
  *
- * @param: container - the name of the container we want to fetch the image from
- * @param: path - the path inside the container to fetch the image from
+ * @param: container - the name of the container we want to fetch the images from
+ * @param: path - the path inside the container to fetch the images from
  * @param: images - list of String which represent the images names we want to fetch
- * returns a list of image URLs
+ * @return: a list of image URLs.
  */
 const getImages = (container, path, images) => {
   const imageBaseURL = blobService.getUrl(SA.CONTAINERS[container]);
@@ -30,6 +30,15 @@ const getImages = (container, path, images) => {
   return imagesList;
 };
 
+/**
+ * @author: Alon Talmor
+ * @date: 24/05/18
+ *
+ * @param: images - list of Base64 Strings to extract details from.
+ * @return: a list of the image details as an Object of {type, buffer}
+ *          type - the type of the image
+ *          buffer - image base64 representation
+ */
 const getBase64Data = (images) => {
   const imagesData = [];
   for (let i = 0; i < images.length; i += 1) {
@@ -44,6 +53,16 @@ const getBase64Data = (images) => {
   return imagesData;
 };
 
+/**
+ * @author: Alon Talmor
+ * @date: 24/05/18
+ *
+ * @param: container - the name of the container we want to upload the images to
+ * @param: path - the path inside the container to upload the images to
+ * @param: images - list of Base64 Strings of the images we want to upload
+ *
+ * @return: a Promise which will contains a list of Strings which are the uploaded images names
+ */
 const uploadImages = (container, path, images) => {
   const promises = [];
   const imagesList = [];
