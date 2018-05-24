@@ -7,6 +7,9 @@ const {
   UNAUTHORIZED,
   OK
 } = require('http-status');
+const {
+  ObjectID
+} = require('mongodb');
 require('./server-config');
 require('./db/mongoose');
 require('./socketsServer');
@@ -27,8 +30,7 @@ const {
   User
 } = require('./models/user');
 const {
-  XAUTH,
-  AZURE
+  XAUTH
 } = require('./constants');
 const {
   authenticate
@@ -62,9 +64,7 @@ const {
 const userVerificator = require('./services/user-verification/user-verificator');
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
-const azureStorage = require('azure-storage');
-const uuid = require('uuid/v4');
-const { ObjectID } = require('mongodb');
+const imageService = require('./services/image-service/image-service');
 
 const app = express();
 
@@ -80,6 +80,10 @@ useVue(app);
 /**
  * Add a new apartemnt. The posting user has to be authenticated.
  * the specified center point and radius.
+ *
+ * @updatedBy: Alon Talmor
+ * @date: 24/05/18
+ * Now the route uses image-service to upload images to storage.
  *
  * @param {String} title
  * @param {Number} price
@@ -113,7 +117,6 @@ app.post('/apartments', authenticate, async (req, res) => {
       return res.status(BAD_REQUEST).send(errors.invalidLocation);
     }
 
-    const imagesData = req.body.files || [];
     const apartmentData = _.pick(req.body, [
       'price',
       'entranceDate',
@@ -127,49 +130,20 @@ app.post('/apartments', authenticate, async (req, res) => {
       'totalFloors',
       'area'
     ]);
+    apartmentData._id = new ObjectID();
     apartmentData._createdBy = req.user._id;
     apartmentData._notificationSubscribers = [req.user._id];
     apartmentData.createdAt = Date.now();
     apartmentData.location = location;
-    apartmentData.images = [];
-    for (let i = 0; i < imagesData.length; i++) {
-      const matches = imagesData[i].imageURL.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      imagesData[i].type = matches[1];
-      imagesData[i].buffer = new Buffer(matches[2], 'base64');
-
-      apartmentData.images[i] = `${uuid()}.${imagesData[i].type.split('/')[1]}`;
-    }
+    apartmentData.images = await imageService.uploadImages('APARTMENT_IMAGES', apartmentData._id, apartmentData.images);
 
     const apartment = await new Apartment(apartmentData).save();
-    await Promise.all([
-      User.findByIdAndUpdate(req.user._id, {
-        $push: {
-          _publishedApartments: apartment._id
-        }
-      }).catch(err => {
-        Apartment.findByIdAndRemove(apartment._id);
-        throw err;
-      }),
-      new Promise(async resolve => {
-        const SA = AZURE.STORAGE_ACCOUNT;
-        const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
-
-        await Promise.all(imagesData.map((image, index) => new Promise((imageResolve, imageReject) => {
-          blobService.createBlockBlobFromText(SA.CONTAINERS.APARTMENT_IMAGES, `${apartment._id}/${apartmentData.images[index]}`, image.buffer, {
-            contentType: image.type
-          }, error => {
-            if (error) {
-              imageReject(error);
-            } else {
-              imageResolve();
-            }
-          });
-        }))).catch(err => {
-          throw err;
-        });
-        resolve();
-      })
-    ]).catch(err => {
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: {
+        _publishedApartments: apartment._id
+      }
+    }).catch(err => {
+      Apartment.findByIdAndRemove(apartment._id);
       throw err;
     });
 
@@ -177,6 +151,7 @@ app.post('/apartments', authenticate, async (req, res) => {
       apartment
     });
   } catch (err) {
+    console.log(err);
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
@@ -280,6 +255,10 @@ app.get('/apartments/tags', async (req, res) => {
  * @param {Array of Number} geolocation - structure: [longitude, latitude]
  *
  * @returns the list of all the apartments that passed the above filter attributes.
+ *
+ * @updatedBy: Alon Talmor
+ * @date: 24/05/18
+ * Now the route uses image-service to fetch images from storage.
  */
 app.get('/apartments', async (req, res) => {
   try {
@@ -303,20 +282,13 @@ app.get('/apartments', async (req, res) => {
       // 'longitude',
       // 'latitude'
     ]);
-
-    const SA = AZURE.STORAGE_ACCOUNT;
-    const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
-    const imageBaseURL = blobService.getUrl(SA.CONTAINERS.APARTMENT_IMAGES);
-    ``
-
     const apartments = await Apartment.findByProperties(query);
+    for (let i = 0; i < apartments.length; i += 1) {
+      apartments[i].images = imageService.getImages('APARTMENT_IMAGES', apartments[i]._id, apartments[i].images);
+    }
 
     res.send({
-      apartments: apartments.map(apartment => {
-        apartment.images = apartment.images.map(image => `${imageBaseURL}/${apartment._id}/${image}`);
-
-        return apartment;
-      })
+      apartments
     });
     // let tags;
     // if (body.tags && Array.isArray(body.tags)) {
@@ -991,10 +963,10 @@ app.patch('/users/notifications', authenticate, async (req, res) => {
     const ids = _.castArray(req.query.id);
     const notificationData = _.pick(req.body, ['wasRead']);
 
-    var objectIds = []; 
+    var objectIds = [];
     var newNotificationsData = [];
 
-    ids.forEach((id) =>{
+    ids.forEach((id) => {
       const curNotification = JSON.parse(
         JSON.stringify(req.user.getNotificationById(id))
       );
@@ -1033,13 +1005,15 @@ app.delete('/users/conversation', authenticate, async (req, res) => {
   try {
     const _participants = _.castArray(req.query.id);
 
-    for(var i=0;i<_participants.length;i++){
+    for (var i = 0; i < _participants.length; i++) {
       _participants[i] = new ObjectID(_participants[i]);
     }
 
     const user = await req.user.removeConversation(_participants);
-    res.send({user});
-  } catch(err){
+    res.send({
+      user
+    });
+  } catch (err) {
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
