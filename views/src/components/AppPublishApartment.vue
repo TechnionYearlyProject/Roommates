@@ -48,11 +48,6 @@
                   <v-subheader v-text="'Entrance date'"></v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-sm2 order-md1>
-
-
-
-
-                  <v-text-field v-model="payload.entranceDate" label="" mask="#######" :rules="rules.entranceDate" required class="hidden"></v-text-field>
                   <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" :min="today" />
                 </v-flex>
                 <v-flex xs12 sm12 md1 order-md2>
@@ -150,7 +145,7 @@
       <v-stepper-step ref="step4" step="4">Upload some images</v-stepper-step>
       <v-stepper-content step="4">
         <v-card :color="color" class="mb-5 pa-3" height="auto" style="min-height: 300px">
-          <app-uploader v-model="payload.files" fileType="image/*"></app-uploader>
+          <app-uploader v-model="payload.images" fileType="image/*"></app-uploader>
         </v-card>
         <v-layout class="pb-1">
           <v-btn outline @click.native="goPreviousStep">
@@ -194,7 +189,7 @@
           numberOfRooms: 4,
           area: null,
           description: '',
-          files: [],
+          images: [],
           tags: []
         },
         address: null,

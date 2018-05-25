@@ -13,7 +13,7 @@
                         <v-list-tile-title v-text="getName(favor)"></v-list-tile-title>
                     </v-list-tile-content>
                     <v-list-tile-avatar>
-                        <app-avatar :src="getImage(favor)" :name="getName(favor)" :size="40"/>
+                        <app-avatar :image="getImage(favor)" :name="isMyFavor(favor) ? getUser.firstName : getName(favor)" :size="40"/>
                     </v-list-tile-avatar>
                 </v-list-tile>
             </transition-group>
@@ -42,7 +42,6 @@
         };
       },
       methods: {
-        ...mapGetters(['isVerified', 'getUser']),
         isMyFavor(favor) {
           return this.isVerified && favor === this.getUser._id;
         },
@@ -62,10 +61,10 @@
           }
         },
         getName(favor) {
-          if (!this.usersList[favor]) {
-            return 'User';
-          } else if (this.isMyFavor(favor)) {
+          if (this.isMyFavor(favor)) {
             return 'You';
+          } else if (!this.usersList[favor]) {
+            return 'User';
           } else { // eslint-disable-line
             return `${this.usersList[favor].firstName} ${
               this.usersList[favor].lastName
@@ -73,12 +72,17 @@
           }
         },
         getImage(favor) {
-          if (!this.usersList[favor]) {
+          if (this.isMyFavor(favor)) {
+            return this.getUser.image;
+          }else if (!this.usersList[favor]) {
             return null;
+          } else { // eslint-disable-line
+            return this.usersList[favor].image;
           }
-
-          return this.usersList[favor].image;
         }
+      },
+      computed: {
+        ...mapGetters(['isVerified', 'getUser']),
       },
       beforeMount() {
         this.fetchUsers();

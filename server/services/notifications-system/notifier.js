@@ -45,7 +45,7 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
     const promise = new Promise(async (resolve, reject) => {
       try {
         if (userId === fromId) {
-          resolve();
+          return resolve();
         }
         const user = await User.findById(userId);
         const userNotifications = user.getNotifications();
@@ -68,9 +68,9 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
           //send real-time update for the new one
           sendUserRealTimeNotification(userId, user.getNotificationById(aggregateWithId));
         }
-        resolve();
+        return resolve();
       } catch (err) {
-        reject(err);
+        return reject(err);
       }
     });
     promises.push(promise);
