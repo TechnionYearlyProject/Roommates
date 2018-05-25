@@ -66,7 +66,7 @@ const getBase64Data = (images) => {
 const uploadImages = (container, path, images) => {
   const promises = [];
   const imagesList = [];
-  const imagesData = getBase64Data(_.castArray(images));
+  const imagesData = getBase64Data(_.compact(_.castArray(images)));
   for (let i = 0; i < imagesData.length; i += 1) {
     const image = `${uuid()}.${imagesData[i].type.split('/')[1]}`;
     promises.push(new Promise((resolve, reject) => {

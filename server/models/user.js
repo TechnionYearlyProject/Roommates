@@ -60,11 +60,7 @@ const UserSchema = new mongoose.Schema({
   image: {
     type: String,
     trim: true,
-    validate: {
-      validator: value => validator.isURL(value) || value === '',
-      message: '{VALUE} is not a valid URL'
-    },
-    default: '' //TODO:put url to some anonymous image
+    default: null
   },
   about: {
     type: String,

@@ -151,7 +151,6 @@ app.post('/apartments', authenticate, async (req, res) => {
       apartment
     });
   } catch (err) {
-    console.log(err);
     return res.status(BAD_REQUEST).send(errors.unknownError);
   }
 });
@@ -972,8 +971,8 @@ app.patch('/users/notifications', authenticate, async (req, res) => {
     const ids = _.castArray(req.query.id);
     const notificationData = _.pick(req.body, ['wasRead']);
 
-    var objectIds = [];
-    var newNotificationsData = [];
+    const objectIds = [];
+    const newNotificationsData = [];
 
     ids.forEach((id) => {
       const curNotification = JSON.parse(

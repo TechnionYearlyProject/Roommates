@@ -139,7 +139,6 @@ const user1 = {
   birthdate: new Date('1992-06-24').getTime(),
   gender: 'male',
   mobilePhone: '',
-  image: '',
   about: '',
   hobbies: [1, 2, 3],
   _givenReviews: [review1Id.toHexString()],
@@ -179,7 +178,6 @@ const user2 = {
   birthdate: new Date('1995-04-17').getTime(),
   gender: 'male',
   mobilePhone: '',
-  image: '',
   about: '',
   hobbies: [1, 4, 5, 6],
   _publishedApartments: [apartment1Id.toHexString()],
@@ -211,7 +209,6 @@ const user3 = {
   birthdate: new Date('1992-06-24').getTime(),
   gender: 'male',
   mobilePhone: '',
-  image: '',
   about: '',
   hobbies: [7, 8, 9],
   _givenReviews: [review3Id.toHexString()],
@@ -230,7 +227,6 @@ const user4 = {
   _publishedApartments: [],
   _givenReviews: [releventReviewId.toHexString(), shouldUpdateToIrreleventReviewId.toHexString(), shouldRemoveIrreleventReviewId.toHexString()],
   _interestedApartments: [],
-  image: '',
   hobbies: [4, 5, 7]
 };
 
@@ -242,7 +238,6 @@ const user5 = {
   lastName: 'user5_lastName',
   birthdate: new Date('1992-06-24').getTime(),
   mobilePhone: '',
-  image: '',
   about: '',
   gender: 'female',
   _publishedApartments: [],
@@ -258,7 +253,6 @@ const user6 = {
   lastName: 'user6_lastName',
   birthdate: new Date('1992-06-24').getTime(),
   mobilePhone: '',
-  image: '',
   about: '',
   gender: 'male',
   _publishedApartments: [apartment1Id.toHexString(), apartment2Id.toHexString()],
@@ -276,7 +270,6 @@ const user7 = {
   birthdate: new Date('1995-04-17').getTime(),
   gender: 'male',
   mobilePhone: '',
-  image: '',
   about: '',
   hobbies: [1, 4, 5, 6],
   tokens: [{
