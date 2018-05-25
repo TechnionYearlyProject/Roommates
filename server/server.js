@@ -638,18 +638,18 @@ app.post('/users/login', async (req, res) => {
     const body = _.pick(req.body, ['email', 'password']);
 
     const user = await User.findByCredentials(body.email, body.password);
-
     /**
      * @updatedBy: Alon Talmor
      * @date: 16/04/18
      * We should generate a token even if the user is yet to be verified (verification is by mail).
-
-    if (!user.isVerified) {
-      return res.send({ user });
-    }
-	 */
+     
+     if (!user.isVerified) {
+       return res.send({ user });
+      }
+      */
     user.removeExpiredTokens();
     const token = await user.generateAuthenticationToken();
+    [user.image] = imageService.getImages('USER_IMAGES', user._id, [user.image]);
     res.header(XAUTH, token).send({
       user
     });
@@ -671,6 +671,7 @@ app.post('/users/login', async (req, res) => {
  *
  */
 app.get('/users/self', authenticate, (req, res) => {
+  [req.user.image] = imageService.getImages('USER_IMAGES', req.user._id, [req.user.image]);
   res.send({
     self: req.user
   });
@@ -721,6 +722,11 @@ app.get('/users', async (req, res) => {
     // if (users.length !== ids.length) { // if some ids were not found
     //   return res.status(BAD_REQUEST).send();
     // }
+
+    for (let i = 0; i < users.length; i += 1) {
+      [users[i].image] = imageService.getImages('USER_IMAGES', users[i]._id, [users[i].image]);
+    }
+
     users = convertArrayToJsonMap(users, '_id');
 
     return res.send({
@@ -798,6 +804,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
       '_interestedApartments'
     ]);
 
+    [body.image] = await imageService.uploadImages('USER_IMAGES', req.user._id, body.image);
     const user = await User.findByIdAndUpdate(
       req.user._id, {
         $set: body
@@ -806,6 +813,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
         runValidators: true
       }
     );
+    user.image = imageService.getImages('USER_IMAGES', user._id, [user.image]);
     res.send({
       user
     });
@@ -933,6 +941,7 @@ app.patch('/users/reset/:token', async (req, res) => {
     });
     passwordReset.verifyResetToken(user, req.params.token);
     await user.resetPassword(req.body.password);
+    [user.image] = imageService.getImages('USER_IMAGES', user._id, [user.image]);
 
     //TODO: disable using this same link after password change.
     res.send({

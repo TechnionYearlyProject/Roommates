@@ -7,7 +7,7 @@
             <transition-group v-else name="scale-transition" mode="out-in">
                 <v-list-tile avatar v-for="(favor, i) in favors" :key="`interested-${i}`" @click="goToProfile(favor)">
                     <v-list-tile-action>
-                        <v-icon color="amber accent-3">star</v-icon>
+                        <v-icon small color="pink lighten-4">favorite</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title v-text="getName(favor)"></v-list-tile-title>
@@ -74,7 +74,7 @@
         getImage(favor) {
           if (this.isMyFavor(favor)) {
             return this.getUser.image;
-          }else if (!this.usersList[favor]) {
+          } else if (!this.usersList[favor]) {
             return null;
           } else { // eslint-disable-line
             return this.usersList[favor].image;

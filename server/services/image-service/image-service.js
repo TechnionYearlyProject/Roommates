@@ -26,7 +26,7 @@ const blobService = azureStorage.createBlobService(SA.NAME, SA.ACCESS_KEY);
  */
 const getImages = (container, path, images) => {
   const imageBaseURL = blobService.getUrl(SA.CONTAINERS[container]);
-  const imagesList = images.map(image => `${imageBaseURL}/${path}/${image}`);
+  const imagesList = _.compact(images).map(image => `${imageBaseURL}/${path}/${image}`);
   return imagesList;
 };
 
@@ -76,18 +76,16 @@ const uploadImages = (container, path, images) => {
         imagesData[i].buffer, {
           contentType: imagesData[i].type
         },
-        (error, response) => {
+        (error) => {
           if (error) {
             reject(errors.imageUploadFailure);
           } else {
-            console.log(response);
             imagesList.push(image);
             resolve();
           }
         });
     }));
   }
-  console.log(imagesList);
   return Promise.all(promises)
     .then(() => imagesList);
 };
