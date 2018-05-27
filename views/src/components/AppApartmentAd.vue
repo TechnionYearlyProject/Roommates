@@ -44,7 +44,7 @@
         <v-card style="min-height:60px">
           <div v-if="fetchedPublisher">
           <v-list>
-            <v-list-tile avatar>
+            <v-list-tile avatar  @click="$router.push({ name: 'AppUserProfile', params: { id: publisher._id } })">
               <v-list-tile-avatar>
                 <app-avatar :image="publisher.image" :name="publisher.firstName" :size="40"></app-avatar>
               </v-list-tile-avatar>

@@ -641,7 +641,7 @@ app.post('/users/login', async (req, res) => {
      * @updatedBy: Alon Talmor
      * @date: 16/04/18
      * We should generate a token even if the user is yet to be verified (verification is by mail).
-     
+
      if (!user.isVerified) {
        return res.send({ user });
       }
