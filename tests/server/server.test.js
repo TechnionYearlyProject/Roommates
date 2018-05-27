@@ -183,9 +183,9 @@ describe('#Server Tests', () => {
         });
     });
 
-    it('should not create apartment with invalid tag ', (done) => {
+    it('should not create apartment with invalid tag', (done) => {
       const apartment = JSON.parse(JSON.stringify(notPublishedApartment));
-      apartment.tags = [0];
+      apartment.tags = [-1];
       request(app)
         .post('/apartments')
         .set(XAUTH, users[1].tokens[0].token)
@@ -1300,7 +1300,7 @@ describe('#Server Tests', () => {
       request(app)
         .get('/apartments')
         .query({
-          tags: [1, 8]
+          tags: [0, 7]
         })
         .expect(OK)
         .expect((res) => {

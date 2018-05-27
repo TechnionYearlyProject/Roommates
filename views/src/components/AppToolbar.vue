@@ -45,7 +45,7 @@
                 <app-notifications/>
                 <v-menu offset-y bottom left attach>
                     <v-btn flat slot="activator">
-                        <app-avatar image='' name='alon'></app-avatar>
+                        <app-avatar :image="getUser.image" :name="getUser.firstName"></app-avatar>
                     </v-btn>
                     <v-list light>
                         <v-list-tile v-for="(item,i) in menuItems" :key="`item-${i}`" exact :to="{name: item.to}" @click="item.do">
@@ -103,7 +103,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isAuthenticated', 'isVerified']),
+    ...mapGetters(['isAuthenticated', 'isVerified', 'getUser']),
   },
   components: {
     AppAvatar,

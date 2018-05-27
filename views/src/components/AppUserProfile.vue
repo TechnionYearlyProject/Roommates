@@ -7,9 +7,27 @@
             <v-card-title primary-title>
               <div class="display-1 white--text ml-3">{{ title }}</div>
               <v-spacer></v-spacer>
-              <v-btn dark icon class="mr-3">
+              <div v-if="isMyProfile">
+              <v-btn dark icon class="mr-3" @click="uploadDialog = true">
                 <v-icon>edit</v-icon>
               </v-btn>
+              <v-dialog v-model="uploadDialog" max-width="400">
+                <v-card>
+                  <v-alert :value="uploadError" type="error">An error occured while trying to upload your photo</v-alert>
+                  <v-card-title class="headline">
+                    Upload profile picture
+                    <v-spacer/>
+                    <v-btn icon @click="uploadDialog = false"><v-icon>close</v-icon></v-btn>
+                  </v-card-title>
+                  <div style="height:220px">
+                  <app-uploader v-model="imageToUpload" fileType="image/*" :multipleFiles="false" button-text="Select your photo" single-line/>
+                  </div>
+                  <v-layout align-end justify-end warp row fill-height>
+                      <v-btn @click="uploadImage" color="success" :disabled="uploadloading" :loading="uploadloading">Upload</v-btn>
+                  </v-layout>
+                </v-card>
+              </v-dialog>
+              </div>
             </v-card-title>
           </v-layout>
         </v-card-media>
@@ -69,7 +87,8 @@
                 <v-list-tile-title>{{ favorites.title }} </v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-progress-circular v-if="!favorites.loaded" indeterminate color="purple"/>
+            <div v-if="favorites.values.length === 0" class="body-1 pl-3">You have yet to express interest in anything.</div>
+            <v-progress-circular v-else-if="!favorites.loaded" indeterminate color="purple"/>
             <template v-else v-for="(favorite, i) in favorites.values">
               <v-list-tile :key="`favorites-${i}`" @click="goToAd(favorite)" avatar>
                 <v-list-tile-action>
@@ -116,7 +135,8 @@
                 <v-list-tile-title>{{ publishes.title }}</v-list-tile-title>
               </v-list-tile-content>
             </v-list-tile>
-            <v-progress-circular v-if="!publishes.loaded" indeterminate color="purple"/>
+            <div v-if="publishes.values.length === 0" class="body-1 pl-3">You have yet to publish anything.</div>
+            <v-progress-circular v-else-if="!publishes.loaded" indeterminate color="purple"/>
             <template v-else v-for="(publish, i) in publishes.values">
               <v-list-tile :key="`publishes-${i}`" @click="goToAd(publish)">
                 <v-list-tile-action>
@@ -167,6 +187,7 @@ import { mapGetters } from 'vuex';
 import defaultUserImage from '../assets/user-default.jpg';
 import defaultApartment from '../assets/apartment-defalut.jpg';
 import attrList from '../assets/attributes';
+import AppUploader from './sub-components/AppUploader';
 
 export default {
   data() {
@@ -213,12 +234,39 @@ export default {
         },
       ],
       allAttributes: attrList,
-      defaultApartmentImage: defaultApartment
+      defaultApartmentImage: defaultApartment,
+      imageToUpload: [],
+      uploadDialog: false,
+      uploadloading: false,
+      uploadError: false
     };
   },
   methods: {
+    uploadImage() {
+      this.uploadError = false;
+      if (this.imageToUpload.length === 0) {
+        this.uploadDialog = false;
+        return;
+      }
+      this.uploadloading = true;
+      this.$store
+        .dispatch('updateUser', { image: this.imageToUpload[0] })
+        .then((user) => {
+          this.image = user.image;
+          this.uploadDialog = false;
+        })
+        .catch(() => {
+          this.uploadError = true;
+        })
+        .then(() => {
+          this.uploadloading = false;
+          this.imageToUpload = [];
+        });
+    },
     loadPublishedApartments() {
-      if (!this.publishes.loaded) {
+      if (this.publishes.values.length === 0) {
+        this.publishes.loaded = true;
+      } else if (!this.publishes.loaded) {
         this.$store.dispatch('searchApartments', { id: this.publishes.values })
           .then((apartments) => {
             this.publishes.values = apartments;
@@ -227,7 +275,9 @@ export default {
       }
     },
     loadFavoriteApartments() {
-      if (!this.favorites.loaded) {
+      if (this.favorites.values.length === 0) {
+        this.favorites.loaded = true;
+      } else if (!this.favorites.loaded) {
         this.$store.dispatch('searchApartments', { id: this.favorites.values })
           .then((apartments) => {
             this.favorites.values = apartments;
@@ -424,6 +474,9 @@ export default {
         .then(() => this.$store.commit('hideLoading'));
     }
   },
+  components: {
+    AppUploader
+  }
 };
 </script>
 
