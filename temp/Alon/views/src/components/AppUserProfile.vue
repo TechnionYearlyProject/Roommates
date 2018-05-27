@@ -7,7 +7,7 @@
             <v-card-title>
               <v-spacer></v-spacer>
               <v-btn dark icon class="mr-3">
-                <v-icon>edit</v-icon>
+                <v-icon color="accept">edit</v-icon>
               </v-btn>
             </v-card-title>
           </v-layout>
@@ -89,7 +89,7 @@
 </template>
 
 <script>
-  import defaultUserImage from '../assets/user-default.jpg';
+  import defaultUserImage from '../assets/user-default.png';
   import attrList from '../assets/attributes';
 
   export default {

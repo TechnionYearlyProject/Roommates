@@ -211,7 +211,7 @@
 
 <script>
   import { mapGetters } from 'vuex';
-  import defaultApartmentImage from '../assets/apartment-defalut.jpg';
+  import defaultApartmentImage from '../assets/apartment-default.png';
   import tagsList from '../assets/tags';
   import AppAvatar from './sub-components/AppAvatar';
   import AppMap from './sub-components/AppMap';

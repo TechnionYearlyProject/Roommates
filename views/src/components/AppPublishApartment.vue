@@ -3,7 +3,7 @@
     <v-stepper v-model="e6" vertical>
       <h3 class="headline secondary--text ma-4">Advertise</h3>
       <v-divider></v-divider>
-      <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="step1Rules">
+      <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="step1Rules" editable edit-icon="check">
         Main details
         <small>The most important stuff!</small>
       </v-stepper-step>
@@ -67,7 +67,7 @@
         </v-btn>
 
       </v-stepper-content>
-      <v-stepper-step ref="step2" step="2" :complete="e6 > 2">Nice to know</v-stepper-step>
+      <v-stepper-step ref="step2" step="2" :complete="e6 > 2" editable edit-icon="check">Nice to know</v-stepper-step>
       <v-stepper-content step="2">
         <v-card :color="color" class="mb-1" height="auto">
           <v-container fluid grid-list-md>
@@ -76,15 +76,15 @@
                 <v-subheader v-text="'Floor'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
-                <v-text-field v-model="payload.floor" label="" type="number" prepend-icon="" single-line></v-text-field>
+                <v-text-field v-model="payload.floor" label="Floor" type="number" prepend-icon=""  single-line></v-text-field>
               </v-flex>
               <v-flex xs12 sm12 md1>
               </v-flex>
               <v-flex xs12 sm12 md2>
-                <v-subheader v-text="'Total floors'"></v-subheader>
+                <v-subheader v-text="'Building floors'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
-                <v-text-field v-model="payload.totalFloors" label="" type="number" prepend-icon="" single-line></v-text-field>
+                <v-text-field v-model="payload.totalFloors" label="Building floors" type="number" prepend-icon="" single-line></v-text-field>
               </v-flex>
               <v-flex xs12 sm12 md1>
               </v-flex>
@@ -92,7 +92,7 @@
                 <v-subheader v-text="'Number of rooms'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
-                <v-text-field v-model="payload.numberOfRooms" label="" mask="#####" prepend-icon="" single-line></v-text-field>
+                <v-text-field v-model="payload.numberOfRooms" label="Number of rooms" mask="#####" prepend-icon="" single-line></v-text-field>
               </v-flex>
               <v-flex xs12 sm12 md1>
               </v-flex>
@@ -100,7 +100,7 @@
                 <v-subheader v-text="'size'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
-                <v-text-field v-model="payload.area" label="" mask="#####" prepend-icon="" suffix="square meters" single-line></v-text-field>
+                <v-text-field v-model="payload.area" label="size" mask="#####" prepend-icon="" suffix="square meters" single-line></v-text-field>
               </v-flex>
               <v-flex xs12 sm12 md1>
               </v-flex>
@@ -121,7 +121,7 @@
         </v-btn>
       </v-stepper-content>
 
-      <v-stepper-step ref="step3" step="3" :complete="e6 > 3">Select the asset's special attributes</v-stepper-step>
+      <v-stepper-step ref="step3" step="3" :complete="e6 > 3" editable edit-icon="check">Select the asset's special attributes</v-stepper-step>
       <v-stepper-content step="3">
         <v-card :color="color" class="mb-1" height="auto">
           <template>
@@ -142,7 +142,7 @@
         </v-btn>
       </v-stepper-content>
 
-      <v-stepper-step ref="step4" step="4">Upload some images</v-stepper-step>
+      <v-stepper-step ref="step4" step="4" editable edit-icon="check">Upload some images</v-stepper-step>
       <v-stepper-content step="4">
         <v-card :color="color" class="mb-5 pa-3" height="auto" style="min-height: 300px">
           <app-uploader v-model="payload.images" fileType="image/*"></app-uploader>
@@ -183,12 +183,12 @@
           price: null,
           entranceDate: null,
           requiredRoommates: 1,
-          totalRoommates: 2,
-          floor: 2,
-          totalFloors: 3,
-          numberOfRooms: 4,
+          totalRoommates: 3,
+          floor: null,
+          totalFloors: null,
+          numberOfRooms: null,
           area: null,
-          description: '',
+          description: null,
           images: [],
           tags: []
         },

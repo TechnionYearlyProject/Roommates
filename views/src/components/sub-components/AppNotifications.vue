@@ -97,7 +97,7 @@
 <script>
   import { mapGetters } from 'vuex';
   import AppAvatar from './AppAvatar';
-  import image from '../../assets/user-default.jpg';
+  import image from '../../assets/user-default.png';
 
   export default {
     props: {

@@ -37,27 +37,27 @@
     data: () => ({
       valid: true,
       payload: {
-        email: 'alontalmor@gmail.com',
-        password: '123456',
-        firstName: 'Alon',
-        lastName: 'Talmor',
-        birthdate: new Date('1992-06-24').getTime(),
-        gender: 'male'
+        email: null,
+        password: null,
+        firstName: null,
+        lastName: null,
+        birthdate: null,
+        gender: null
       },
       rules: {
         email: [
           v => !!v || 'E-mail is required',
-          v =>
+          v => v && 
             /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
             'E-mail must be valid'
         ],
         password: [
           v => !!v || 'Password is required',
-          v => v.length >= 6 || 'Password must be at least 6 characters'
+          v => v && v.length >= 6 || 'Password must be at least 6 characters'
         ],
         firstName: [
           v => !!v || 'Name is required',
-          v => v.length >= 2 || 'Password must be at least 2 characters'
+          v => v && v.length >= 2 || 'Password must be at least 2 characters'
         ]
       },
       showPassword: false,

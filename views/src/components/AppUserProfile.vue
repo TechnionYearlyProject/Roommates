@@ -5,11 +5,11 @@
         <v-card-media :src="image" height="300px">
           <v-layout column class="media">
             <v-card-title primary-title>
-              <div class="display-1 white--text ml-3">{{ title }}</div>
+              <v-chip class="display-1 primary--text headline ml-3"><v-icon class="mr-1">account_circle</v-icon>{{ title }}</v-chip>
               <v-spacer></v-spacer>
               <div v-if="isMyProfile">
               <v-btn dark icon class="mr-3" @click="uploadDialog = true">
-                <v-icon>edit</v-icon>
+                <v-icon color="info">edit</v-icon>
               </v-btn>
               <v-dialog v-model="uploadDialog" max-width="400">
                 <v-card>
@@ -184,8 +184,8 @@
 <script>
 /* eslint no-param-reassign: ["error", { "props": false }] */
 import { mapGetters } from 'vuex';
-import defaultUserImage from '../assets/user-default.jpg';
-import defaultApartment from '../assets/apartment-defalut.jpg';
+import defaultUserImage from '../assets/user-default.png';
+import defaultApartment from '../assets/apartment-default.png';
 import attrList from '../assets/attributes';
 import AppUploader from './sub-components/AppUploader';
 
