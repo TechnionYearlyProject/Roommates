@@ -803,7 +803,9 @@ app.patch('/users/self', authenticate, async (req, res) => {
       '_interestedApartments'
     ]);
 
-    [body.image] = await imageService.uploadImages('USER_IMAGES', req.user._id, body.image);
+    if (body.image) {
+      [body.image] = await imageService.uploadImages('USER_IMAGES', req.user._id, body.image);
+    }
     const user = await User.findByIdAndUpdate(
       req.user._id, {
         $set: body

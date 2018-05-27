@@ -41,7 +41,7 @@
         password: null,
         firstName: null,
         lastName: null,
-        birthdate: null,
+        birthdate: '1-1-1992',
         gender: null
       },
       rules: {
