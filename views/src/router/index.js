@@ -6,6 +6,7 @@ import AppVerification from '@/components/AppVerification';
 import AppResetPassword from '@/components/AppResetPassword';
 import AppUserProfile from '@/components/AppUserProfile';
 import AppPublishApartment from '@/components/AppPublishApartment';
+import AppReviews from '@/components/AppReviews';
 import store from '../store';
 // import HelloWorld from '@/components/HelloWorld';
 
@@ -63,6 +64,11 @@ const router = new Router({
       meta: {
         requiresVerify: true
       }
+    },
+    {
+      path: '/reviews/:location?',
+      name: 'AppReviews',
+      component: AppReviews
     }
   ],
   scrollBehavior() {
