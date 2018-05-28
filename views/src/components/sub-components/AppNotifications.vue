@@ -85,19 +85,19 @@
               <v-list-tile-title>{{ user.firstName.capitalize() }} {{ user.lastName.capitalize() }}</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-avatar>
-              <img :src="user.image || defaultImage">
+              <app-avatar :image="user.image" :name="user.firstName" :size="40"></app-avatar>
             </v-list-tile-avatar>
           </v-list-tile>
         </v-list>
       </v-card>
-  </v-dialog>
-  </v-dialog>
+    </v-dialog>
   </v-menu>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
-  import image from '../../assets/user-default.jpg';
+  import AppAvatar from './AppAvatar';
+  import image from '../../assets/user-default.png';
 
   export default {
     props: {
@@ -226,6 +226,9 @@
           console.log(message);
         });
       }
+    },
+    components: {
+      AppAvatar
     }
   };
 </script>

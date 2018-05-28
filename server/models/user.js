@@ -60,11 +60,7 @@ const UserSchema = new mongoose.Schema({
   image: {
     type: String,
     trim: true,
-    validate: {
-      validator: value => validator.isURL(value) || value === '',
-      message: '{VALUE} is not a valid URL'
-    },
-    default: '' //TODO:put url to some anonymous image
+    default: null
   },
   about: {
     type: String,
@@ -90,7 +86,6 @@ const UserSchema = new mongoose.Schema({
       type: String
     }
   ],
-  default: [],
   _interestedApartments: [
     {
       type: String
@@ -143,7 +138,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
         validate: {
           validator: (value) => value.length >= 2,
-            message: 'a minimum of 2 users for chat is required'
+          message: 'a minimum of 2 users for chat is required'
         }
       },
       messages: [PrivateMessageSchema],
@@ -296,7 +291,7 @@ UserSchema.methods.removeExpiredTokens = function () {
   const user = this;
 
   const currentTime = Date.now() / 1000;
-  const tokens = user.tokens.filter(t => !t.exp || t.exp < currentTime);
+  const tokens = user.tokens.filter(t => currentTime < jwt.verify(t.token, process.env.JWT_SECRET).exp);
   user.tokens = tokens;
   return user.save();
 };

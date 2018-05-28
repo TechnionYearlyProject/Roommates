@@ -31,19 +31,19 @@
       payload: {
         // email: '',
         // password: ''
-        email: 'alontalmor@gmail.com',
-        password: '123456'
+        email: null,
+        password: null
       },
       rules: {
         email: [
           v => !!v || 'E-mail is required',
-          v =>
+          v => v &&
             /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
             'E-mail must be valid'
         ],
         password: [
           v => !!v || 'Password is required',
-          v => v.length >= 6 || 'Password must be at least 6 characters'
+          v => v && v.length >= 6 || 'Password must be at least 6 characters'
         ]
       },
       alert: {

@@ -150,7 +150,7 @@
 </template>
 
 <script>
-    import defaultApartmentImage from '../assets/apartment-defalut.jpg';
+    import defaultApartmentImage from '../assets/apartment-default.png';
     import tagsList from '../assets/tags';
     import AppAvatar from './AppAvatar';
 
