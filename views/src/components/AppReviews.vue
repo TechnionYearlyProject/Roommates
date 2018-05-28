@@ -23,7 +23,7 @@
                     </h2>
                 </v-card-title>
                 <v-card-text>
-                    <v-layout>
+                    <v-layout wrap row>
                         <v-flex style="text-align: center">
                             Parking:
                             <span class="rating" :style="{ width: totalStatistics.parking * 24 + 'px' }">
@@ -58,10 +58,36 @@
                 </v-card-text>
             </v-card>
         </v-container>
+
+        <v-container grid-list-lg>
+            <v-layout wrap row>
+                <v-flex xs12 sm6 md6 lg4 v-for="(review ,i) in reviews" :key="`review-${i}`">
+                    <v-card>
+                        <v-card-title>
+                            <v-flex>
+                                <v-list-tile-avatar style="display: inline">
+                                    <app-avatar img="" :name="review.createdBy" :size="30"></app-avatar>
+                                </v-list-tile-avatar>
+                                <v-list-tile-content style="display: inline">
+                                    {{ review.createdBy }}
+                                </v-list-tile-content>
+                            </v-flex>
+                            <v-spacer></v-spacer>
+                            <v-flex style="text-align: right">{{ new Date(review.createdAt).toDateString() }}</v-flex>
+                        </v-card-title>
+                        <v-card-text>
+                            asd
+                        </v-card-text>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
     </div>
 </template>
 
 <script>
+  import AppAvatar from './sub-components/AppAvatar';
+
   export default {
     name: 'AppReviews',
     data() {
@@ -73,6 +99,8 @@
         address: 'Menahem Begin 40, Holon',
         reviews: [
           {
+            createdBy: 'Idan Yadgar',
+            createdAt: new Date(2018, 28, 5).getTime(),
             ratedCharacteristics: {
               parking: 1,
               publicTransport: 2,
@@ -81,8 +109,36 @@
               upkeep: 5,
               generalRating: 5,
             },
-            pros: '',
-            cons: ''
+            pros: 'Pros Pros Pros Pros Pros Pros',
+            cons: 'Cons Cons Cons Cons Cons Cons '
+          },
+          {
+            createdBy: 'Idan Yadgar',
+            createdAt: new Date(2018, 28, 5).getTime(),
+            ratedCharacteristics: {
+              parking: 1,
+              publicTransport: 2,
+              noise: 3,
+              commercialServices: 4,
+              upkeep: 5,
+              generalRating: 5,
+            },
+            pros: 'Pros Pros Pros Pros Pros Pros',
+            cons: 'Cons Cons Cons Cons Cons Cons '
+          },
+          {
+            createdBy: 'Idan Yadgar',
+            createdAt: new Date(2018, 28, 5).getTime(),
+            ratedCharacteristics: {
+              parking: 1,
+              publicTransport: 2,
+              noise: 3,
+              commercialServices: 4,
+              upkeep: 5,
+              generalRating: 5,
+            },
+            pros: 'Pros Pros Pros Pros Pros Pros',
+            cons: 'Cons Cons Cons Cons Cons Cons '
           }
         ]
       };
@@ -112,7 +168,7 @@
       }
     },
     components: {
-
+      AppAvatar
     }
   };
 </script>
