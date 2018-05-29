@@ -3,14 +3,14 @@
         <v-container fluid>
             <v-layout justify-center>
                 <input type="file" v-show="false" ref="fileInput" @change="addFiles" :accept="fileType" :multiple="multipleFiles">
-                <v-btn block color="primary" @click="selectFiles">Upload
+                <v-btn block color="primary" @click="selectFiles">{{ buttonText }}
                     <v-icon right>file_upload</v-icon>
                 </v-btn>
             </v-layout>
         </v-container>
         <v-container fluid grid-list-lg text-xs-center>
             <transition-group name="scale-transition" tag="v-layout" class="wrap row">
-                <v-flex xs12 md6 v-for="(file, i) in files" :key="file.key" my-2>
+                <v-flex xs12 :md6="!singleLine" v-for="(file, i) in files" :key="file.key" my-2>
                     <v-card>
                         <v-layout row wrap align-center align-start>
                             <v-flex xs4>
@@ -45,6 +45,14 @@
         value: {
           type: Array,
           required: true
+        },
+        singleLine: {
+          type: Boolean,
+          default: false
+        },
+        buttonText: {
+          type: String,
+          default: 'Upload'
         }
       },
       data() {
@@ -82,8 +90,15 @@
               abort: false
             };
             this.keys += 1;
-            this.value.push(file);
-            this.$emit('input', this.value);
+            if(this.multipleFiles) {
+              this.value.push(file);
+            } else {
+              if (this.files.length !== 0) {
+                this.cancelUpload(0);
+              }
+                this.files.push(file);
+                this.$emit('input', this.files);
+            }
 
             fileReader.addEventListener('progress', (e) => {
               if (file.abort) fileReader.abort();
@@ -105,6 +120,7 @@
           // files[index].fileReader.abort();
           this.files[index].abort = true;
           this.files.splice(index, 1);
+          this.$emit('input', this.files);
         },
         getProgressColor(progress) {
           return [

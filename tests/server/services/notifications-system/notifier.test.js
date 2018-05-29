@@ -114,10 +114,9 @@ describe('Notifier Tests', () => {
         newDate);
 
       Promise.all(promises).then((results) => {
-        Promise.all(results).then(() => {
-          User.findById(createdBy).then(() => {
-            done();
-          });
+        User.findById(createdBy).then((user) => {
+          expect(user.notifications.length).toBe(users[1].notifications.length);
+          done();
         });
       }).catch((e) => done(e));
     });

@@ -6,6 +6,7 @@ const UNKNOWN_ERROR             = 111111;
 const UNCONFIRMED_USER          = 100000;
 const PASSWORD_RESET_FAILURE    = 500000;
 const MULTI_RATING              = 600000;
+const IMAGE_UPLOAD_FAILURE      = 666000;
 
 const Error = function (code, message) {
   return {
@@ -22,4 +23,5 @@ module.exports = {
   unconfirmedUser: Error(UNCONFIRMED_USER, 'Account is not verified.'),
   PasswordResetFailure: Error(PASSWORD_RESET_FAILURE, 'Couldn\'t complete the reset password action.'),
   multiRating: Error(MULTI_RATING, 'User tried to rate 2 adjacent locations.'),
+  imageUploadFailure: Error(IMAGE_UPLOAD_FAILURE, 'error accured while trying to upload images'),
 };

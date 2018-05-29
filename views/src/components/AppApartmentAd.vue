@@ -44,9 +44,9 @@
         <v-card style="min-height:60px">
           <div v-if="fetchedPublisher">
           <v-list>
-            <v-list-tile avatar>
+            <v-list-tile avatar  @click="$router.push({ name: 'AppUserProfile', params: { id: publisher._id } })">
               <v-list-tile-avatar>
-                <app-avatar img="" :name="publisher.firstName" :size="40"></app-avatar>
+                <app-avatar :image="publisher.image" :name="publisher.firstName" :size="40"></app-avatar>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title>{{ publisher.firstName.capitalize() }} {{ publisher.lastName.capitalize() }}</v-list-tile-title>
@@ -211,7 +211,7 @@
 
 <script>
   import { mapGetters } from 'vuex';
-  import defaultApartmentImage from '../assets/apartment-defalut.jpg';
+  import defaultApartmentImage from '../assets/apartment-default.png';
   import tagsList from '../assets/tags';
   import AppAvatar from './sub-components/AppAvatar';
   import AppMap from './sub-components/AppMap';

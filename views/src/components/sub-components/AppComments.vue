@@ -35,7 +35,7 @@
             </v-flex>
             <v-flex mt-4>
               <v-tooltip top slot="activator">
-                <app-avatar  slot="activator" :src="getImage(comment)" :name="getPublisher(comment)" :size="40" @click.native="goToProfile(comment)" style="cursor: pointer"/>
+                <app-avatar  slot="activator" :image="getImage(comment)" :name="isMyComments(comment) ? getUser.firstName : getPublisher(comment)" :size="40" @click.native="goToProfile(comment)" style="cursor: pointer"/>
                 <span>Go to profile</span>
               </v-tooltip>
             </v-flex>
@@ -143,9 +143,7 @@
       getPublisher(comment) {
         if (this.isMyComments(comment)) {
           return 'You';
-        }
-
-        if (!this.usersList[comment._createdBy]) {
+        } else if (!this.usersList[comment._createdBy]) {
           return 'User';
         }
 
