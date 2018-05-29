@@ -108,13 +108,13 @@
         <v-card-text>
             <v-card>
                 <v-tabs grow icons-and-text centered slider-color="blue-grey darken-1" color="blue-grey lighten-4">
-                    <v-tab href="#pros" ripple>
+                    <v-tab href="#pros" ripple class="green--text text--darken-3">
                         Pros
-                        <v-icon>thumb_up</v-icon>
+                        <v-icon color="green darken-3">thumb_up</v-icon>
                     </v-tab>
-                    <v-tab href="#cons">
+                    <v-tab href="#cons" class="red--text">
                         Cons
-                        <v-icon>thumb_down</v-icon>
+                        <v-icon color="red">thumb_down</v-icon>
                     </v-tab>
                     <v-tabs-items class="tabs-items">
                         <v-tab-item id="pros">
