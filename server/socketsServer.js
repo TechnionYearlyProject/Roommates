@@ -176,7 +176,7 @@ const sendUserRealTimeNotification = (_userId, notification) => {
  *
  */
 const sendUserRealTimePrivateMessage = (_toId, message) => {
-  sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG, JSON.stringify(message));
+  sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG, message);
 }
 /**
  * @author: Or Abramovich
@@ -191,7 +191,7 @@ const sendUserRealTimePrivateMessage = (_toId, message) => {
  *
  */
 const sendUserRealTimeReadPrivateMessage = (_toId, message) => {
-  sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG_READ, JSON.stringify(message));
+  sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG_READ, message);
 }
 module.exports = {
   sendUserRealTimeNotification

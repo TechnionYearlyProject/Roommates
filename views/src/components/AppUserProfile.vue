@@ -79,7 +79,7 @@
               <v-select v-model="attributes.values" @input="updateAttributes" :items="allAttributes" label="Your attributes" :error-messages="attributes.error" :disabled="!isMyProfile" :hint="attributes.hint" persistent-hint chips deletable-chips multiple autocomplete />
             </v-container>
           </v-list-group>
-          
+
           <!-- Favorite Apartments -->
           <v-list-group v-model="favorites.active" :prepend-icon="favorites.icon" @click.native="loadFavoriteApartments" lazy>
             <v-list-tile slot="activator">
@@ -127,7 +127,7 @@
               <v-divider v-if="i < favorites.values.length -1" inset :key="`divider-${i}`"/>
             </template>
           </v-list-group>
-          
+
           <!-- Published Apartments -->
           <v-list-group v-model="publishes.active" :prepend-icon="publishes.icon" @click.native="loadPublishedApartments" lazy>
             <v-list-tile slot="activator">
@@ -184,8 +184,8 @@
 <script>
 /* eslint no-param-reassign: ["error", { "props": false }] */
 import { mapGetters } from 'vuex';
-import defaultUserImage from '../assets/user-default.png';
-import defaultApartment from '../assets/apartment-default.png';
+import defaultUserImage from '../assets/user-default.jpg';
+import defaultApartment from '../assets/apartment-default.jpg';
 import attrList from '../assets/attributes';
 import AppUploader from './sub-components/AppUploader';
 
