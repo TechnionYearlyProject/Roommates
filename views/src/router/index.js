@@ -7,6 +7,7 @@ import AppResetPassword from '@/components/AppResetPassword';
 import AppUserProfile from '@/components/AppUserProfile';
 import AppPublishApartment from '@/components/AppPublishApartment';
 import AppApartmentPage from '@/components/AppApartmentPage'
+import AppReviews from '@/components/AppReviews';
 import store from '../store';
 // import HelloWorld from '@/components/HelloWorld';
 
@@ -69,6 +70,11 @@ const router = new Router({
       path: '/apartments/:id',
       name: 'AppApartmentPage',
       component: AppApartmentPage,
+    },
+    {
+      path: '/reviews/:location?',
+      name: 'AppReviews',
+      component: AppReviews
     }
   ],
   scrollBehavior() {
