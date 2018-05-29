@@ -107,7 +107,7 @@
         </v-card-text>
         <v-card-text>
             <v-card>
-                <v-tabs grow icons-and-text centered slider-color="blue-grey darken-1" color="blue-grey lighten-4">
+                <v-tabs grow icons-and-text centered slider-color="grey" color="grey lighten-2">
                     <v-tab href="#pros" ripple class="green--text text--darken-3">
                         Pros
                         <v-icon color="green darken-3">thumb_up</v-icon>
