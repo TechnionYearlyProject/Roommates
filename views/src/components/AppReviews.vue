@@ -24,7 +24,7 @@
                 </v-card-title>
                 <v-card-text>
                     <v-layout wrap row>
-                        <v-flex style="text-align: center">
+                        <v-flex style="text-align: center"tify >
                             Parking:
                             <span class="rating" :style="{ width: totalStatistics.parking * 24 + 'px' }">
                                 <v-icon v-for="i in 5" :key="i" color="orange" class="star">star</v-icon>
@@ -62,23 +62,7 @@
         <v-container grid-list-lg>
             <v-layout wrap row>
                 <v-flex xs12 sm6 md6 lg4 v-for="(review ,i) in reviews" :key="`review-${i}`">
-                    <v-card>
-                        <v-card-title>
-                            <v-flex>
-                                <v-list-tile-avatar style="display: inline">
-                                    <app-avatar img="" :name="review.createdBy" :size="30"></app-avatar>
-                                </v-list-tile-avatar>
-                                <v-list-tile-content style="display: inline">
-                                    {{ review.createdBy }}
-                                </v-list-tile-content>
-                            </v-flex>
-                            <v-spacer></v-spacer>
-                            <v-flex style="text-align: right">{{ new Date(review.createdAt).toDateString() }}</v-flex>
-                        </v-card-title>
-                        <v-card-text>
-                            asd
-                        </v-card-text>
-                    </v-card>
+                    <app-review-tile :review="review"></app-review-tile>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -87,6 +71,7 @@
 
 <script>
   import AppAvatar from './sub-components/AppAvatar';
+  import AppReviewTile from './sub-components/AppReviewTile';
 
   export default {
     name: 'AppReviews',
@@ -100,7 +85,7 @@
         reviews: [
           {
             createdBy: 'Idan Yadgar',
-            createdAt: new Date(2018, 28, 5).getTime(),
+            createdAt: new Date(2018, 4, 28).getTime(),
             ratedCharacteristics: {
               parking: 1,
               publicTransport: 2,
@@ -114,7 +99,7 @@
           },
           {
             createdBy: 'Idan Yadgar',
-            createdAt: new Date(2018, 28, 5).getTime(),
+            createdAt: new Date(2018, 4, 28).getTime(),
             ratedCharacteristics: {
               parking: 1,
               publicTransport: 2,
@@ -128,7 +113,7 @@
           },
           {
             createdBy: 'Idan Yadgar',
-            createdAt: new Date(2018, 28, 5).getTime(),
+            createdAt: new Date(2018, 4, 28).getTime(),
             ratedCharacteristics: {
               parking: 1,
               publicTransport: 2,
@@ -168,6 +153,7 @@
       }
     },
     components: {
+      AppReviewTile,
       AppAvatar
     }
   };
@@ -177,12 +163,12 @@
     .address {
         position: absolute;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.6);
+        background-color: #3f51b5;
         color: #fff;
-        width: 100%;
-        padding: 15px;
-        font-size: 32px;
+        padding: 10px 30px;
+        font-size: 26px;
         font-weight: normal;
+        box-shadow: #999 1px -1px 5px 0;
     }
 
     .rating {
