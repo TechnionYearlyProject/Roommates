@@ -1353,6 +1353,17 @@ app.delete('/reviews/:id', authenticate, async (req, res) => {
 
 /**
  * @author: Alon Talmor
+ * @date: 30/5/18
+ *
+ * Get apartment's suggested groups by apartment-id
+ */
+app.get('/apartments/:id/groups', authenticate, (req, res) => {
+  const groups = [1, 2, 3];
+  res.send({ groups });
+});
+
+/**
+ * @author: Alon Talmor
  * @date: 28/3/18
  *
  * This is considered as the "default route".
