@@ -8,7 +8,7 @@
       </v-flex>
     </v-layout>
   </v-container>
-  <v-container grid-list-sm>
+  <v-container grid-list-xl>
     <div class="subheading">Create Your Own Group</div>
     <div class="caption mb-2">Drag other interested fellows to your group.</div>
     <app-my-group :members="interestedList" :myGroupMaxSize="requiredRoommates" @submit="groups.push($event)"></app-my-group>
