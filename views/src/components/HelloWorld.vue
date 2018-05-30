@@ -1,41 +1,94 @@
 <template>
-    <v-btn @click="clickButton">click</v-btn>
+<div>
+  <v-container grid-list-sm>
+    <v-layout wrap>
+      <v-flex xs12 sm6>
+  My Group ({{ myGroupSize }}/{{ myGroupMaxLength }})
+    <v-list>
+  <draggable v-model="myGroup" :options="dragOptions" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
+      <v-list-tile v-for="e in myGroup" class="app-drag-handle">
+        {{ e }}
+      </v-list-tile>
+  </draggable>
+    </v-list>
+    </v-flex>
+    <v-flex xs12 sm6>
+    These people expressed interest:
+  <v-list >
+  <draggable v-model="hisArray" :options="dragOptions" :move="onMove" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
+      <v-list-tile v-for="e in hisArray" class="app-drag-handle">
+        {{ e }}
+      </v-list-tile>
+  </draggable>
+    </v-list>
+    </v-flex>
+    </v-layout>
+    </v-container>
+</div>
 </template>
 
 <script>
-    export default {
-      name: 'helloWorld',
-      sockets: {
-        connect: function() {
-          alert('socket connected');
-          // this.$socket.emit('join');
-        },
-        notification: function({ message }) {
-          console.log(
-            'this method was fired by the socket server. eg: io.emit("notification", data)'
-          );
-        },
-        'chat_message': function (val) {
-
-        }
-      },
-      methods: {
-        clickButton: function(val) {
-          // $socket is socket.io-client instance
-          this.$socket.emit('chat_message', '5ad8588944db813fe850c923');
-          console.log('emitted');
-        }
-      },
-      created() {
-        console.log(this.$store.getters.getToken);
-        if( this.$store.getters.isAuthenticated) {
-        this.$socket.emit('connect', this.$store.getters.getToken);
-        this.$socket.emit('join');
-        }
+import draggable from 'vuedraggable'
+export default{
+  data() {
+    return {
+      myGroup: [1,2,3,4],
+      hisArray: [5,6,7,8],
+      isDragging: false,
+      editable: true,
+      delayedDragging: false,
+      myGroupMaxLength: 4
+    }
+  },
+  methods: {
+    onMove ({relatedContext, draggedContext}) {
+      return this.myGroup.length < this.myGroupMaxLength;
+    }
+  },
+  computed: {
+    dragOptions () {
+      return  {
+        animation: 0,
+        scroll: true,
+        group: 'description',
+        disabled: !this.editable,
+        ghostClass: 'app-drag-ghost',
+        chosenClass: 'app-drag-chosen',
+        dragClass: 'app-drag-chosen',
+      };
+    },
+    myGroupSize() {
+      return this.myGroup.length;
+    }
+  },
+  watch: {
+    isDragging (newValue) {
+      if (newValue) {
+        this.delayedDragging= true
+        return
       }
-    };
+      this.$nextTick( () => {
+           this.delayedDragging =false
+      });
+    }
+  },
+  components: {
+    draggable
+  }
+}
 </script>
 
 <style>
-
+.app-drag-ghost {
+  opacity: .5;
+  background: #C8EBFB;
+}
+.app-drag-chosen {
+  opacity: 1;
+  background: #C8EBFB;
+}
+.app-drag-handle {
+  cursor: move;
+	cursor: -webkit-grabbing;
+}
 </style>
