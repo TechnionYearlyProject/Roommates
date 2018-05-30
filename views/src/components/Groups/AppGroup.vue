@@ -1,4 +1,15 @@
 <template>
+<div>
+  <v-toolbar color="primary" dark dense>
+    <span>details about the group here</span>
+    <v-spacer></v-spacer>
+    <v-tooltip left class="mx-0">
+      <v-btn slot="activator" icon>
+        <v-icon>poll</v-icon>
+      </v-btn>
+      <span>statistics</span>
+    </v-tooltip>
+    </v-toolbar>
     <v-card height="390px">
           <v-list style="height:300px;overflow-y: auto;">
             <template  v-for="(m,j) in value.members">
@@ -71,6 +82,7 @@
             </div>
           </div>
         </v-card>
+      </div>
 </template>
 
 <script>

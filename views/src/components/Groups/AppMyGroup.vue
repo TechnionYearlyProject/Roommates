@@ -1,7 +1,9 @@
 <template>
     <v-layout wrap>
       <v-flex xs12 sm6>
-        <div class="body-1 mb-1">Group ({{ myGroup.length }}/{{ myGroupMaxSize }})</div>
+        <v-toolbar dark dense color="primary lighten-3">
+          <span class="mb-1 ml-3">My Group ({{ myGroup.length }}/{{ myGroupMaxSize }})</span>
+        </v-toolbar>
         <v-card>
           <v-btn v-if="$vuetify.breakpoint.xsOnly" @click.stop="peopleDialog = true" color="secondary" dark absolute top right fab style="z-index:1">
             <v-icon>add</v-icon>
@@ -51,7 +53,9 @@
       </v-flex>
       <v-flex xs12 sm6>
         <div v-if="$vuetify.breakpoint.smAndUp">
-          <div class="body-1 mb-1">These people expressed interest:</div>
+          <v-toolbar dense color="secondary">
+            <div class="mb-1 ml-3">People Who Expressed Interest</div>
+          </v-toolbar>
           <v-card>
             <v-list>
               <draggable v-model="availableMemebers" :options="dragOptions" :move="onMove" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
