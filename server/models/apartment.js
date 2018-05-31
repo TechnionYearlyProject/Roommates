@@ -19,6 +19,9 @@ const {
   ObjectID
 } = require('mongodb');
 const visit = require('./visit');
+const {
+    Group
+} = require('./group');
 
 const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -175,8 +178,12 @@ const ApartmentSchema = new mongoose.Schema({
         validator: value => visit.isSupportedVisitStatusID(value),
         message: '{VALUE} is not a valid visit status'
       }
-    }
-  }]
+    },
+  }],
+  groups: {
+      type: [String],
+      required: false,
+  }
 });
 
 /**
@@ -359,8 +366,43 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
+  if(apartment._interested.length >= apartment.requiredRoommates){
+      group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment._id);
+      apartment.groups = [group];
+  }
+
 
   return apartment.save();
+};
+
+ApartmentSchema.methods.createUserGroup = function (_interestedID, apartmentID) {
+    //create new group
+    const groupData = [
+        'members',
+        'memberPayed',
+        'apartment',
+        'createdAt',
+        'score',
+        'status',
+    ];
+    groupData.members = [_interestedID];
+    groupData.memberPayed = [false];
+    groupData.apartment = apartmentID;
+    groupData.createdAt = Date.now();
+    groupData.score = 7;
+    groupData.status = 0;
+    const group = new Group(groupData);
+
+
+    //push new group
+    //   apartment.groups = [group.ObjectID];
+    //
+    return group;
+};
+
+ApartmentSchema.methods.numberOfGroups = function (){
+  const apartment = this;
+  return apartment.groups.length;
 };
 
 /**

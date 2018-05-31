@@ -10,71 +10,71 @@ const GROUP_STATUS_ACCEPTED = 3;
 const GROUP_STATUS_COMPLETED = 4;
 
 const GroupStatusCodes = [
-    {
-        _id: GROUP_STATUS_PENDING,
-        name: 'PENDING FOR PARTICIPANTS RESPONSES'
-    },
-    {
-        _id: GROUP_STATUS_DECLINED,
-        name: 'A PARTICIPANT DECLINED'
-    },
-    {
-        _id: GROUP_STATUS_ACCEPTED,
-        name: 'ALL PARTICIPANTS APPROVED'
-    },
-    {
-        _id: GROUP_STATUS_COMPLETED,
-        name: 'ALL PARTICIPANTS APPROVED AND OWNER APPROVED'
-    }
+
+         GROUP_STATUS_PENDING
+    ,
+
+         GROUP_STATUS_DECLINED
+    ,
+
+         GROUP_STATUS_ACCEPTED
+    ,
+
+         GROUP_STATUS_COMPLETED
+
 ];
 
-const visitStatusChangeLogic = [
-    {
-        operation_name: "APPROVE",
-        from_status: GROUP_STATUS_PENDING,
-        to_status: GROUP_STATUS_ACCEPTED,
-        can_be_done_by_the_owner: false,
-        can_be_done_by_the_visitor: true
-    },
-    {
-        operation_name: "CANCEL",
-        //from_status: Not needed, can be from every status
-        to_status: GROUP_STATUS_DECLINED,
-        can_be_done_by_the_owner: true,
-        can_be_done_by_the_visitor: true
-    },
-    {
-        operation_name: "COMPLETE",
-        from_status: GROUP_STATUS_ACCEPTED,
-        to_status: GROUP_STATUS_COMPLETED,
-        can_be_done_by_the_owner: true,
-        can_be_done_by_the_visitor: false
-    },
-];
+// const groupStatusChangeLogic = [
+//     {
+//         operation_name: "APPROVE",
+//         from_status: GROUP_STATUS_PENDING,
+//         to_status: GROUP_STATUS_ACCEPTED,
+//         can_be_done_by_the_owner: false,
+//         can_be_done_by_the_visitor: true
+//     },
+//     // {
+//     //     operation_name: "CANCEL",
+//     //     //from_status: Not needed, can be from every status
+//     //     to_status: GROUP_STATUS_DECLINED,
+//     //     can_be_done_by_the_owner: true,
+//     //     can_be_done_by_the_visitor: true
+//     // },
+//     {
+//         operation_name: "COMPLETE",
+//         from_status: GROUP_STATUS_ACCEPTED,
+//         to_status: GROUP_STATUS_COMPLETED,
+//         can_be_done_by_the_owner: true,
+//         can_be_done_by_the_visitor: false
+//     },
+// ];
 
 
 
 const GroupSchema = new Schema({
-    creator: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    },
     members: {
         type: [mongoose.Schema.Types.ObjectId],
         required: true
     },
-    apartment: {
-        type: mongoose.Schema.Types.ObjectId,
+    memberPayed: {
+        type: [Boolean],
         required: true
     },
+    // apartment: {
+    //     type: String,
+    //     required: true
+    // },
     createdAt: {
         type: Number,
         required: true
     },
+    score: {
+        type: Number,
+        required: false
+    },
     status: {
         type: Number,
         validate: {
-            validator: (value) => isSupportedGroupStatusID(value),
+            validator: (value) => (value === value),
             message: '{VALUE} is not a supported group status Id'
         },
         required: true
@@ -86,8 +86,13 @@ const GroupSchema = new Schema({
 
 //checks that the given value represents a supported group status id
 const isSupportedGroupStatusID = (value) => {
-    return arrayFunctions.containsElementWithProperty(GroupStatusCodes, '_id', value);
+    return value >= 0 && value <= 4;
 };
+
+const getGroupStatusOnCreate = () => {
+    return 0;
+};
+
 
 //returns all supported group codes
 const getGroupStatusCodes = () => groupStatusCodes;
@@ -97,10 +102,11 @@ const getGroupCreatorID = (group) => group.creator;
 const getGroupMemberIDs = (group) => group.members;
 
 
-
+const Group = mongoose.model('Group', GroupSchema);
 module.exports = {
-    GroupSchema,
+    Group,
     GroupStatusCodes,
+    getGroupStatusOnCreate,
     isSupportedGroupStatusID,
     getGroupStatusCodes,
     getGroupCreatorID,

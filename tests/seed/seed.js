@@ -80,6 +80,7 @@ const apartment1 = new Apartment({
   }
   ],
   //comments
+   groups: []
 });
 
 const apartment2 = new Apartment({
@@ -109,6 +110,7 @@ const apartment2 = new Apartment({
   requiredRoommates: 1,
   totalRoommates: 2,
   //comments
+    groups: []
 });
 
 const notPublishedApartment = {

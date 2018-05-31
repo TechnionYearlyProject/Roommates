@@ -511,6 +511,7 @@ describe('#Server Tests', () => {
             const apartment = await Apartment.findById(id);
             expect(user.isInterestedInApartment(id)).toBe(true);
             expect(apartment.isUserInterested(users[1]._id)).toBe(true);
+            expect(apartment.numberOfGroups()).toBe(1);
             return done();
           } catch (e) {
             return done(e);
