@@ -63,7 +63,9 @@ const {
   notRegisteredUser,
   // user1VerificationToken,
   user2VerificationToken,
-  getForgotPasswordToken
+  getForgotPasswordToken,
+  review1Id,
+  review2Id
 } = require('../seed/seed');
 
 describe('#Server Tests', () => {
@@ -2340,6 +2342,23 @@ describe('#Server Tests', () => {
         });
     });
   });
+
+  describe('#GET /reviews/:long/:lat', () => {
+    it('should return all reviews for technion', (done) => {
+      const tech = coords.technionIsrael;
+      request(app)
+        .get(`/reviews/${tech[0]}/${tech[1]}`)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.reviews.length).toBe(2);
+          expect(res.body.reviews[0]._id).toBe(review1Id.toHexString());
+          expect(res.body.reviews[1]._id).toBe(review2Id.toHexString())
+
+        })
+        .end(done);
+    });
+  });
+
 
   describe('#GET /reviews/aggregated/:long/:lat', () => {
     it('should return accurate calculated review for technion', (done) => {
