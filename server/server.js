@@ -1382,9 +1382,14 @@ app.delete('/reviews/:id', authenticate, async (req, res) => {
  *
  * Get apartment's suggested groups by apartment-id
  */
-app.get('/apartments/:id/groups', authenticate, (req, res) => {
-  const groups = [1, 2, 3];
-  res.send({ groups });
+app.get('/apartments/:id/groups', authenticate, async (req, res) => {
+  try {
+    const apartment = await Apartment.findById(req.params.id);
+    const { groups } = apartment;
+    res.send({ groups });
+  } catch (error) {
+    res.status(BAD_REQUEST).send(errors.apartmentNotFound);
+  }
 });
 
 /**
