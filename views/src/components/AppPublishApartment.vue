@@ -40,23 +40,25 @@
                 </v-flex>
                 <v-flex xs12 sm12 md3>
                   <v-subheader>Number of roommates I'm looking for*</v-subheader>
+                  
                 </v-flex>
                 <v-flex xs12 sm12 md3>
-                  <vue-slider :processStyle="{backgroundColor: $vuetify.theme.primary}" :tooltipStyle="{backgroundColor: $vuetify.theme.primary, borderColor: $vuetify.theme.primary}" :min="0" :max="10" :interval="1" tooltip="always" v-model="payload.requiredRoommates" :debug="false" class="pt-4" />
+                  <v-slider v-model="payload.requiredRoommates" thumb-label step="1" :min="0" :max="10" ticks hide-details></v-slider>
+                  <div class="text-xs-left body-2">{{ payload.requiredRoommates }}/{{ payload.totalRoommates }}</div>
                 </v-flex>
-                <v-flex xs12 sm12 md2 order-sm2 order-md1>
+                <v-flex xs12 sm12 md2 order-xs3 order-md1>
                   <v-subheader v-text="'Entrance date'"></v-subheader>
                 </v-flex>
-                <v-flex xs12 sm12 md3 order-sm2 order-md1>
+                <v-flex xs12 sm12 md3 order-xs2 order-md1>
                   <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" :min="today" />
                 </v-flex>
                 <v-flex xs12 sm12 md1 order-md2>
                 </v-flex>
-                <v-flex xs12 sm12 md3 order-sm1 order-md2>
+                <v-flex xs12 sm12 md3 order-xs1 order-md2>
                   <v-subheader>Total number of roommates</v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-sm1 order-md2>
-                  <vue-slider :processStyle="{backgroundColor: $vuetify.theme.primary}" :tooltipStyle="{backgroundColor: $vuetify.theme.primary, borderColor: $vuetify.theme.primary}" :min="0" :max="11" :interval="1" tooltip="always" v-model="payload.totalRoommates" :debug="false" class="pt-4" />
+                                    <v-slider v-model="payload.totalRoommates" thumb-label step="1" :min="1" :max="11" ticks hide-details></v-slider>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -163,7 +165,6 @@
 </template>
 
 <script>
-  import vueSlider from 'vue-slider-component';
   import AppCalendarForm from './sub-components/AppCalendarForm';
   import AppUploader from './sub-components/AppUploader';
   import tagsList from '../assets/tags';
@@ -214,7 +215,8 @@
         countries: ['IL'],
         types: 'address',
         isLazyValidate: true,
-        valid: false
+        valid: false,
+        showSilders: false
       };
     },
     methods: {
@@ -276,18 +278,20 @@
       }
     },
     watch: {
-      'payload.totalRoommates'(val) {
-         this.payload.requiredRoommates =
-          val < this.payload.requiredRoommates ? val : this.payload.requiredRoommates;
-      },
-      'payload.requiredRoommates'(val) {
-        this.payload.totalRoommates =
-          val > this.payload.totalRoommates ? val : this.payload.totalRoommates;
-      },
       floorSlider(val) {
         this.payload.floor = val;
         this.payload.totalFloors =
           val > this.payload.totalFloors ? val : this.payload.totalFloors;
+      },
+      'payload.requiredRoommates'(val) {
+        if (val > this.payload.totalRoommates) {
+          this.payload.totalRoommates = val;
+        }
+      },
+      'payload.totalRoommates'(val) {
+        if (val < this.payload.requiredRoommates) {
+          this.payload.requiredRoommates = val
+        }
       }
     },
     mounted() {
@@ -296,7 +300,6 @@
     components: {
       AppCalendarForm,
       AppUploader,
-      vueSlider
     }
   };
 </script>
