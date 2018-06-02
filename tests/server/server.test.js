@@ -2341,7 +2341,7 @@ describe('#Server Tests', () => {
     });
   });
 
-  describe('#GET /reviews/:long/:lat', () => {
+  describe('#GET /reviews/aggregated/:long/:lat', () => {
     it('should return accurate calculated review for technion', (done) => {
       const tech = coords.technionIsrael;
       const rated = {
@@ -2353,7 +2353,7 @@ describe('#Server Tests', () => {
         generalRating: 2,
       };
       request(app)
-        .get(`/reviews/${tech[0]}/${tech[1]}`)
+        .get(`/reviews/aggregated/${tech[0]}/${tech[1]}`)
         .expect(OK)
         .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
@@ -2375,7 +2375,7 @@ describe('#Server Tests', () => {
         generalRating: (2 / 1.5),
       };
       request(app)
-        .get(`/reviews/${dor[0]}/${dor[1]}`)
+        .get(`/reviews/aggregated/${dor[0]}/${dor[1]}`)
         .expect(OK)
         .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
@@ -2384,7 +2384,7 @@ describe('#Server Tests', () => {
     });
   });
 
-  describe('GET /reviews/:long/:lat', () => {
+  describe('GET /reviews/aggregated/:long/:lat', () => {
     it('should return the new accurate review after updating old reviews', (done) => {
       const {
         westWall
@@ -2398,7 +2398,7 @@ describe('#Server Tests', () => {
         generalRating: 2,
       };
       request(app)
-        .get(`/reviews/${westWall[0]}/${westWall[1]}`)
+        .get(`/reviews/aggregated/${westWall[0]}/${westWall[1]}`)
         .expect(OK)
         .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
