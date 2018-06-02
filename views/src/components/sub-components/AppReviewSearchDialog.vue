@@ -1,16 +1,18 @@
 <template>
-  <div class="modal-backdrop">
+  <v-container class="modal-backdrop">
     <v-card max-width="750px">
       <v-card-title primary-title> Search for a review </v-card-title primary-title>
-      <v-layout wrap row>
-        <v-flex>
-          <v-text-field v-model="address" ref="address" @placechanged="setAddress" label="Street and City" prepend-icon="searcg"></v-text-field>
-        </v-flex>
-      </v-layout>
-      <v-btn color="primary" @click.native="close();">Cancel</v-btn>                
-      <v-btn color="primary" @click.native="search();">Search</v-btn>                
+      <v-card-text>
+        <v-layout wrap row>
+          <v-flex>
+            <v-text-field v-model="address" ref="address" @placechanged="setAddress" label="Street and City"></v-text-field>
+          </v-flex>
+        </v-layout>
+        <v-btn color="primary" @click.native="search();">Search</v-btn>  
+        <v-btn color="primary" @click.native="close();">Cancel</v-btn>                
+      </v-card-text>              
     </v-card>
-  </div>
+  </v-container>
 </template>
 
 <script>
@@ -50,7 +52,6 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
