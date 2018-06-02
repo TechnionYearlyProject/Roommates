@@ -1081,9 +1081,9 @@ app.post('/reviews', authenticate, async (req, res) => {
 });
 
 /**
- * Get calculated review of vacinity of given coordinadets.
+ * Get calculated aggregated review of vacinity of given coordinadets.
  */
-app.get('/reviews/:long/:lat', async (req, res) => {
+app.get('/reviews/aggregated/:long/:lat', async (req, res) => {
   try {
     const r = {
       ratedCharacteristics: {
@@ -1159,7 +1159,32 @@ app.get('/reviews/:long/:lat', async (req, res) => {
     res.status(BAD_REQUEST).send(err);
   }
 });
-
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 06/18
+ *
+ * Gets all reviews near the given coordinates
+ *
+ * Parameters of the route:
+ *
+ * @param {Number} long: the longitude param of the coordinate.
+ * @param {Number} lat: the latitude param of the coordinate.
+ *
+ */
+app.get('/reviews/:long/:lat', async (req, res) => {
+  try {
+    var reviews = [];
+    Review.findInRange(req.params.long, req.params.lat, 1).then(result => {
+      for (let index = 0; index < result.length; index++) {
+        reviews.push(result[index]);
+      }
+      return res.send({reviews});
+    });
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
 /**
  * Update review. The patching user has to be authenticated and the giver of the review.
  *
