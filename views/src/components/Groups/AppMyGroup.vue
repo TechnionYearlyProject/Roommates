@@ -3,6 +3,8 @@
       <v-flex xs12 sm6>
         <v-toolbar dark dense color="primary lighten-3">
           <span class="mb-1 ml-3">My Group ({{ myGroup.length }}/{{ myGroupMaxSize }})</span>
+          <v-spacer></v-spacer>
+          <v-icon v-show="$vuetify.breakpoint.smAndUp">open_with</v-icon>
         </v-toolbar>
         <v-card>
           <v-btn v-if="$vuetify.breakpoint.xsOnly" @click.stop="peopleDialog = true" color="secondary" dark absolute top right fab style="z-index:1">
@@ -14,7 +16,7 @@
               <v-divider></v-divider>
               <v-card-text style="height: 300px;">
                 <v-list subheader>
-                  <v-list-tile v-for="(e,i) in members" :key="`xs-interested-${i}`" @click.capture.stop="toggleSelection(e)" avatar>
+                  <v-list-tile v-for="(e,i) in members" :key="`xs-interested-${i}`" @click.capture.stop="toggleSelection(e)" avatar">
                     <v-list-tile-action>
                       <v-checkbox v-model="myGroup" :value="e" :disabled="myGroup.length >= myGroupMaxSize && !myGroup.includes(e)"/>
                     </v-list-tile-action>
@@ -55,6 +57,8 @@
         <div v-if="$vuetify.breakpoint.smAndUp">
           <v-toolbar dense color="secondary">
             <div class="mb-1 ml-3">People Who Expressed Interest</div>
+            <v-spacer></v-spacer>
+            <v-icon v-show="$vuetify.breakpoint.smAndUp">open_with</v-icon>
           </v-toolbar>
           <v-card>
             <v-list>
