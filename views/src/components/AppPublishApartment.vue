@@ -3,6 +3,9 @@
     <v-stepper v-model="e6" vertical>
       <h3 class="headline secondary--text ma-4">Advertise</h3>
       <v-divider></v-divider>
+    <v-alert :value="error.show" type="error">
+      {{ error.message }}
+    </v-alert>
       <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="step1Rules" editable edit-icon="check">
         Main details
         <small>The most important stuff!</small>
@@ -216,19 +219,26 @@
         types: 'address',
         isLazyValidate: true,
         valid: false,
-        showSilders: false
+        showSilders: false,
+        error: {
+          show: false,
+          message: ''
+        }
       };
     },
     methods: {
       async submit() {
         if (this.$refs.form.validate()) {
+          this.error.show = false;
           try {
             this.$store.commit('showLoading');
-            await this.$store.dispatch('publishApartment', this.payload).then(async (apartment) => {
+            await this.$store.dispatch('publishApartment', this.payload)
+            .then(async (apartment) => {
               this.$router.push({ name: 'AppMain' });
               await this.$store.dispatch('searchApartments', { id: apartment._id });
             }).catch((e) => {
-              this.$store.commit('showSnackbar', e.response.data.message);
+              this.error.message = e.response.data.message;
+              this.error.show = true;
             });
           } catch (error) {
             // eslint-disable-next-line
