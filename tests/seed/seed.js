@@ -645,5 +645,7 @@ module.exports = {
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,
-  getForgotPasswordToken
+  getForgotPasswordToken,
+  review1Id,
+  review2Id
 };
