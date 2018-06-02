@@ -102,7 +102,7 @@
               <v-flex xs12 sm12 md1>
               </v-flex>
               <v-flex xs12 sm12 md2>
-                <v-subheader v-text="'size'"></v-subheader>
+                <v-subheader v-text="'Size'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
                 <v-text-field v-model="payload.area" label="size" mask="#####" prepend-icon="" suffix="square meters" single-line></v-text-field>
