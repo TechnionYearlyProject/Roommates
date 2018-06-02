@@ -362,8 +362,8 @@ export default {
       this.profile.properties.push({
         title: 'Birthday date',
         value: {
-          current: '2018-03-02',
-          previous: '2018-03-02',
+          current: new Date(user.birthdate).toLocaleDateString(),
+          previous: new Date(user.birthdate).toLocaleDateString(),
         },
         icon: 'event',
         error: [],
@@ -371,11 +371,12 @@ export default {
         edit: {
           active: false,
           kind: 'text',
-          mask: '####-##-##',
         },
         getPayload() {
+          const date = this.value.current.split('.');
+          const birthdate = new Date(`${date[2]}-${date[1]}-${date[0]}`).getTime();
           return {
-            birthdate: new Date(this.value.current).getTime(),
+            birthdate
           };
         },
       });
