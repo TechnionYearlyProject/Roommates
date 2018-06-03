@@ -9,20 +9,15 @@ const GROUP_STATUS_DECLINED = 2;
 const GROUP_STATUS_ACCEPTED = 3;
 const GROUP_STATUS_COMPLETED = 4;
 
-const GroupStatusCodes = [
+const USER_STATUS_PENDING = 1;
+const USER_STATUS_ACCEPTED = 2;
+const USER_STATUS_DECLINED = 3;
+const USER_STATUS_PAYED = 4;
 
-         GROUP_STATUS_PENDING
-    ,
 
-         GROUP_STATUS_DECLINED
-    ,
+const GroupStatusCodes = [GROUP_STATUS_PENDING, GROUP_STATUS_DECLINED, GROUP_STATUS_ACCEPTED, GROUP_STATUS_COMPLETED];
 
-         GROUP_STATUS_ACCEPTED
-    ,
-
-         GROUP_STATUS_COMPLETED
-
-];
+const UserStatusCode = [USER_STATUS_PENDING, USER_STATUS_ACCEPTED, USER_STATUS_DECLINED, USER_STATUS_PAYED];
 
 // const groupStatusChangeLogic = [
 //     {
@@ -56,7 +51,7 @@ const GroupSchema = new Schema({
         required: true
     },
     memberPayed: {
-        type: [Boolean],
+        type: [Number],
         required: true
     },
     // apartment: {

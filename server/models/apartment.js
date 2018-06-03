@@ -22,6 +22,10 @@ const visit = require('./visit');
 const {
     Group
 } = require('./group');
+const {
+    User
+} = require('./user');
+
 
 const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -367,7 +371,7 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
 
   apartment._interested.push(_interestedID);
   if(apartment._interested.length >= apartment.requiredRoommates){
-      group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment._id);
+      group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment);
       apartment.groups = [group];
   }
 
@@ -375,7 +379,7 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   return apartment.save();
 };
 
-ApartmentSchema.methods.createUserGroup = function (_interestedID, apartmentID) {
+ApartmentSchema.methods.createUserGroup = function (_interestedID, apartment) {
     //create new group
     const groupData = [
         'members',
@@ -385,9 +389,22 @@ ApartmentSchema.methods.createUserGroup = function (_interestedID, apartmentID) 
         'score',
         'status',
     ];
-    groupData.members = [_interestedID];
-    groupData.memberPayed = [false];
-    groupData.apartment = apartmentID;
+
+    // const user = User.find({_id: {_interestedID}});
+    // const interested = user.getBestMatchingUsers(
+    //     apartment._interested
+    // );
+    const interested = apartment._interested.slice(0,apartment.requiredRoommates - 1);
+    const statuses = [];
+    for (i = 0; i < apartment.requiredRoommates; i++) {
+        statuses.push(0);
+    }
+    if(!interested.includes(_interestedID)){
+      interested[0] = _interestedID;
+    }
+    groupData.members = interested;
+    groupData.memberPayed = statuses;
+    groupData.apartment = apartment._id;
     groupData.createdAt = Date.now();
     groupData.score = 7;
     groupData.status = 0;
