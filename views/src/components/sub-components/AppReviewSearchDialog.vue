@@ -1,6 +1,16 @@
+/**
+ * @author: Or Abramovich
+ * @date: 06/18
+ * Dialog serves to search for a review. The dialog contains an autocomplete textbox to select a street for the review.
+ */
 <template>
   <v-container class="modal-backdrop">
     <v-card max-width="750px">
+    <div dir="rtl">
+      <v-btn icon @click.native="close();" flat small>
+        <v-icon>highlight_off</v-icon>
+      </v-btn>
+    </div>
       <v-card-title primary-title> Search for a review </v-card-title primary-title>
       <v-card-text>
         <v-layout wrap row>
@@ -8,8 +18,7 @@
             <v-text-field v-model="address" ref="address" @placechanged="setAddress" label="Street and City"></v-text-field>
           </v-flex>
         </v-layout>
-        <v-btn color="primary" @click.native="search();">Search</v-btn>  
-        <v-btn color="primary" @click.native="close();">Cancel</v-btn>                
+        <v-btn small color="primary" @click.native="search();">Search</v-btn>  
       </v-card-text>              
     </v-card>
   </v-container>
@@ -26,8 +35,7 @@
     },
     methods: {
       search() {
-        this.$emit('search', this.searchData);
-        this.$emit('close');
+        this.$router.push({ name: 'AppReviews', query: {lat: this.searchData.latitude, lng: this.searchData.longitude, city: this.searchData.locality, street: this.searchData.route} });
       },
       close() {
         this.$emit('close');
