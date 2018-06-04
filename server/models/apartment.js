@@ -393,8 +393,8 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
 
   apartment._interested.push(_interestedID);
   if(apartment._interested.length >= apartment.requiredRoommates){
-      group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment);
-      apartment.groups = [group];
+      const group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment);
+      apartment.groups.push(group);
   }
 
 
