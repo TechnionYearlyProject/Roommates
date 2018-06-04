@@ -281,7 +281,7 @@ ApartmentSchema.statics.findAllByIds = function (listIds) {
  * @prop: tags - Array of the tags Numbers (ids)
  * @prop: geolocation - Array of 2 numbers: ['longitude','latitude']
  * @returns Promise Object with a list of all relevant apartments.
- * 
+ *
  * @updatedBy: Alon Talmor
  * @date: 14/05/18
  * Allow id to be a List of ids or a String of one id.
@@ -702,11 +702,11 @@ ApartmentSchema.methods.updateVisitProps = function (
   }
 
   if (!apartment.isLegalVisitChange(
-      apartment.visits[visitIndex],
-      _offeringUserID,
-      propNames,
-      propValues
-    )) {
+    apartment.visits[visitIndex],
+    _offeringUserID,
+    propNames,
+    propValues
+  )) {
     return Promise.reject();
   }
 
@@ -739,23 +739,21 @@ ApartmentSchema.methods.isLegalVisitChange = function (
   const apartment = this;
 
   if (!visit.canModifyVisit(
-      apartment._createdBy,
-      visitData._askedBy,
-      _offeringUserID
-    )) {
+    apartment._createdBy,
+    visitData._askedBy,
+    _offeringUserID
+  )) {
     return false;
   }
 
   for (let i = 0; i < propNames.length; i++) {
     switch (propNames[i]) {
       case 'status':
-        if (!visit.isValidVisitStatusChange(
-            visitData.status,
-            propValues[i],
-            apartment.isOwner(_offeringUserID)
-          )) {
+        if (!visit.isValidVisitStatusChange(visitData.status, propValues[i], apartment.isOwner(_offeringUserID))) {
           return false;
         }
+        break;
+      default:
     }
   }
 
@@ -781,7 +779,7 @@ ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
   apartment.visits.forEach((visitData) => {
     if (
       visitData._askedBy.equals(_userID) &&
-      visitData.status != visit.getVisitStatusOnCancelation() &&
+      visitData.status !== visit.getVisitStatusOnCancelation() &&
       visitData.scheduledTo > date
     ) {
       futureVisitExist = true;

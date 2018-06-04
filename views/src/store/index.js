@@ -295,7 +295,31 @@ export default new Vuex.Store({
         commit('setNotifications', response.data.user.notifications);
         return response.data.user.notifications;
       });
-    }
+    },
+    /**
+     * @author: Or Abramovich
+     * @date: 06/18
+     * @param: params: object of {long, lat} -
+     * Gets all reviews within a radius of 1 KM from the given coordinates 
+     */
+    getReviews({ commit }, params) {
+      return axios.get(`http://localhost:3000/reviews/${params.long}/${params.lat}`)
+        .then((response) => {
+          return response.data.reviews;
+        });
+    },
+    /**
+     * @author: Or Abramovich
+     * @date: 06/18
+     * @param: payload: object of review
+     * Adds the given review to the DB.
+     */
+    publishReview({ state }, payload) {
+      return axios.post('http://localhost:3000/reviews', payload)
+      .then((response) => {
+        return response.data.review;
+      });
+    },
   },
   plugins: [vuexPersistence.plugin]
 });
