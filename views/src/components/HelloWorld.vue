@@ -1,17 +1,31 @@
 <template>
 <div>
   <v-container grid-list-xl>
-    <div class="title">Suggested Groups</div>
-    <v-layout wrap>
-      <v-flex xs12 sm6 md4 v-for="(g,i) in groups" :key="`group-${i}`">
-        <app-group v-model="groups[i]" :group-title="`Group #${i+1}`"></app-group>
-      </v-flex>
-    </v-layout>
+    <v-toolbar>
+      <v-icon>mdi-account-group</v-icon>
+      <v-toolbar-title>Suggested Groups</v-toolbar-title>
+    </v-toolbar>
+    <v-card>
+      <v-card-title></v-card-title>
+      <v-container>
+        <v-layout wrap>
+          <v-flex xs12 sm6 md4 v-for="(g,i) in groups" :key="`group-${i}`">
+            <app-group v-model="groups[i]" :group-title="`Group #${i+1}`"></app-group>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-card>
   </v-container>
   <v-container grid-list-xl>
-    <div class="subheading">Create Your Own Group</div>
-    <div class="caption mb-2" v-if="$vuetify.breakpoint.smAndUp">Drag other interested fellows to your group.</div>
-    <app-my-group :members="interestedList" :myGroupMaxSize="requiredRoommates" @submit="groups.push($event)"></app-my-group>
+    <v-toolbar>
+      <v-icon>mdi-account-multiple-plus</v-icon>
+      <v-toolbar-title>Create Your Own Group</v-toolbar-title>
+    </v-toolbar>
+    <v-card>
+      <v-container>
+        <app-my-group :members="interestedList" :myGroupMaxSize="requiredRoommates" @submit="groups.push($event)"></app-my-group>
+      </v-container>
+    </v-card>
   </v-container>
 </div>
 </template>
@@ -29,50 +43,34 @@ export default {
     },
     interestedList: {
       type: Array,
-      default: () => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      default: () => ['Alon Talmor', 'Gerry The Pacemaker', 'Agnetha Faltskog', 'Judith Durham', 'Kent Lambert']
     }
   },
   data() {
     return {
       groups: [
         {
-          members: ['5ad8588944db813fe850c923'],
-          status: ["in"],
-          loaded: false
+          members: ['5b140ad395d5b923886ffb43','5b1414c195d5b923886ffb61'],
+          status: ["in","in"],
         },
         {
-          members: ["5ad8588944db813fe850c923", "5ae46e3ab67e3d46f895c53c", "5af6e0274507132c7c2016c0"],
-          status: ["out", "in", "in"],
-          loaded: false
+          members: ["5b140ad395d5b923886ffb43", "5b140fae95d5b923886ffb54", "5b14141895d5b923886ffb5d"],
+          status: ["pending", "in", "in"],
         },
         {
-          members: ["5ae46e3ab67e3d46f895c53c", "5af6e0274507132c7c2016c0"],
+          members: ["5b140fae95d5b923886ffb54", "5b14141895d5b923886ffb5d"],
           status: ["out", "in"],
-          loaded: false
         },
         {
-          members: ["5ad8588944db813fe850c923", "5af6e0274507132c7c2016c0"],
-          status: ["in", "pending"],
-          loaded: false
+          members: ["5b140ad395d5b923886ffb43", "5b14149295d5b923886ffb5f",'5b1414c195d5b923886ffb61'],
+          status: ["in", "pending", "pending"],
         }
       ]
     };
   },
   methods: {},
   mounted() {
-    console.log(this.groups)
-    const id = union.apply(null, this.groups.map(g => g.members));
-    this.$store.dispatch('fetchUser', {id})
-    .then((users) => {
-      for(let i = 0; i < this.groups.length; i++) {
-        console.log(this.groups[i].members);
-        for (let j = 0; j < this.groups[i].members.length; j++) {
-          this.groups[i].members[j] = users[this.groups[i].members[j]];
-        }
-        this.groups[i].loaded = true;
-      }
-    })
-    .catch(e => console.log(e));
+    
   },
 
   components: {

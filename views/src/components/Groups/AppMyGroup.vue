@@ -16,7 +16,7 @@
               <v-divider></v-divider>
               <v-card-text style="height: 300px;">
                 <v-list subheader>
-                  <v-list-tile v-for="(e,i) in members" :key="`xs-interested-${i}`" @click.capture.stop="toggleSelection(e)" avatar">
+                  <v-list-tile v-for="(e,i) in members" :key="`xs-interested-${i}`" @click.capture.stop="toggleSelection(e)" avatar>
                     <v-list-tile-action>
                       <v-checkbox v-model="myGroup" :value="e" :disabled="myGroup.length >= myGroupMaxSize && !myGroup.includes(e)"/>
                     </v-list-tile-action>
@@ -24,7 +24,7 @@
                       {{ e }}
                     </v-list-tile-content>
                     <v-list-tile-avatar>
-                      <app-avatar name="Alon" :size="40"></app-avatar>
+                      <app-avatar :name="e" :size="40"></app-avatar>
                     </v-list-tile-avatar>
                   </v-list-tile>
                 </v-list>
@@ -41,7 +41,7 @@
               <div v-for="(e,i) in myGroup">
                 <v-list-tile :key="`my-group-${i}`" @click="" avatar>
                   <v-list-tile-avatar>
-                    <app-avatar name="Alon" :size="40"></app-avatar>
+                    <app-avatar :name="e" :size="40"></app-avatar>
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                       {{ e }}
@@ -66,7 +66,7 @@
                 <div v-for="(e,i) in availableMemebers">
                   <v-list-tile :key="`interest-${i}`" @click="" avatar>
                     <v-list-tile-avatar>
-                      <app-avatar name="Alon" :size="40"></app-avatar>
+                      <app-avatar :name="e" :size="40"></app-avatar>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
                       {{ e }}

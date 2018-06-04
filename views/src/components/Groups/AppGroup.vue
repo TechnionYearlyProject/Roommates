@@ -22,23 +22,23 @@
     </v-tooltip>
   </v-toolbar>
   <v-card height="390px">
-    <div v-if="!value.loaded" class="text-xs-center">
+    <div v-if="!loaded" class="text-xs-center">
       <v-progress-circular indeterminate color="purple" class="mt-5"></v-progress-circular>
     </div>
     <div v-else>
       <v-list style="height:300px;overflow-y: auto;">
-        <template  v-for="(m,j) in value.members">
-        <v-list-tile :key="`member-${j}`" @click.stop="goToProfile(m)" avatar :disabled="disabled" :class="color(value.status[j])">
+        <template  v-for="(id,j) in value.members">
+        <v-list-tile :key="`member-${j}`" @click.stop="goToProfile(members[id])" avatar :class="color(value.status[j])">
           <v-list-tile-action>
             <v-icon v-if="value.status[j] === 'in'" color="teal">mdi-comment-check-outline</v-icon>
             <v-icon v-else-if="value.status[j] === 'out'" color="red">mdi-comment-remove-outline</v-icon>
             <v-icon v-else color="yellow darken-3">mdi-comment-question-outline</v-icon>
           </v-list-tile-action>
           <v-list-tile-avatar>
-            <app-avatar :name="getName(m)" :size="40"></app-avatar>
+            <app-avatar :name="getName(members[id])" :size="40"></app-avatar>
           </v-list-tile-avatar>
           <v-list-tile-content>
-          {{ getName(m) }}
+          {{ getName(members[id]) }}
           </v-list-tile-content>
           <v-list-tile-action>
             <v-tooltip top>
@@ -63,7 +63,7 @@
         </div>
         <div v-else>
           <div>
-            <v-btn slot="activator" block outline @click.stop="optInDialog = true" color="success" class="pa-0 ma-0 mb-1">
+            <v-btn slot="activator" block outline @click.stop="optInDialog = true" color="success" class="pa-0 ma-0 mb-1" :disabled="disabled">
                 <v-icon>check</v-icon>
                 Count me in !
             </v-btn>
@@ -73,14 +73,14 @@
                 <v-card-text>Just to make sure you didn't click <span class="teal--text">Approve</span> by mistake.</v-card-text>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="green darken-1" flat @click.native="optIn();optOutDialog = false">I'm sure!</v-btn>
+                  <v-btn color="green darken-1" flat @click.native="optIn();optInDialog = false">I'm sure!</v-btn>
                   <v-btn color="grey darken-3" flat @click.native="optInDialog = false">nevermind...</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>  
           </div>
           <div>
-            <v-btn block outline @click.stop="optOutDialog = true" color="error" class="pa-0 ma-0">
+            <v-btn block outline @click.stop="optOutDialog = true" color="error" class="pa-0 ma-0" :disabled="disabled">
               <v-icon>close</v-icon>
               Not a chance
             </v-btn>
@@ -107,9 +107,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 import AppAvatar from "../sub-components/AppAvatar";
-import GroupStatuses from "../../assets/group-statuses";
 
 export default {
   props: {
@@ -123,17 +122,30 @@ export default {
   },
   data() {
     return {
-      status: GroupStatuses,
       disabled: false,
       optInDialog: false,
-      optOutDialog: false
+      optOutDialog: false,
+      loaded: false,
+      members: null,
+      myIndex: -1,
     };
   },
   methods: {
+    ...mapMutations(['showSnackbar']),
+    showThankYouMessage() {
+      this.showSnackbar('Thank you for voting!')
+    },
     optOut() {
       this.disabled = true;
+      this.value.status[this.myIndex] = 'out';
+      this.showThankYouMessage();
     },
-    optIn() {},
+    optIn() {
+      this.disabled = true;
+      this.value.status[this.myIndex] = 'in';
+      this.value.status.splice();
+      this.showThankYouMessage();
+    },
     color(status) {
       let color;
       if (status === "in") {
@@ -153,7 +165,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getUser']),
+    ...mapGetters(['getUser','isVerified']),
     optInNumber() {
       return this.value.status.filter(s => s === "in").length;
     },
@@ -174,8 +186,19 @@ export default {
       };
     },
     participatingInGroup() {
-      return this.value.members.some(m => m._id === this.getUser._id);
+      return this.myIndex > -1;
     }
+  },
+  created() {
+      const id = this.value.members;
+      this.$store.dispatch('fetchUser', {id})
+      .then((users) => {
+        this.members = users;
+        this.loaded = true;
+      })
+      .catch(e => console.log(e));
+      if (this.isVerified) this.myIndex = this.value.members.findIndex(id => id === this.getUser._id);
+      if (this.participatingInGroup && this.value.status[this.myIndex] !== 'pending') this.disabled = true;
   },
   components: {
     AppAvatar
