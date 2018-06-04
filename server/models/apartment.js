@@ -392,9 +392,9 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-  if(apartment._interested.length >= apartment.requiredRoommates){
-      const group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment);
-      apartment.groups.push(group);
+  if (apartment._interested.length >= apartment.requiredRoommates) {
+    const group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment);
+    apartment.groups.push(group);
   }
 
 
@@ -402,45 +402,32 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
 };
 
 ApartmentSchema.methods.createUserGroup = function (_interestedID, apartment) {
-    //create new group
-    const groupData = [
-        'members',
-        'memberPayed',
-        'apartment',
-        'createdAt',
-        'score',
-        'status',
-    ];
+  // const user = User.find({_id: {_interestedID}});
+  // const interested = user.getBestMatchingUsers(
+  //     apartment._interested
+  // );
+  const interested = apartment._interested.slice(0, apartment.requiredRoommates - 1);
+  const statuses = new Array(apartment.requiredRoommates).fill(0);
 
-    // const user = User.find({_id: {_interestedID}});
-    // const interested = user.getBestMatchingUsers(
-    //     apartment._interested
-    // );
-    const interested = apartment._interested.slice(0,apartment.requiredRoommates - 1);
-    const statuses = [];
-    for (i = 0; i < apartment.requiredRoommates; i++) {
-        statuses.push(0);
-    }
-    if(!interested.includes(_interestedID)){
-      interested[0] = _interestedID;
-    }
-    groupData.members = interested;
-    groupData.memberPayed = statuses;
-    groupData.apartment = apartment._id;
-    groupData.createdAt = Date.now();
-    groupData.score = 7;
-    groupData.status = 0;
-    const group = new Group(groupData);
+  if (!interested.includes(_interestedID)) {
+    interested[0] = _interestedID;
+  }
+  // create new group
+  const group = new Group({
+    members: interested,
+    memberPayed: statuses,
+    apartment: apartment._id,
+    createdAt: Date.now(),
+    score: 7,
+    status: 0
+  });
 
-
-    //push new group
-    //   apartment.groups = [group.ObjectID];
-    //
-    return group;
+  return group;
 };
 
-ApartmentSchema.methods.numberOfGroups = function (){
+ApartmentSchema.methods.numberOfGroups = function () {
   const apartment = this;
+
   return apartment.groups.length;
 };
 
@@ -462,12 +449,12 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   }
   function checkGroup(group) {
     let exists = false;
-      let i;
-      for (i = 0; i < group.members.length; i++) {
-        if(group.members[i].equals(_interestedID))
-          exists = true
+    for (let i = 0; i < group.members.length; i++) {
+      if (group.members[i].equals(_interestedID)) {
+        exists = true;
       }
-      return !exists;
+    }
+    return !exists;
   }
   apartment.groups = apartment.groups.filter(checkGroup);
 
