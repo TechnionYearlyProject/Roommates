@@ -1051,7 +1051,7 @@ describe('#Server Tests', () => {
         .expect(OK)
         .expect((res) => {
           // the id is ignored, so all apartments are returned (same as query {})
-          expect(res.body.apartments.length).toBe(2);
+          expect(res.body.apartments.length).toBe(3);
         })
         .end(done);
     });
@@ -1098,7 +1098,7 @@ describe('#Server Tests', () => {
         .expect(OK)
         .expect((res) => {
           // the owner's id is ignored, so all apartments are returned (same as query {})
-          expect(res.body.apartments.length).toBe(2);
+          expect(res.body.apartments.length).toBe(3);
         })
         .end(done);
     });
@@ -1244,7 +1244,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(2); //should find haifa and tel aviv
+          expect(res.body.apartments.length).toBe(3); //should find haifa and tel aviv
         })
         .end(done);
     });
@@ -1312,7 +1312,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments.length).toBe(2);
           expect(res.body.apartments[0].totalRoommates).toBeLessThanOrEqual(maxRoommates);
         })
         .end(done);
@@ -1329,7 +1329,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments.length).toBe(2);
           expect(res.body.apartments[0].totalRoommates).toBeGreaterThanOrEqual(minRoommates);
           expect(res.body.apartments[0].totalRoommates).toBeLessThanOrEqual(maxRoommates);
         })
@@ -1359,7 +1359,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments.length).toBe(2);
           expect(res.body.apartments[0]._id.toString()).toBe(apartments[1]._id.toString());
         })
         .end(done);
