@@ -56,10 +56,15 @@
       <v-progress-linear :value="optInNumber / value.members.length * 100" height="4" color="teal" class="mt-0 mb-1"></v-progress-linear>
       <div v-if="participatingInGroup">
         <div v-if="closeTheDeal">
-          <v-btn block outline color="primary" style="height:75px">
+          <v-btn block outline slot="activator" color="primary" style="height:75px" @click="PaymentMenuDialog = true">
             <v-icon class="mr-1">new_releases</v-icon>
             Close The Deal !
           </v-btn>
+          <v-dialog v-model="PaymentMenuDialog" max-width="320">
+            <v-card v-if="PaymentMenuDialog" height="200">
+              <app-payment></app-payment>
+            </v-card>
+          </v-dialog>
         </div>
         <div v-else>
           <div>
@@ -109,6 +114,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex';
 import AppAvatar from "../sub-components/AppAvatar";
+import AppPayment from '../AppPayment';
 
 export default {
   props: {
@@ -128,6 +134,7 @@ export default {
       loaded: false,
       members: null,
       myIndex: -1,
+      PaymentMenuDialog: false
     };
   },
   methods: {
@@ -201,7 +208,8 @@ export default {
       if (this.participatingInGroup && this.value.status[this.myIndex] !== 'pending') this.disabled = true;
   },
   components: {
-    AppAvatar
+    AppAvatar,
+    AppPayment
   }
 };
 </script>
