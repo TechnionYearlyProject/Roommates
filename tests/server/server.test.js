@@ -55,7 +55,7 @@ const {
   populateApartments,
   populateReviews,
   populateUsers,
-  // populateGroups,
+  populateGroups,
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
@@ -73,7 +73,7 @@ describe('#Server Tests', () => {
   beforeEach(populateApartments);
   beforeEach(populateReviews);
 
-  //beforeEach(populateGroups);
+  beforeEach(populateGroups);
 
   // beforeEach((done) => {
   //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
@@ -490,6 +490,8 @@ describe('#Server Tests', () => {
             const apartment = await Apartment.findById(id);
             expect(user.isInterestedInApartment(id)).toBe(false);
             expect(apartment.isUserInterested(users[1]._id)).toBe(false);
+
+              expect(apartment.numberOfGroups()).toBe(0);
             return done();
           } catch (e) {
             return done(e);
@@ -521,6 +523,56 @@ describe('#Server Tests', () => {
         });
     }).timeout(5000);
   });
+
+    describe('#PUT /apartments/:id/interested  more', () => {
+        it('should toggle to not interested, and have 1 group instead of 2', (done) => {
+            const id = apartments[2]._id;
+            request(app)
+                .put(`/apartments/${id}/interested`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .expect(OK)
+                .end(async (err) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    try {
+                        const user = await User.findById(users[1]._id);
+                        const apartment = await Apartment.findById(id);
+                        expect(user.isInterestedInApartment(id)).toBe(false);
+                        expect(apartment.isUserInterested(users[1]._id)).toBe(false);
+                        expect(apartment.numberOfGroups()).toBe(1);
+                        return done();
+                    } catch (e) {
+                        return done(e);
+                    }
+                });
+        }).timeout(5000);
+
+        it('should toggle to interested and add a group', (done) => {
+            const id = apartments[1]._id;
+            request(app)
+                .put(`/apartments/${id}/interested`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .expect(OK)
+                .end(async (err) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    try {
+                        const user = await User.findById(users[1]._id);
+                        const apartment = await Apartment.findById(id);
+                        expect(user.isInterestedInApartment(id)).toBe(true);
+                        expect(apartment.isUserInterested(users[1]._id)).toBe(true);
+                        expect(apartment.numberOfGroups()).toBe(1);
+                        return done();
+                    } catch (e) {
+                        return done(e);
+                    }
+                });
+        }).timeout(5000);
+    });
 
   describe('/apartments/:id/interested/groups/self/lazy', () => {
     it('get a group', (done) => {

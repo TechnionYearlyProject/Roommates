@@ -184,10 +184,32 @@ const ApartmentSchema = new mongoose.Schema({
       }
     },
   }],
-  groups: {
-      type: [String],
-      required: false,
-  }
+  groups: [{
+      members: {
+          type: [mongoose.Schema.Types.ObjectId],
+          required: true
+      },
+      memberPayed: {
+          type: [Number],
+          required: true
+      },
+      createdAt: {
+          type: Number,
+          required: true
+      },
+      score: {
+          type: Number,
+          required: false
+      },
+      status: {
+          type: Number,
+          validate: {
+              validator: (value) => (value === value),
+              message: '{VALUE} is not a supported group status Id'
+          },
+          required: true
+      },
+  }]
 });
 
 /**
@@ -438,6 +460,16 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   if (interestedIDIndex > -1) {
     apartment._interested.splice(interestedIDIndex, 1);
   }
+  function checkGroup(group) {
+    let exists = false;
+      let i;
+      for (i = 0; i < group.members.length; i++) {
+        if(group.members[i].equals(_interestedID))
+          exists = true
+      }
+      return !exists;
+  }
+  apartment.groups = apartment.groups.filter(checkGroup);
 
   return apartment.save();
 };
