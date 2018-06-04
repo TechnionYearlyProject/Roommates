@@ -19,6 +19,13 @@ const {
   ObjectID
 } = require('mongodb');
 const visit = require('./visit');
+const {
+    Group
+} = require('./group');
+const {
+    User
+} = require('./user');
+
 
 const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -175,7 +182,33 @@ const ApartmentSchema = new mongoose.Schema({
         validator: value => visit.isSupportedVisitStatusID(value),
         message: '{VALUE} is not a valid visit status'
       }
-    }
+    },
+  }],
+  groups: [{
+      members: {
+          type: [mongoose.Schema.Types.ObjectId],
+          required: true
+      },
+      memberPayed: {
+          type: [Number],
+          required: true
+      },
+      createdAt: {
+          type: Number,
+          required: true
+      },
+      score: {
+          type: Number,
+          required: false
+      },
+      status: {
+          type: Number,
+          validate: {
+              validator: (value) => (value === value),
+              message: '{VALUE} is not a supported group status Id'
+          },
+          required: true
+      },
   }]
 });
 
@@ -248,7 +281,7 @@ ApartmentSchema.statics.findAllByIds = function (listIds) {
  * @prop: tags - Array of the tags Numbers (ids)
  * @prop: geolocation - Array of 2 numbers: ['longitude','latitude']
  * @returns Promise Object with a list of all relevant apartments.
- * 
+ *
  * @updatedBy: Alon Talmor
  * @date: 14/05/18
  * Allow id to be a List of ids or a String of one id.
@@ -359,8 +392,56 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
+  if(apartment._interested.length >= apartment.requiredRoommates){
+      const group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment);
+      apartment.groups.push(group);
+  }
+
 
   return apartment.save();
+};
+
+ApartmentSchema.methods.createUserGroup = function (_interestedID, apartment) {
+    //create new group
+    const groupData = [
+        'members',
+        'memberPayed',
+        'apartment',
+        'createdAt',
+        'score',
+        'status',
+    ];
+
+    // const user = User.find({_id: {_interestedID}});
+    // const interested = user.getBestMatchingUsers(
+    //     apartment._interested
+    // );
+    const interested = apartment._interested.slice(0,apartment.requiredRoommates - 1);
+    const statuses = [];
+    for (i = 0; i < apartment.requiredRoommates; i++) {
+        statuses.push(0);
+    }
+    if(!interested.includes(_interestedID)){
+      interested[0] = _interestedID;
+    }
+    groupData.members = interested;
+    groupData.memberPayed = statuses;
+    groupData.apartment = apartment._id;
+    groupData.createdAt = Date.now();
+    groupData.score = 7;
+    groupData.status = 0;
+    const group = new Group(groupData);
+
+
+    //push new group
+    //   apartment.groups = [group.ObjectID];
+    //
+    return group;
+};
+
+ApartmentSchema.methods.numberOfGroups = function (){
+  const apartment = this;
+  return apartment.groups.length;
 };
 
 /**
@@ -379,6 +460,16 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   if (interestedIDIndex > -1) {
     apartment._interested.splice(interestedIDIndex, 1);
   }
+  function checkGroup(group) {
+    let exists = false;
+      let i;
+      for (i = 0; i < group.members.length; i++) {
+        if(group.members[i].equals(_interestedID))
+          exists = true
+      }
+      return !exists;
+  }
+  apartment.groups = apartment.groups.filter(checkGroup);
 
   return apartment.save();
 };
@@ -611,11 +702,11 @@ ApartmentSchema.methods.updateVisitProps = function (
   }
 
   if (!apartment.isLegalVisitChange(
-      apartment.visits[visitIndex],
-      _offeringUserID,
-      propNames,
-      propValues
-    )) {
+    apartment.visits[visitIndex],
+    _offeringUserID,
+    propNames,
+    propValues
+  )) {
     return Promise.reject();
   }
 
@@ -648,23 +739,21 @@ ApartmentSchema.methods.isLegalVisitChange = function (
   const apartment = this;
 
   if (!visit.canModifyVisit(
-      apartment._createdBy,
-      visitData._askedBy,
-      _offeringUserID
-    )) {
+    apartment._createdBy,
+    visitData._askedBy,
+    _offeringUserID
+  )) {
     return false;
   }
 
   for (let i = 0; i < propNames.length; i++) {
     switch (propNames[i]) {
       case 'status':
-        if (!visit.isValidVisitStatusChange(
-            visitData.status,
-            propValues[i],
-            apartment.isOwner(_offeringUserID)
-          )) {
+        if (!visit.isValidVisitStatusChange(visitData.status, propValues[i], apartment.isOwner(_offeringUserID))) {
           return false;
         }
+        break;
+      default:
     }
   }
 
@@ -690,7 +779,7 @@ ApartmentSchema.methods.isFutureVisitPlanned = function (_userID, date) {
   apartment.visits.forEach((visitData) => {
     if (
       visitData._askedBy.equals(_userID) &&
-      visitData.status != visit.getVisitStatusOnCancelation() &&
+      visitData.status !== visit.getVisitStatusOnCancelation() &&
       visitData.scheduledTo > date
     ) {
       futureVisitExist = true;

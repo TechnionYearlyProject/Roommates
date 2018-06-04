@@ -3,6 +3,9 @@
     <v-stepper v-model="e6" vertical>
       <h3 class="headline secondary--text ma-4">Advertise</h3>
       <v-divider></v-divider>
+    <v-alert :value="error.show" type="error">
+      {{ error.message }}
+    </v-alert>
       <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="step1Rules" editable edit-icon="check">
         Main details
         <small>The most important stuff!</small>
@@ -40,23 +43,25 @@
                 </v-flex>
                 <v-flex xs12 sm12 md3>
                   <v-subheader>Number of roommates I'm looking for*</v-subheader>
+                  
                 </v-flex>
                 <v-flex xs12 sm12 md3>
-                  <vue-slider :processStyle="{backgroundColor: $vuetify.theme.primary}" :tooltipStyle="{backgroundColor: $vuetify.theme.primary, borderColor: $vuetify.theme.primary}" :min="0" :max="10" :interval="1" tooltip="always" v-model="payload.requiredRoommates" :debug="false" class="pt-4" />
+                  <v-slider v-model="payload.requiredRoommates" thumb-label step="1" :min="0" :max="10" ticks hide-details></v-slider>
+                  <div class="text-xs-left body-2">{{ payload.requiredRoommates }}/{{ payload.totalRoommates }}</div>
                 </v-flex>
-                <v-flex xs12 sm12 md2 order-sm2 order-md1>
+                <v-flex xs12 sm12 md2 order-xs3 order-md1>
                   <v-subheader v-text="'Entrance date'"></v-subheader>
                 </v-flex>
-                <v-flex xs12 sm12 md3 order-sm2 order-md1>
+                <v-flex xs12 sm12 md3 order-xs2 order-md1>
                   <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" :min="today" />
                 </v-flex>
                 <v-flex xs12 sm12 md1 order-md2>
                 </v-flex>
-                <v-flex xs12 sm12 md3 order-sm1 order-md2>
+                <v-flex xs12 sm12 md3 order-xs1 order-md2>
                   <v-subheader>Total number of roommates</v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-sm1 order-md2>
-                  <vue-slider :processStyle="{backgroundColor: $vuetify.theme.primary}" :tooltipStyle="{backgroundColor: $vuetify.theme.primary, borderColor: $vuetify.theme.primary}" :min="0" :max="11" :interval="1" tooltip="always" v-model="payload.totalRoommates" :debug="false" class="pt-4" />
+                                    <v-slider v-model="payload.totalRoommates" thumb-label step="1" :min="1" :max="11" ticks hide-details></v-slider>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -97,7 +102,7 @@
               <v-flex xs12 sm12 md1>
               </v-flex>
               <v-flex xs12 sm12 md2>
-                <v-subheader v-text="'size'"></v-subheader>
+                <v-subheader v-text="'Size'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
                 <v-text-field v-model="payload.area" label="size" mask="#####" prepend-icon="" suffix="square meters" single-line></v-text-field>
@@ -163,7 +168,6 @@
 </template>
 
 <script>
-  import vueSlider from 'vue-slider-component';
   import AppCalendarForm from './sub-components/AppCalendarForm';
   import AppUploader from './sub-components/AppUploader';
   import tagsList from '../assets/tags';
@@ -214,19 +218,27 @@
         countries: ['IL'],
         types: 'address',
         isLazyValidate: true,
-        valid: false
+        valid: false,
+        showSilders: false,
+        error: {
+          show: false,
+          message: ''
+        }
       };
     },
     methods: {
       async submit() {
         if (this.$refs.form.validate()) {
+          this.error.show = false;
           try {
             this.$store.commit('showLoading');
-            await this.$store.dispatch('publishApartment', this.payload).then(async (apartment) => {
+            await this.$store.dispatch('publishApartment', this.payload)
+            .then(async (apartment) => {
               this.$router.push({ name: 'AppMain' });
               await this.$store.dispatch('searchApartments', { id: apartment._id });
             }).catch((e) => {
-              this.$store.commit('showSnackbar', e.response.data.message);
+              this.error.message = e.response.data.message;
+              this.error.show = true;
             });
           } catch (error) {
             // eslint-disable-next-line
@@ -276,18 +288,20 @@
       }
     },
     watch: {
-      'payload.totalRoommates'(val) {
-         this.payload.requiredRoommates =
-          val < this.payload.requiredRoommates ? val : this.payload.requiredRoommates;
-      },
-      'payload.requiredRoommates'(val) {
-        this.payload.totalRoommates =
-          val > this.payload.totalRoommates ? val : this.payload.totalRoommates;
-      },
       floorSlider(val) {
         this.payload.floor = val;
         this.payload.totalFloors =
           val > this.payload.totalFloors ? val : this.payload.totalFloors;
+      },
+      'payload.requiredRoommates'(val) {
+        if (val > this.payload.totalRoommates) {
+          this.payload.totalRoommates = val;
+        }
+      },
+      'payload.totalRoommates'(val) {
+        if (val < this.payload.requiredRoommates) {
+          this.payload.requiredRoommates = val
+        }
       }
     },
     mounted() {
@@ -296,7 +310,6 @@
     components: {
       AppCalendarForm,
       AppUploader,
-      vueSlider
     }
   };
 </script>

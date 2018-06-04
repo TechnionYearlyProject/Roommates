@@ -55,7 +55,7 @@ const {
   populateApartments,
   populateReviews,
   populateUsers,
-  // populateGroups,
+  populateGroups,
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
@@ -63,7 +63,9 @@ const {
   notRegisteredUser,
   // user1VerificationToken,
   user2VerificationToken,
-  getForgotPasswordToken
+  getForgotPasswordToken,
+  review1Id,
+  review2Id
 } = require('../seed/seed');
 
 describe('#Server Tests', () => {
@@ -71,7 +73,7 @@ describe('#Server Tests', () => {
   beforeEach(populateApartments);
   beforeEach(populateReviews);
 
-  //beforeEach(populateGroups);
+  beforeEach(populateGroups);
 
   // beforeEach((done) => {
   //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
@@ -488,6 +490,8 @@ describe('#Server Tests', () => {
             const apartment = await Apartment.findById(id);
             expect(user.isInterestedInApartment(id)).toBe(false);
             expect(apartment.isUserInterested(users[1]._id)).toBe(false);
+
+              expect(apartment.numberOfGroups()).toBe(0);
             return done();
           } catch (e) {
             return done(e);
@@ -511,6 +515,7 @@ describe('#Server Tests', () => {
             const apartment = await Apartment.findById(id);
             expect(user.isInterestedInApartment(id)).toBe(true);
             expect(apartment.isUserInterested(users[1]._id)).toBe(true);
+            expect(apartment.numberOfGroups()).toBe(1);
             return done();
           } catch (e) {
             return done(e);
@@ -518,6 +523,56 @@ describe('#Server Tests', () => {
         });
     }).timeout(5000);
   });
+
+    describe('#PUT /apartments/:id/interested  more', () => {
+        it('should toggle to not interested, and have 1 group instead of 2', (done) => {
+            const id = apartments[2]._id;
+            request(app)
+                .put(`/apartments/${id}/interested`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .expect(OK)
+                .end(async (err) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    try {
+                        const user = await User.findById(users[1]._id);
+                        const apartment = await Apartment.findById(id);
+                        expect(user.isInterestedInApartment(id)).toBe(false);
+                        expect(apartment.isUserInterested(users[1]._id)).toBe(false);
+                        expect(apartment.numberOfGroups()).toBe(1);
+                        return done();
+                    } catch (e) {
+                        return done(e);
+                    }
+                });
+        }).timeout(5000);
+
+        it('should toggle to interested and add a group', (done) => {
+            const id = apartments[1]._id;
+            request(app)
+                .put(`/apartments/${id}/interested`)
+                .set(XAUTH, users[1].tokens[0].token)
+                .expect(OK)
+                .end(async (err) => {
+                    if (err) {
+                        return done(err);
+                    }
+
+                    try {
+                        const user = await User.findById(users[1]._id);
+                        const apartment = await Apartment.findById(id);
+                        expect(user.isInterestedInApartment(id)).toBe(true);
+                        expect(apartment.isUserInterested(users[1]._id)).toBe(true);
+                        expect(apartment.numberOfGroups()).toBe(1);
+                        return done();
+                    } catch (e) {
+                        return done(e);
+                    }
+                });
+        }).timeout(5000);
+    });
 
   describe('/apartments/:id/interested/groups/self/lazy', () => {
     it('get a group', (done) => {
@@ -996,7 +1051,7 @@ describe('#Server Tests', () => {
         .expect(OK)
         .expect((res) => {
           // the id is ignored, so all apartments are returned (same as query {})
-          expect(res.body.apartments.length).toBe(2);
+          expect(res.body.apartments.length).toBe(3);
         })
         .end(done);
     });
@@ -1043,7 +1098,7 @@ describe('#Server Tests', () => {
         .expect(OK)
         .expect((res) => {
           // the owner's id is ignored, so all apartments are returned (same as query {})
-          expect(res.body.apartments.length).toBe(2);
+          expect(res.body.apartments.length).toBe(3);
         })
         .end(done);
     });
@@ -1189,7 +1244,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(2); //should find haifa and tel aviv
+          expect(res.body.apartments.length).toBe(3); //should find haifa and tel aviv
         })
         .end(done);
     });
@@ -1257,7 +1312,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments.length).toBe(2);
           expect(res.body.apartments[0].totalRoommates).toBeLessThanOrEqual(maxRoommates);
         })
         .end(done);
@@ -1274,7 +1329,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments.length).toBe(2);
           expect(res.body.apartments[0].totalRoommates).toBeGreaterThanOrEqual(minRoommates);
           expect(res.body.apartments[0].totalRoommates).toBeLessThanOrEqual(maxRoommates);
         })
@@ -1304,7 +1359,7 @@ describe('#Server Tests', () => {
         })
         .expect(OK)
         .expect((res) => {
-          expect(res.body.apartments.length).toBe(1);
+          expect(res.body.apartments.length).toBe(2);
           expect(res.body.apartments[0]._id.toString()).toBe(apartments[1]._id.toString());
         })
         .end(done);
@@ -2341,6 +2396,23 @@ describe('#Server Tests', () => {
   });
 
   describe('#GET /reviews/:long/:lat', () => {
+    it('should return all reviews for technion', (done) => {
+      const tech = coords.technionIsrael;
+      request(app)
+        .get(`/reviews/${tech[0]}/${tech[1]}`)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.reviews.length).toBe(2);
+          expect(res.body.reviews[0]._id).toBe(review1Id.toHexString());
+          expect(res.body.reviews[1]._id).toBe(review2Id.toHexString())
+
+        })
+        .end(done);
+    });
+  });
+
+
+  describe('#GET /reviews/aggregated/:long/:lat', () => {
     it('should return accurate calculated review for technion', (done) => {
       const tech = coords.technionIsrael;
       const rated = {
@@ -2352,7 +2424,7 @@ describe('#Server Tests', () => {
         generalRating: 2,
       };
       request(app)
-        .get(`/reviews/${tech[0]}/${tech[1]}`)
+        .get(`/reviews/aggregated/${tech[0]}/${tech[1]}`)
         .expect(OK)
         .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
@@ -2374,7 +2446,7 @@ describe('#Server Tests', () => {
         generalRating: (2 / 1.5),
       };
       request(app)
-        .get(`/reviews/${dor[0]}/${dor[1]}`)
+        .get(`/reviews/aggregated/${dor[0]}/${dor[1]}`)
         .expect(OK)
         .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated);
@@ -2383,7 +2455,7 @@ describe('#Server Tests', () => {
     });
   });
 
-  describe('GET /reviews/:long/:lat', () => {
+  describe('GET /reviews/aggregated/:long/:lat', () => {
     it('should return the new accurate review after updating old reviews', (done) => {
       const {
         westWall
@@ -2397,7 +2469,7 @@ describe('#Server Tests', () => {
         generalRating: 2,
       };
       request(app)
-        .get(`/reviews/${westWall[0]}/${westWall[1]}`)
+        .get(`/reviews/aggregated/${westWall[0]}/${westWall[1]}`)
         .expect(OK)
         .expect((res) => {
           expect(res.body.r.ratedCharacteristics).toMatchObject(rated);

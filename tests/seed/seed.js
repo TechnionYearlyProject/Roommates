@@ -20,6 +20,7 @@ const user7Id = new ObjectID();
 
 const apartment1Id = new ObjectID();
 const apartment2Id = new ObjectID();
+const apartment3Id = new ObjectID();
 
 const review1Id = new ObjectID();
 const review2Id = new ObjectID();
@@ -35,7 +36,7 @@ const apartment1User2VisitId = new ObjectID();
 const user1Notification1Id = new ObjectID();
 
 const group1Id = new ObjectID();
-// const group2Id = new ObjectID();
+const group2Id = new ObjectID();
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
@@ -80,6 +81,7 @@ const apartment1 = new Apartment({
   }
   ],
   //comments
+   groups: []
 });
 
 const apartment2 = new Apartment({
@@ -109,6 +111,54 @@ const apartment2 = new Apartment({
   requiredRoommates: 1,
   totalRoommates: 2,
   //comments
+    groups: []
+});
+
+const apartment3 = new Apartment({
+    _id: apartment3Id,
+    _createdBy: new ObjectID(),
+    createdAt: Date.now(),
+    price: 1,
+    _interested:[user2Id],
+    entranceDate: new Date('12-29-2019').getTime(),
+    location: {
+        address: {
+            state: 'israel',
+            city: 'Tel-Aviv',
+            street: 'Rothschild',
+            number: 23
+            //apartmentNumber:
+        },
+        geolocation: [34.775313, 32.065887]
+    },
+    numberOfRooms: 3,
+    floor: 1,
+    totalFloors: 5,
+    //area:
+    //images:
+    //description:
+    tags: [0, 7],
+    requiredRoommates: 1,
+    totalRoommates: 2,
+    //comments
+    groups: [{
+        _id: group2Id,
+        members: [user1Id],
+        memberPayed: [0],
+        createdAt: new Date('2018-04-04').getTime(),
+        apartment: [apartment1Id],
+        score: 1,
+        status: 2, //accepted
+    },
+    {
+        _id: group1Id,
+        members: [user2Id, user3Id],
+        memberPayed: [0],
+        createdAt: new Date('2018-04-04').getTime(),
+        apartment: [apartment1Id],
+        score: 1,
+        status: 2, //accepted
+    }]
 });
 
 const notPublishedApartment = {
@@ -516,27 +566,28 @@ const notPublishedReview2 = {
 
 const group1 = {
   _id: group1Id,
-  creator: user1Id,
   members: [user1Id, user2Id, user3Id],
-  apartment: [apartment1Id],
+  memberPayed: [0, 0, 0],
   createdAt: new Date('2018-05-05').getTime(),
+  apartment: [apartment1Id],
   score: 0,
   status: 0, //pending
 };
 
 const group2 = {
-  _id: group1Id,
-  creator: user3Id,
-  members: [user3Id, user2Id],
-  apartment: [apartment2Id],
-  createdAt: new Date('2018-05-05').getTime(),
-  score: 0,
-  status: 1, // canceled
+  _id: group2Id,
+  members: [user1Id],
+  memberPayed: [0],
+  createdAt: new Date('2018-04-04').getTime(),
+  apartment: [apartment1Id],
+  score: 1,
+  status: 2, //accepted
 };
 
 const apartments = [
   apartment1,
-  apartment2
+  apartment2,
+  apartment3
 ];
 
 const users = [
@@ -643,5 +694,7 @@ module.exports = {
   notRegisteredUser,
   user1VerificationToken,
   user2VerificationToken,
-  getForgotPasswordToken
+  getForgotPasswordToken,
+  review1Id,
+  review2Id
 };

@@ -44,7 +44,7 @@ describe('Apartment Tests', () => {
     it('should return all apartments', (done) => {
       Apartment.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 150)
         .then((result) => {
-          expect(result.length).toBe(2);
+          expect(result.length).toBe(3);
           done();
         }).catch(done);
     });
