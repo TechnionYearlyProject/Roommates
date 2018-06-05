@@ -247,7 +247,7 @@ UserSchema.statics.toJSON = function (user) {
 };
 
 /**
- * @author: Alon Talmor 
+ * @author: Alon Talmor
  * @date: 6/5/18
  *
  * checks if all the id recieve is a valid user id,

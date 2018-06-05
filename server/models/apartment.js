@@ -353,7 +353,7 @@ ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
 };
 
 /**
- * @author:
+ * @author: Alon Talmor
  * @date: 6/5/18
  *
  * @returns: true or false whether it is time to create a group.
@@ -375,7 +375,7 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
 
   apartment._interested.push(_interestedID);
   if (apartment.isTimeToOpenGroup()) {
-    ApartmentSchema.methods.createGroup(_interestedID, apartment);
+    apartment.createGroup(_interestedID);
   }
 };
 

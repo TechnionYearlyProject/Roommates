@@ -320,6 +320,30 @@ export default new Vuex.Store({
         return response.data.review;
       });
     },
+    /**
+     * @author: Alon Talmor
+     * @date: 6/5/18
+     * @param: params: object of {id} which specified the apartment id.
+     */
+    fetchGroups(context, params) {
+      return axios.get(`http://localhost:3000/apartments/${params.id}/groups`)
+      .then((response) => {
+        return response.data.groups;
+      });
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 6/5/18
+     * @param: params: object of {id} - the id of the apartment.
+     * @param: payload: Array of {id} - the ids array of the group members.
+     */
+    addGroup(context, { params, payload }) {
+      console.log(payload);
+      return axios.post(`http://localhost:3000/apartments/${params.id}/groups`, payload)
+      .then((response) => {
+        return response.data.groups;
+      });
+    }
   },
   plugins: [vuexPersistence.plugin]
 });

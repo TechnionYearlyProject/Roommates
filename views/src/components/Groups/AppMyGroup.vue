@@ -129,10 +129,7 @@ export default {
       }
     },
     submit() {
-      this.$emit("submit", {
-        members: this.myGroup,
-        status: Array(this.myGroup.length).fill("not-set")
-      });
+      this.$emit("submit", this.myGroup);
       this.clearMyGroup();
     }
   },
