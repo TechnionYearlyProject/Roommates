@@ -247,6 +247,28 @@ UserSchema.statics.toJSON = function (user) {
 };
 
 /**
+ * @author: Alon Talmor 
+ * @date: 6/5/18
+ *
+ * checks if all the id recieve is a valid user id,
+ *
+ * @param {String or Array of String} id - the id to test.
+ * @returns Promise Object with the boolean result (true or false).
+ */
+UserSchema.statics.isValidId = function (id) {
+  const User = this;
+
+  const ids = _.castArray(id);
+  return User.find({ _id: { $in: ids } })
+    .then((users) => {
+      if (users.length !== ids.length) {
+        return false;
+      }
+      return true;
+    });
+};
+
+/**
  * express uses this function when sending an object over HTTP requests.
  *
  * we don't want all of a user properties to be exposed.

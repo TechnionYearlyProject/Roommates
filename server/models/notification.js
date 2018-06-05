@@ -16,8 +16,6 @@
 const _ = require('lodash');
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
 const arrayFunctions = require('../helpers/arrayFunctions');
 
 
@@ -53,7 +51,6 @@ const NotificationSchema = new mongoose.Schema({
     required: true
   },
 });
-
 
 
 /**
@@ -113,7 +110,7 @@ const getNotifiedObjectsIDs = (notification) => notification._notifiedObjectsIds
  */
 const containsNotifiedObjectIDs = (notification, _notifiedObjectIDsArr) => {
   const temp = arrayFunctions.unionArrays(notification._notifiedObjectsIds, _notifiedObjectIDsArr);
-  return temp.length == notification._notifiedObjectsIds.length;
+  return temp.length === notification._notifiedObjectsIds.length;
 }
 /**
  * @author: Or Abramovich

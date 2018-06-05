@@ -8,6 +8,8 @@ const PASSWORD_RESET_FAILURE    = 500000;
 const MULTI_RATING              = 600000;
 const IMAGE_UPLOAD_FAILURE      = 666000;
 const APARTMENT_NOT_FOUND       = 160000;
+const GROUP_CREATION_FAILED     = 160001;
+const USER_NOT_FOUND            = 170000;
 
 const Error = function (code, message) {
   return {
@@ -25,5 +27,7 @@ module.exports = {
   PasswordResetFailure: Error(PASSWORD_RESET_FAILURE, 'Couldn\'t complete the reset password action.'),
   multiRating: Error(MULTI_RATING, 'User tried to rate 2 adjacent locations.'),
   imageUploadFailure: Error(IMAGE_UPLOAD_FAILURE, 'Error occurred while trying to upload images.'),
-  apartmentNotFound: Error(APARTMENT_NOT_FOUND, 'The apartment was not found.')
+  apartmentNotFound: Error(APARTMENT_NOT_FOUND, 'The apartment was not found.'),
+  groupCreationFailed: Error(GROUP_CREATION_FAILED, 'Couldn\'t create new group for the apartment.'),
+  userNotFound: Error(USER_NOT_FOUND, 'Couldn\'t find user.')
 };

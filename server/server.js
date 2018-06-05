@@ -1382,7 +1382,7 @@ app.delete('/reviews/:id', authenticate, async (req, res) => {
  *
  * Get apartment's suggested groups by apartment-id
  */
-app.get('/apartments/:id/groups', authenticate, async (req, res) => {
+app.get('/apartments/:id/groups', async (req, res) => {
   try {
     const apartment = await Apartment.findById(req.params.id);
     const { groups } = apartment;
@@ -1394,6 +1394,35 @@ app.get('/apartments/:id/groups', authenticate, async (req, res) => {
 
 /**
  * @author: Alon Talmor
+ * @date: 6/5/18
+ *
+ * Create a new group.
+ * The request should include:
+ * - String id (which should be a valid ObjectId).
+ * or
+ * - list of String ids (which should be valid ObjectId's)
+ * The route will return the updated apartment (with the added group).
+ * The route might fail if creating the new group failed.
+ */
+app.post('/apartments/:id/groups', authenticate, async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['id']);
+
+    // check that we receive only valid ids
+    const isValidId = await User.isValidId(body.id);
+    if (!isValidId) {
+      return res.status(BAD_REQUEST).send(errors.userNotFound);
+    }
+    // now we know that all ids are valid so we can try to add this group
+    let apartment = await Apartment.findById(req.params.id);
+    apartment = await apartment.createGroup(body.id);
+    return res.send({ apartment });
+  } catch (error) {
+    return res.status(BAD_REQUEST).send(error);
+  }
+});
+/**
+ * @author: Alon Talmor
  * @date: 28/3/18
  *
  * This is considered as the "default route".
@@ -1402,7 +1431,7 @@ app.get('/apartments/:id/groups', authenticate, async (req, res) => {
  * Nothing special here, it only returns an 404 HTTP respond.
  *
  * TODO: Add a test that routes to an undefined route (such as "/undefined/:-)").
- * Expect to recieve 404 respond.
+ * Expect to receive 404 respond.
  */
 app.get('*', (req, res) => {
   res.status(NOT_FOUND).send('404');

@@ -19,13 +19,8 @@ const {
   ObjectID
 } = require('mongodb');
 const visit = require('./visit');
-const {
-    Group
-} = require('./group');
-const {
-    User
-} = require('./user');
-
+const { Group } = require('./group');
+const errors = require('../errors');
 
 const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -184,32 +179,7 @@ const ApartmentSchema = new mongoose.Schema({
       }
     },
   }],
-  groups: [{
-      members: {
-          type: [mongoose.Schema.Types.ObjectId],
-          required: true
-      },
-      memberPayed: {
-          type: [Number],
-          required: true
-      },
-      createdAt: {
-          type: Number,
-          required: true
-      },
-      score: {
-          type: Number,
-          required: false
-      },
-      status: {
-          type: Number,
-          validate: {
-              validator: (value) => (value === value),
-              message: '{VALUE} is not a supported group status Id'
-          },
-          required: true
-      },
-  }]
+  groups: [Group]
 });
 
 /**
@@ -383,6 +353,18 @@ ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
 };
 
 /**
+ * @author:
+ * @date: 6/5/18
+ *
+ * @returns: true or false whether it is time to create a group.
+ */
+ApartmentSchema.methods.isTimeToOpenGroup = function () {
+  const apartment = this;
+
+  return apartment._interested.length >= apartment.requiredRoommates;
+};
+
+/**
  * add an interested user to the apartment's interested list.
  *
  * @param {ObjectId} _interestedID
@@ -392,43 +374,52 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-  if (apartment._interested.length >= apartment.requiredRoommates) {
-    const group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment);
-    apartment.groups.push(group);
+  if (apartment.isTimeToOpenGroup()) {
+    ApartmentSchema.methods.createGroup(_interestedID, apartment);
   }
-
-
-  return apartment.save();
 };
 
-ApartmentSchema.methods.createUserGroup = function (_interestedID, apartment) {
-  // const user = User.find({_id: {_interestedID}});
-  // const interested = user.getBestMatchingUsers(
-  //     apartment._interested
-  // );
-  const interested = apartment._interested.slice(0, apartment.requiredRoommates - 1);
-  const statuses = new Array(apartment.requiredRoommates).fill(0);
-
-  if (!interested.includes(_interestedID)) {
-    interested[0] = _interestedID;
-  }
-  // create new group
-  const group = new Group({
-    members: interested,
-    memberPayed: statuses,
-    apartment: apartment._id,
-    createdAt: Date.now(),
-    score: 7,
-    status: 0
-  });
-
-  return group;
-};
-
-ApartmentSchema.methods.numberOfGroups = function () {
+/**
+ * @author: Omri Huller
+ * @updatedBy: Alon Talmor
+ * @date:6/5/18
+ *
+ * Created a new group.
+ * - This methods creates a group by receiving a list of ids.
+ * - if the received object is not a list then it creates the a group that best
+ * matches the id received as parameter.
+ * The candidates for matching are other users which are also interested in the apartment.
+ *
+ * @param: List of ObjectIDs that will be the members of the new group
+ *         or String of ObjectID of the user to create a group by best matching
+ * @returns: Promise containing the new updated apartment object.
+ */
+ApartmentSchema.methods.createGroup = function (id) {
   const apartment = this;
 
-  return apartment.groups.length;
+  let members;
+  // if (!interested.includes(_interestedID)) {
+  //   interested[0] = _interestedID;
+  // }
+  if (_.isArray(id) && id.every($ => ObjectID.isValid($))) {
+    if (id.length !== apartment.requiredRoommates) {
+      return Promise.reject(errors.groupCreationFailed);
+    }
+    members = id;
+  } else if (_.isString(id) && ObjectID.isValid(id)) {
+    members = apartment._interested.slice(0, apartment.requiredRoommates);
+    members[0] = id;
+  } else {
+    return Promise.reject(errors.groupCreationFailed);
+  }
+  members = members.map($ => ({ id: $ }));
+  // create new group
+  const group = {
+    members,
+    _apartmentId: apartment._id,
+  };
+  apartment.groups.push(group);
+  return apartment.save();
 };
 
 /**
@@ -447,6 +438,7 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   if (interestedIDIndex > -1) {
     apartment._interested.splice(interestedIDIndex, 1);
   }
+
   function checkGroup(group) {
     let exists = false;
     for (let i = 0; i < group.members.length; i++) {
@@ -689,11 +681,11 @@ ApartmentSchema.methods.updateVisitProps = function (
   }
 
   if (!apartment.isLegalVisitChange(
-    apartment.visits[visitIndex],
-    _offeringUserID,
-    propNames,
-    propValues
-  )) {
+      apartment.visits[visitIndex],
+      _offeringUserID,
+      propNames,
+      propValues
+    )) {
     return Promise.reject();
   }
 
@@ -726,10 +718,10 @@ ApartmentSchema.methods.isLegalVisitChange = function (
   const apartment = this;
 
   if (!visit.canModifyVisit(
-    apartment._createdBy,
-    visitData._askedBy,
-    _offeringUserID
-  )) {
+      apartment._createdBy,
+      visitData._askedBy,
+      _offeringUserID
+    )) {
     return false;
   }
 
