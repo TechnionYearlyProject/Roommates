@@ -1408,7 +1408,7 @@ app.post('/apartments/:id/groups', authenticate, async (req, res) => {
   try {
     const body = _.pick(req.body, ['id']);
 
-    // check that we receive only valid ids
+    // check that we received only valid ids
     const isValidId = await User.isValidId(body.id);
     if (!isValidId) {
       return res.status(BAD_REQUEST).send(errors.userNotFound);
