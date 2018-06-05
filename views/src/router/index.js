@@ -70,6 +70,7 @@ const router = new Router({
     {
       path: '/apartments/:id',
       name: 'AppApartmentPage',
+      props: true,
       component: AppApartmentPage,
     },
     {
