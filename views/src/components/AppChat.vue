@@ -65,7 +65,7 @@
                         </div>
                     </v-flex>
                     <v-flex class="message-field-container">
-                        <v-text-field hide-details multi-line auto-grow :rows="1" label="Write a message..." append-icon="send" :append-icon-cb="sendMessage" autofocus v-model="message" @keyup.native.enter.exact="sendMessage" />
+                        <v-text-field hide-details multi-line auto-grow :rows="1" label="Write a message..." append-icon="send" :append-icon-cb="sendMessage" autofocus v-model="message" @keypress.native.enter.exact.prevent="sendMessage" />
                     </v-flex>
                 </v-layout>
             </v-flex>
