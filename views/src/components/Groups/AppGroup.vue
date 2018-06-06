@@ -68,7 +68,7 @@
         </div>
         <div v-else>
           <div>
-            <v-btn slot="activator" block outline @click.stop="optInDialog = true" color="success" class="pa-0 ma-0 mb-1" :disabled="disabled">
+            <v-btn slot="activator" block outline @click.stop="optInDialog = true" color="success" class="pa-0 ma-0 mb-1" :disabled="disabled" :loading="loading">
                 <v-icon>check</v-icon>
                 Count me in !
             </v-btn>
@@ -85,7 +85,7 @@
             </v-dialog>  
           </div>
           <div>
-            <v-btn block outline @click.stop="optOutDialog = true" color="error" class="pa-0 ma-0" :disabled="disabled">
+            <v-btn block outline @click.stop="optOutDialog = true" color="error" class="pa-0 ma-0" :disabled="disabled" :loading="loading">
               <v-icon>close</v-icon>
               Not a chance
             </v-btn>
@@ -121,6 +121,10 @@ export default {
     value: {
       required: true
     },
+    apartmentId: {
+      type: String,
+      required: true
+    },
     groupTitle: {
       type: String,
       default: "Group"
@@ -129,6 +133,7 @@ export default {
   data() {
     return {
       disabled: false,
+      loading: false,
       optInDialog: false,
       optOutDialog: false,
       loaded: false,
@@ -147,15 +152,32 @@ export default {
       this.showSnackbar('Thank you for voting!')
     },
     optOut() {
-      this.disabled = true;
-      this.value.members[this.myIndex].status = this.DECLINED;
-      this.showThankYouMessage();
+      this.loading = true;
+      this.$store.dispatch('updateGroupStatus', {
+         params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.DECLINED } 
+        })
+      .then(() => {
+        this.disabled = true;
+        this.value.members[this.myIndex].status = this.DECLINED;
+        this.value.members.splice();
+        this.showThankYouMessage();
+      })
+      .catch(error => console.log(error))
+      .then(() => this.loading = false);
     },
     optIn() {
-      this.disabled = true;
-      this.value.members[this.myIndex].status = this.ACCEPTED;
-      this.value.members.splice();
-      this.showThankYouMessage();
+      this.loading = true;
+      this.$store.dispatch('updateGroupStatus', {
+        params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.ACCEPTED } 
+        })
+      .then(() => {
+        this.disabled = true;
+        this.value.members[this.myIndex].status = this.ACCEPTED;
+        this.value.members.splice();
+        this.showThankYouMessage();
+      })
+      .catch(error => console.log(error))
+      .then(() => this.loading = false);
     },
     color(status) {
       let color;

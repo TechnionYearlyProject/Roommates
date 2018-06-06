@@ -11,7 +11,7 @@
         <v-layout wrap>
             <div v-if="groups.length === 0" class="pb-4 pl-3 body-1">There are no groups</div>
             <v-flex v-else xs12 sm6 md4 v-for="(g,i) in groups" :key="`group-${i}`">
-                <app-group v-model="groups[i]" :group-title="`Group #${i+1}`"></app-group>
+                <app-group v-model="groups[i]" :apartmentId="apartmentId" :group-title="`Group #${i+1}`"></app-group>
             </v-flex>
         </v-layout>
       </v-container>
@@ -61,11 +61,9 @@ export default {
     submit(group) {
       this.showLoading();
       this.$store.dispatch('addGroup', { params: { id: this.apartmentId }, payload: { id: group } })
-      .then(() => {
-        this.groups.push({
-          members: group,
-          status: Array(group.length).fill("not-set")
-        });
+      .then((apartment) => {
+        console.log(apartment)
+        this.groups.push(apartment.groups[apartment.groups.length - 1]);
       })
       .catch((error) => console.log(error))
       .then(() => this.hideLoading());
