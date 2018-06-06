@@ -1,27 +1,35 @@
 <template>
     <v-container fill-height class="chat-container">
-        <v-layout height="100%" width="100%" class="card" style="padding: 10px;">
+        <v-layout height="100%" width="100%" class="card">
             <v-flex xs4 class="side-panel">
-                <div>
-                    <v-text-field hide-details v-model="searchInput" label="Search contact" append-icon="search" />
-                </div>
-                <div>
-                    <ul>
-                        <li v-for="(contact, contactName) in contacts"
-                            :class="{ active: activeContact.name === contactName, contact: true }"
-                            @click="activeContactIndex = getIndexOfContact(contactName)">
-                            <v-layout>
-                                <div class="contact-avatar">
-                                    <app-avatar :name="contactName" :size="35" />
-                                </div>
-                                <v-flex>
-                                    {{ contactName }}<br />
-                                    {{ contact.conversations[contact.conversations.length - 1].content }}
-                                </v-flex>
-                            </v-layout>
-                        </li>
-                    </ul>
-                </div>
+                <v-layout column>
+                    <v-flex class="search-contact-container">
+                        <v-text-field hide-details v-model="searchInput" label="Search contact" append-icon="search" />
+                    </v-flex>
+                    <v-flex class="contacts-container">
+                        <div class="contacts-scroll">
+                            <ul>
+                                <li v-for="(contact, contactName) in contacts" :key="contactName"
+                                    :class="{ active: activeContact.name === contactName, contact: true }"
+                                    @click="activeContactIndex = getIndexOfContact(contactName)">
+                                    <v-layout>
+                                        <div class="contact-avatar">
+                                            <app-avatar :name="contactName" :size="35" />
+                                        </div>
+                                        <v-flex>
+                                            <div class="contact-name">
+                                                {{ contactName }}
+                                            </div><br style="clear: both;" />
+                                            <div class="contact-last-message">
+                                                {{ contact.conversations[contact.conversations.length - 1].content }}
+                                            </div>
+                                        </v-flex>
+                                    </v-layout>
+                                </li>
+                            </ul>
+                        </div>
+                    </v-flex>
+                </v-layout>
             </v-flex>
             <v-flex xs12>
                 <v-layout column>
@@ -31,8 +39,10 @@
                                 <app-avatar :name="activeContact.name" />
                             </div>
                             <v-flex>
-                                {{ activeContact.name }}<br />
-                                {{ activeContact.active ? 'Active' : 'Not Active' }}
+                                {{ activeContact.name }}
+                                <div class="current-contact-status">
+                                    {{ activeContact.active ? 'Active' : 'Not Active' }}
+                                </div>
                             </v-flex>
                         </v-layout>
                     </v-flex>
@@ -54,7 +64,7 @@
                             </ul>
                         </div>
                     </v-flex>
-                    <v-flex>
+                    <v-flex class="message-field-container">
                         <v-text-field hide-details multi-line auto-grow :rows="1" label="Write a message..." append-icon="send" :append-icon-cb="sendMessage" autofocus v-model="message" @keyup.native.enter.exact="sendMessage" />
                     </v-flex>
                 </v-layout>
@@ -187,17 +197,41 @@
         padding: 0;
     }
 
+    .side-panel {
+        border-right: solid 1px #ddd;
+    }
+
+    .search-contact-container {
+        padding: 0 10px 10px;
+        border-bottom: solid 1px #ddd;
+    }
+
+    .contacts-container {
+        position: relative;
+        height: 100%;
+    }
+
+    .contacts-scroll {
+        overflow-y: scroll;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
     .contact {
         cursor: pointer;
         padding: 10px;
     }
 
     .contact:hover {
-        background-color: #aaa;
+        background-color: #e8eaf56c;
     }
 
     .contact.active {
-        background-color: gray;
+        background-color: #e8eaf5;
     }
 
     .contact-avatar, .contact-avatar ~ * {
@@ -220,12 +254,45 @@
         display: inline-block;
     }
 
+    .contact-avatar + div {
+        position: relative;
+    }
+
+    .contact-name, .contact-last-message {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: absolute;
+        width: 100%;
+    }
+
+    .contact-last-message {
+        opacity: 0.6;
+        font-size: 13px;
+    }
+
+    .current-contact {
+        padding: 6px;
+        border-bottom: solid 1px #ddd;
+    }
+
     .current-contact > * {
         vertical-align: middle;
+        padding-top: 5px;
     }
 
     .current-contact-avatar {
         margin: 0 10px;
+        padding: 0;
+    }
+
+    .current-contact-status {
+        font-size: 13px;
+        opacity: 0.7;
+    }
+
+    .current-contact, .search-contact-container, .message-field-container {
+        background-color: #e9ebf55c;
     }
 
     .messages-outer-container {
@@ -288,9 +355,22 @@
         width: 100%;
         padding: 15px;
         text-align: left;
+        background-color: #e8eaf56c;
+        min-width: 100px;
     }
 
     .message-container:not(.incoming) .message-content {
-        background-color: #64b5e0;
+        background-color: #33a1ce;
+        color: #fff;
+    }
+
+    .message-container.incoming .message-data-content {
+        margin-left: 0;
+        margin-right: 15px;
+    }
+
+    .message-field-container {
+        padding: 0 10px 10px;
+        border-top: solid 1px #ddd;
     }
 </style>
