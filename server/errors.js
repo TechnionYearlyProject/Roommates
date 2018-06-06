@@ -9,6 +9,8 @@ const MULTI_RATING              = 600000;
 const IMAGE_UPLOAD_FAILURE      = 666000;
 const APARTMENT_NOT_FOUND       = 160000;
 const GROUP_CREATION_FAILED     = 160001;
+const GROUP_NOT_FOUND           = 160002;
+const GROUP_MEMBER_NOT_FOUND    = 160003;
 const USER_NOT_FOUND            = 170000;
 
 const Error = function (code, message) {
@@ -29,5 +31,7 @@ module.exports = {
   imageUploadFailure: Error(IMAGE_UPLOAD_FAILURE, 'Error occurred while trying to upload images.'),
   apartmentNotFound: Error(APARTMENT_NOT_FOUND, 'The apartment was not found.'),
   groupCreationFailed: Error(GROUP_CREATION_FAILED, 'Couldn\'t create new group for the apartment.'),
-  userNotFound: Error(USER_NOT_FOUND, 'Couldn\'t find user.')
+  groupNotFound: Error(GROUP_NOT_FOUND, 'The group was not found.'),
+  groupMemberNotFound: Error(GROUP_MEMBER_NOT_FOUND, 'The group member was not found.'),
+  userNotFound: Error(USER_NOT_FOUND, 'The user was not found.')
 };

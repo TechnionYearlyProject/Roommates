@@ -1,16 +1,14 @@
 const expect = require('expect');
 const geolib = require('geolib');
-const { ObjectID } = require('mongodb');
 
-const { Review } = require('../../../server/models/review');
 const {
-    reviews,
-    coords,
-    populateApartments,
-    populateUsers,
-    populateReviews,
-    apartments,
-    users
+  Review
+} = require('../../../server/models/review');
+const {
+  coords,
+  populateApartments,
+  populateUsers,
+  populateReviews,  
 } = require('../../seed/seed');
 
 describe('Review Tests', () => {
@@ -28,20 +26,17 @@ describe('Review Tests', () => {
     });
 
     it('should return apartments near technion', (done) => {
-        Review.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 1)
+      Review.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 1)
         .then((result) => {
           expect(result.length).toBe(2);
           result.forEach((review) => {
-            expect(geolib.getDistance(
-              {
-                longitude: review.geolocation[0],
-                latitude: review.geolocation[1]
-              },
-              {
-                longitude: coords.technionIsrael[0],
-                latitude: coords.technionIsrael[1]
-              }
-            )).toBeLessThanOrEqual(1000);
+            expect(geolib.getDistance({
+              longitude: review.geolocation[0],
+              latitude: review.geolocation[1]
+            }, {
+              longitude: coords.technionIsrael[0],
+              latitude: coords.technionIsrael[1]
+            })).toBeLessThanOrEqual(1000);
           });
           done();
         }).catch(done);
@@ -54,7 +49,5 @@ describe('Review Tests', () => {
           done();
         }).catch(done);
     });
-
   });
 });
-

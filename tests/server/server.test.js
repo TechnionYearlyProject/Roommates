@@ -35,7 +35,7 @@ const {
 const {
   buildPrivateMessageJSON
 } = require('../../server/models/privateMessage');
-
+const { memberStatus } = require('../../server/models/group');
 
 const {
   getVisitStatusCodes,
@@ -2671,6 +2671,70 @@ describe('#Server Tests', () => {
         .set(XAUTH, users[1].tokens[0].token) // need to be authorized
         .send({ id })
         .expect(BAD_REQUEST)
+        .end(done);
+    });
+  });
+
+  describe('#PATCH /apartments/:id/groups', () => {
+    it('should updated the member\'s status', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = apartments[2].groups[1]._id.toHexString();
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups`)
+        .set(XAUTH, users[1].tokens[0].token) // need to be authorized
+        .send({ id: groupId, status: memberStatus.ACCEPTED })
+        .expect(OK)
+        .expect((res) => {
+          expect((res.body.apartment.groups[1].members.find(m => m.id === (users[1]._id.toHexString()))).status).toBe(memberStatus.ACCEPTED);
+        })
+        .end((error) => {
+          if (error) {
+            return done(error);
+          }
+          return Apartment.findById(apartmentId)
+            .then((apartment) => {
+              expect((apartment.groups[1].members.find(m => m.id.equals(users[1]._id))).status).toBe(memberStatus.ACCEPTED);
+              done();
+            });
+        })
+    });
+    it('should fail when member does not exist in group', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = apartments[2].groups[0]._id.toHexString();
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups`)
+        .set(XAUTH, users[1].tokens[0].token) // need to be authorized
+        .send({ id: groupId, status: memberStatus.ACCEPTED })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+    it('should fail when group does not exist in apartment', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = new ObjectID().toHexString();
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups`)
+        .set(XAUTH, users[1].tokens[0].token) // need to be authorized
+        .send({ id: groupId, status: memberStatus.ACCEPTED })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+    it('should fail when apartment does not exist', (done) => {
+      const apartmentId = new ObjectID().toHexString();
+      const groupId = apartments[2].groups[0]._id.toHexString();
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups`)
+        .set(XAUTH, users[1].tokens[0].token) // need to be authorized
+        .send({ id: groupId, status: memberStatus.ACCEPTED })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+    it('should fail when not authorized', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = apartments[2].groups[1]._id.toHexString();
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups`)
+        .send({ id: groupId, status: memberStatus.ACCEPTED })
+        .expect(UNAUTHORIZED)
         .end(done);
     });
   });

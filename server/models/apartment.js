@@ -423,6 +423,30 @@ ApartmentSchema.methods.createGroup = function (id) {
 };
 
 /**
+ * @author: Alon Talmor
+ * @date: 6/5/18
+ *
+ * This methods finds the appropriate group and updates the status of the specified member.
+ * Properties available:
+ * @param groupId - the id of the group to update.
+ * @param memberId - the id of the member to update.
+ * @param status - the new status of the member.
+ * @returns Promise object which includes the updated apartment
+ * @throws groupNotFound exception if the group does not exist.
+ * @throws userNotFound exception if the user in not a member of the group.
+ */
+ApartmentSchema.methods.updateMemberStatus = function (groupId, memberId, status) {
+  const apartment = this;
+
+  const group = apartment.groups.id(groupId);
+  if (!group) {
+    return Promise.reject(errors.groupNotFound);
+  }
+  group.updateStatus(memberId, status);
+  return apartment.save();
+};
+
+/**
  * remove the interested user from the apartment's interested list.
  *
  * @param {ObjectId} _interestedID

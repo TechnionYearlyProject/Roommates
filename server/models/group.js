@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const mongoose = require('mongoose');
 
+const errors = require('../errors');
+
 const groupStatus = {
   PENDING: 1,
   DECLINED: 2,
@@ -8,7 +10,7 @@ const groupStatus = {
   COMPLETED: 4
 };
 
-const userStatus = {
+const memberStatus = {
   PENDING: 1,
   ACCEPTED: 2,
   DECLINED: 3,
@@ -25,11 +27,11 @@ const GroupSchema = new mongoose.Schema({
     status: {
       type: Number,
       validate: {
-        validator: (value) => (_.includes(userStatus, value)),
+        validator: (value) => (_.includes(memberStatus, value)),
         message: '{VALUE} is not a supported User Status'
       },
       required: true,
-      default: userStatus.PENDING
+      default: memberStatus.PENDING
     }
   }],
   createdAt: {
@@ -57,10 +59,46 @@ const GroupSchema = new mongoose.Schema({
   }
 });
 
+/**
+ * @author: Alon Talmor
+ * @date: 7/5/18
+ * Updated the status of the group according to the other group members.
+ * This methods puts some invariant on the schema.
+ */
+GroupSchema.pre('save', function (next) {
+  const group = this;
+  // check whether anyone declined - then set the group status to declined
+  if (group.members.some($ => $.status === memberStatus.DECLINED)) {
+    group.status = groupStatus.DECLINED;
+  } // eslint-disable-line
+  // check whether all members accepted - then set the froup status to accepted
+  else if (group.members.every($ => $.status === memberStatus.ACCEPTED)) {
+    group.status = groupStatus.ACCEPTED;
+  }
+  next();
+});
+
+/**
+ * @author: Alon Talmor
+ * @date: 6/5/18
+ * updated the status of the specified member id.
+ *
+ */
+GroupSchema.methods.updateStatus = function (memberId, status) {
+  const group = this;
+
+  for (let i = 0; i < group.members.length; i++) {
+    if (group.members[i].id.equals(memberId)) {
+      group.members[i].status = status;
+      return;
+    }
+  }
+  throw errors.groupMemberNotFound;
+};
 // const Group = mongoose.model('Group', GroupSchema);
 
 module.exports = {
   Group: GroupSchema,
   groupStatus,
-  userStatus
+  memberStatus
 };

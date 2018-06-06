@@ -161,8 +161,9 @@ const apartment3 = new Apartment({
     _apartmentId: apartment3Id,
   },
   {
-    members: [{ id: user2Id }, { id: user3Id }],
+    members: [{ id: user3Id }, { id: user2Id }],
     _apartmentId: apartment3Id,
+    _id: new ObjectID()
   }]
 });
 

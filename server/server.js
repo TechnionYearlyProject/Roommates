@@ -1421,6 +1421,30 @@ app.post('/apartments/:id/groups', authenticate, async (req, res) => {
     return res.status(BAD_REQUEST).send(error);
   }
 });
+
+/**
+ * @author: Alon Talmor
+ * @date: 6/5/18
+ *
+ * Update a group.
+ * The initial version of this route will only support updating of the member status.
+ * The body should include the id of the group and the new status in the
+ * following way: {id, status}. A user is allowed to update ONLY his own status.
+ * Returns the updated apartment.
+ */
+app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
+  const body = _.pick(req.body, ['id', 'status']);
+  try {
+    let apartment = await Apartment.findById(req.params.id);
+    if (!apartment) {
+      return res.status(BAD_REQUEST).send(errors.apartmentNotFound);
+    }
+    apartment = await apartment.updateMemberStatus(body.id, req.user._id, body.status);
+    res.send({ apartment });
+  } catch (error) {
+    res.status(BAD_REQUEST).send(error);
+  }
+});
 /**
  * @author: Alon Talmor
  * @date: 28/3/18
