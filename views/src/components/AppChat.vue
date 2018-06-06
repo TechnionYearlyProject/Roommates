@@ -33,7 +33,7 @@
                         </ul>
                     </v-flex>
                     <v-flex>
-                        <v-text-field label="Write a message..." v-model="message" @keyup.native.enter="sendMessage" />
+                        <v-text-field label="Write a message..." autofocus v-model="message" @keyup.native.enter="sendMessage" />
                     </v-flex>
                 </v-layout>
             </v-flex>
