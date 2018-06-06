@@ -1,5 +1,5 @@
 <template>
-    <v-container fill-height class="chat-container">
+    <v-container fluid fill-height class="chat-container">
         <v-layout height="100%" width="100%" class="card">
             <v-flex xs4 class="side-panel">
                 <v-layout column>
