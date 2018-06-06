@@ -9,6 +9,7 @@ import AppPublishApartment from '@/components/AppPublishApartment';
 import AppApartmentPage from '@/components/AppApartmentPage'
 import AppReviews from '@/components/AppReviews';
 import AppPayment from '@/components/AppPayment';
+import AppChat from '@/components/AppChat';
 import store from '../store';
 import HelloWorld from '@/components/HelloWorld';
 
@@ -81,6 +82,11 @@ const router = new Router({
       path: '/payment',
       name: 'AppPayment',
       component: AppPayment
+    },
+    {
+      path: '/chat',
+      name: 'AppChat',
+      component: AppChat
     }
   ],
   scrollBehavior() {
