@@ -103,6 +103,7 @@ const UserSchema = new mongoose.Schema({
     minlength: 5,
     trim: true,
     unique: true,
+    lowercase: true,
     validate: {
       validator: value => validator.isEmail(value),
       message: '{VALUE} is not a valid email'
@@ -177,6 +178,7 @@ UserSchema.pre('save', function (next) {
  */
 UserSchema.statics.findByCredentials = function (email, password) {
   const User = this;
+  email = email.toLowerCase();
 
   return User.findOne({ email }).then(user => {
     if (!user) {
