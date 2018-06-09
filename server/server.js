@@ -1398,9 +1398,11 @@ app.get('/apartments/:id/groups', async (req, res) => {
  *
  * Create a new group.
  * The request should include:
- * - String id (which should be a valid ObjectId).
+ * - String id (which should be a valid ObjectId) - in this case the route will try to
+ * build the best group for the id.
  * or
- * - list of String ids (which should be valid ObjectId's)
+ * - list of String ids (which should be valid ObjectId's) - in this case the route will
+ * try to build a group based on the ids in the list
  * The route will return the updated apartment (with the added group).
  * The route might fail if creating the new group failed.
  */
@@ -1415,7 +1417,18 @@ app.post('/apartments/:id/groups', authenticate, async (req, res) => {
     }
     // now we know that all ids are valid so we can try to add this group
     let apartment = await Apartment.findById(req.params.id);
-    apartment = await apartment.createGroup(body.id);
+    if (_.isArray(body.id)) { // add the group as is.
+      apartment = await apartment.createGroup(body.id);
+    } else if (_.isString(body.id) && apartment.isTimeToOpenGroup()) { // find best group to build if it is time to open a group
+      const ids = (await req.user.getBestMatchingUsers(apartment._interested))
+        .map($ => $._id)
+        .filter($ => !$.equals(req.user._id))
+        .slice(0, apartment.requiredRoommates);
+      ids[ids.length - 1] = req.user._id.toHexString(); // set the requesting member to be in the group
+      apartment = await apartment.createGroup(ids);
+    } else {
+      return res.status(BAD_REQUEST).send(errors.groupCreationFailed);
+    }
     return res.send({ apartment });
   } catch (error) {
     return res.status(BAD_REQUEST).send(error);
@@ -1440,9 +1453,9 @@ app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
       return res.status(BAD_REQUEST).send(errors.apartmentNotFound);
     }
     apartment = await apartment.updateMemberStatus(body.id, req.user._id, body.status);
-    res.send({ apartment });
+    return res.send({ apartment });
   } catch (error) {
-    res.status(BAD_REQUEST).send(error);
+    return res.status(BAD_REQUEST).send(error);
   }
 });
 /**

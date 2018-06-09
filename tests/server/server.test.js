@@ -2579,7 +2579,7 @@ describe('#Server Tests', () => {
           }
         });
     });
-    it('should create a new group when sending a single member', (done) => {
+    it('should create a new best group when sending a single member', (done) => {
       const apartmentId = apartments[0]._id.toHexString();
       const id = users[1]._id.toHexString();
       request(app)
@@ -2596,6 +2596,8 @@ describe('#Server Tests', () => {
             const apartment = await Apartment.findById(apartmentId);
             expect(apartment.groups.length).toBe(1);
             expect(apartment.groups[0].members.length).toBe(2);
+            expect(apartment.groups[0].members[0].id.toHexString()).toBe(users[0]._id.toHexString());
+            expect(apartment.groups[0].members[1].id.toHexString()).toBe(users[1]._id.toHexString());
             return done();
           } catch (e) {
             return done(e);

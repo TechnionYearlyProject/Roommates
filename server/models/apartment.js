@@ -374,9 +374,6 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-  if (apartment.isTimeToOpenGroup()) {
-    apartment.createGroup(_interestedID);
-  }
 };
 
 /**
