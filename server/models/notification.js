@@ -22,7 +22,8 @@ const arrayFunctions = require('../helpers/arrayFunctions');
 const NotificationsTypesEnum = {
   COMMENT_WAS_ADDED_TO_APARTMENT: 1,
   USER_LIKED_APARTMENT: 2,
-  APARTMENT_WAS_MODIFIED: 3
+  APARTMENT_WAS_MODIFIED: 3,
+  NEW_GROUP_CREATION: 4
 };
 
 const NotificationSchema = new mongoose.Schema({

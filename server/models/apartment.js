@@ -374,9 +374,7 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-  if (apartment.isTimeToOpenGroup()) {
-    apartment.createGroup(_interestedID);
-  }
+  return apartment.save();
 };
 
 /**
@@ -463,16 +461,7 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
     apartment._interested.splice(interestedIDIndex, 1);
   }
 
-  function checkGroup(group) {
-    let exists = false;
-    for (let i = 0; i < group.members.length; i++) {
-      if (group.members[i].equals(_interestedID)) {
-        exists = true;
-      }
-    }
-    return !exists;
-  }
-  apartment.groups = apartment.groups.filter(checkGroup);
+  apartment.groups = apartment.groups.filter($ => !$.members.some(m => m.id.equals(_interestedID)));
 
   return apartment.save();
 };
@@ -705,11 +694,11 @@ ApartmentSchema.methods.updateVisitProps = function (
   }
 
   if (!apartment.isLegalVisitChange(
-      apartment.visits[visitIndex],
-      _offeringUserID,
-      propNames,
-      propValues
-    )) {
+    apartment.visits[visitIndex],
+    _offeringUserID,
+    propNames,
+    propValues
+  )) {
     return Promise.reject();
   }
 
@@ -742,10 +731,10 @@ ApartmentSchema.methods.isLegalVisitChange = function (
   const apartment = this;
 
   if (!visit.canModifyVisit(
-      apartment._createdBy,
-      visitData._askedBy,
-      _offeringUserID
-    )) {
+    apartment._createdBy,
+    visitData._askedBy,
+    _offeringUserID
+  )) {
     return false;
   }
 

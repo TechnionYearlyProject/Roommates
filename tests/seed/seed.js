@@ -51,9 +51,6 @@ const apartment1User2VisitId = new ObjectID();
 
 const user1Notification1Id = new ObjectID();
 
-const group1Id = new ObjectID();
-const group2Id = new ObjectID();
-
 const apartment1 = new Apartment({
   _id: apartment1Id,
   _createdBy: new ObjectID(),
