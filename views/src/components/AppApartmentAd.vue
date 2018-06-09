@@ -1,8 +1,8 @@
 <template>
 <div>
   <v-card>
-    <v-toolbar dense card height="40">
-      <v-spacer/>
+    <v-toolbar dense card height="40" color="grey lighten-3">
+      <!-- <v-spacer/> -->
         <v-tooltip top class="mx-0">
           <span>Visit page</span>
           <v-btn icon slot="activator" @click="visitPage">

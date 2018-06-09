@@ -142,16 +142,16 @@ app.post('/apartments', authenticate, async (req, res) => {
       $push: {
         _publishedApartments: apartment._id
       }
-    }).catch(err => {
+    }).catch(() => {
       Apartment.findByIdAndRemove(apartment._id);
-      throw err;
+      throw errors.userUpdateFailure;
     });
 
     return res.send({
       apartment
     });
   } catch (err) {
-    return res.status(BAD_REQUEST).send(errors.unknownError);
+    return res.status(BAD_REQUEST).send(err);
   }
 });
 
@@ -354,39 +354,39 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
  *
  * @param {String} id
  */
-app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
-  try {
-    const {
-      id
-    } = req.params;
-    const userId = req.user._id;
+// app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
+//   try {
+//     const {
+//       id
+//     } = req.params;
+//     const userId = req.user._id;
 
-    const apartment = await Apartment.findById(id);
-    if (!apartment) {
-      return res.status(NOT_FOUND).send();
-    }
-    const roommates = apartment.totalRoommates;
+//     const apartment = await Apartment.findById(id);
+//     if (!apartment) {
+//       return res.status(NOT_FOUND).send();
+//     }
+//     const roommates = apartment.totalRoommates;
 
-    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
-    let usersIncluded = false;
+//     const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+//     let usersIncluded = false;
 
-    // get the group
-    const group = _interested.slice(0, roommates);
-    for (let u of group) {
-      if ((u._doc._id.id).equals(userId.id))
-        usersIncluded = true;
-    }
-    if (!usersIncluded)
-      group[roommates - 1] = userId;
+//     // get the group
+//     const group = _interested.slice(0, roommates);
+//     for (let u of group) {
+//       if ((u._doc._id.id).equals(userId.id))
+//         usersIncluded = true;
+//     }
+//     if (!usersIncluded)
+//       group[roommates - 1] = userId;
 
-    return res.send({
-      group
-    });
+//     return res.send({
+//       group
+//     });
 
-  } catch (err) {
-    return res.status(BAD_REQUEST).send(err);
-  }
-});
+//   } catch (err) {
+//     return res.status(BAD_REQUEST).send(err);
+//   }
+// });
 
 
 /**
@@ -436,41 +436,41 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
  *
  * @param {String} id
  */
-app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
-  try {
-    const {
-      id
-    } = req.params;
-    const userId = req.user._id;
+// app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
+//   try {
+//     const {
+//       id
+//     } = req.params;
+//     const userId = req.user._id;
 
-    const apartment = await Apartment.findById(id);
-    if (!apartment) {
-      return res.status(NOT_FOUND).send();
-    }
-    const roommates = apartment.totalRoommates;
+//     const apartment = await Apartment.findById(id);
+//     if (!apartment) {
+//       return res.status(NOT_FOUND).send();
+//     }
+//     const roommates = apartment.totalRoommates;
 
-    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
-    let usersIncluded = false;
+//     const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+//     let usersIncluded = false;
 
-    // get the group
-    const group = _interested.slice(0, roommates);
-    //const group = [ _interested[1], _interested[1], _interested[1]];
-    //if((group.filter(user => (user._id() === userId))).length === 0)
-    for (let u of group) {
-      if ((u._doc._id.id).equals(userId.id))
-        usersIncluded = true;
-    }
-    if (!usersIncluded)
-      group[roommates - 1] = userId;
+//     // get the group
+//     const group = _interested.slice(0, roommates);
+//     //const group = [ _interested[1], _interested[1], _interested[1]];
+//     //if((group.filter(user => (user._id() === userId))).length === 0)
+//     for (let u of group) {
+//       if ((u._doc._id.id).equals(userId.id))
+//         usersIncluded = true;
+//     }
+//     if (!usersIncluded)
+//       group[roommates - 1] = userId;
 
-    return res.send({
-      group
-    });
+//     return res.send({
+//       group
+//     });
 
-  } catch (err) {
-    return res.status(BAD_REQUEST).send(err);
-  }
-});
+//   } catch (err) {
+//     return res.status(BAD_REQUEST).send(err);
+//   }
+// });
 
 
 /**

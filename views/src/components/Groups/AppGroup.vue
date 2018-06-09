@@ -10,13 +10,13 @@
       <span>
         <div class="subheading">statistics:</div>
           <div>
-          <span class="green--text text--lighten-2">accepted:</span> {{ statistics.accepted }}/{{ value.members.length }}
+          <span class="green--text text--lighten-2">accepted:</span>&nbsp;&nbsp;{{ statistics.accepted }}
           </div>
           <div>
-          <span class="red--text text--lighten-2">declined:</span> {{ statistics.declined }}/{{ value.members.length }}
+          <span class="red--text text--lighten-2">declined:</span>&nbsp;&nbsp;&nbsp;{{ statistics.declined }}
           </div>
           <div>
-          <span class="yellow--text text--lighten-2">pending:</span> {{ statistics.pending }}/{{ value.members.length }}
+          <span class="yellow--text text--lighten-2">pending:</span>&nbsp;&nbsp;&nbsp;&nbsp;{{ statistics.pending }}
         </div>
       </span>
     </v-tooltip>

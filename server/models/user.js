@@ -10,7 +10,7 @@ const {
   NotificationSchema,
   addAggregationDataInNotification
 } = require('./notification');
-const {PrivateMessageSchema, wasPrivateMessageWrittenByParticipants, setPrivateMessageReadState, getPrivateMessageCreationTime} = require('./privateMessage');
+const { PrivateMessageSchema, wasPrivateMessageWrittenByParticipants, setPrivateMessageReadState, getPrivateMessageCreationTime } = require('./privateMessage');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH, XAUTH_EXPIRATION_TIME } = require('../constants');
