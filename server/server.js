@@ -1417,18 +1417,29 @@ app.post('/apartments/:id/groups', authenticate, async (req, res) => {
     }
     // now we know that all ids are valid so we can try to add this group
     let apartment = await Apartment.findById(req.params.id);
+    let ids;
     if (_.isArray(body.id)) { // add the group as is.
-      apartment = await apartment.createGroup(body.id);
+      ids = body.id.map($ => new ObjectID($));
     } else if (_.isString(body.id) && apartment.isTimeToOpenGroup()) { // find best group to build if it is time to open a group
-      const ids = (await req.user.getBestMatchingUsers(apartment._interested))
+      ids = (await req.user.getBestMatchingUsers(apartment._interested))
         .map($ => $._id)
         .filter($ => !$.equals(req.user._id))
         .slice(0, apartment.requiredRoommates);
-      ids[ids.length - 1] = req.user._id.toHexString(); // set the requesting member to be in the group
-      apartment = await apartment.createGroup(ids);
+      ids[ids.length - 1] = req.user._id; // set the requesting member to be in the group
     } else {
       return res.status(BAD_REQUEST).send(errors.groupCreationFailed);
     }
+    apartment = await apartment.createGroup(ids);
+
+    notifyUsers(
+      NotificationsTypesEnum.NEW_GROUP_CREATION,
+      req.user._id,
+      ids,
+      [apartment._id],
+      false,
+      Date.now()
+    );
+
     return res.send({ apartment });
   } catch (error) {
     return res.status(BAD_REQUEST).send(error);

@@ -44,7 +44,7 @@ const notifyUsers = (notificationType, fromId, toIdsArray, notifiedObjectIdsArr,
   toIdsArray.forEach((userId) => {
     const promise = new Promise(async (resolve, reject) => {
       try {
-        if (userId.equals(fromId)) {
+        if (fromId.equals(userId)) {
           return resolve();
         }
         const user = await User.findById(userId);
