@@ -313,7 +313,7 @@ UserSchema.methods.removeExpiredTokens = function () {
   const user = this;
 
   const currentTime = Date.now() / 1000;
-  const tokens = user.tokens.filter(t => currentTime < jwt.verify(t.token, process.env.JWT_SECRET).exp);
+  const tokens = user.tokens.filter(t => currentTime < jwt.decode(t.token, process.env.JWT_SECRET).exp);
   user.tokens = tokens;
   return user.save();
 };
@@ -639,11 +639,11 @@ UserSchema.methods.saveUpdatedNotifications = function (
 ) {
   const user = this;
 
-  if(_notificationsId.length != newNotifications.length){
+  if (_notificationsId.length !== newNotifications.length) {
     return Promise.reject();
   }
 
-  for(var i=0;i<_notificationsId.length;i++){  
+  for (let i = 0; i < _notificationsId.length; i++) {  
     const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationsId[i].toString());
     if (notificationIndex < 0) {
       continue;
@@ -683,7 +683,7 @@ UserSchema.methods.getNotificationById = function (_notificationId) {
 
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
-  if(notificationIndex < 0){
+  if (notificationIndex < 0) {
     return {};
   }
 
