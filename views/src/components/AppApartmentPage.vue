@@ -1,311 +1,204 @@
 <template>
-<v-container mt-5 grid-list-lg>
-  <v-layout row wrap v-if="loaded">
-    <v-flex xs12 sm12 md9>
-      <v-card>
-        <v-card-media contain height="400" class="grey lighten-5">
-          <v-slide-x-transition>
-            <div :key="image" class="card__media__background" :style="{background: `url(${image}) center center / contain no-repeat`}"></div>
-          </v-slide-x-transition>
-           <v-container fill-height fluid>
+<div>
+  <v-card>
+    <app-image-dialog v-model="imageDialog" :images="apartment.images"/>
+    <v-card-media contain height="200px" @click.native="imageDialog = (apartment.images.length > 0)" class="grey lighten-5" :style="{cursor: apartment.images.length > 0 ? 'pointer' : 'auto'}">
+      <v-slide-x-transition>
+        <div :key="image" class="card__media__background" :style="{background: `url(${image}) center center / contain no-repeat`}"></div>
+      </v-slide-x-transition>
+      <v-container fill-height fluid>
         <v-layout fill-height>
-          <v-btn v-if="v.images.length > 0" :disabled="v.images.length === 1" icon @click.native="">
+          <v-btn v-if="apartment.images.length > 0" :disabled="apartment.images.length === 1" icon @click.native="previousImage">
             <v-icon>keyboard_arrow_left</v-icon>
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn v-if="v.images.length > 0" :disabled="v.images.length === 1" icon @click.native="">
+          <v-btn v-if="apartment.images.length > 0" :disabled="apartment.images.length === 1" icon @click.native="nextImage">
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
-                      <gmap-map :center="position" :zoom="15" map-type-id="roadmap" :style="{ width: 'auto', height: '200px', bottom: 0 }">
-            <GmapMarker :position="position" />
-            </gmap-map justify-right>
         </v-layout>
-                    <v-layout justify-end align-end>
-                      <v-flex xs7>
-
-            </v-flex>
-            </v-layout>
       </v-container>
-        </v-card-media>
-        <v-list-tile-content>
-          <v-btn icon @click.native="openMap" class="pink--text mb-1">
-            <v-icon>place</v-icon>
+    </v-card-media>
+    <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
+
+    <v-card-actions class="subheading">
+      <v-btn icon @click.native="openMap" class="pink--text mb-1">
+        <v-icon>place</v-icon>
+      </v-btn>
+      {{ getAddress() }}
+      <v-spacer></v-spacer>
+      ${{ apartment.price }}
+
+      <v-spacer></v-spacer>
+
+    </v-card-actions>
+    <v-card-actions class="pt-4">
+      <v-flex>
+        <span class="caption">
+          <span class="body-2">published:</span>
+          <span class="body-1">{{ new Date(apartment.createdAt).toDateString() }}</span>
+        </span>
+      </v-flex>
+      <v-spacer></v-spacer>
+      <v-tooltip top slot="activator">
+        <v-btn icon slot="activator" :class="fav ? 'red--text' : ''" @click.native="favorite">
+          <v-icon>favorite</v-icon>
+        </v-btn>
+        <span>{{ interestedMessage }}</span>
+      </v-tooltip>
+      <v-menu offset-x :close-on-content-click="false" :nudge-width="245" lazy>
+        <v-tooltip top slot="activator">
+          <v-btn icon slot="activator" @click.native="getPublisher">
+            <v-icon>account_box</v-icon>
           </v-btn>
-          <div class="body-1">{{ address }}</div>
-          <div class="body-1">$ {{ v.price }}</div>
-          <div class="body-1">Entrance date: {{ v.entranceDate }}</div>
-          <div></div>
-        </v-list-tile-content>
-      </v-card>
-    </v-flex>
-    <v-flex xs12 sm12 md3>
-      <v-card>
-        <v-card-media>
-          <v-layout align-center>
-            <v-flex xs4 ml-3 mt-3>
-            <app-avatar :src="p.image" :name="p.firstName" :size="70" class="text-xs-center mb-3"></app-avatar>
-            </v-flex>
-            <v-flex>
-            <div class="title">{{ p.firstName }}</div>
-            </v-flex>
-          </v-layout>
-        </v-card-media>
-        <v-divider/>
-        
-          <transition name="slide-x-transition" mode="out-in">
-            <div key="action" v-if="!share">
-              <v-btn icon :class="fav ? 'red--text' : ''" @click.native="">
-              <v-icon>favorite</v-icon>
-            </v-btn>
-            <v-btn icon  @click="share = true">
-              <v-icon>share</v-icon>
-            </v-btn>
-            </div>
-            <div v-if="share" key="share">
-              <v-layout wrap row  align-center justify-center>
-                <v-flex>
-              <v-btn icon @click="share = false">&#x2190;</v-btn>
-              </v-flex>
-              <v-flex mr-3>
-              <app-social-sharing :id="v._id" :price="v.price" :address="address"/>
-              </v-flex>
-              </v-layout>
-              </div>
-          </transition>
-        <v-divider/>
-        <v-list two-line>
-          <v-list-tile @click="">
-            <v-list-tile-action>
-              <v-icon color="indigo">email</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title class="body-1">{{ p.email }}</v-list-tile-title>
-              <v-list-tile-sub-title>E-mail</v-list-tile-sub-title>
-            </v-list-tile-content>
-        </v-list-tile>
-          <v-list-tile @click="">
-            <v-list-tile-action>
-              <v-icon color="indigo">phone</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ p.phone || '---'}}</v-list-tile-title>
-              <v-list-tile-sub-title>Mobile</v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-            </v-list-tile-action>
-        </v-list-tile>
-        </v-list>
-      </v-card>
-    </v-flex>
-    <v-flex >
-      <v-card>
-        <!-- <v-carousel>
-          <v-carousel-item
-            v-for="(image, i) in v.images"
-            :key="`image-${i}`"
-            :src="image"
-            hide-delimiters="true"
-            reverse-transition="fade"
-          ></v-carousel-item>
-        </v-carousel> -->
-        <!-- <v-card>
-          <v-card-title>
-            <span class="body-2"></span>
-            <v-spacer/>
-            <v-icon color="black" >home</v-icon>
-          </v-card-title>
-          <v-divider ></v-divider>
-          <v-card-actions class="pt-4">
-            <v-flex>
-            <span class="caption">
-              <span class="body-2">published:</span>
-              <span class="body-1">{{ new Date(v.createdAt).toDateString() }}</span>
-            </span>
-            </v-flex>
-            <v-spacer></v-spacer>
-            <v-tooltip top slot="activator">
-              <v-btn icon slot="activator" :class="fav ? 'red--text' : ''" @click.native="favorite">
-                <v-icon>favorite</v-icon>
-              </v-btn>
-              <span>{{ interestedMessage }}</span>
-            </v-tooltip>
-            <v-tooltip top slot="activator">
-              <v-btn icon slot="activator" @click.native="getPublisher">
-                <v-icon>account_box</v-icon>
-              </v-btn>
-              <span>Publisher profile</span>
-            </v-tooltip>
-            <v-menu offset-y :nudge-bottom="15" bottom :close-on-content-click="false" max-width="340" lazy>
-              <v-tooltip top slot="activator">
-                <v-btn icon slot="activator">
-                  <v-icon>share</v-icon>
-                </v-btn>
-                <span>Share</span>
-              </v-tooltip>
-              <v-card>
-                <v-container grid-list-sm pa-2>
-                  <v-layout wrap row>
-                    <v-flex xs10>
-                      <v-text-field ref="apartmentLink" v-model="share.url" hide-details readonly class="pl-2" />
-                    </v-flex>
-                    <v-flex xs2 class="text-xs-center">
-                      <v-tooltip top slot="activator" :color="clipboard.color" :close-delay="clipboard.closeDelay">
-                        <v-btn color="success" slot="activator" class="mt-2" style="min-width: 0;width:40px" @click="copyToClipboard">
-                          <v-icon color="white-text">content_copy</v-icon>
-                        </v-btn>
-                        <div class="text-xs-center">{{ clipboard.text }}</div>
-                      </v-tooltip>
-                    </v-flex>
-                    <v-flex xs12 py-2>
-                      <v-divider/>
-                    </v-flex>
-                    <v-flex>
-                      <v-layout justify-center wrap row justify-space-around>
-                        <social-sharing v-for="(network, i) in share.networks" :key="`network-${i}`" :url="share.url" :title="share.title" :description="share.description" :quote="share.quote" inline-template>
-                          <network :network="network.name" style="cursor:pointer">
-                            <v-icon large :color="network.color">{{ network.icon }}</v-icon>
-                          </network>
-                        </social-sharing>
-                      </v-layout>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card>
-            </v-menu>
+          <span>Publisher profile</span>
+        </v-tooltip>
+        <v-card style="min-height:60px">
+          <div v-if="fetchedPublisher">
+          <v-list>
+            <v-list-tile avatar  @click="$router.push({ name: 'AppUserProfile', params: { id: publisher._id } })">
+              <v-list-tile-avatar>
+                <app-avatar :image="publisher.image" :name="publisher.firstName" :size="40"></app-avatar>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ publisher.firstName.capitalize() }} {{ publisher.lastName.capitalize() }}</v-list-tile-title>
+                <v-list-tile-sub-title>rating</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+          <v-divider></v-divider>
+          <v-list>
+            <v-list-tile>
+              <v-icon class="pr-1">email</v-icon>
+              <v-list-tile-title>
+                <small class="pr-3">E-mail</small>
+                {{ publisher.email }}
+              </v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile>
+              <v-icon class="pr-1">phone</v-icon>
+              <v-list-tile-title>
+                <small class="pr-3">Phone</small>
+                {{ publisher.mobilePhone || 'No Phone' }}
+              </v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+          <v-divider inset></v-divider>
+          <v-card-actions>
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-switch color="purple"></v-switch>
+              </v-list-tile-action>
+              <v-list-tile-title>Enable notifications</v-list-tile-title>
+            </v-list-tile>
           </v-card-actions>
+          </div>
+          <div v-else class="text-xs-center mt-3">
+            <v-progress-circular indeterminate color="purple"></v-progress-circular>
+          </div>
+        </v-card>
+      </v-menu>
+      <v-menu offset-y :nudge-bottom="15" bottom :close-on-content-click="false" max-width="340" lazy>
+        <v-tooltip top slot="activator">
+          <v-btn icon slot="activator">
+            <v-icon>share</v-icon>
+          </v-btn>
+          <span>Share</span>
+        </v-tooltip>
+        <v-card>
+          <v-container grid-list-sm pa-2>
+            <v-layout wrap row>
+              <v-flex xs10>
+                <v-text-field ref="apartmentLink" v-model="share.url" hide-details readonly class="pl-2" />
+              </v-flex>
+              <v-flex xs2 class="text-xs-center">
+                <v-tooltip top slot="activator" :color="clipboard.color" :close-delay="clipboard.closeDelay">
+                  <v-btn color="success" slot="activator" class="mt-2" style="min-width: 0;width:40px" @click="copyToClipboard">
+                    <v-icon color="white-text">content_copy</v-icon>
+                  </v-btn>
+                  <div class="text-xs-center">{{ clipboard.text }}</div>
+                </v-tooltip>
+              </v-flex>
+              <v-flex xs12 py-2>
+                <v-divider/>
+              </v-flex>
+              <v-flex>
+                <app-social-sharing :id="apartment._id" :price="apartment.price" :address="getAddress()"/>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card>
+      </v-menu>
+    </v-card-actions>
 
-
-          <v-card-actions class="subheading">
-            <span  class="body-2" >Address:</span>
-            {{ getAddress() }}
-            <v-spacer/>
-            <v-tooltip top slot="activator" justify-end>
-              <v-btn icon slot="activator" @click.native="openMap" class="pink--text mb-1" >
-                <v-icon>place</v-icon>
-              </v-btn>
-              <span>{{"Open in map"}}</span>
-            </v-tooltip>
-          </v-card-actions> -->
-
-          <!--<v-card-actions class="subheading">-->
-            <!--<span  class="body-2" >Price:</span>-->
-            <!--${{ apartment.price }}-->
-          <!--</v-card-actions>-->
-          <!-- <v-divider></v-divider> -->
-          <!-- <v-list subheader two-line>
-            <v-list-group v-model="apartment.active" no-action :prepend-icon="apartment.icons[0]">
-              <v-list-tile slot="activator">
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    <span class="body-2">{{ "attributes" }}</span>
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
+      <v-card-text ref="details"
+       class="pt-0">
+        <v-divider class="mb-3"></v-divider>
+        <transition name="slide-x-transition" mode="out-in" v-if="show">
+          <div v-if="show === 'apartmentDetails'" ref='cardDetails' key="apartmentDetails">
+            <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
+            <v-card class="mt-3">
+              <v-card-title>
+                <h4>Attributes</h4>
+              </v-card-title>
               <v-divider></v-divider>
-              <v-container pt-1>
-                <div v-for="(property, i) in apartment.properties" :key="`property-${i}`" class="pb-3">
-                  <v-subheader>
-                    {{ property.title }}
-                    <v-spacer/>
-                    <span v-if="property.isEditable" >
-                      <v-btn icon v-if="!property.edit.active" @click="property.edit.active = true">
-                        <v-icon color="info">edit</v-icon>
-                      </v-btn>
-                      <v-btn icon v-if="property.edit.active" @click="editProperty(property)">
-                        <v-icon color="success">check</v-icon>
-                      </v-btn>
-                      <v-btn icon v-if="property.edit.active" @click="property.edit.active = false; property.value.current = property.value.previous, property.error = []">
-                        <v-icon color="error">close</v-icon>
-                      </v-btn>
-                    </span>
-                  </v-subheader>
-                  <span v-if="!property.isEditable || !property.edit.active" class="body-1 pl-3">
-                  {{ property.value.current }}
-                  </span>
-                  <span v-else>
-                    <v-text-field
-                      v-if="property.edit.kind === 'text'"
-                      class="pt-0 px-3"
-                      v-model="property.value.current"
-                      :rules="property.edit.rules"
-                      :multi-line="property.edit.isMultiline"
-                      :error-messages="property.error"
-                      />
-                  </span>
+              <v-list dense>
+                <v-list-tile v-for="(attribute,i) in attributes" :key="`attribute-${i}`">
+                  <v-list-tile-content>{{ attribute.label }}</v-list-tile-content>
+                  <v-list-tile-content class="align-end">{{ apartment[attribute.ref] || '-' }}</v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+              <v-divider></v-divider>
+            </v-card>
+            <v-layout row wrap py-3>
+              <v-flex xs3 v-for="(tag,i) in apartment.tags" :key="`tag-${i}`" mx-auto>
+                <div class="text-xs-center">
+                  <v-icon>{{ tags[tag].vicon }}</v-icon><br>
+                  <small>{{ tags[tag].name }}</small>
                 </div>
-              </v-container>
-            </v-list-group>
+              </v-flex>
+            </v-layout>
 
-            <v-list-group  :prepend-icon="apartment.icons[1]" no-action >
-              <v-list-tile slot="activator">
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    <span class="body-2">{{ "interested" }}</span>
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-container>
-                <span>omri</span>
-              </v-container>
-            </v-list-group>
+            <v-card v-if="apartment.description">
+              <v-card-title>
+                <h4>About</h4>
+              </v-card-title>
+              <v-divider></v-divider>
+              <v-card-text>
+                <i>{{ apartment.description }}</i>
+              </v-card-text>
+            </v-card>
+          </div>
 
-            <v-list-group  :prepend-icon="apartment.icons[2]" no-action >
-              <v-list-tile slot="activator">
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    <span class="body-2">{{ "groups" }}</span>
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-container>
-                <span>from a group!</span>
-              </v-container>
-            </v-list-group>
+          <div v-else-if="show === 'comments'" :style="{'height': detailsHeight}" key="comments">
+            <app-comments :comments="apartment.comments" :onComment="addComment"></app-comments>
+          </div>
 
-            <v-list-group  :prepend-icon="apartment.icons[3]" no-action >
-              <v-list-tile slot="activator">
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    <span class="body-2">{{ "reviews" }}</span>
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-container>
-                <span>pros vs cons</span>
-              </v-container>
-            </v-list-group>
-
-            <v-list-group  :prepend-icon="apartment.icons[4]" no-action >
-              <v-list-tile slot="activator">
-                <v-list-tile-content>
-                  <v-list-tile-title>
-                    <span class="body-2">{{ "comments" }}</span>
-                  </v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-container>
-                <div>
-                  <app-comments :comments="apartment.comments" :onComment="addComment"></app-comments>
-                </div>
-              </v-container>
-            </v-list-group>
-
-          </v-list> -->
-        <!-- </v-card> -->
-      </v-card>
-    </v-flex>
-    <v-flex>
-      <v-card height="200">
-
-      </v-card>
-    </v-flex>
-  </v-layout>
-</v-container>
+          <div v-else-if="show === 'favors'" :style="{'height': detailsHeight}" key="favors">
+            <app-favors :favors="apartment._interested"></app-favors>
+          </div>
+        </transition>
+        <v-divider/>
+        <v-breadcrumbs divider="/">
+          <v-breadcrumbs-item v-if="show !== 'apartmentDetails'" @click.native="showApartmentDetails">
+            &larr; Go back
+          </v-breadcrumbs-item>
+          <v-breadcrumbs-item v-if="show !== 'favors'" :disabled="false" v-show="true" @click.native="showFavores">
+            {{ apartment._interested.length }} interested
+          </v-breadcrumbs-item>
+          <v-breadcrumbs-item v-if="show !== 'comments'" @click.native="showComments">
+            {{ apartment.comments.length }} comments
+          </v-breadcrumbs-item>
+          <v-breadcrumbs-item :disabled="false" v-show="true" to="#">
+            reviews
+          </v-breadcrumbs-item>
+        </v-breadcrumbs>
+      </v-card-text>
+  </v-card>
+</div>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
-  import AppSocialSharing from './AppSocialSharing';
   import defaultApartmentImage from '../assets/apartment-default.jpg';
   import tagsList from '../assets/tags';
   import AppAvatar from './sub-components/AppAvatar';
@@ -313,480 +206,277 @@
   import AppComments from './sub-components/AppComments';
   import AppFavors from './sub-components/AppFavors';
   import AppImageDialog from './sub-components/AppImageDialog';
-  import attributes from "../assets/attributes";
+  import AppSocialSharing from './AppSocialSharing';
 
- 
-
-    export default {
-      props: {
-        apartment: {
-          type: Object,
-          default: null
+  export default {
+    //props: ['apartment'],
+    data() {
+      return {
+      apartment:{
+              _id : "5b0a57dddc534c2fe0e6dcff",
+              price : 3500,
+              entranceDate : 1527552,
+              requiredRoommates : 1,
+              totalRoommates : 2,
+              numberOfRooms : 4,
+              floor : 2,
+              totalFloors : 3,
+              area : 50,
+              _createdBy : "5b07ddf3a31f335750626a9c",
+              createdAt : 1527404509807,
+              visits : [],
+              _notificationSubscribers : [ 
+                  "5b07ddf3a31f335750626a9c"
+              ],
+              comments : [],
+              tags : [ 
+                  6
+              ],
+              description : "מיקום מטורף",
+              images : [ 
+                  "ef722d80-26cb-4f24-8ea3-8bfe61453742.jpeg", 
+                  "414630c5-c7c9-4ac7-814d-9de5d9e6e22d.jpeg", 
+                  "d83413be-e23e-4383-b8cd-5439e867877f.jpeg"
+              ],
+              location : {
+                  geolocation : [ 
+                      34.833147, 
+                      32.0833338
+                  ],
+                  address : {
+                      state : "israel",
+                      city : "bnei brak",
+                      street : "bartenura street",
+                      number : 32
+                  }
+              },
+              _interested : [],
         },
-        publisher: {
-          type: Object,
-          default: null
-        }
-      },
-      data() {
-        return {
-          loaded: false,
-          v: null,
-          p: null,
-          dialog: false,
-          fav: false,
-          share: false,
-          image: null,
-          defaultImage: defaultApartmentImage,
-
-          a: {
-            active: true,
-            price: 1000,
-            comments: [],
-            icon: 'C:\\Users\\omrih\\WebstormProjects\\Roommates\\views\\static\\favicon\\android-chrome-192x192.png',
-            title: 'Apartment Information',
-            createdAt: new Date('2018-05-05').getTime(),
-            icons: [
-              'list',
-              'favorite',
-              'person',
-              'check',
-              'chat'
-            ],
-            properties: [
-              {
-                title: 'price ($)',
-                value: {
-                  current: 8,
-                  previous: 8,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 ],
-                }
-              },
-              {
-                title: 'required roommates',
-                value: {
-                  current: 2,
-                  previous: 2,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 && v < 12],
-                }
-              },
-              {
-                title: 'total roommates',
-                value: {
-                  current: 3,
-                  previous: 3,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 && v < 12],
-                }
-              },
-              {
-                title: 'floor',
-                value: {
-                  current: 2,
-                  previous: 2,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v >= 0 && v < 12],
-                }
-              },
-              {
-                title: 'total floors',
-                value: {
-                  current: 3,
-                  previous: 3,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  // rules: [v => v >= 0 && v < 12 && v >= apartment.properties.floor],
-                }
-              },
-              {
-                title: 'rooms',
-                value: {
-                  current: 7,
-                  previous: 7,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 && v < 12],
-                }
-              },
-              {
-                title: 'area (square meter)',
-                value: {
-                  current: 2,
-                  previous: 2,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 ],
-                }
-              }
-            ],
-
-            photos: [
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/squirrel.jpg'
-              },
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/sky.jpg'
-              },
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/bird.jpg'
-              },
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/planet.jpg'
-              }
-            ],
+        attributes: [
+          {
+            label: 'required roommates',
+            ref: 'requiredRoommates'
           },
-      
-          expended: false,
-          show: 'apartmentDetails',
-          fav: false,
-          showMap: false,
-          tags: tagsList,
-          
-          imageNumber: 0,
-          imageDialog: false,
-          interestedMessage: "I'm interested!",
-          clipboard: {
-            color: undefined,
-            text: 'Copy link',
-            closeDelay: 200,
-            lastCopyTime: 0
+          {
+            label: 'total roommates',
+            ref: 'totalRoommates' // change model from currentlyNumberOfRoommates -> totalRoommates
           },
-          e1: 'recent',
-          fetchedPublisher: false,
-        };
-      },
-      methods: {
-        getAddress() {
-          return 'Gilboa 35, Haifa';
-          // return `${this.apartment.location.address.street.capitalize()} ${
-          //   this.apartment.location.address.number
-          //   }, ${this.apartment.location.address.city.capitalize()}`;
-        },
-        favorite() {
-          if (!this.isAuthenticated) {
-            this.interestedMessage = 'Please login first';
-          } else if (!this.isVerified) {
-            this.interestedMessage = 'Please verify account';
-          } else {
-            this.fav = !this.fav;
-          //   this.$store
-          //     .dispatch('favor', { id: this.apartment._id })
-          //     .then((apartment) => {
-          //       this.apartment._interested = apartment._interested;
-          //     })
-          //     .catch((error) => {
-          //       // eslint-disable-next-line
-          //       console.log(error);
-          //       this.fav = !this.fav;
-          //     });
+          {
+            label: 'floor',
+            ref: 'floor'
+          },
+          {
+            label: 'total floors',
+            ref: 'totalFloors'
+          },
+          {
+            label: 'rooms number',
+            ref: 'numberOfRooms'
+          },
+          {
+            label: 'area (square meter)',
+            ref: 'area'
           }
-        },
-        getPublisher() {
-          if (!this.fetchedPublisher) {
-            const id = this.apartment._createdBy;
-            this.$store.dispatch('fetchUser', { id }).then((users) => {
-              if (users[id]) {
-                this.publisher = users[id];
-              } else {
-                this.publisher = {
-                  firstName: 'Some',
-                  lastName: 'User',
-                  email: 'user@example.com',
-                  mobilePhone: '+972-8711111'
-                };
-              }
-              this.fetchedPublisher = true;
-            });
-          }
-        },
-        initApartment(){
-          this.apartment.properties.push({
-            title: 'price',
-            value: 8,
-            icon: 'dollar',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
+        ],
+        share: {
+          url: null,
+          title: null,
+          description: null,
+          quote: null,
+          networks: [
+            {
+              name: 'email',
+              icon: 'mdi-email',
+              color: 'lime darken-4'
             },
-          });
-          this.profile.properties.push({
-            title: 'required roommates',
-            value: 1,
-            icon: 'people',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
+            {
+              name: 'facebook',
+              icon: 'mdi-facebook-box',
+              color: 'blue darken-3'
             },
-          });
-          this.apartment.properties.push({
-            title: 'total roommates',
-            value: 2,
-            icon: 'people',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
+            {
+              name: 'googleplus',
+              icon: 'mdi-google-plus-box',
+              color: 'red darken-1'
             },
-          });
-          this.apartment.properties.push({
-            title: 'floor',
-            value: 2,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
+            {
+              name: 'twitter',
+              icon: 'mdi-twitter-box',
+              color: 'light-blue'
             },
-          });
-          this.apartment.properties.push({
-            title: 'total roommates',
-            value: 3,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.apartment.properties.push({
-            title: 'rooms',
-            value: 7,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.apartment.properties.push({
-            title: 'area (square meters)',
-            value: 2,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-        },
-        editProperty(property) {
-          if (property.value.current === property.value.previous) {
-            property.edit.active = false;
-            return;
-          }
-          // this.$store
-          //   .dispatch('updateUser', property.getPayload())
-          //   .then(() => {
-          //     property.error = [];
-          if ( (property.value.current >= 0)) {
-            property.value.previous = property.value.current;
-            property.edit.active = false;
-          }
-          else{
-            property.error.push("invalid value")
-          }
-
-          //   })
-          //   .catch((error) => {
-          //     property.value.current = property.value.previous;
-          //     property.error = 'An error occured!';
-          //     // eslint-disable-next-line
-          //     console.log(error); // show an error message
-          //   }
-          // );
-        },
-        openMap() {
-          this.showMap = true;
-        },
-        addComment(comment) {
-          // return this.$store.dispatch('addApartmentComment', {
-          //   params: {
-          //     id: this.apartment._id
-          //   },
-          //   payload: {
-          //     text: comment.text
-          //   }
-          // });
-        },
-        expandDetails() {
-          if (this.expended) {
-            this.expended = false;
-          } else {
-            this.expended = true;
-          }
-        },
-        showFavores() {
-          this.show = 'favors';
-          this.goToTopOfAdd();
-        },
-        showComments() {
-          this.show = 'comments';
-          this.goToTopOfAdd();
-        },
-        addComment(comment) {
-          return this.$store.dispatch('addApartmentComment', {
-            params: {
-              id: this.apartment._id
-            },
-            payload: {
-              text: comment.text
+            {
+              name: 'whatsapp',
+              icon: 'mdi-whatsapp',
+              color: 'teal darken-1'
             }
-          });
+          ]
         },
-        copyToClipboard() {
-          this.$refs.apartmentLink.$refs.input.select();
-          document.execCommand('copy');
-          this.clipboard.text = 'Copied!';
-          this.clipboard.color = 'success';
-          this.clipboard.closeDelay = 3000;
-          const lastCopyTime = Date.now();
-          this.clipboard.lastCopyTime = lastCopyTime;
-          setInterval(() => {
-            if (lastCopyTime === this.clipboard.lastCopyTime) {
-              this.clipboard.text = 'Copy link';
-              this.clipboard.color = undefined;
-              this.clipboard.closeDelay = 200;
-            }
-          }, 5000);
+        show: 'apartmentDetails',
+        fav: false,
+        showMap: false,
+        tags: tagsList,
+        defaultImage: defaultApartmentImage,
+        imageNumber: 0,
+        imageDialog: false,
+        interestedMessage: "I'm interested!",
+        clipboard: {
+          color: undefined,
+          text: 'Copy link',
+          closeDelay: 200,
+          lastCopyTime: 0
         },
-        fetchApartment(id) {
-          return this.$store.dispatch('searchApartments', { id })
-          .then((apartment) => {
-            this.v = apartment[0];
-            this.image = this.v.images[0] || defaultImage;
-          });
-        },
-        fetchPublisher(id) {
-          return this.$store.dispatch('fetchUser', { id })
-          .then((users) => {
-            console.log(users)
-            this.p = users[id];
-          });
-        }
+        e1: 'recent',
+        fetchedPublisher: false,
+        publisher: null
+      };
+    },
+    methods: {
+      getAddress() {
+        return `${this.apartment.location.address.street.capitalize()} ${
+          this.apartment.location.address.number
+        }, ${this.apartment.location.address.city.capitalize()}`;
       },
-      computed: {
-        ...mapGetters(['isAuthenticated', 'isVerified']),
-        image() {
-          return this.apartment.images[0]
-            ? this.apartment.images[this.imageNumber]
-            : this.defaultImage;
-        },
-        detailsHeight() {
-          return `${this.$refs.cardDetails.clientHeight}px`;
-        },
-        address() {
-            return `${this.v.location.address.street.capitalize()} ${ this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
-        },
-        position() {
-          return {
-            lat: this.v.location.geolocation[1],
-            lng: this.v.location.geolocation[0]
-          }
-        }
-      },
-      created() {
-        if (!this.apartment) {
-          this.$store.commit('showLoading');
-          this.fetchApartment(this.$route.params.id)
-          .then(() => this.fetchPublisher(this.v._createdBy))
-          .then(() => this.loaded = true)
-          .catch(e => console.log(e))
-          .then(() => this.$store.commit('hideLoading'));
-        } else if (!this.publisher) {
-          this.$store.commit('showLoading');
-          this.fetchPublisher(this.v._createdBy)
-          .then(() => this.loaded = true)
-          .catch(e => console.log(e))
-          .then(() => this.$store.commit('hideLoading'));
+      favorite() {
+        if (!this.isAuthenticated) {
+          this.interestedMessage = 'Please login first';
+        } else if (!this.isVerified) {
+          this.interestedMessage = 'Please verify account';
         } else {
-          this.v = this.apartment;
-          this.p = this.publisher;
-          this.loaded = true;
+          this.fav = !this.fav;
+          this.$store
+            .dispatch('favor', { id: this.apartment._id })
+            .then((apartment) => {
+              this.apartment._interested = apartment._interested;
+            })
+            .catch((error) => {
+              // eslint-disable-next-line
+              console.log(error);
+              this.fav = !this.fav;
+            });
         }
       },
-      components: {
-        AppAvatar,
-        AppMap,
-        AppComments,
-        AppFavors,
-        AppImageDialog,
-
-        AppSocialSharing
+      getPublisher() {
+        if (!this.fetchedPublisher) {
+          const id = this.apartment._createdBy;
+          this.$store.dispatch('fetchUser', { id }).then((users) => {
+            if (users[id]) {
+              this.publisher = users[id];
+            } else {
+              this.publisher = {
+                firstName: 'Some',
+                lastName: 'User',
+                email: 'user@example.com',
+                mobilePhone: '+972-8711111'
+              };
+            }
+            this.fetchedPublisher = true;
+          });
+        }
       },
-      mounted() {
-        // if (this.isAuthenticated) {
-        //   this.fav = this.apartment._interested.includes(
-        //     this.$store.getters.getUser._id
-        //   );
-        // }
-        // this.share.url = `https://localhost:8080/${this.apartment._id}`;
-        // this.share.title = 'Sharing this apartment I found on Roommates with you';
-        // this.share.description = `Located in ${this.getAddress()}, price: ${
-        //   this.apartment.price
-        //   }`;
-        // this.share.quote =
-        //   'This is an apartment that I thought might interest you.';
+      nextImage(e) {
+        e.stopPropagation();
+
+        this.imageNumber =
+          this.imageNumber >= this.apartment.images.length - 1
+            ? 0
+            : this.imageNumber + 1;
+      },
+      previousImage(e) {
+        e.stopPropagation();
+
+        this.imageNumber =
+          this.imageNumber <= 0
+            ? this.apartment.images.length - 1
+            : this.imageNumber - 1;
+      },
+      openMap() {
+        this.showMap = true;
+      },
+      showApartmentDetails() {
+        this.show = 'apartmentDetails';
+        this.goToTopOfAdd();
+      },
+      showFavores() {
+        this.show = 'favors';
+        this.goToTopOfAdd();
+      },
+      showComments() {
+        this.show = 'comments';
+        this.goToTopOfAdd();
+      },
+      addComment(comment) {
+        return this.$store.dispatch('addApartmentComment', {
+          params: {
+            id: this.apartment._id
+          },
+          payload: {
+            text: comment.text
+          }
+        });
+      },
+      goToTopOfAdd() {
+        this.$vuetify.goTo(this.$refs.details, {
+          duration: 1100,
+          offset: -200,
+          easing: 'easeInOutCubic'
+        });
+      },
+      copyToClipboard() {
+        this.$refs.apartmentLink.$refs.input.select();
+        document.execCommand('copy');
+        this.clipboard.text = 'Copied!';
+        this.clipboard.color = 'success';
+        this.clipboard.closeDelay = 3000;
+        const lastCopyTime = Date.now();
+        this.clipboard.lastCopyTime = lastCopyTime;
+        setInterval(() => {
+          if (lastCopyTime === this.clipboard.lastCopyTime) {
+            this.clipboard.text = 'Copy link';
+            this.clipboard.color = undefined;
+            this.clipboard.closeDelay = 200;
+          }
+        }, 5000);
+      },
+      goToReview() {
+        this.$router.push({name: 'AppApartmentPage', params: {
+          id: this.apartment._id,
+          apartment: this.apartment, 
+          publisher: this.publisher
+        }});
       }
-    };
+    },
+    computed: {
+      ...mapGetters(['isAuthenticated', 'isVerified']),
+      image() {
+        return this.apartment.images[0]
+          ? this.apartment.images[this.imageNumber]
+          : this.defaultImage;
+      },
+      detailsHeight() {
+        return `${this.$refs.cardDetails.clientHeight}px`;
+      }
+    },
+    mounted() {
+      if (this.isAuthenticated) {
+        this.fav = this.apartment._interested.includes(
+          this.$store.getters.getUser._id
+        );
+      }
+      this.share.url = `https://localhost:8080/${this.apartment._id}`;
+      this.share.title = 'Sharing this apartment I found on Roommates with you';
+      this.share.description = `Located in ${this.getAddress()}, price: ${
+        this.apartment.price
+      }`;
+      this.share.quote =
+        'This is an apartment that I thought might interest you.';
+    },
+    components: {
+      AppAvatar,
+      AppMap,
+      AppComments,
+      AppFavors,
+      AppImageDialog,
+      AppSocialSharing
+    }
+  };
 </script>
-
-<style scoped>
-
-</style>
