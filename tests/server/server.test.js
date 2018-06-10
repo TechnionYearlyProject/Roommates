@@ -1397,6 +1397,49 @@ describe('#Server Tests', () => {
         .end(done);
     });
 
+    it('should not register a user with email already exist (case insensetive)', (done) => {
+      const user = Object.assign({}, notRegisteredUser);
+      user.email = 'USER1@Gmail.com';
+
+      request(app)
+        .post('/users')
+        .send(user)
+        .expect(BAD_REQUEST)
+        .expect((res) => {
+          expect(res.headers[XAUTH]).toBeFalsy();
+        })
+        .end(done);
+    });
+
+    it('should register a new user with uppercase email address', (done) => {
+      const user = Object.assign({}, notRegisteredUser);
+      user.email = user.email.toUpperCase();
+      request(app)
+        .post('/users')
+        .send(user)
+        .expect(OK)
+        .expect((res) => {
+          expect(res.headers[XAUTH]).toBeTruthy(); // token is returned after registration
+          expect(res.body.user._id).toBeTruthy();
+          expect(res.body.user).toMatchObject(User.toJSON(notRegisteredUser));
+        })
+        .end((err) => {
+          if (err) {
+            return done(err);
+          }
+
+          return User.findOne({
+            email: notRegisteredUser.email
+          })
+            .then($ => {
+              expect($).toBeTruthy();
+              expect($._id).toBeTruthy();
+              expect($.toObject()).toMatchObject(User.toJSON(notRegisteredUser));
+              done();
+            }).catch((errr) => done(errr));
+        });
+    });
+
     it('should not register a user without email', (done) => {
       const user = Object.assign({}, notRegisteredUser);
       delete user.email;
@@ -1551,6 +1594,34 @@ describe('#Server Tests', () => {
         .post('/users/login')
         .send({
           email: users[0].email,
+          password: users[0].password
+        })
+        .expect(OK)
+        .expect((res) => expect(res.headers[XAUTH]).toBeTruthy())
+        .end((err, res) => {
+          if (err) {
+            return done(err);
+          }
+          return User.findOne({
+            email: users[0].email
+          })
+            .then((user) => {
+              expect(user.toObject().tokens[0]).toMatchObject({
+                access: XAUTH,
+                token: res.headers[XAUTH]
+              });
+              // It is important to check that the user is indeed verified, otherwise he shouldn't have been abled to login.
+              expect(user.isVerified).toBeTruthy();
+              done();
+            }).catch((errr) => done(errr));
+        });
+    });
+
+    it('should login user and return auth token (email is case insensetive)', (done) => {
+      request(app)
+        .post('/users/login')
+        .send({
+          email: users[0].email.toUpperCase(),
           password: users[0].password
         })
         .expect(OK)
