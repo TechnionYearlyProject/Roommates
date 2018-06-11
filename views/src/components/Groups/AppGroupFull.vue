@@ -11,7 +11,7 @@
         <v-layout wrap>
             <div v-if="groups.length === 0" class="pb-4 pl-3 body-1">There are no groups</div>
             <v-flex v-else xs12 sm6 md4 v-for="(g,i) in groups" :key="`group-${i}`">
-                <app-group v-model="groups[i]" :apartmentId="apartmentId" :group-title="`Group #${i+1}`"></app-group>
+                <app-group v-model="groups[i]" :apartmentId="apartmentId" :ownerId="ownerId" :group-title="`Group #${i+1}`"></app-group>
             </v-flex>
         </v-layout>
       </v-container>
@@ -39,6 +39,10 @@ import { mapMutations } from 'vuex';
 export default {
   props: {
     apartmentId: {
+      type: String,
+      required: true
+    },
+    ownerId: {
       type: String,
       required: true
     },

@@ -93,6 +93,7 @@
 
 <script>
   import AppPaypal from './sub-components/AppPayPal';
+  import AppApartmentAd from './AppApartmentAd';
 
   export default {
     name: "AppPayment",
@@ -104,35 +105,6 @@
     },
     url: '',
     agreedToS: false,
-    apartment: [{
-      _id: '5b154565bfc2730600d892c3',
-      _createdBy: '',
-      createdAt: Date.now(),
-      price: 1000,
-      //_interested:
-      entranceDate: new Date('12-29-2019').getTime(),
-      location: {
-        address: {
-          state: 'israel',
-          city: 'Tel-Aviv',
-          street: 'Rothschild',
-          number: 23
-          //apartmentNumber:
-        },
-        geolocation: [34.775313, 32.065887]
-      },
-      numberOfRooms: 3,
-      floor: 1,
-      totalFloors: 5,
-      //area:
-      //images:
-      //description:
-      tags: [0, 7],
-      requiredRoommates: 1,
-      totalRoommates: 2,
-      //comments
-      groups: []
-    }],
     data() {
       return {
         amount: 100,
@@ -150,6 +122,35 @@
           message: '',
           type: 'error'
         },
+        apartment: [{
+          _id: '5b154565bfc2730600d892c3',
+          _createdBy: '',
+          createdAt: Date.now(),
+          price: 1000,
+          //_interested:
+          entranceDate: new Date('12-29-2019').getTime(),
+          location: {
+            address: {
+              state: 'israel',
+              city: 'Tel-Aviv',
+              street: 'Rothschild',
+              number: 23
+              //apartmentNumber:
+            },
+            geolocation: [34.775313, 32.065887]
+          },
+          numberOfRooms: 3,
+          floor: 1,
+          totalFloors: 5,
+          //area:
+          //images:
+          //description:
+          tags: [0, 7],
+          requiredRoommates: 1,
+          totalRoommates: 2,
+          //comments
+          groups: []
+        }],
       };
     },
     methods: {
@@ -208,6 +209,7 @@
     },
     components: {
       AppPaypal,
+      AppApartmentAd
     }
   }
 </script>

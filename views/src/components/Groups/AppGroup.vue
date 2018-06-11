@@ -54,19 +54,19 @@
       </v-list>
       <v-divider></v-divider>
       <v-progress-linear :value="optInNumber / value.members.length * 100" height="4" color="teal" class="mt-0 mb-1"></v-progress-linear>
-      <div v-if="participatingInGroup">
-        <div v-if="closeTheDeal">
-          <v-btn block outline slot="activator" color="primary" style="height:75px" @click="PaymentMenuDialog = true">
-            <v-icon class="mr-1">new_releases</v-icon>
-            Close The Deal !
-          </v-btn>
-          <v-dialog v-model="PaymentMenuDialog" max-width="320">
-            <v-card v-if="PaymentMenuDialog" height="200">
-              <app-payment></app-payment>
-            </v-card>
-          </v-dialog>
-        </div>
-        <div v-else>
+      <div v-if="closeTheDeal">
+        <v-btn block outline slot="activator" color="primary" style="height:75px" @click="$router.push({name:'AppPayment'})">
+          <v-icon class="mr-1">new_releases</v-icon>
+          Close The Deal !
+        </v-btn>
+        <v-dialog v-model="PaymentMenuDialog" max-width="320">
+          <v-card v-if="PaymentMenuDialog" height="200">
+            <app-payment></app-payment>
+          </v-card>
+        </v-dialog>
+      </div>
+      <div v-else-if="participatingInGroup">
+        <div>
           <div>
             <v-btn slot="activator" block outline @click.stop="optInDialog = true" color="success" class="pa-0 ma-0 mb-1" :disabled="disabled" :loading="loading">
                 <v-icon>check</v-icon>
@@ -82,7 +82,7 @@
                   <v-btn color="grey darken-3" flat @click.native="optInDialog = false">nevermind...</v-btn>
                 </v-card-actions>
               </v-card>
-            </v-dialog>  
+            </v-dialog>
           </div>
           <div>
             <v-btn block outline @click.stop="optOutDialog = true" color="error" class="pa-0 ma-0" :disabled="disabled" :loading="loading">
@@ -99,7 +99,7 @@
                   <v-btn color="grey darken-3" flat @click.native="optOutDialog = false">nevermind...</v-btn>
                 </v-card-actions>
               </v-card>
-            </v-dialog>  
+            </v-dialog>
           </div>
         </div>
       </div>
@@ -122,6 +122,10 @@ export default {
       required: true
     },
     apartmentId: {
+      type: String,
+      required: true
+    },
+    ownerId:{
       type: String,
       required: true
     },
@@ -154,7 +158,7 @@ export default {
     optOut() {
       this.loading = true;
       this.$store.dispatch('updateGroupStatus', {
-         params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.DECLINED } 
+         params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.DECLINED }
         })
       .then(() => {
         this.disabled = true;
@@ -168,7 +172,7 @@ export default {
     optIn() {
       this.loading = true;
       this.$store.dispatch('updateGroupStatus', {
-        params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.ACCEPTED } 
+        params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.ACCEPTED }
         })
       .then(() => {
         this.disabled = true;
@@ -209,7 +213,11 @@ export default {
       return this.value.members.filter(m => m.status === this.PENDING).length;
     },
     closeTheDeal() {
-      return this.value.members.filter(m => m.status === this.ACCEPTED).length === this.value.members.length;
+      const user = this.getUser;
+      console.log(user);
+      console.log(user._id);
+      console.log(this.ownerId);
+      return user && user._id === this.ownerId && (this.value.members.filter(m => m.status === this.ACCEPTED).length === this.value.members.length)
     },
     statistics() {
       return {

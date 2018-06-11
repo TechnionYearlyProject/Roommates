@@ -1,5 +1,5 @@
 <template>
-  <app-group-full apartmentId="5b140b8f95d5b923886ffb46"></app-group-full>
+  <app-group-full apartmentId="5b140b8f95d5b923886ffb46" ownerId="5b191de10ee12e2414940807"></app-group-full>
 </template>
 
 <script>
