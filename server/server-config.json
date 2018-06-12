@@ -7,6 +7,14 @@
         "CORS": "http://localhost:8080",
         "LOG_LEVEL": "debug"
     },
+    "cloud": {
+        "PORT": 3000,
+        "WEB_SOCKETS_PORT": 5000,
+        "MONGODB_URI": "mongodb://roommates-cloud-db:NKzbS8U4UtlGYBvuzVMz9wZcu7sYaNnO818cbVCwPTlJ6UzLF02p3ntTQREAuqAkiyMhTQ7ZhJE2f4iOCwUr4g==@roommates-cloud-db.documents.azure.com:10255/?ssl=true",
+        "JWT_SECRET": "cloudjwtsecret-hdjgmk3d0932mcm3x",
+        "CORS": "http://localhost:8080",
+        "LOG_LEVEL": "emerg"
+    },
     "test": {
         "PORT": 3000,
         "WEB_SOCKETS_PORT": 5000,
