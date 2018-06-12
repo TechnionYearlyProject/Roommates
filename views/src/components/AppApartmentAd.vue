@@ -134,7 +134,7 @@
           </div>
 
           <div v-else-if="show === 'favors'" :style="{'height': detailsHeight}" key="favors">
-            <app-favors :favors="apartment._interested"></app-favors>
+            <app-favor-list :favors="apartment._interested"></app-favor-list>
           </div>
         </transition>
         <v-divider/>
@@ -162,7 +162,6 @@
   import { mapGetters } from 'vuex';
   import AppAvatar from './sub-components/AppAvatar';
   import AppComments from './sub-components/AppComments';
-  import AppFavors from './sub-components/AppFavors';
   import AppImageDialog from './sub-components/AppImageDialog';
   import AppSocialSharing from './AppSocialSharing';
   import AppImageGallery from './Galleries/AppImageGallery';
@@ -170,6 +169,7 @@
   import AppTagList from './Lists/AppTagList';
   import AppMapIcon from './Maps/AppMapIcon';
   import AppPublisherDetails from './Lists/AppPublisherDetails';
+  import AppFavorList from './Lists/AppFavorList';
 
   export default {
     props: ['apartment'],
@@ -395,7 +395,7 @@
     components: {
       AppAvatar,
       AppComments,
-      AppFavors,
+      AppFavorList,
       AppImageDialog,
       AppSocialSharing,
       AppImageGallery,

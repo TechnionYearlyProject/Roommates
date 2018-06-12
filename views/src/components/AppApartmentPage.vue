@@ -1,7 +1,7 @@
 <template>
 <v-container fluid grid-list-lg>
   <v-layout row wrap v-if="loaded">
-    <v-flex xs12 sm12 md9>
+    <v-flex xs12 sm12 md9 order-xs2 order-md1>
       <v-tabs icons-and-text centered dark color="primary">
         <v-tabs-slider color="yellow"></v-tabs-slider>
         <v-tab v-for="(tab,i) in tabs" :href="`#tab-${i+1}`">
@@ -9,9 +9,9 @@
           <v-icon>{{ tab.icon }}</v-icon>
         </v-tab>
 
-        <v-tab-item :id="`tab-1`">
+        <v-tab-item id="tab-1">
           <v-card>
-            <v-card-media contain :height="400">
+            <v-card-media contain :height="400" class="grey lighten-4">
               <app-image-gallery v-model="v.images"/>
             </v-card-media>
             <v-card-text>
@@ -51,6 +51,9 @@
               </v-layout>
             </v-card-text>
           </v-card>
+        </v-tab-item>
+        <v-tab-item id="tab-2">
+          <app-favor-list :favors="v._interested"/>
         </v-tab-item>
       </v-tabs>
     </v-flex>
@@ -372,6 +375,7 @@
   import AppTagList from './Lists/AppTagList'
   import AppMapIcon from './Maps/AppMapIcon'
   import AppPublisherDetails from './Lists/AppPublisherDetails';
+  import AppFavorList from './Lists/AppFavorList';
 
     export default {
       props: {
@@ -394,7 +398,7 @@
           share: false,
           tabs: [
             {
-              icon: 'favorite',
+              icon: 'list_alt',
               title: 'Details'
             },
             {
@@ -402,15 +406,15 @@
               title: 'Interested'
             },
             {
-              icon: 'favorite',
+              icon: 'comment',
               title: 'Comments'
             },
             {
-              icon: 'favorite',
+              icon: 'rate_review',
               title: 'Reviews'
             },
             {
-              icon: 'favorite',
+              icon: 'group',
               title: 'Groups'
             }
           ],
@@ -602,7 +606,6 @@
            latitude: this.v.location.geolocation[1] 
         }
       }
-        
         // image() {
         //   return this.apartment.images[0]
         //     ? this.apartment.images[this.imageNumber]
@@ -647,7 +650,8 @@
         AppAttributeList,
         AppTagList,
         AppMapIcon,
-        AppPublisherDetails
+        AppPublisherDetails,
+        AppFavorList
       },
       mounted() {
         // if (this.isAuthenticated) {

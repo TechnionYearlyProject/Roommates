@@ -49,10 +49,6 @@ export default {
     value: {
       type: Object,
       required: true
-    },
-    large: {
-      type: Boolean,
-      default: false
     }
   },
   methods: {
