@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import AppGroup from "./AppGroup";
-import AppMyGroup from "./AppMyGroup";
 import { mapMutations } from 'vuex';
+import AppGroup from './AppGroup';
+import AppMyGroup from './AppMyGroup';
 
 export default {
   props: {
@@ -61,24 +61,25 @@ export default {
     };
   },
   methods: {
-    ...mapMutations(['showLoading','hideLoading']),
+    ...mapMutations(['showLoading', 'hideLoading']),
     submit(group) {
       this.showLoading();
-      this.$store.dispatch('addGroup', { params: { id: this.apartmentId }, payload: { id: group } })
-      .then((apartment) => {
-        console.log(apartment)
-        this.groups.push(apartment.groups[apartment.groups.length - 1]);
-      })
-      .catch((error) => console.log(error))
-      .then(() => this.hideLoading());
+      this.$store
+        .dispatch('addGroup', { params: { id: this.apartmentId }, payload: { id: group } })
+        .then((apartment) => {
+          this.groups.push(apartment.groups[apartment.groups.length - 1]);
+        })
+        .catch(error => console.log(error)) // eslint-disable-line
+        .then(() => this.hideLoading());
     }
   },
   mounted() {
-    this.$store.dispatch("fetchGroups", { id: this.apartmentId })
-    .then(groups => {
-      this.groups = groups;
-    })
-    .catch((error) => console.log(error));
+    this.$store
+      .dispatch('fetchGroups', { id: this.apartmentId })
+      .then((groups) => {
+        this.groups = groups;
+      })
+      .catch(error => console.log(error)); // eslint-disable-line
   },
 
   components: {

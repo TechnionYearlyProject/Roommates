@@ -46,138 +46,136 @@
 </template>
 
 <script>
-  import StarRating from 'vue-star-rating'
+import StarRating from 'vue-star-rating';
 
-
-  export default {
-    name: 'AppReviewAddDialog',
-    data() {
-      return {
-        loading: false,
-        reviewAddress: '',
-     	  e6: 1,
-     	  locationData: [],
-     	  ratedCharacteristics: {
-     		 noise: 0,
-     		 parking: 0,
-     		 commercialServices: 0,
-     		 upkeep: 0,
-     		 publicTransport: 0
-     	  },
-     	  ratedPros: '',
-     	  ratedCons: '',
-        alert: {
-          show: false,
-          message: '',
-          type: 'error'
-        },
+export default {
+  name: 'AppReviewAddDialog',
+  data() {
+    return {
+      loading: false,
+      reviewAddress: '',
+      e6: 1,
+      locationData: [],
+      ratedCharacteristics: {
+        noise: 0,
+        parking: 0,
+        commercialServices: 0,
+        upkeep: 0,
+        publicTransport: 0
+      },
+      ratedPros: '',
+      ratedCons: '',
+      alert: {
+        show: false,
+        message: '',
+        type: 'error'
+      }
+    };
+  },
+  methods: {
+    locationStepOnFinish() {
+      this.hideAlert();
+      if (this.locationData.length < 1) {
+        this.showBadAlert('Valid address must be selected');
+        return;
+      }
+      this.e6 = 2;
+    },
+    clearData() {
+      this.reviewAddress = '';
+      this.e6 = 1;
+      this.loading = false;
+      this.locationData = [];
+      this.ratedCharacteristics = {
+        noise: 0,
+        parking: 0,
+        commercialServices: 0,
+        upkeep: 0,
+        publicTransport: 0
       };
+      this.ratedPros = '';
+      this.ratedCons = '';
     },
-    methods: {
-      locationStepOnFinish(){
-        this.hideAlert();
-        if( this.locationData.length < 1){
-            this.showBadAlert('Valid address must be selected');
-            return;
-        }
-        this.e6 = 2;
-      },
-      clearData(){
-        this.reviewAddress= '';
-        this.e6= 1;
-        this.loading=false;
-        this.locationData= [];
-        this.ratedCharacteristics= {
-         noise: 0,
-         parking: 0,
-         commercialServices: 0,
-         upkeep: 0,
-         publicTransport: 0
-        };
-        this.ratedPros= '';
-        this.ratedCons= '';
-      },
-      setReviewAddress(data){
-      		this.locationData = data;
-      		this.reviewAddress =  data.full_name;
-      },
-      close() {
-        this.clearData();
-        this.$emit('close');
-      },
-      showBadAlert(errorMsg) {
-        this.alert.message = errorMsg;
-        this.alert.type = 'error';
-        this.alert.show = true;
-      },
-      hideAlert() {
-        this.alert.message = '';
-        this.alert.show = false;
-      },
-      showLoading() {
-        this.loading = true;
-      },
-      hideLoading() {
-        this.loading = false;
-      },
-      validateReviewInput() {
-        if(this.ratedPros.length < 10){
-            this.showBadAlert('Review text must contain at least 10 letters');
-            return false;
-        }
-        if(this.ratedCons.length < 10){
-            this.showBadAlert('Review text must contain at least 10 letters');
-            return false;
-        }
-        return true;
-      },
-      goToReview() {
-         this.$router.push({ name: 'AppReviews', query: {lat: this.locationData.latitude, lng: this.locationData.longitude, city: this.locationData.locality, street: this.locationData.route} });
-      },
-      async saveReview() {
-        this.hideAlert();
-        if( !this.validateReviewInput())
-          return;
-        this.showLoading();
-      	var userRating = {
-      		  city: this.locationData.locality,
-      			street: this.locationData.route,
-      			state: this.locationData.country,
-      			ratedCharacteristics: this.ratedCharacteristics,
-      			Pros: this.ratedPros,
-      			Cons: this.ratedCons
-      		};
-    		await this.$store.dispatch('publishReview', userRating).then(async (review) => {
-            this.hideLoading();
-            this.goToReview();
-            this.close();
-        }).catch(() => this.showBadAlert('Could not save review')).then(() => this.hideLoading());
-      },
+    setReviewAddress(data) {
+      this.locationData = data;
+      this.reviewAddress = data.full_name;
     },
-	 mounted() {
-      this.$setAutocomplete(this.$refs.reviewAddress, ['address']);
-
+    close() {
+      this.clearData();
+      this.$emit('close');
     },
-    components: {
-      StarRating
+    showBadAlert(errorMsg) {
+      this.alert.message = errorMsg;
+      this.alert.type = 'error';
+      this.alert.show = true;
+    },
+    hideAlert() {
+      this.alert.message = '';
+      this.alert.show = false;
+    },
+    showLoading() {
+      this.loading = true;
+    },
+    hideLoading() {
+      this.loading = false;
+    },
+    validateReviewInput() {
+      if (this.ratedPros.length < 10) {
+        this.showBadAlert('Review text must contain at least 10 letters');
+        return false;
+      }
+      if (this.ratedCons.length < 10) {
+        this.showBadAlert('Review text must contain at least 10 letters');
+        return false;
+      }
+      return true;
+    },
+    goToReview() {
+      this.$router.push({ name: 'AppReviews', query: { lat: this.locationData.latitude, lng: this.locationData.longitude, city: this.locationData.locality, street: this.locationData.route } });
+    },
+    async saveReview() {
+      this.hideAlert();
+      if (!this.validateReviewInput()) return;
+      this.showLoading();
+      const userRating = {
+        city: this.locationData.locality,
+        street: this.locationData.route,
+        state: this.locationData.country,
+        ratedCharacteristics: this.ratedCharacteristics,
+        Pros: this.ratedPros,
+        Cons: this.ratedCons
+      };
+      await this.$store
+        .dispatch('publishReview', userRating)
+        .then(async () => {
+          this.hideLoading();
+          this.goToReview();
+          this.close();
+        })
+        .catch(() => this.showBadAlert('Could not save review'))
+        .then(() => this.hideLoading());
     }
-  };
+  },
+  mounted() {
+    this.$setAutocomplete(this.$refs.reviewAddress, ['address']);
+  },
+  components: {
+    StarRating
+  }
+};
 </script>
 
 <style scoped>
-
 .modal-backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index:99;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
 }
-
-
 </style>

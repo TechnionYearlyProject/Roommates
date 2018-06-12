@@ -62,7 +62,7 @@
           default: undefined
         },
         startDate: {
-          type: String,
+          type: Number,
           default: null
         },
         showCurrent: {
@@ -96,7 +96,11 @@
         }
       },
       created() {
-        this.date = this.startDate;
+        if (this.startDate) {
+          const date = new Date(this.startDate);
+          this.date = date.toJSON();
+          this.dateFormatted = this.formatDate(this.date.substring(0, 10));
+        }
       }
     };
 </script>

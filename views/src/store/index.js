@@ -207,6 +207,18 @@ export default new Vuex.Store({
     },
     /**
      * @author: Alon Talmor
+     * @date: 13/6/18
+     * @param: params: object of {id} - the id to update
+     * @param: payload: object of {price,entranceDate,images,description,tags,requiredRoommates,totalRoommates, numberOfRooms,floor totalFloors, area} - the properties to update
+     */
+    editApartment(context, {params, payload}) {
+      return axios.patch(`http://localhost:3000/apartments/${params.id}`, payload)
+        .then((response) => {
+          return response.data.apartment;
+        });
+    },
+    /**
+     * @author: Alon Talmor
      * @date: 19/04/18
      * @param: params: object of {id} - the id of the apartment to favor.
      */
@@ -311,13 +323,13 @@ export default new Vuex.Store({
      * @author: Or Abramovich
      * @date: 06/18
      * @param: params: object of {long, lat} -
-     * Gets all reviews within a radius of 1 KM from the given coordinates 
+     * Gets all reviews within a radius of 1 KM from the given coordinates
      */
     getReviews({ commit }, params) {
       return axios.get(`http://localhost:3000/reviews/${params.long}/${params.lat}`)
-        .then((response) => {
-          return response.data.reviews;
-        });
+        .then(response =>
+          response.data.reviews
+        );
     },
     /**
      * @author: Or Abramovich
@@ -327,9 +339,9 @@ export default new Vuex.Store({
      */
     publishReview({ state }, payload) {
       return axios.post('http://localhost:3000/reviews', payload)
-      .then((response) => {
-        return response.data.review;
-      });
+      .then(response =>
+        response.data.review
+      );
     },
     /**
      * @author: Alon Talmor
@@ -338,9 +350,9 @@ export default new Vuex.Store({
      */
     fetchGroups(context, params) {
       return axios.get(`http://localhost:3000/apartments/${params.id}/groups`)
-      .then((response) => {
-        return response.data.groups;
-      });
+      .then(response =>
+        response.data.groups
+      );
     },
     /**
      * @author: Alon Talmor
@@ -350,22 +362,23 @@ export default new Vuex.Store({
      */
     addGroup(context, { params, payload }) {
       return axios.post(`http://localhost:3000/apartments/${params.id}/groups`, payload)
-      .then((response) => {
-        return response.data.apartment;
-      });
+      .then(response =>
+        response.data.apartment
+      );
     },
     /**
      * @author: Alon Talmor
      * @date: 6/6/18
      * @param: params: object of {id} - the id of the apartment.
-     * @param: payload: Array of {id,status} - the id of the group to update, and the new member's status.
+     * @param: payload: Array of {id,status} - the id of the group to update,
+     * and the new member's status.
      * Note that is it possible to update only self status.
      */
     updateGroupStatus(context, { params, payload }) {
       return axios.patch(`http://localhost:3000/apartments/${params.id}/groups`, payload)
-      .then((response) => {
-        return response.data.apartment;
-      });
+      .then(response =>
+        response.data.apartment
+      );
     }
   },
   plugins: [vuexPersistence.plugin]

@@ -105,8 +105,8 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import AppAvatar from "../sub-components/AppAvatar";
+import draggable from 'vuedraggable';
+import AppAvatar from '../sub-components/AppAvatar';
 
 export default {
   props: {
@@ -136,7 +136,7 @@ export default {
     };
   },
   methods: {
-    onMove({ relatedContext, draggedContext }) {
+    onMove() {
       return this.myGroupIds.length < this.myGroupMaxSize;
     },
     updateAvailableMembers() {
@@ -155,10 +155,10 @@ export default {
       }
     },
     getName(m) {
-      return `${m.firstName.capitalize()}`+ (m.lastName ? ` ${m.lastName.capitalize()}` : '');
+      return `${m.firstName.capitalize()}${m.lastName ? ` ${m.lastName.capitalize()}` : ''}`;
     },
     submit() {
-      this.$emit("submit", this.myGroupIds);
+      this.$emit('submit', this.myGroupIds);
       this.clearMyGroup();
     }
   },
@@ -167,11 +167,11 @@ export default {
       return {
         animation: 0,
         scroll: true,
-        group: "description",
+        group: 'description',
         disabled: !this.editable,
-        ghostClass: "app-drag-ghost",
-        chosenClass: "app-drag-chosen",
-        dragClass: "app-drag-chosen"
+        ghostClass: 'app-drag-ghost',
+        chosenClass: 'app-drag-chosen',
+        dragClass: 'app-drag-chosen'
       };
     }
   },
@@ -188,23 +188,24 @@ export default {
   },
   mounted() {
     if (!this.interested) {
-      this.$store.dispatch('fetchApartments', { id: this.apartmentId })
-      .then((apartments) => {
-        this.interestedUsersids = apartments[0]._interested;
-        this.$store.dispatch('fetchUser', { id: this.interestedUsersids })
-        .then((users) => {
-          this.interestedUsers = users;
-           this.loaded = true;
-        });
-      })
-      .catch(error => console.log(error));
+      this.$store
+        .dispatch('fetchApartments', { id: this.apartmentId })
+        .then((apartments) => {
+          this.interestedUsersids = apartments[0]._interested;
+          this.$store.dispatch('fetchUser', { id: this.interestedUsersids })
+          .then((users) => {
+            this.interestedUsers = users;
+            this.loaded = true;
+          });
+        })
+        .catch(error => console.log(error)); // eslint-disable-line
     } else {
       this.interestedUsersids = this.interested;
       this.$store.dispatch('fetchUser', { id: this.interestedUsersids })
-        .then((users) => {
-          this.interestedUsers = users;
-           this.loaded = true;
-        });
+      .then((users) => {
+        this.interestedUsers = users;
+        this.loaded = true;
+      });
     }
   },
   components: {

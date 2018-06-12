@@ -1,7 +1,15 @@
 <template>
   <v-container>
-    <v-stepper v-model="e6" vertical>
-      <h3 class="headline secondary--text ma-4">Advertise</h3>
+    <v-stepper v-model="e6" vertical :class="flat ? 'elevation-0' : ''">
+      <v-layout fill-height align-center>
+        <h3 class="headline secondary--text ma-4">{{ title }}</h3>
+        <v-spacer/>
+        <v-btn v-if="edit" icon @click="$emit('cancel')">
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-layout>
+     
+
       <v-divider></v-divider>
     <v-alert :value="error.show" type="error">
       {{ error.message }}
@@ -13,7 +21,7 @@
       <v-stepper-content step="1">
         <v-card :color="color" class="mb-1">
 
-          <v-form v-model="valid" ref="form" lazy-validation>
+          <v-form v-model="valid" ref="form">
             <v-container fluid grid-list-md>
               <v-layout wrap row>
                 <v-flex xs12 sm12 md2>
@@ -53,7 +61,7 @@
                   <v-subheader v-text="'Entrance date'"></v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-xs2 order-md1>
-                  <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" :min="today" />
+                  <app-calendar-form @dateUpdated="payload.entranceDate = new Date($event).getTime()" label="when" single-line validate-on-blur :required="true" :rules="rules.entranceDate" :min="today" :startDate="payload.entranceDate"/>
                 </v-flex>
                 <v-flex xs12 sm12 md1 order-md2>
                 </v-flex>
@@ -157,7 +165,7 @@
             <v-icon left>keyboard_arrow_up</v-icon>Return</v-btn>
           <v-spacer/>
           <v-btn block @click.native="submit" color="secondary" :disabled="!valid">
-            Advertise Now
+            {{ submitText }}
             <v-icon right>send</v-icon>
           </v-btn>
         </v-layout>
@@ -173,8 +181,22 @@
   import tagsList from '../assets/tags';
 
   export default {
+    props: {
+      edit: {
+        type: Boolean,
+        default: false
+      },
+      value: {
+        type: Object
+      },
+      flat: {
+        type: Boolean,
+        default: false
+      }
+    },
     data() {
       return {
+        id: null,
         payload: {
           address: {
             state: 'Israel', // for now this is the default
@@ -227,22 +249,32 @@
       };
     },
     methods: {
+      publishApartment() {
+        return this.$store.dispatch('publishApartment', this.payload);
+      },
+      editApartment() {
+        return this.$store.dispatch('editApartment', { params: { id: this.id }, payload: this.payload })
+        .then((apartment) => {
+          this.$emit('input', apartment);
+          this.$emit('updated');
+          return apartment;
+        });
+      },
       async submit() {
         if (this.$refs.form.validate()) {
           this.error.show = false;
           try {
             this.$store.commit('showLoading');
-            await this.$store.dispatch('publishApartment', this.payload)
-            .then(async (apartment) => {
-              this.$router.push({ name: 'AppMain' });
-              await this.$store.dispatch('searchApartments', { id: apartment._id });
-            }).catch((e) => {
-              this.error.message = e.response.data.message;
-              this.error.show = true;
-            });
+            let apartment;
+            if (this.edit) {
+              apartment = await this.editApartment();
+            } else {
+              apartment = await this.publishApartment();
+            }
+            this.$router.push({ name: 'AppApartmentPage', params: { id: apartment._id } });
           } catch (error) {
-            // eslint-disable-next-line
-            console.log(error);
+            this.error.message = error.response.data.message;
+            this.error.show = true;
           } finally {
             this.$store.commit('hideLoading');
           }
@@ -285,6 +317,12 @@
       },
       today() {
         return new Date(Date.now() - (1000 * 60 * 60 * 24)).toISOString();
+      },
+      title() {
+        return this.edit ? 'Edit Details' : 'Advertise';
+      },
+      submitText() {
+        return this.edit ? 'Update' : 'Advertise Now';
       }
     },
     watch: {
@@ -300,8 +338,29 @@
       },
       'payload.totalRoommates'(val) {
         if (val < this.payload.requiredRoommates) {
-          this.payload.requiredRoommates = val
+          this.payload.requiredRoommates = val;
         }
+      }
+    },
+    created() {
+      if (this.edit) {
+        this.id = this.value._id;
+        this.payload.address.city = this.value.location.address.city;
+        this.payload.address.street = this.value.location.address.street;
+        this.payload.address.number = this.value.location.address.number;
+        this.address = (this.payload.address.street ? `${this.payload.address.street}` : '') + (this.payload.address.city ? ` ${this.payload.address.city}` : '') + `, ${this.payload.address.state}`; // eslint-disable-line
+        this.payload.address.apartmentNumber = this.value.location.address.apartmentNumber;
+        this.payload.price = this.value.price;
+        this.payload.entranceDate = this.value.entranceDate;
+        this.payload.requiredRoommates = this.value.requiredRoommates;
+        this.payload.totalRoommates = this.value.totalRoommates;
+        this.payload.floor = this.value.floor;
+        this.payload.totalFloors = this.value.totalFloors;
+        this.payload.numberOfRooms = this.value.numberOfRooms;
+        this.payload.area = this.value.area;
+        this.payload.description = this.value.description;
+        this.payload.images = this.value.images;
+        this.payload.tags = this.value.tags;
       }
     },
     mounted() {

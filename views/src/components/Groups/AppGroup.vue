@@ -113,7 +113,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex';
-import AppAvatar from "../sub-components/AppAvatar";
+import AppAvatar from '../sub-components/AppAvatar';
 import AppPayment from '../AppPayment';
 
 export default {
@@ -125,13 +125,13 @@ export default {
       type: String,
       required: true
     },
-    ownerId:{
+    ownerId: {
       type: String,
       required: true
     },
     groupTitle: {
       type: String,
-      default: "Group"
+      default: 'Group'
     }
   },
   data() {
@@ -153,56 +153,60 @@ export default {
   methods: {
     ...mapMutations(['showSnackbar']),
     showThankYouMessage() {
-      this.showSnackbar('Thank you for voting!')
+      this.showSnackbar('Thank you for voting!');
     },
     optOut() {
       this.loading = true;
-      this.$store.dispatch('updateGroupStatus', {
-         params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.DECLINED }
+      this.$store
+        .dispatch('updateGroupStatus', {
+          params: { id: this.apartmentId },
+          payload: { id: this.value._id, status: this.DECLINED }
         })
-      .then(() => {
-        this.disabled = true;
-        this.value.members[this.myIndex].status = this.DECLINED;
-        this.value.members.splice();
-        this.showThankYouMessage();
-      })
-      .catch(error => console.log(error))
-      .then(() => this.loading = false);
+        .then(() => {
+          this.disabled = true;
+          this.value.members[this.myIndex].status = this.DECLINED;
+          this.value.members.splice();
+          this.showThankYouMessage();
+        })
+        .catch(error => console.log(error)) // eslint-disable-line
+        .then(() => { this.loading = false; });
     },
     optIn() {
       this.loading = true;
-      this.$store.dispatch('updateGroupStatus', {
-        params: { id: this.apartmentId }, payload: { id: this.value._id, status: this.ACCEPTED }
+      this.$store
+        .dispatch('updateGroupStatus', {
+          params: { id: this.apartmentId },
+          payload: { id: this.value._id, status: this.ACCEPTED }
         })
-      .then(() => {
-        this.disabled = true;
-        this.value.members[this.myIndex].status = this.ACCEPTED;
-        this.value.members.splice();
-        this.showThankYouMessage();
-      })
-      .catch(error => console.log(error))
-      .then(() => this.loading = false);
+        .then(() => {
+          this.disabled = true;
+          this.value.members[this.myIndex].status = this.ACCEPTED;
+          this.value.members.splice();
+          this.showThankYouMessage();
+        })
+        .catch(error => console.log(error)) // eslint-disable-line
+        .then(() => { this.loading = false; });
     },
     color(status) {
       let color;
       if (status === this.ACCEPTED) {
-        color = "green lighten-5";
+        color = 'green lighten-5';
       } else if (status === this.DECLINED) {
-        color = "red lighten-5";
+        color = 'red lighten-5';
       } else {
-        color = "grey lighten-5";
+        color = 'grey lighten-5';
       }
       return color;
     },
     getName(user) {
-      return `${user.firstName.capitalize()}` + (user.lastName ? ` ${user.lastName.capitalize()}` : "");
+      return `${user.firstName.capitalize()}${(user.lastName ? ` ${user.lastName.capitalize()}` : '')}`;
     },
     goToProfile(user) {
-      this.$router.push({ name: "AppUserProfile", params: { id: user._id } });
+      this.$router.push({ name: 'AppUserProfile', params: { id: user._id } });
     }
   },
   computed: {
-    ...mapGetters(['getUser','isVerified']),
+    ...mapGetters(['getUser', 'isVerified']),
     optInNumber() {
       return this.value.members.filter(m => m.status === this.ACCEPTED).length;
     },
@@ -214,10 +218,8 @@ export default {
     },
     closeTheDeal() {
       const user = this.getUser;
-      console.log(user);
-      console.log(user._id);
-      console.log(this.ownerId);
-      return user && user._id === this.ownerId && (this.value.members.filter(m => m.status === this.ACCEPTED).length === this.value.members.length)
+      return user && user._id === this.ownerId &&
+       this.value.members.filter(m => m.status === this.ACCEPTED).length === this.value.members.length; // eslint-disable-line
     },
     statistics() {
       return {
@@ -231,15 +233,20 @@ export default {
     }
   },
   created() {
-      const id = this.value.members.map(m => m.id);
-      this.$store.dispatch('fetchUser', {id})
+    const id = this.value.members.map(m => m.id);
+    this.$store
+      .dispatch('fetchUser', { id })
       .then((users) => {
         this.members = users;
         this.loaded = true;
       })
-      .catch(e => console.log(e));
-      if (this.isVerified) this.myIndex = this.value.members.findIndex(m => m.id === this.getUser._id);
-      if (this.participatingInGroup && this.value.members[this.myIndex].status !== this.PENDING) this.disabled = true;
+      .catch(e => console.log(e)); // eslint-disable-line
+    if (this.isVerified) {
+      this.myIndex = this.value.members.findIndex(m => m.id === this.getUser._id);
+    }
+    if (this.participatingInGroup && this.value.members[this.myIndex].status !== this.PENDING) {
+      this.disabled = true;
+    }
   },
   components: {
     AppAvatar,

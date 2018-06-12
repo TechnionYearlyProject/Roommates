@@ -6,22 +6,22 @@ import AppVerification from '@/components/AppVerification';
 import AppResetPassword from '@/components/AppResetPassword';
 import AppUserProfile from '@/components/AppUserProfile';
 import AppPublishApartment from '@/components/AppPublishApartment';
-import AppApartmentPage from '@/components/AppApartmentPage'
+import AppApartmentPage from '@/components/AppApartmentPage';
 import AppReviews from '@/components/AppReviews';
 import AppPayment from '@/components/AppPayment';
 import store from '../store';
-import HelloWorld from '@/components/HelloWorld';
+// import HelloWorld from '@/components/HelloWorld';
 
 Vue.use(Router);
 
 const router = new Router({
   mode: 'history',
   routes: [
-    {
-      path: '/test',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },
+    // {
+    //   path: '/test',
+    //   name: 'HelloWorld',
+    //   component: HelloWorld
+    // },
     {
       path: '/',
       name: 'AppMain',

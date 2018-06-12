@@ -28,24 +28,24 @@ export default {
   data() {
     return {
       interestedMessage: 'I\'m interested!'
-    }
+    };
   },
   methods: {
     favorite() {
       if (!this.isAuthenticated) {
-        this.interestedMessage = "Please login first";
+        this.interestedMessage = 'Please login first';
       } else if (!this.isVerified) {
-        this.interestedMessage = "Please verify account";
+        this.interestedMessage = 'Please verify account';
       } else {
         this.$store
-          .dispatch("favor", { id: this.apartmentId })
-          .then(apartment => {
-            this.$emit('input', apartment._interested)
+          .dispatch('favor', { id: this.apartmentId })
+          .then((apartment) => {
+            this.$emit('input', apartment._interested);
           })
-          .catch(error => {
+          .catch((error) => {
             // eslint-disable-next-line
             console.log(error);
-            this.$emit('input', !this.value)
+            this.$emit('input', !this.value);
           });
       }
     }
@@ -54,9 +54,7 @@ export default {
     ...mapGetters(['isAuthenticated', 'isVerified']),
     fav() {
       const me = this.$store.getters.getUser;
-      const id =  me ? me._id : 'nop'
-      console.log(me._id)
-      console.log(this.value)
+      const id = me ? me._id : 'nop';
       return this.value.includes(id);
     }
   }

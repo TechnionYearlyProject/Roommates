@@ -92,42 +92,42 @@
 </template>
 
 <script>
-  import AppPaypal from './sub-components/AppPayPal';
-  import AppApartmentAd from './AppApartmentAd';
+import AppPaypal from './sub-components/AppPayPal';
+import AppApartmentAd from './AppApartmentAd';
 
-  export default {
-    name: "AppPayment",
-    props: {
-      price: {
-        type: Number,
-        required: false
-      }
-    },
-    url: '',
-    agreedToS: false,
-    data() {
-      return {
-        amount: 100,
-        ToSDialog: false,
-        contractDialog: false,
-        fetchedPublisher: false,
-        publisher: {
-          firstName: 'Some',
-          lastName: 'User',
-          email: 'user@example.com',
-          mobilePhone: '+972-8711111'
-        },
-        alert: {
-          show: false,
-          message: '',
-          type: 'error'
-        },
-        apartment: [{
+export default {
+  name: 'AppPayment',
+  props: {
+    price: {
+      type: Number,
+      required: false
+    }
+  },
+  url: '',
+  agreedToS: false,
+  data() {
+    return {
+      amount: 100,
+      ToSDialog: false,
+      contractDialog: false,
+      fetchedPublisher: false,
+      publisher: {
+        firstName: 'Some',
+        lastName: 'User',
+        email: 'user@example.com',
+        mobilePhone: '+972-8711111'
+      },
+      alert: {
+        show: false,
+        message: '',
+        type: 'error'
+      },
+      apartment: [
+        {
           _id: '5b154565bfc2730600d892c3',
           _createdBy: '',
           createdAt: Date.now(),
           price: 1000,
-          //_interested:
           entranceDate: new Date('12-29-2019').getTime(),
           location: {
             address: {
@@ -135,85 +135,80 @@
               city: 'Tel-Aviv',
               street: 'Rothschild',
               number: 23
-              //apartmentNumber:
             },
             geolocation: [34.775313, 32.065887]
           },
           numberOfRooms: 3,
           floor: 1,
           totalFloors: 5,
-          //area:
-          //images:
-          //description:
           tags: [0, 7],
           requiredRoommates: 1,
           totalRoommates: 2,
-          //comments
           groups: []
-        }],
-      };
-    },
-    methods: {
-
-      paymentSuccess(payment) {
-        if (payment.state === 'approved') {
-          if(this.agreedToS === true){
-            if(this.agreedContract === true){
-              alert(`success!\nID: ${payment.id}`);
-              // redirect to group page where the user status will be changed to payed
-            }
-            else {
-              this.alert.message = 'please read and agree to the Apartment Contract';
-              this.alert.show = true;
-            }
-          }
-          else {
-            this.alert.message = 'please read and agree to the Terms of Service';
+        }
+      ]
+    };
+  },
+  methods: {
+    paymentSuccess(payment) {
+      if (payment.state === 'approved') {
+        if (this.agreedToS === true) {
+          if (this.agreedContract === true) {
+            alert(`success!\nID: ${payment.id}`); // eslint-disable-line
+            // redirect to group page where the user status will be changed to payed
+          } else {
+            this.alert.message = 'please read and agree to the Apartment Contract';
             this.alert.show = true;
           }
-        }
-        else {
-          this.alert.message = 'payment not complete';
+        } else {
+          this.alert.message = 'please read and agree to the Terms of Service';
           this.alert.show = true;
         }
-      },
-      ToSClick(){
-        this.ToSDialog = false;
-        this.agreedToS = true;
-      },
-      getPublisher() {
-        if (!this.fetchedPublisher) {
-          const id = this.apartment._createdBy;
-          this.$store.dispatch('fetchUser', { id }).then((users) => {
-            if (users[id]) {
-              this.publisher = users[id];
-            } else {
-              this.publisher = {
-                firstName: 'Some',
-                lastName: 'User',
-                email: 'user@example.com',
-                mobilePhone: '+972-8711111'
-              };
-            }
-            this.fetchedPublisher = true;
-          });
-        }
-      },
-      visitPage() {
-        this.$router.push({name: 'AppApartmentPage', params: {
-            id: this.apartment._id,
-            apartment: this.apartment,
-            publisher: this.publisher
-          }});
-      },
+      } else {
+        this.alert.message = 'payment not complete';
+        this.alert.show = true;
+      }
     },
-    components: {
-      AppPaypal,
-      AppApartmentAd
+    ToSClick() {
+      this.ToSDialog = false;
+      this.agreedToS = true;
+    },
+    getPublisher() {
+      if (!this.fetchedPublisher) {
+        const id = this.apartment._createdBy;
+        this.$store.dispatch('fetchUser', { id })
+        .then((users) => {
+          if (users[id]) {
+            this.publisher = users[id];
+          } else {
+            this.publisher = {
+              firstName: 'Some',
+              lastName: 'User',
+              email: 'user@example.com',
+              mobilePhone: '+972-8711111'
+            };
+          }
+          this.fetchedPublisher = true;
+        });
+      }
+    },
+    visitPage() {
+      this.$router.push({
+        name: 'AppApartmentPage',
+        params: {
+          id: this.apartment._id,
+          apartment: this.apartment,
+          publisher: this.publisher
+        }
+      });
     }
+  },
+  components: {
+    AppPaypal,
+    AppApartmentAd
   }
+};
 </script>
 
 <style scoped>
-
 </style>

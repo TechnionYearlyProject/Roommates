@@ -42,22 +42,24 @@ export default {
   data() {
     return {
       recommended: []
-    }
+    };
   },
   methods: {
     goToPage(id) {
-      this.$router.push({name: 'AppApartmentPage', params: {id}});
+      this.$router.push({ name: 'AppApartmentPage', params: { id } });
     },
     getAddress(a) {
-      return `${a.location.address.street.capitalize()} ${a.location.address.number}, ${a.location.address.city.capitalize()}`
+      return `${a.location.address.street.capitalize()} ${a.location.address.number}, ${a.location.address.city.capitalize()}`;
     }
   },
   mounted() {
     this.$store.dispatch('fetchApartments', { geolocation: this.geolocation, radius: this.radius })
     .then((apartments) => {
-      this.recommended = apartments.filter(a => !this.filtered.includes(a._id)).slice(0, Math.max(this.listLength, apartments.length));
+      this.recommended = apartments
+      .filter(a => !this.filtered.includes(a._id))
+      .slice(0, Math.max(this.listLength, apartments.length));
     })
-    .catch((e) => console.log(e));
+    .catch(e => console.log(e)); // eslint-disable-line
   }
 };
 </script>

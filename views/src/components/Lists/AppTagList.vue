@@ -23,7 +23,7 @@ export default {
   data() {
     return {
       tags: t
-    }
+    };
   }
 };
 </script>
