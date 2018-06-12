@@ -95,7 +95,10 @@
           </v-card>
         </div>
       </v-flex>
-      <v-btn @click="submit" :disabled="myGroupIds.length !== myGroupMaxSize" color="success">Add Group</v-btn>
+      <v-btn @click="submit" :disabled="myGroupIds.length !== myGroupMaxSize" color="success">
+        <v-icon left>group_add</v-icon>
+        Add Group
+        </v-btn>
       <v-btn @click="clearMyGroup">Clear</v-btn>
     </v-layout>
   </div>
@@ -192,11 +195,16 @@ export default {
         .then((users) => {
           this.interestedUsers = users;
            this.loaded = true;
-        })
+        });
       })
       .catch(error => console.log(error));
     } else {
-      this.interestedUsers = this.interested;
+      this.interestedUsersids = this.interested;
+      this.$store.dispatch('fetchUser', { id: this.interestedUsersids })
+        .then((users) => {
+          this.interestedUsers = users;
+           this.loaded = true;
+        });
       this.loaded = true;
     }
   },

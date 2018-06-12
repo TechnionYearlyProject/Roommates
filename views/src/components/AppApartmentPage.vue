@@ -2,6 +2,7 @@
 <v-container fluid grid-list-lg>
   <v-layout row wrap v-if="loaded">
     <v-flex xs12 sm12 md9 order-xs2 order-md1>
+      <v-card flat>
         <v-tabs card icons-and-text centered dark color="primary">
           <v-tabs-slider color="yellow"></v-tabs-slider>
           <v-tab v-for="(tab,i) in tabs" :href="`#tab-${i+1}`">
@@ -64,11 +65,16 @@
               <app-comments :comments="v.comments" :onComment="addComment"/>
             </v-card>
           </v-tab-item>
-  
+
           <v-tab-item id="tab-4">
             <app-reviews :lat="v.location.geolocation[1]" :lng="v.location.geolocation[0]" :city="v.location.address.city" :street="v.location.address.street"/>
           </v-tab-item>
+
+          <v-tab-item id="tab-5">
+            <app-group-full :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
+          </v-tab-item>
         </v-tabs>
+      </v-card>
     </v-flex>
     <v-flex order-xs1 order-md2>
       <v-toolbar color="primary" dark :height="72"><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
@@ -391,6 +397,7 @@
   import AppFavorList from './Lists/AppFavorList';
   import AppComments from './Comments/AppComments'
   import AppReviews from './AppReviews'
+  import AppGroupFull from './Groups/AppGroupFull'
 
     export default {
       props: {
@@ -600,7 +607,8 @@
         AppPublisherDetails,
         AppFavorList,
         AppComments,
-        AppReviews
+        AppReviews,
+        AppGroupFull
       },
       mounted() {
         // if (this.isAuthenticated) {

@@ -1,8 +1,8 @@
 <template>
     <div>
-  <v-container grid-list-xl>
-    <v-card>
-        <v-toolbar card>
+  <v-container fluid grid-list-xl px-0 pt-0>
+    <v-card flat>
+      <v-toolbar card color="primary lighten-5">
       <v-icon>mdi-account-group</v-icon>
       <v-toolbar-title>Suggested Groups</v-toolbar-title>
     </v-toolbar>
@@ -17,9 +17,9 @@
       </v-container>
     </v-card>
   </v-container>
-  <v-container grid-list-xl>
-    <v-card>
-        <v-toolbar card>
+  <v-container fluid grid-list-xl px-0 pt-0>
+    <v-card flat>
+        <v-toolbar card color="primary lighten-5">
             <v-icon>mdi-account-multiple-plus</v-icon>
             <v-toolbar-title>Create Your Own Group</v-toolbar-title>
         </v-toolbar>
