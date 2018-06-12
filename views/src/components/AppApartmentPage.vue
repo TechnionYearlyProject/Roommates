@@ -15,7 +15,18 @@
           <app-image-gallery v-model="v.images"/>
         </v-card-media>
         <v-card-text>
-          <app-attribute-list v-model="attributes" />
+          <v-layout wrap row >
+          <v-flex xs12 sm12 md8>
+            <app-attribute-list v-model="attributes" />
+          </v-flex>
+          <v-flex xs12 sm12 md4>
+            <v-card class="mt-3 ml-3">
+              <v-card-title><h4>Utilities</h4></v-card-title>
+              <v-divider/>
+              <app-tag-list v-model="v.tags"/>
+            </v-card>
+          </v-flex>
+          </v-layout>
         </v-card-text>
       </v-card>
     </v-tab-item>
@@ -332,6 +343,7 @@
   import AppSocialSharing from './AppSocialSharing';
   import AppImageGallery from './Galleries/AppImageGallery'
   import AppAttributeList from './Lists/AppAttributeList'
+  import AppTagList from './Lists/AppTagList'
 
     export default {
       props: {
@@ -594,7 +606,8 @@
         // AppAvatar,
         AppImageGallery,
         AppSocialSharing,
-        AppAttributeList
+        AppAttributeList,
+        AppTagList
       },
       mounted() {
         // if (this.isAuthenticated) {

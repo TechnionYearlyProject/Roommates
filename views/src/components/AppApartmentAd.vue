@@ -152,15 +152,9 @@
           <div v-if="show === 'apartmentDetails'" ref='cardDetails' key="apartmentDetails">
             <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
             <app-attribute-list v-model="attributes"/>
-            <v-layout row wrap py-3>
-              <v-flex xs3 v-for="(tag,i) in apartment.tags" :key="`tag-${i}`" mx-auto>
-                <div class="text-xs-center">
-                  <v-icon>{{ tags[tag].vicon }}</v-icon><br>
-                  <small>{{ tags[tag].name }}</small>
-                </div>
+            <app-tag-list v-model="apartment.tags"/>
 
-              </v-flex>
-            </v-layout>
+            
 
             <v-card v-if="apartment.description">
               <v-card-title>
@@ -204,8 +198,6 @@
 
 <script>
   import { mapGetters } from 'vuex';
-  import defaultApartmentImage from '../assets/apartment-default.jpg';
-  import tagsList from '../assets/tags';
   import AppAvatar from './sub-components/AppAvatar';
   import AppMap from './sub-components/AppMap';
   import AppComments from './sub-components/AppComments';
@@ -214,6 +206,7 @@
   import AppSocialSharing from './AppSocialSharing';
   import AppImageGallery from './Galleries/AppImageGallery';
   import AppAttributeList from './Lists/AppAttributeList';
+  import AppTagList from './Lists/AppTagList';
 
   export default {
     props: ['apartment'],
@@ -256,7 +249,6 @@
         show: 'apartmentDetails',
         fav: false,
         showMap: false,
-        tags: tagsList,
         defaultImage: defaultApartmentImage,
         imageNumber: 0,
         imageDialog: false,
@@ -440,7 +432,8 @@
       AppImageDialog,
       AppSocialSharing,
       AppImageGallery,
-      AppAttributeList
+      AppAttributeList,
+      AppTagList    
     }
   };
 </script>
