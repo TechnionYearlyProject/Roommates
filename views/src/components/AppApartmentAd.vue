@@ -12,7 +12,8 @@
       </v-toolbar>
     <app-image-dialog v-model="imageDialog" :images="apartment.images"/>
     <v-card-media contain height="200px" @click.native="imageDialog = (apartment.images.length > 0)" class="grey lighten-5" :style="{cursor: apartment.images.length > 0 ? 'pointer' : 'auto'}">
-      <v-slide-x-transition>
+      <app-image-gallery v-model="apartment.images"/>
+      <!-- <v-slide-x-transition>
         <div :key="image" class="card__media__background" :style="{background: `url(${image}) center center / contain no-repeat`}"></div>
       </v-slide-x-transition>
       <v-container fill-height fluid>
@@ -25,7 +26,7 @@
             <v-icon>keyboard_arrow_right</v-icon>
           </v-btn>
         </v-layout>
-      </v-container>
+      </v-container> -->
     </v-card-media>
     <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
 
@@ -223,6 +224,7 @@
   import AppFavors from './sub-components/AppFavors';
   import AppImageDialog from './sub-components/AppImageDialog';
   import AppSocialSharing from './AppSocialSharing';
+  import AppImageGallery from './Galleries/AppImageGallery';
 
   export default {
     props: ['apartment'],
@@ -350,22 +352,7 @@
           });
         }
       },
-      nextImage(e) {
-        e.stopPropagation();
 
-        this.imageNumber =
-          this.imageNumber >= this.apartment.images.length - 1
-            ? 0
-            : this.imageNumber + 1;
-      },
-      previousImage(e) {
-        e.stopPropagation();
-
-        this.imageNumber =
-          this.imageNumber <= 0
-            ? this.apartment.images.length - 1
-            : this.imageNumber - 1;
-      },
       openMap() {
         this.showMap = true;
       },
@@ -460,7 +447,8 @@
       AppComments,
       AppFavors,
       AppImageDialog,
-      AppSocialSharing
+      AppSocialSharing,
+      AppImageGallery
     }
   };
 </script>

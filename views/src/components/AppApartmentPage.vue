@@ -1,5 +1,26 @@
 <template>
-<v-container mt-5 grid-list-lg>
+<v-container fluid>
+  <v-layout row wrap v-if="loaded">
+    <v-flex xs12 sm12 md9>
+  <v-tabs icons-and-text centered dark color="primary">
+    <v-tabs-slider color="yellow"></v-tabs-slider>
+    <v-tab v-for="(tab,i) in tabs" :href="`#tab-${i+1}`">
+      {{ tab.title }}
+      <v-icon>{{ tab.icon }}</v-icon>
+    </v-tab>
+
+    <v-tab-item :id="`tab-1`">
+      <v-card>
+        <v-card-media contain height="400" class="grey lighten-5">
+          <app-image-gallery v-model="v.images"/>
+        </v-card-media>
+      </v-card>
+    </v-tab-item>
+  </v-tabs>
+    </v-flex>
+  </v-layout>
+</v-container>
+<!-- <v-container mt-5 grid-list-lg>
   <v-layout row wrap v-if="loaded">
     <v-flex xs12 sm12 md9>
       <v-card>
@@ -98,7 +119,7 @@
       </v-card>
     </v-flex>
     <v-flex >
-      <v-card>
+      <v-card> -->
         <!-- <v-carousel>
           <v-carousel-item
             v-for="(image, i) in v.images"
@@ -292,7 +313,7 @@
 
           </v-list> -->
         <!-- </v-card> -->
-      </v-card>
+      <!-- </v-card>
     </v-flex>
     <v-flex>
       <v-card height="200">
@@ -300,22 +321,13 @@
       </v-card>
     </v-flex>
   </v-layout>
-</v-container>
+</v-container> -->
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
   import AppSocialSharing from './AppSocialSharing';
-  import defaultApartmentImage from '../assets/apartment-default.jpg';
-  import tagsList from '../assets/tags';
-  import AppAvatar from './sub-components/AppAvatar';
-  import AppMap from './sub-components/AppMap';
-  import AppComments from './sub-components/AppComments';
-  import AppFavors from './sub-components/AppFavors';
-  import AppImageDialog from './sub-components/AppImageDialog';
-  import attributes from "../assets/attributes";
-
- 
+  import AppImageGallery from './Galleries/AppImageGallery'
 
     export default {
       props: {
@@ -336,157 +348,45 @@
           dialog: false,
           fav: false,
           share: false,
-          image: null,
-          defaultImage: defaultApartmentImage,
-
-          a: {
-            active: true,
-            price: 1000,
-            comments: [],
-            icon: 'C:\\Users\\omrih\\WebstormProjects\\Roommates\\views\\static\\favicon\\android-chrome-192x192.png',
-            title: 'Apartment Information',
-            createdAt: new Date('2018-05-05').getTime(),
-            icons: [
-              'list',
-              'favorite',
-              'person',
-              'check',
-              'chat'
-            ],
-            properties: [
-              {
-                title: 'price ($)',
-                value: {
-                  current: 8,
-                  previous: 8,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 ],
-                }
-              },
-              {
-                title: 'required roommates',
-                value: {
-                  current: 2,
-                  previous: 2,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 && v < 12],
-                }
-              },
-              {
-                title: 'total roommates',
-                value: {
-                  current: 3,
-                  previous: 3,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 && v < 12],
-                }
-              },
-              {
-                title: 'floor',
-                value: {
-                  current: 2,
-                  previous: 2,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v >= 0 && v < 12],
-                }
-              },
-              {
-                title: 'total floors',
-                value: {
-                  current: 3,
-                  previous: 3,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  // rules: [v => v >= 0 && v < 12 && v >= apartment.properties.floor],
-                }
-              },
-              {
-                title: 'rooms',
-                value: {
-                  current: 7,
-                  previous: 7,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 && v < 12],
-                }
-              },
-              {
-                title: 'area (square meter)',
-                value: {
-                  current: 2,
-                  previous: 2,
-                },
-                error: [],
-                isEditable: true,
-                edit: {
-                  active: false,
-                  kind: 'text',
-                  rules: [v => v > 0 ],
-                }
-              }
-            ],
-
-            photos: [
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/squirrel.jpg'
-              },
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/sky.jpg'
-              },
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/bird.jpg'
-              },
-              {
-                src: 'https://vuetifyjs.com/static/doc-images/carousel/planet.jpg'
-              }
-            ],
-          },
-      
-          expended: false,
-          show: 'apartmentDetails',
-          fav: false,
-          showMap: false,
-          tags: tagsList,
+          tabs: [
+            {
+              icon: 'favorite',
+              title: 'Details'
+            },
+            {
+              icon: 'favorite',
+              title: 'Interested'
+            },
+            {
+              icon: 'favorite',
+              title: 'Comments'
+            },
+            {
+              icon: 'favorite',
+              title: 'Reviews'
+            },
+            {
+              icon: 'favorite',
+              title: 'Groups'
+            }
+          ],
+          // expended: false,
+          // show: 'apartmentDetails',
+          // fav: false,
+          // showMap: false,
+          // tags: tagsList,
           
-          imageNumber: 0,
-          imageDialog: false,
-          interestedMessage: "I'm interested!",
-          clipboard: {
-            color: undefined,
-            text: 'Copy link',
-            closeDelay: 200,
-            lastCopyTime: 0
-          },
-          e1: 'recent',
-          fetchedPublisher: false,
+          // imageNumber: 0,
+          // imageDialog: false,
+          // interestedMessage: "I'm interested!",
+          // clipboard: {
+          //   color: undefined,
+          //   text: 'Copy link',
+          //   closeDelay: 200,
+          //   lastCopyTime: 0
+          // },
+          // e1: 'recent',
+          // fetchedPublisher: false,
         };
       },
       methods: {
@@ -533,108 +433,12 @@
             });
           }
         },
-        initApartment(){
-          this.apartment.properties.push({
-            title: 'price',
-            value: 8,
-            icon: 'dollar',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.profile.properties.push({
-            title: 'required roommates',
-            value: 1,
-            icon: 'people',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.apartment.properties.push({
-            title: 'total roommates',
-            value: 2,
-            icon: 'people',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.apartment.properties.push({
-            title: 'floor',
-            value: 2,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.apartment.properties.push({
-            title: 'total roommates',
-            value: 3,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.apartment.properties.push({
-            title: 'rooms',
-            value: 7,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-          this.apartment.properties.push({
-            title: 'area (square meters)',
-            value: 2,
-            icon: '',
-            error: [],
-            isEditable: true,
-            edit: {
-              active: false,
-              kind: 'number',
-              rules: v => v >= 0 ,
-              counter: 25,
-            },
-          });
-        },
         editProperty(property) {
           if (property.value.current === property.value.previous) {
             property.edit.active = false;
             return;
           }
-          // this.$store
-          //   .dispatch('updateUser', property.getPayload())
-          //   .then(() => {
-          //     property.error = [];
+          
           if ( (property.value.current >= 0)) {
             property.value.previous = property.value.current;
             property.edit.active = false;
@@ -642,15 +446,6 @@
           else{
             property.error.push("invalid value")
           }
-
-          //   })
-          //   .catch((error) => {
-          //     property.value.current = property.value.previous;
-          //     property.error = 'An error occured!';
-          //     // eslint-disable-next-line
-          //     console.log(error); // show an error message
-          //   }
-          // );
         },
         openMap() {
           this.showMap = true;
@@ -710,10 +505,10 @@
           return this.$store.dispatch('searchApartments', { id })
           .then((apartment) => {
             this.v = apartment[0];
-            this.image = this.v.images[0] || defaultImage;
           });
         },
         fetchPublisher(id) {
+          console.log(id);
           return this.$store.dispatch('fetchUser', { id })
           .then((users) => {
             console.log(users)
@@ -751,6 +546,7 @@
           .then(() => this.$store.commit('hideLoading'));
         } else if (!this.publisher) {
           this.$store.commit('showLoading');
+          this.v = this.apartment;
           this.fetchPublisher(this.v._createdBy)
           .then(() => this.loaded = true)
           .catch(e => console.log(e))
@@ -762,12 +558,8 @@
         }
       },
       components: {
-        AppAvatar,
-        AppMap,
-        AppComments,
-        AppFavors,
-        AppImageDialog,
-
+        // AppAvatar,
+        AppImageGallery,
         AppSocialSharing
       },
       mounted() {
