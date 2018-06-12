@@ -1,12 +1,20 @@
 <template>
-    <v-layout wrap>
+  <div>
+    <v-layout v-if="!loaded" wrap>
+
+    </v-layout>
+    <v-layout v-else wrap>
       <v-flex xs12 sm6>
         <v-toolbar dark dense color="primary lighten-3">
-          <span class="mb-1 ml-3">My Group ({{ myGroup.length }}/{{ myGroupMaxSize }})</span>
+          <span class="mb-1 ml-3">My Group ({{ myGroupIds.length }}/{{ myGroupMaxSize }})</span>
           <v-spacer></v-spacer>
           <v-icon v-show="$vuetify.breakpoint.smAndUp">open_with</v-icon>
         </v-toolbar>
+
+        <!-- the group that I'm building layout -->
         <v-card>
+
+          <!-- display for small screens only -->
           <v-btn v-if="$vuetify.breakpoint.xsOnly" @click.stop="peopleDialog = true" color="secondary" dark absolute top right fab style="z-index:1">
             <v-icon>add</v-icon>
           </v-btn>
@@ -16,15 +24,15 @@
               <v-divider></v-divider>
               <v-card-text style="height: 300px;">
                 <v-list subheader>
-                  <v-list-tile v-for="(e,i) in members" :key="`xs-interested-${i}`" @click.capture.stop="toggleSelection(e)" avatar">
+                  <v-list-tile v-for="(id,i) in interestedUsersids" :key="`xs-interested-${i}`" @click.capture.stop="toggleSelection(id)" avatar>
                     <v-list-tile-action>
-                      <v-checkbox v-model="myGroup" :value="e" :disabled="myGroup.length >= myGroupMaxSize && !myGroup.includes(e)"/>
+                      <v-checkbox v-model="myGroupIds" :value="id" :disabled="myGroupIds.length >= myGroupMaxSize && !myGroupIds.includes(id)"/>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                      {{ e }}
+                      {{ getName(interestedUsers[id]) }}
                     </v-list-tile-content>
                     <v-list-tile-avatar>
-                      <app-avatar name="Alon" :size="40"></app-avatar>
+                      <app-avatar :name="getName(interestedUsers[id])" :size="40"></app-avatar>
                     </v-list-tile-avatar>
                   </v-list-tile>
                 </v-list>
@@ -36,23 +44,31 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+
+
+          <!-- the actual group that I'm building -->
           <v-list>
-            <draggable v-model="myGroup" :options="dragOptions" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
-              <div v-for="(e,i) in myGroup">
+            <draggable v-model="myGroupIds" :options="dragOptions" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
+              <div v-for="(id,i) in myGroupIds">
                 <v-list-tile :key="`my-group-${i}`" @click="" avatar>
                   <v-list-tile-avatar>
-                    <app-avatar name="Alon" :size="40"></app-avatar>
+                    <app-avatar :name="getName(interestedUsers[id])" :size="40"></app-avatar>
                   </v-list-tile-avatar>
                   <v-list-tile-content>
-                      {{ e }}
+                      {{ getName(interestedUsers[id]) }}
                   </v-list-tile-content>
                 </v-list-tile>
                 <v-divider :key="`divider-my-group-${i}`"></v-divider>
               </div>
             </draggable>
           </v-list>
+
+
         </v-card>
       </v-flex>
+
+
+
       <v-flex xs12 sm6>
         <div v-if="$vuetify.breakpoint.smAndUp">
           <v-toolbar dense color="secondary">
@@ -62,14 +78,14 @@
           </v-toolbar>
           <v-card>
             <v-list>
-              <draggable v-model="availableMemebers" :options="dragOptions" :move="onMove" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
-                <div v-for="(e,i) in availableMemebers">
+              <draggable v-model="interestedUsersids" :options="dragOptions" :move="onMove" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
+                <div v-for="(id,i) in interestedUsersids">
                   <v-list-tile :key="`interest-${i}`" @click="" avatar>
                     <v-list-tile-avatar>
-                      <app-avatar name="Alon" :size="40"></app-avatar>
+                      <app-avatar :name="getName(interestedUsers[id])" :size="40"></app-avatar>
                     </v-list-tile-avatar>
                     <v-list-tile-content>
-                      {{ e }}
+                      {{ getName(interestedUsers[id]) }}
                     </v-list-tile-content>
                   </v-list-tile>
                   <v-divider :key="`divider-interest-${i}`" slot="footer"></v-divider>
@@ -79,9 +95,10 @@
           </v-card>
         </div>
       </v-flex>
-      <v-btn @click="submit" :disabled="myGroup.length !== myGroupMaxSize" color="success">Add Group</v-btn>
+      <v-btn @click="submit" :disabled="myGroupIds.length !== myGroupMaxSize" color="success">Add Group</v-btn>
       <v-btn @click="clearMyGroup">Clear</v-btn>
     </v-layout>
+  </div>
 </template>
 
 <script>
@@ -90,49 +107,55 @@ import AppAvatar from "../sub-components/AppAvatar";
 
 export default {
   props: {
+    apartmentId: {
+      type: String,
+      required: true
+    },
     myGroupMaxSize: {
       type: Number,
       required: true
     },
-    members: {
-      type: Array,
+    interested: {
       required: true
     }
   },
   data() {
     return {
-      myGroup: [],
+      interestedUsers: [], // object
+      interestedUsersids: [], // list of ids (of interested users)
+      myGroupIds: [], // list of ids (of the group users)
       delayedDragging: false,
-      availableMemebers: null,
+      availableMemebers: [],
       isDragging: false,
       editable: true,
-      peopleDialog: false
+      peopleDialog: false,
+      loaded: false
     };
   },
   methods: {
     onMove({ relatedContext, draggedContext }) {
-      return this.myGroup.length < this.myGroupMaxSize;
+      return this.myGroupIds.length < this.myGroupMaxSize;
     },
     updateAvailableMembers() {
-      this.availableMemebers = this.availableMemebers.filter(e => !this.myGroup.includes(e));
+      this.availableMemebers = this.availableMemebers.filter(e => !this.myGroupIds.includes(e));
     },
     clearMyGroup() {
-      this.availableMemebers = this.availableMemebers.concat(this.myGroup);
-      this.myGroup = [];
+      this.availableMemebers = this.availableMemebers.concat(this.myGroupIds);
+      this.myGroupIds = [];
     },
-    toggleSelection(member) {
-      const i = this.myGroup.indexOf(member);
+    toggleSelection(id) {
+      const i = this.myGroupIds.indexOf(id);
       if (i > -1) {
-        this.myGroup.splice(i, 1);
-      } else if (this.myGroup.length < this.myGroupMaxSize) {
-        this.myGroup.push(member);
+        this.myGroupIds.splice(i, 1);
+      } else if (this.myGroupIds.length < this.myGroupMaxSize) {
+        this.myGroupIds.push(id);
       }
     },
+    getName(m) {
+      return `${m.firstName.capitalize()}`+ (m.lastName ? ` ${m.lastName.capitalize()}` : '');
+    },
     submit() {
-      this.$emit("submit", {
-        members: this.myGroup,
-        status: Array(this.myGroup.length).fill("not-set")
-      });
+      this.$emit("submit", this.myGroupIds);
       this.clearMyGroup();
     }
   },
@@ -160,8 +183,22 @@ export default {
       });
     }
   },
-  created() {
-    this.availableMemebers = this.members.slice();
+  mounted() {
+    if (!this.interested) {
+      this.$store.dispatch('searchApartments', { id: this.apartmentId })
+      .then((apartments) => {
+        this.interestedUsersids = apartments[0]._interested;
+        this.$store.dispatch('fetchUser', { id: this.interestedUsersids })
+        .then((users) => {
+          this.interestedUsers = users;
+           this.loaded = true;
+        })
+      })
+      .catch(error => console.log(error));
+    } else {
+      this.interestedUsers = this.interested;
+      this.loaded = true;
+    }
   },
   components: {
     draggable,

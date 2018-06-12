@@ -14,7 +14,7 @@
           </router-link>
           </v-flex>
 
-          <v-btn @click="login" :disabled="!valid || loading" :loading="loading">
+          <v-btn @click="login" :disabled="loading" :loading="loading">
             Login
           </v-btn>
         </v-form>

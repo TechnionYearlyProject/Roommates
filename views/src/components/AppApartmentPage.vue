@@ -1,48 +1,125 @@
 <template>
-  <v-layout row warp pt-0>
-    <v-flex xs12 sm12 md6 offset-md3 :class="{'my-5': $vuetify.breakpoint.mdAndUp}">
+<v-container mt-5 grid-list-lg>
+  <v-layout row wrap v-if="loaded">
+    <v-flex xs12 sm12 md9>
       <v-card>
-        <v-carousel>
+        <v-card-media contain height="400" class="grey lighten-5">
+          <v-slide-x-transition>
+            <div :key="image" class="card__media__background" :style="{background: `url(${image}) center center / contain no-repeat`}"></div>
+          </v-slide-x-transition>
+           <v-container fill-height fluid>
+        <v-layout fill-height>
+          <v-btn v-if="v.images.length > 0" :disabled="v.images.length === 1" icon @click.native="">
+            <v-icon>keyboard_arrow_left</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn v-if="v.images.length > 0" :disabled="v.images.length === 1" icon @click.native="">
+            <v-icon>keyboard_arrow_right</v-icon>
+          </v-btn>
+                      <gmap-map :center="position" :zoom="15" map-type-id="roadmap" :style="{ width: 'auto', height: '200px', bottom: 0 }">
+            <GmapMarker :position="position" />
+            </gmap-map justify-right>
+        </v-layout>
+                    <v-layout justify-end align-end>
+                      <v-flex xs7>
+
+            </v-flex>
+            </v-layout>
+      </v-container>
+        </v-card-media>
+        <v-list-tile-content>
+          <v-btn icon @click.native="openMap" class="pink--text mb-1">
+            <v-icon>place</v-icon>
+          </v-btn>
+          <div class="body-1">{{ address }}</div>
+          <div class="body-1">$ {{ v.price }}</div>
+          <div class="body-1">Entrance date: {{ v.entranceDate }}</div>
+          <div></div>
+        </v-list-tile-content>
+      </v-card>
+    </v-flex>
+    <v-flex xs12 sm12 md3>
+      <v-card>
+        <v-card-media>
+          <v-layout align-center>
+            <v-flex xs4 ml-3 mt-3>
+            <app-avatar :src="p.image" :name="p.firstName" :size="70" class="text-xs-center mb-3"></app-avatar>
+            </v-flex>
+            <v-flex>
+            <div class="title">{{ p.firstName }}</div>
+            </v-flex>
+          </v-layout>
+        </v-card-media>
+        <v-divider/>
+        
+          <transition name="slide-x-transition" mode="out-in">
+            <div key="action" v-if="!share">
+              <v-btn icon :class="fav ? 'red--text' : ''" @click.native="">
+              <v-icon>favorite</v-icon>
+            </v-btn>
+            <v-btn icon  @click="share = true">
+              <v-icon>share</v-icon>
+            </v-btn>
+            </div>
+            <div v-if="share" key="share">
+              <v-layout wrap row  align-center justify-center>
+                <v-flex>
+              <v-btn icon @click="share = false">&#x2190;</v-btn>
+              </v-flex>
+              <v-flex mr-3>
+              <app-social-sharing :id="v._id" :price="v.price" :address="address"/>
+              </v-flex>
+              </v-layout>
+              </div>
+          </transition>
+        <v-divider/>
+        <v-list two-line>
+          <v-list-tile @click="">
+            <v-list-tile-action>
+              <v-icon color="indigo">email</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title class="body-1">{{ p.email }}</v-list-tile-title>
+              <v-list-tile-sub-title>E-mail</v-list-tile-sub-title>
+            </v-list-tile-content>
+        </v-list-tile>
+          <v-list-tile @click="">
+            <v-list-tile-action>
+              <v-icon color="indigo">phone</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>{{ p.phone || '---'}}</v-list-tile-title>
+              <v-list-tile-sub-title>Mobile</v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+            </v-list-tile-action>
+        </v-list-tile>
+        </v-list>
+      </v-card>
+    </v-flex>
+    <v-flex >
+      <v-card>
+        <!-- <v-carousel>
           <v-carousel-item
-            v-for="(photo,i) in apartment.photos"
-            :key="i"
-            :src="photo.src"
+            v-for="(image, i) in v.images"
+            :key="`image-${i}`"
+            :src="image"
             hide-delimiters="true"
             reverse-transition="fade"
           ></v-carousel-item>
-        </v-carousel>
-        <!--<v-card-media-->
-          <!--height="200px"-->
-          <!--src="https://vuetifyjs.com/static/doc-images/cards/docks.jpg"-->
-        <!--&gt;-->
-          <!--<v-container fill-height fluid>-->
-            <!--<v-layout column class="media">-->
-              <!--<v-card-title primary-title>-->
-                <!--<div class="display-1 white&#45;&#45;text ml-3">{{ apartment.title }}</div>-->
-              <!--</v-card-title>-->
-            <!--</v-layout>-->
-          <!--</v-container>-->
-        <!--</v-card-media>-->
-
-
-
-
-        <v-card>
+        </v-carousel> -->
+        <!-- <v-card>
           <v-card-title>
-            <span class="body-2">{{ apartment.title }}</span>
+            <span class="body-2"></span>
             <v-spacer/>
             <v-icon color="black" >home</v-icon>
           </v-card-title>
           <v-divider ></v-divider>
           <v-card-actions class="pt-4">
-            <!--<v-card-title>-->
-            <!--{{ apartment.title }}-->
-            <!--<v-icon>home</v-icon>-->
-            <!--</v-card-title>-->
             <v-flex>
             <span class="caption">
               <span class="body-2">published:</span>
-              <span class="body-1">{{ new Date(apartment.createdAt).toDateString() }}</span>
+              <span class="body-1">{{ new Date(v.createdAt).toDateString() }}</span>
             </span>
             </v-flex>
             <v-spacer></v-spacer>
@@ -108,14 +185,14 @@
               </v-btn>
               <span>{{"Open in map"}}</span>
             </v-tooltip>
-          </v-card-actions>
+          </v-card-actions> -->
 
           <!--<v-card-actions class="subheading">-->
             <!--<span  class="body-2" >Price:</span>-->
             <!--${{ apartment.price }}-->
           <!--</v-card-actions>-->
-          <v-divider></v-divider>
-          <v-list subheader two-line>
+          <!-- <v-divider></v-divider> -->
+          <!-- <v-list subheader two-line>
             <v-list-group v-model="apartment.active" no-action :prepend-icon="apartment.icons[0]">
               <v-list-tile slot="activator">
                 <v-list-tile-content>
@@ -213,17 +290,22 @@
               </v-container>
             </v-list-group>
 
-          </v-list>
-        </v-card>
-
+          </v-list> -->
+        <!-- </v-card> -->
+      </v-card>
+    </v-flex>
+    <v-flex>
+      <v-card height="200">
 
       </v-card>
     </v-flex>
   </v-layout>
+</v-container>
 </template>
 
 <script>
   import { mapGetters } from 'vuex';
+  import AppSocialSharing from './AppSocialSharing';
   import defaultApartmentImage from '../assets/apartment-default.jpg';
   import tagsList from '../assets/tags';
   import AppAvatar from './sub-components/AppAvatar';
@@ -233,11 +315,31 @@
   import AppImageDialog from './sub-components/AppImageDialog';
   import attributes from "../assets/attributes";
 
+ 
+
     export default {
-      props: [],
+      props: {
+        apartment: {
+          type: Object,
+          default: null
+        },
+        publisher: {
+          type: Object,
+          default: null
+        }
+      },
       data() {
         return {
-          apartment: {
+          loaded: false,
+          v: null,
+          p: null,
+          dialog: false,
+          fav: false,
+          share: false,
+          image: null,
+          defaultImage: defaultApartmentImage,
+
+          a: {
             active: true,
             price: 1000,
             comments: [],
@@ -367,45 +469,13 @@
               }
             ],
           },
-          share: {
-            url: null,
-            title: null,
-            description: null,
-            quote: null,
-            networks: [
-              {
-                name: 'email',
-                icon: 'mdi-email',
-                color: 'lime darken-4'
-              },
-              {
-                name: 'facebook',
-                icon: 'mdi-facebook-box',
-                color: 'blue darken-3'
-              },
-              {
-                name: 'googleplus',
-                icon: 'mdi-google-plus-box',
-                color: 'red darken-1'
-              },
-              {
-                name: 'twitter',
-                icon: 'mdi-twitter-box',
-                color: 'light-blue'
-              },
-              {
-                name: 'whatsapp',
-                icon: 'mdi-whatsapp',
-                color: 'teal darken-1'
-              }
-            ]
-          },
+      
           expended: false,
           show: 'apartmentDetails',
           fav: false,
           showMap: false,
           tags: tagsList,
-          defaultImage: defaultApartmentImage,
+          
           imageNumber: 0,
           imageDialog: false,
           interestedMessage: "I'm interested!",
@@ -417,7 +487,6 @@
           },
           e1: 'recent',
           fetchedPublisher: false,
-          publisher: null
         };
       },
       methods: {
@@ -636,6 +705,20 @@
               this.clipboard.closeDelay = 200;
             }
           }, 5000);
+        },
+        fetchApartment(id) {
+          return this.$store.dispatch('searchApartments', { id })
+          .then((apartment) => {
+            this.v = apartment[0];
+            this.image = this.v.images[0] || defaultImage;
+          });
+        },
+        fetchPublisher(id) {
+          return this.$store.dispatch('fetchUser', { id })
+          .then((users) => {
+            console.log(users)
+            this.p = users[id];
+          });
         }
       },
       computed: {
@@ -647,6 +730,35 @@
         },
         detailsHeight() {
           return `${this.$refs.cardDetails.clientHeight}px`;
+        },
+        address() {
+            return `${this.v.location.address.street.capitalize()} ${ this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
+        },
+        position() {
+          return {
+            lat: this.v.location.geolocation[1],
+            lng: this.v.location.geolocation[0]
+          }
+        }
+      },
+      created() {
+        if (!this.apartment) {
+          this.$store.commit('showLoading');
+          this.fetchApartment(this.$route.params.id)
+          .then(() => this.fetchPublisher(this.v._createdBy))
+          .then(() => this.loaded = true)
+          .catch(e => console.log(e))
+          .then(() => this.$store.commit('hideLoading'));
+        } else if (!this.publisher) {
+          this.$store.commit('showLoading');
+          this.fetchPublisher(this.v._createdBy)
+          .then(() => this.loaded = true)
+          .catch(e => console.log(e))
+          .then(() => this.$store.commit('hideLoading'));
+        } else {
+          this.v = this.apartment;
+          this.p = this.publisher;
+          this.loaded = true;
         }
       },
       components: {
@@ -654,7 +766,9 @@
         AppMap,
         AppComments,
         AppFavors,
-        AppImageDialog
+        AppImageDialog,
+
+        AppSocialSharing
       },
       mounted() {
         // if (this.isAuthenticated) {

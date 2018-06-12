@@ -1,5 +1,15 @@
 <template>
+<div>
   <v-card>
+    <v-toolbar dense card height="40" color="grey lighten-3">
+      <!-- <v-spacer/> -->
+        <v-tooltip top class="mx-0">
+          <span>Visit page</span>
+          <v-btn icon slot="activator" @click="visitPage">
+            <v-icon color="primary">mdi-door-open</v-icon>
+          </v-btn>
+        </v-tooltip>
+      </v-toolbar>
     <app-image-dialog v-model="imageDialog" :images="apartment.images"/>
     <v-card-media contain height="200px" @click.native="imageDialog = (apartment.images.length > 0)" class="grey lighten-5" :style="{cursor: apartment.images.length > 0 ? 'pointer' : 'auto'}">
       <v-slide-x-transition>
@@ -111,13 +121,7 @@
                 <v-divider/>
               </v-flex>
               <v-flex>
-                <v-layout justify-center wrap row justify-space-around>
-                  <social-sharing v-for="(network, i) in share.networks" :key="`network-${i}`" :url="share.url" :title="share.title" :description="share.description" :quote="share.quote" inline-template>
-                    <network :network="network.name" style="cursor:pointer">
-                      <v-icon large :color="network.color">{{ network.icon }}</v-icon>
-                    </network>
-                  </social-sharing>
-                </v-layout>
+                <app-social-sharing :id="apartment._id" :price="apartment.price" :address="getAddress()"/>
               </v-flex>
             </v-layout>
           </v-container>
@@ -205,8 +209,8 @@
         </v-breadcrumbs>
       </v-card-text>
     </v-slide-y-transition>
-
   </v-card>
+</div>
 </template>
 
 <script>
@@ -218,6 +222,7 @@
   import AppComments from './sub-components/AppComments';
   import AppFavors from './sub-components/AppFavors';
   import AppImageDialog from './sub-components/AppImageDialog';
+  import AppSocialSharing from './AppSocialSharing';
 
   export default {
     props: ['apartment'],
@@ -415,6 +420,13 @@
             this.clipboard.closeDelay = 200;
           }
         }, 5000);
+      },
+      visitPage() {
+        this.$router.push({name: 'AppApartmentPage', params: {
+          id: this.apartment._id,
+          apartment: this.apartment, 
+          publisher: this.publisher
+        }});
       }
     },
     computed: {
@@ -427,13 +439,6 @@
       detailsHeight() {
         return `${this.$refs.cardDetails.clientHeight}px`;
       }
-    },
-    components: {
-      AppAvatar,
-      AppMap,
-      AppComments,
-      AppFavors,
-      AppImageDialog
     },
     mounted() {
       if (this.isAuthenticated) {
@@ -448,6 +453,14 @@
       }`;
       this.share.quote =
         'This is an apartment that I thought might interest you.';
+    },
+    components: {
+      AppAvatar,
+      AppMap,
+      AppComments,
+      AppFavors,
+      AppImageDialog,
+      AppSocialSharing
     }
   };
 </script>

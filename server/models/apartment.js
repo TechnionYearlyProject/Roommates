@@ -19,9 +19,8 @@ const {
   ObjectID
 } = require('mongodb');
 const visit = require('./visit');
-const {
-  Group
-} = require('./group');
+const { Group } = require('./group');
+const errors = require('../errors');
 
 const ApartmentSchema = new mongoose.Schema({
   _createdBy: {
@@ -180,10 +179,7 @@ const ApartmentSchema = new mongoose.Schema({
       }
     },
   }],
-  groups: {
-    type: [String],
-    required: false,
-  }
+  groups: [Group]
 });
 
 /**
@@ -357,6 +353,18 @@ ApartmentSchema.methods.addComment = function (_createdBy, text, createdAt) {
 };
 
 /**
+ * @author: Alon Talmor
+ * @date: 6/5/18
+ *
+ * @returns: true or false whether it is time to create a group.
+ */
+ApartmentSchema.methods.isTimeToOpenGroup = function () {
+  const apartment = this;
+
+  return apartment._interested.length >= apartment.requiredRoommates;
+};
+
+/**
  * add an interested user to the apartment's interested list.
  *
  * @param {ObjectId} _interestedID
@@ -366,43 +374,74 @@ ApartmentSchema.methods.addInterestedUser = function (_interestedID) {
   const apartment = this;
 
   apartment._interested.push(_interestedID);
-  if (apartment._interested.length >= apartment.requiredRoommates) {
-    const group = ApartmentSchema.methods.createUserGroup(_interestedID, apartment._id);
-    apartment.groups = [group];
-  }
-
-
   return apartment.save();
 };
 
-ApartmentSchema.methods.createUserGroup = function (_interestedID, apartmentID) {
-  //create new group
-  const groupData = [
-    'members',
-    'memberPayed',
-    'apartment',
-    'createdAt',
-    'score',
-    'status',
-  ];
-  groupData.members = [_interestedID];
-  groupData.memberPayed = [false];
-  groupData.apartment = apartmentID;
-  groupData.createdAt = Date.now();
-  groupData.score = 7;
-  groupData.status = 0;
-  const group = new Group(groupData);
+/**
+ * @author: Omri Huller
+ * @updatedBy: Alon Talmor
+ * @date:6/5/18
+ *
+ * Created a new group.
+ * - This methods creates a group by receiving a list of ids.
+ * - if the received object is not a list then it creates the a group that best
+ * matches the id received as parameter.
+ * The candidates for matching are other users which are also interested in the apartment.
+ *
+ * @param: List of ObjectIDs that will be the members of the new group
+ *         or String of ObjectID of the user to create a group by best matching
+ * @returns: Promise containing the new updated apartment object.
+ */
+ApartmentSchema.methods.createGroup = function (id) {
+  const apartment = this;
 
-
-  //push new group
-  //   apartment.groups = [group.ObjectID];
-  //
-  return group;
+  let members;
+  // if (!interested.includes(_interestedID)) {
+  //   interested[0] = _interestedID;
+  // }
+  if (_.isArray(id) && id.every($ => ObjectID.isValid($))) {
+    if (id.length !== apartment.requiredRoommates) {
+      return Promise.reject(errors.groupCreationFailed);
+    }
+    members = id;
+  } else if (_.isString(id) && ObjectID.isValid(id)) {
+    members = apartment._interested.slice(0, apartment.requiredRoommates);
+    members[0] = id;
+  } else {
+    return Promise.reject(errors.groupCreationFailed);
+  }
+  members = members.map($ => ({ id: $ }));
+  // create new group
+  const group = {
+    members,
+    _apartmentId: apartment._id,
+  };
+  apartment.groups.push(group);
+  return apartment.save();
 };
 
-ApartmentSchema.methods.numberOfGroups = function () {
+/**
+ * @author: Alon Talmor
+ * @date: 6/5/18
+ *
+ * This methods finds the appropriate group and updates the status of the specified member.
+ * Properties available:
+ * @param groupId - the id of the group to update.
+ * @param memberId - the id of the member to update.
+ * @param status - the new status of the member.
+ * @returns Promise object which includes the updated apartment
+ * @throws groupNotFound exception if the group does not exist.
+ * @throws userNotFound exception if the user in not a member of the group.
+ */
+ApartmentSchema.methods.updateMemberStatus = function (groupId, memberId, status) {
   const apartment = this;
-  return apartment.groups.length;
+
+  const group = apartment.groups.id(groupId);
+  if (!group) {
+    return Promise.reject(errors.groupNotFound);
+  }
+  group.updateStatus(memberId, status);
+  return apartment.save();
 };
 
 /**
@@ -421,6 +460,8 @@ ApartmentSchema.methods.removeInterestedUser = function (_interestedID) {
   if (interestedIDIndex > -1) {
     apartment._interested.splice(interestedIDIndex, 1);
   }
+
+  apartment.groups = apartment.groups.filter($ => !$.members.some(m => m.id.equals(_interestedID)));
 
   return apartment.save();
 };
