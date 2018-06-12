@@ -1,6 +1,6 @@
 <template>
   <v-layout row wrap py-3>
-    <v-flex xs3 v-for="(tag,i) in value" :key="`tag-${i}`" mx-auto>
+    <v-flex xs3 v-for="(tag,i) in value" :key="`tag-${i}`">
       <div class="text-xs-center">
         <v-icon>{{ tags[tag].vicon }}</v-icon><br>
         <small>{{ tags[tag].name }}</small>

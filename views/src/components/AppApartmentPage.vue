@@ -3,7 +3,7 @@
   <v-layout row wrap v-if="loaded">
     <v-flex xs12 sm12 md9 order-xs2 order-md1>
       <v-card flat>
-        <v-tabs card icons-and-text centered dark color="primary">
+        <v-tabs height="60" icons-and-text centered dark color="primary">
           <v-tabs-slider color="yellow"></v-tabs-slider>
           <v-tab v-for="(tab,i) in tabs" :href="`#tab-${i+1}`">
             {{ tab.title }}
@@ -19,7 +19,7 @@
                 <v-layout wrap row >
                   <v-flex xs12>
                     <v-card-title class="title">
-                      <app-map-icon :location="location"/>
+                      <app-map-icon :location="location" class="pb-3"/>
                       {{ address }}
                       <v-spacer/>
                       &#x24;{{ v.price }}
@@ -71,15 +71,23 @@
       </v-card>
     </v-flex>
     <v-flex order-xs1 order-md2>
-      <v-toolbar color="primary" dark :height="72"><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
+      <v-toolbar color="primary" dark :height="60 "><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
       <app-publisher-details v-model="p"/>
       <v-card class="mt-3" style="max-height: 400px">
         <v-card-actions>
           <app-favorite-icon large v-model="v._interested" :apartment-id="v._id"/>
           {{ interestTitle }}
+          <v-spacer/>
+          <v-btn icon @click.native="expendInterested = !expendInterested">
+          <v-icon>{{ expendInterestedIcon }}</v-icon>
+          </v-btn>
           </v-card-actions>
-          <v-divider/>
-        <app-favor-list :favors="v._interested"/>
+          <v-slide-y-transition mode="out-in">
+            <v-card-text v-show="expendInterested" class="pa-0">
+            <v-divider/>
+            <app-favor-list :favors="v._interested"/>
+            </v-card-text>
+          </v-slide-y-transition>
       </v-card>
     </v-flex>
   </v-layout>
@@ -419,8 +427,8 @@ export default {
       v: null,
       p: null,
       dialog: false,
-      fav: false,
       share: false,
+      expendInterested: false,
       tabs: [
         {
           icon: "list_alt",
@@ -563,6 +571,9 @@ export default {
       } else {
         return `${this.v._interested.length} People Have Expressed Interest`;
       }
+    },
+    expendInterestedIcon() {
+      return this.expendInterested ? 'keyboard_arrow_down' : 'keyboard_arrow_up'
     }
     // image() {
     //   return this.apartment.images[0]
