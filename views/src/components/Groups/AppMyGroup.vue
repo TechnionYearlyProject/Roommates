@@ -205,7 +205,6 @@ export default {
           this.interestedUsers = users;
            this.loaded = true;
         });
-      this.loaded = true;
     }
   },
   components: {

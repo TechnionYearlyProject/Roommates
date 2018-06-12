@@ -39,12 +39,7 @@
         </span>
       </v-flex>
       <v-spacer></v-spacer>
-      <v-tooltip top slot="activator">
-        <v-btn icon slot="activator" :class="fav ? 'red--text' : ''" @click.native="favorite">
-          <v-icon>favorite</v-icon>
-        </v-btn>
-        <span>{{ interestedMessage }}</span>
-      </v-tooltip>
+      <app-favorite-icon v-model="apartment._interested" :apartment-id="apartment._id"/>
       <v-menu offset-x :close-on-content-click="false" :nudge-width="245" lazy>
         <v-tooltip top slot="activator">
           <v-btn icon slot="activator" @click.native="getPublisher">
@@ -167,9 +162,10 @@
   import AppImageGallery from './Galleries/AppImageGallery';
   import AppAttributeList from './Lists/AppAttributeList';
   import AppTagList from './Lists/AppTagList';
-  import AppMapIcon from './Maps/AppMapIcon';
+  import AppMapIcon from './Icons/AppMapIcon';
   import AppPublisherDetails from './Lists/AppPublisherDetails';
   import AppFavorList from './Lists/AppFavorList';
+  import AppFavoriteIcon from './Icons/AppFavoriteIcon';
 
   export default {
     props: ['apartment'],
@@ -210,11 +206,9 @@
         },
         expended: false,
         show: 'apartmentDetails',
-        fav: false,
         showMap: false,
         imageNumber: 0,
         imageDialog: false,
-        interestedMessage: "I'm interested!",
         clipboard: {
           color: undefined,
           text: 'Copy link',
@@ -231,25 +225,6 @@
         return `${this.apartment.location.address.street.capitalize()} ${
           this.apartment.location.address.number
         }, ${this.apartment.location.address.city.capitalize()}`;
-      },
-      favorite() {
-        if (!this.isAuthenticated) {
-          this.interestedMessage = 'Please login first';
-        } else if (!this.isVerified) {
-          this.interestedMessage = 'Please verify account';
-        } else {
-          this.fav = !this.fav;
-          this.$store
-            .dispatch('favor', { id: this.apartment._id })
-            .then((apartment) => {
-              this.apartment._interested = apartment._interested;
-            })
-            .catch((error) => {
-              // eslint-disable-next-line
-              console.log(error);
-              this.fav = !this.fav;
-            });
-        }
       },
       getPublisher() {
         if (!this.fetchedPublisher) {
@@ -379,11 +354,6 @@
       }
     },
     mounted() {
-      if (this.isAuthenticated) {
-        this.fav = this.apartment._interested.includes(
-          this.$store.getters.getUser._id
-        );
-      }
       this.share.url = `https://localhost:8080/${this.apartment._id}`;
       this.share.title = 'Sharing this apartment I found on Roommates with you';
       this.share.description = `Located in ${this.getAddress()}, price: ${
@@ -402,7 +372,8 @@
       AppAttributeList,
       AppTagList,
       AppMapIcon,
-      AppPublisherDetails
+      AppPublisherDetails,
+      AppFavoriteIcon
     }
   };
 </script>

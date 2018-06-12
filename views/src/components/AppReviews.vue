@@ -72,7 +72,7 @@
                 </v-flex>
             </v-layout>
         </v-container>
-        <v-speed-dial right bottom fixed :value="true" class="mr-3">
+        <v-speed-dial left bottom fixed :value="true" class="ml-3">
             <v-btn small fab color="secondary" dark @click.stop="$vuetify.goTo(0, scrollOptions)">
             <v-icon>keyboard_arrow_up</v-icon>
             </v-btn>

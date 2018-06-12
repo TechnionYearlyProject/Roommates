@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import AppMap from './AppMap';
+import AppMap from '../Maps/AppMap';
 
 export default {
     props: {

@@ -55,23 +55,17 @@
           </v-tab-item>
 
           <v-tab-item id="tab-2">
-            <v-card height="500">
-            <app-favor-list :favors="v._interested"/>
-            </v-card>
+            <app-group-full :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
           </v-tab-item>
 
           <v-tab-item id="tab-3">
-            <v-card height="500">
-              <app-comments :comments="v.comments" :onComment="addComment"/>
-            </v-card>
-          </v-tab-item>
-
-          <v-tab-item id="tab-4">
             <app-reviews :lat="v.location.geolocation[1]" :lng="v.location.geolocation[0]" :city="v.location.address.city" :street="v.location.address.street"/>
           </v-tab-item>
 
-          <v-tab-item id="tab-5">
-            <app-group-full :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
+          <v-tab-item id="tab-4">
+            <v-card height="500">
+              <app-comments :comments="v.comments" :onComment="addComment"/>
+            </v-card>
           </v-tab-item>
         </v-tabs>
       </v-card>
@@ -79,6 +73,14 @@
     <v-flex order-xs1 order-md2>
       <v-toolbar color="primary" dark :height="72"><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
       <app-publisher-details v-model="p"/>
+      <v-card class="mt-3" style="max-height: 400px">
+        <v-card-actions>
+          <app-favorite-icon large v-model="v._interested" :apartment-id="v._id"/>
+          {{ interestTitle }}
+          </v-card-actions>
+          <v-divider/>
+        <app-favor-list :favors="v._interested"/>
+      </v-card>
     </v-flex>
   </v-layout>
 </v-container>
@@ -387,246 +389,248 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import AppSocialSharing from './AppSocialSharing';
-  import AppImageGallery from './Galleries/AppImageGallery'
-  import AppAttributeList from './Lists/AppAttributeList'
-  import AppTagList from './Lists/AppTagList'
-  import AppMapIcon from './Maps/AppMapIcon'
-  import AppPublisherDetails from './Lists/AppPublisherDetails';
-  import AppFavorList from './Lists/AppFavorList';
-  import AppComments from './Comments/AppComments'
-  import AppReviews from './AppReviews'
-  import AppGroupFull from './Groups/AppGroupFull'
+import { mapGetters } from "vuex";
+import AppSocialSharing from "./AppSocialSharing";
+import AppImageGallery from "./Galleries/AppImageGallery";
+import AppAttributeList from "./Lists/AppAttributeList";
+import AppTagList from "./Lists/AppTagList";
+import AppMapIcon from "./Icons/AppMapIcon";
+import AppPublisherDetails from "./Lists/AppPublisherDetails";
+import AppFavorList from "./Lists/AppFavorList";
+import AppComments from "./Comments/AppComments";
+import AppReviews from "./AppReviews";
+import AppGroupFull from "./Groups/AppGroupFull";
+import AppFavoriteIcon from "./Icons/AppFavoriteIcon";
 
-    export default {
-      props: {
-        apartment: {
-          type: Object,
-          default: null
+export default {
+  props: {
+    apartment: {
+      type: Object,
+      default: null
+    },
+    publisher: {
+      type: Object,
+      default: null
+    }
+  },
+  data() {
+    return {
+      loaded: false,
+      v: null,
+      p: null,
+      dialog: false,
+      fav: false,
+      share: false,
+      tabs: [
+        {
+          icon: "list_alt",
+          title: "Details"
         },
-        publisher: {
-          type: Object,
-          default: null
-        }
-      },
-      data() {
-        return {
-          loaded: false,
-          v: null,
-          p: null,
-          dialog: false,
-          fav: false,
-          share: false,
-          tabs: [
-            {
-              icon: 'list_alt',
-              title: 'Details'
-            },
-            {
-              icon: 'favorite',
-              title: 'Interested'
-            },
-            {
-              icon: 'comment',
-              title: 'Comments'
-            },
-            {
-              icon: 'rate_review',
-              title: 'Reviews'
-            },
-            {
-              icon: 'group',
-              title: 'Groups'
-            }
-          ],
-          // expended: false,
-          // show: 'apartmentDetails',
-          // fav: false,
-          // showMap: false,
-          // tags: tagsList,
-          
-          // imageNumber: 0,
-          // imageDialog: false,
-          // interestedMessage: "I'm interested!",
-          // clipboard: {
-          //   color: undefined,
-          //   text: 'Copy link',
-          //   closeDelay: 200,
-          //   lastCopyTime: 0
-          // },
-          // e1: 'recent',
-          // fetchedPublisher: false,
-        };
-      },
-      methods: {
-        // favorite() {
-        //   if (!this.isAuthenticated) {
-        //     this.interestedMessage = 'Please login first';
-        //   } else if (!this.isVerified) {
-        //     this.interestedMessage = 'Please verify account';
-        //   } else {
-        //     this.fav = !this.fav;
-        //   //   this.$store
-        //   //     .dispatch('favor', { id: this.apartment._id })
-        //   //     .then((apartment) => {
-        //   //       this.apartment._interested = apartment._interested;
-        //   //     })
-        //   //     .catch((error) => {
-        //   //       // eslint-disable-next-line
-        //   //       console.log(error);
-        //   //       this.fav = !this.fav;
-        //   //     });
-        //   }
-        // },
-        // editProperty(property) {
-        //   if (property.value.current === property.value.previous) {
-        //     property.edit.active = false;
-        //     return;
-        //   }
-          
-        //   if ( (property.value.current >= 0)) {
-        //     property.value.previous = property.value.current;
-        //     property.edit.active = false;
-        //   }
-        //   else{
-        //     property.error.push("invalid value")
-        //   }
-        // },
-        addComment(comment) {
-          return this.$store.dispatch('addApartmentComment', {
-            params: {
-              id: this.v._id
-            },
-            payload: {
-              text: comment.text
-            }
-          });
+        {
+          icon: "group",
+          title: "Groups"
         },
-        fetchApartment(id) {
-          return this.$store.dispatch('searchApartments', { id })
-          .then((apartment) => {
-            this.v = apartment[0];
-          });
+        {
+          icon: "rate_review",
+          title: "Reviews"
         },
-        fetchPublisher(id) {
-          console.log(id);
-          return this.$store.dispatch('fetchUser', { id })
-          .then((users) => {
-            console.log(users)
-            this.p = users[id];
-          });
+        {
+          icon: "comment",
+          title: "Comments"
         }
-      },
-      computed: {
-        // ...mapGetters(['isAuthenticated', 'isVerified']),
-        attributes() {
-        return [
-          {
-            title: 'required roommates',
-            value: this.v.requiredRoommates
-          },
-          {
-            title: 'total roommates',
-            value: this.v.totalRoommates // change model from currentlyNumberOfRoommates -> totalRoommates
-          },
-          {
-            title: 'floor',
-            value: this.v.floor
-          },
-          {
-            title: 'total floors',
-            value: this.v.totalFloors
-          },
-          {
-            title: 'rooms number',
-            value: this.v.numberOfRooms
-          },
-          {
-            title: 'area (square meter)',
-            value: this.v.area
-          }
-        ]
-      },
-      about() {
-        return this.v.description || 'The owner hasn\'t added any additional details';
-      },
-      address() {
-          return `${this.v.location.address.street.capitalize()} ${ this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
-      },
-      location() {
-        return { 
-          longitude: this.v.location.geolocation[0],
-           latitude: this.v.location.geolocation[1] 
-        }
-      }
-        // image() {
-        //   return this.apartment.images[0]
-        //     ? this.apartment.images[this.imageNumber]
-        //     : this.defaultImage;
-        // },
-        // detailsHeight() {
-        //   return `${this.$refs.cardDetails.clientHeight}px`;
-        // },
-        // },
-        // position() {
-        //   return {
-        //     lat: this.v.location.geolocation[1],
-        //     lng: this.v.location.geolocation[0]
-        //   }
-        // }
-      },
-      created() {
-        if (!this.apartment) {
-          this.$store.commit('showLoading');
-          this.fetchApartment(this.$route.params.id)
-          .then(() => this.fetchPublisher(this.v._createdBy))
-          .then(() => this.loaded = true)
-          .catch(e => console.log(e))
-          .then(() => this.$store.commit('hideLoading'));
-        } else if (!this.publisher) {
-          this.$store.commit('showLoading');
-          this.v = this.apartment;
-          this.fetchPublisher(this.v._createdBy)
-          .then(() => this.loaded = true)
-          .catch(e => console.log(e))
-          .then(() => this.$store.commit('hideLoading'));
-        } else {
-          this.v = this.apartment;
-          this.p = this.publisher;
-          this.loaded = true;
-        }
-      },
-      components: {
-        // AppAvatar,
-        AppImageGallery,
-        AppSocialSharing,
-        AppAttributeList,
-        AppTagList,
-        AppMapIcon,
-        AppPublisherDetails,
-        AppFavorList,
-        AppComments,
-        AppReviews,
-        AppGroupFull
-      },
-      mounted() {
-        // if (this.isAuthenticated) {
-        //   this.fav = this.apartment._interested.includes(
-        //     this.$store.getters.getUser._id
-        //   );
-        // }
-        // this.share.url = `https://localhost:8080/${this.apartment._id}`;
-        // this.share.title = 'Sharing this apartment I found on Roommates with you';
-        // this.share.description = `Located in ${this.getAddress()}, price: ${
-        //   this.apartment.price
-        //   }`;
-        // this.share.quote =
-        //   'This is an apartment that I thought might interest you.';
-      }
+      ]
+      // expended: false,
+      // show: 'apartmentDetails',
+      // fav: false,
+      // showMap: false,
+      // tags: tagsList,
+
+      // imageNumber: 0,
+      // imageDialog: false,
+      // interestedMessage: "I'm interested!",
+      // clipboard: {
+      //   color: undefined,
+      //   text: 'Copy link',
+      //   closeDelay: 200,
+      //   lastCopyTime: 0
+      // },
+      // e1: 'recent',
+      // fetchedPublisher: false,
     };
+  },
+  methods: {
+    // favorite() {
+    //   if (!this.isAuthenticated) {
+    //     this.interestedMessage = 'Please login first';
+    //   } else if (!this.isVerified) {
+    //     this.interestedMessage = 'Please verify account';
+    //   } else {
+    //     this.fav = !this.fav;
+    //   //   this.$store
+    //   //     .dispatch('favor', { id: this.apartment._id })
+    //   //     .then((apartment) => {
+    //   //       this.apartment._interested = apartment._interested;
+    //   //     })
+    //   //     .catch((error) => {
+    //   //       // eslint-disable-next-line
+    //   //       console.log(error);
+    //   //       this.fav = !this.fav;
+    //   //     });
+    //   }
+    // },
+    // editProperty(property) {
+    //   if (property.value.current === property.value.previous) {
+    //     property.edit.active = false;
+    //     return;
+    //   }
+
+    //   if ( (property.value.current >= 0)) {
+    //     property.value.previous = property.value.current;
+    //     property.edit.active = false;
+    //   }
+    //   else{
+    //     property.error.push("invalid value")
+    //   }
+    // },
+    addComment(comment) {
+      return this.$store.dispatch("addApartmentComment", {
+        params: {
+          id: this.v._id
+        },
+        payload: {
+          text: comment.text
+        }
+      });
+    },
+    fetchApartment(id) {
+      return this.$store.dispatch("searchApartments", { id }).then(apartment => {
+        this.v = apartment[0];
+      });
+    },
+    fetchPublisher(id) {
+      console.log(id);
+      return this.$store.dispatch("fetchUser", { id }).then(users => {
+        console.log(users);
+        this.p = users[id];
+      });
+    }
+  },
+  computed: {
+    // ...mapGetters(['isAuthenticated', 'isVerified']),
+    attributes() {
+      return [
+        {
+          title: "required roommates",
+          value: this.v.requiredRoommates
+        },
+        {
+          title: "total roommates",
+          value: this.v.totalRoommates // change model from currentlyNumberOfRoommates -> totalRoommates
+        },
+        {
+          title: "floor",
+          value: this.v.floor
+        },
+        {
+          title: "total floors",
+          value: this.v.totalFloors
+        },
+        {
+          title: "rooms number",
+          value: this.v.numberOfRooms
+        },
+        {
+          title: "area (square meter)",
+          value: this.v.area
+        }
+      ];
+    },
+    about() {
+      return this.v.description || "The owner hasn't added any additional details";
+    },
+    address() {
+      return `${this.v.location.address.street.capitalize()} ${this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
+    },
+    location() {
+      return {
+        longitude: this.v.location.geolocation[0],
+        latitude: this.v.location.geolocation[1]
+      };
+    },
+    interestTitle() {
+      if (this.v._interested.length === 0) {
+        return "Be The First To Express Interest!";
+      } else {
+        return `${this.v._interested.length} People Have Expressed Interest`;
+      }
+    }
+    // image() {
+    //   return this.apartment.images[0]
+    //     ? this.apartment.images[this.imageNumber]
+    //     : this.defaultImage;
+    // },
+    // detailsHeight() {
+    //   return `${this.$refs.cardDetails.clientHeight}px`;
+    // },
+    // },
+    // position() {
+    //   return {
+    //     lat: this.v.location.geolocation[1],
+    //     lng: this.v.location.geolocation[0]
+    //   }
+    // }
+  },
+  created() {
+    if (!this.apartment) {
+      this.$store.commit("showLoading");
+      this.fetchApartment(this.$route.params.id)
+        .then(() => this.fetchPublisher(this.v._createdBy))
+        .then(() => (this.loaded = true))
+        .catch(e => console.log(e))
+        .then(() => this.$store.commit("hideLoading"));
+    } else if (!this.publisher) {
+      this.$store.commit("showLoading");
+      this.v = this.apartment;
+      this.fetchPublisher(this.v._createdBy)
+        .then(() => (this.loaded = true))
+        .catch(e => console.log(e))
+        .then(() => this.$store.commit("hideLoading"));
+    } else {
+      this.v = this.apartment;
+      this.p = this.publisher;
+      this.loaded = true;
+    }
+  },
+  components: {
+    // AppAvatar,
+    AppImageGallery,
+    AppSocialSharing,
+    AppAttributeList,
+    AppTagList,
+    AppMapIcon,
+    AppPublisherDetails,
+    AppFavorList,
+    AppComments,
+    AppReviews,
+    AppGroupFull,
+    AppFavoriteIcon
+  },
+  mounted() {
+    // if (this.isAuthenticated) {
+    //   this.fav = this.apartment._interested.includes(
+    //     this.$store.getters.getUser._id
+    //   );
+    // }
+    // this.share.url = `https://localhost:8080/${this.apartment._id}`;
+    // this.share.title = 'Sharing this apartment I found on Roommates with you';
+    // this.share.description = `Located in ${this.getAddress()}, price: ${
+    //   this.apartment.price
+    //   }`;
+    // this.share.quote =
+    //   'This is an apartment that I thought might interest you.';
+  }
+};
 </script>
 
 <style scoped>
-
 </style>
