@@ -188,7 +188,7 @@ export default {
   },
   mounted() {
     if (!this.interested) {
-      this.$store.dispatch('searchApartments', { id: this.apartmentId })
+      this.$store.dispatch('fetchApartments', { id: this.apartmentId })
       .then((apartments) => {
         this.interestedUsersids = apartments[0]._interested;
         this.$store.dispatch('fetchUser', { id: this.interestedUsersids })

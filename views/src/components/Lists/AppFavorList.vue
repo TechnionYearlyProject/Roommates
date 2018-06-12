@@ -18,7 +18,7 @@
                 </v-list-tile>
             </transition-group>
         </v-list>
-        <div v-if="!hasFavors()" class="text-xs-center">
+        <div v-if="!hasFavors()" class="text-xs-center pb-3">
             No one expressed interet
         </div>
     </div>

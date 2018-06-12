@@ -37,12 +37,10 @@ export default {
       } else if (!this.isVerified) {
         this.interestedMessage = "Please verify account";
       } else {
-        this.fav = !this.fav;
         this.$store
           .dispatch("favor", { id: this.apartmentId })
           .then(apartment => {
             this.$emit('input', apartment._interested)
-            apartment._interested.slice();
           })
           .catch(error => {
             // eslint-disable-next-line

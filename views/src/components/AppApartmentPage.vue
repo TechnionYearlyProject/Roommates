@@ -16,39 +16,44 @@
                 <app-image-gallery v-model="v.images"/>
               </v-card-media>
               <v-card-text>
-                <v-layout wrap row >
-                  <v-flex xs12>
-                    <v-card-title class="title">
+                <v-card-title class="caption py-0 grey--text">This Ad is From: {{ new Date(v.entranceDate).toDateString() }}</v-card-title>
+                <v-layout wrap row align-center>
+                  <v-flex xs12 sm8>
+                    <v-card-title class="title py-0">
                       <app-map-icon :location="location" class="pb-3"/>
                       {{ address }}
-                      <v-spacer/>
-                      &#x24;{{ v.price }}
                     </v-card-title>
-                    <v-divider/>
                   </v-flex>
-                <v-flex xs12 sm12 md7 mt-3>
-                  <v-layout wrap row>
-                    <v-flex xs12>
-                      <v-card>
-                        <v-card-title><h4>Utilities</h4></v-card-title>
-                        <v-divider/>
-                        <app-tag-list v-model="v.tags"/>
-                      </v-card>
-                    </v-flex>
-                    <v-flex xs12 mt-3>
-                      <v-card>
-                        <v-card-title><h4>About</h4></v-card-title>
-                        <v-divider></v-divider>
-                        <v-card-text>
-                          <i>{{ about }}</i>
-                        </v-card-text>
-                      </v-card>
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-                <v-flex xs12 sm12 md4 offset-md1>
-                  <app-attribute-list v-model="attributes" />
-                </v-flex>
+                  <v-flex xs12 sm4>
+                    <v-card-title class="title py-0">&#x24;{{ v.price }}</v-card-title>
+                  </v-flex>
+                  <v-flex xs12>
+                    <v-card-title class="py-0 pl-3"><span class="body-2 pr-1">Entrance Date: </span>{{ new Date(v.entranceDate).toDateString() }}</v-card-title>
+                  <v-divider/>
+                  </v-flex>
+                  <v-flex xs12 sm12 md7 mt-3>
+                    <v-layout wrap row>
+                      <v-flex xs12>
+                        <v-card>
+                          <v-card-title><h4>Utilities</h4></v-card-title>
+                          <v-divider/>
+                          <app-tag-list v-model="v.tags"/>
+                        </v-card>
+                      </v-flex>
+                      <v-flex xs12 mt-3>
+                        <v-card>
+                          <v-card-title><h4>About</h4></v-card-title>
+                          <v-divider></v-divider>
+                          <v-card-text>
+                            <i>{{ about }}</i>
+                          </v-card-text>
+                        </v-card>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex xs12 sm12 md4 offset-md1>
+                    <app-attribute-list v-model="attributes" />
+                  </v-flex>
                 </v-layout>
               </v-card-text>
             </v-card>
@@ -70,25 +75,36 @@
         </v-tabs>
       </v-card>
     </v-flex>
-    <v-flex order-xs1 order-md2>
-      <v-toolbar color="primary" dark :height="60 "><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
-      <app-publisher-details v-model="p"/>
-      <v-card class="mt-3" style="max-height: 400px">
-        <v-card-actions>
-          <app-favorite-icon large v-model="v._interested" :apartment-id="v._id"/>
-          {{ interestTitle }}
-          <v-spacer/>
-          <v-btn icon @click.native="expendInterested = !expendInterested">
-          <v-icon>{{ expendInterestedIcon }}</v-icon>
-          </v-btn>
-          </v-card-actions>
-          <v-slide-y-transition mode="out-in">
-            <v-card-text v-show="expendInterested" class="pa-0">
-            <v-divider/>
-            <app-favor-list :favors="v._interested"/>
-            </v-card-text>
-          </v-slide-y-transition>
-      </v-card>
+    <v-flex xs12 sm12 md3 order-xs1 order-md2>
+      <v-layout wrap row>
+        <v-flex xs12>
+          <v-toolbar color="primary" dark :height="60 "><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
+          <app-publisher-details v-model="p"/>
+        </v-flex>
+        <v-flex xs12>
+          <v-card class="mt-3" style="max-height: 400px">
+            <v-card-actions>
+              <app-favorite-icon large v-model="v._interested" :apartment-id="v._id"/>
+              {{ interestTitle }}
+              <v-spacer/>
+              <v-btn icon @click.native="expendInterested = !expendInterested">
+              <v-icon>{{ expendInterestedIcon }}</v-icon>
+              </v-btn>
+            </v-card-actions>
+            <v-slide-y-transition mode="out-in">
+              <v-card-text v-show="expendInterested" class="pa-0">
+              <v-divider/>
+              <app-favor-list :favors="v._interested"/>
+              </v-card-text>
+            </v-slide-y-transition>
+          </v-card>
+        </v-flex>
+        <v-flex xs12>
+          <v-card>
+            <app-recommended-list :geolocation="v.location.geolocation" :filtered="[v._id]"/>
+          </v-card>
+        </v-flex>
+      </v-layout>
     </v-flex>
   </v-layout>
 </v-container>
@@ -397,18 +413,19 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import AppSocialSharing from "./AppSocialSharing";
-import AppImageGallery from "./Galleries/AppImageGallery";
-import AppAttributeList from "./Lists/AppAttributeList";
-import AppTagList from "./Lists/AppTagList";
-import AppMapIcon from "./Icons/AppMapIcon";
-import AppPublisherDetails from "./Lists/AppPublisherDetails";
-import AppFavorList from "./Lists/AppFavorList";
-import AppComments from "./Comments/AppComments";
-import AppReviews from "./AppReviews";
-import AppGroupFull from "./Groups/AppGroupFull";
-import AppFavoriteIcon from "./Icons/AppFavoriteIcon";
+import { mapGetters } from 'vuex';
+import AppSocialSharing from './AppSocialSharing';
+import AppImageGallery from './Galleries/AppImageGallery';
+import AppAttributeList from './Lists/AppAttributeList';
+import AppTagList from './Lists/AppTagList';
+import AppMapIcon from './Icons/AppMapIcon';
+import AppPublisherDetails from './Lists/AppPublisherDetails';
+import AppFavorList from './Lists/AppFavorList';
+import AppComments from './Comments/AppComments';
+import AppReviews from './AppReviews';
+import AppGroupFull from './Groups/AppGroupFull';
+import AppFavoriteIcon from './Icons/AppFavoriteIcon';
+import AppRecommendedList from './Lists/AppRecommendedList';
 
 export default {
   props: {
@@ -428,23 +445,23 @@ export default {
       p: null,
       dialog: false,
       share: false,
-      expendInterested: false,
+      expendInterested: this.$vuetify.breakpoint.smAndUp,
       tabs: [
         {
-          icon: "list_alt",
-          title: "Details"
+          icon: 'list_alt',
+          title: 'Details'
         },
         {
-          icon: "group",
-          title: "Groups"
+          icon: 'group',
+          title: 'Groups'
         },
         {
-          icon: "rate_review",
-          title: "Reviews"
+          icon: 'rate_review',
+          title: 'Reviews'
         },
         {
-          icon: "comment",
-          title: "Comments"
+          icon: 'comment',
+          title: 'Comments'
         }
       ]
       // expended: false,
@@ -501,7 +518,7 @@ export default {
     //   }
     // },
     addComment(comment) {
-      return this.$store.dispatch("addApartmentComment", {
+      return this.$store.dispatch('addApartmentComment', {
         params: {
           id: this.v._id
         },
@@ -511,13 +528,13 @@ export default {
       });
     },
     fetchApartment(id) {
-      return this.$store.dispatch("searchApartments", { id }).then(apartment => {
+      return this.$store.dispatch('fetchApartments', { id }).then(apartment => {
         this.v = apartment[0];
       });
     },
     fetchPublisher(id) {
       console.log(id);
-      return this.$store.dispatch("fetchUser", { id }).then(users => {
+      return this.$store.dispatch('fetchUser', { id }).then(users => {
         console.log(users);
         this.p = users[id];
       });
@@ -528,27 +545,27 @@ export default {
     attributes() {
       return [
         {
-          title: "required roommates",
+          title: 'required roommates',
           value: this.v.requiredRoommates
         },
         {
-          title: "total roommates",
+          title: 'total roommates',
           value: this.v.totalRoommates // change model from currentlyNumberOfRoommates -> totalRoommates
         },
         {
-          title: "floor",
+          title: 'floor',
           value: this.v.floor
         },
         {
-          title: "total floors",
+          title: 'total floors',
           value: this.v.totalFloors
         },
         {
-          title: "rooms number",
+          title: 'rooms number',
           value: this.v.numberOfRooms
         },
         {
-          title: "area (square meter)",
+          title: 'area (square meter)',
           value: this.v.area
         }
       ];
@@ -567,13 +584,13 @@ export default {
     },
     interestTitle() {
       if (this.v._interested.length === 0) {
-        return "Be The First To Express Interest!";
+        return 'Be The First To Express Interest!';
       } else {
         return `${this.v._interested.length} People Have Expressed Interest`;
       }
     },
     expendInterestedIcon() {
-      return this.expendInterested ? 'keyboard_arrow_down' : 'keyboard_arrow_up'
+      return this.expendInterested ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
     }
     // image() {
     //   return this.apartment.images[0]
@@ -593,19 +610,19 @@ export default {
   },
   created() {
     if (!this.apartment) {
-      this.$store.commit("showLoading");
+      this.$store.commit('showLoading');
       this.fetchApartment(this.$route.params.id)
         .then(() => this.fetchPublisher(this.v._createdBy))
         .then(() => (this.loaded = true))
         .catch(e => console.log(e))
-        .then(() => this.$store.commit("hideLoading"));
+        .then(() => this.$store.commit('hideLoading'));
     } else if (!this.publisher) {
-      this.$store.commit("showLoading");
+      this.$store.commit('showLoading');
       this.v = this.apartment;
       this.fetchPublisher(this.v._createdBy)
         .then(() => (this.loaded = true))
         .catch(e => console.log(e))
-        .then(() => this.$store.commit("hideLoading"));
+        .then(() => this.$store.commit('hideLoading'));
     } else {
       this.v = this.apartment;
       this.p = this.publisher;
@@ -624,7 +641,8 @@ export default {
     AppComments,
     AppReviews,
     AppGroupFull,
-    AppFavoriteIcon
+    AppFavoriteIcon,
+    AppRecommendedList
   },
   mounted() {
     // if (this.isAuthenticated) {

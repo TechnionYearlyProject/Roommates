@@ -182,15 +182,26 @@ export default new Vuex.Store({
     },
     /**
      * @author: Alon Talmor
-     * @date: 18/04/18
-     * @param: params: object of {id, address, price, radius, roommates, floor, entranceDate,tags} -
+     * @date: 12/6/18
+     * @param: params: object of {id, address, price, radius, roommates, floor, entranceDate, tags} -
      * filter of the apartments list (the properties are optional).
      * Empty object {} will return all apartments.
      */
-    searchApartments({ commit, getters }, params) {
+    fetchApartments(context, params) {
       return axios.get('http://localhost:3000/apartments', { params })
         .then((response) => {
-          commit('setApartments', response.data.apartments);
+          return response.data.apartments;
+        });
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 18/04/18
+     * search apartment and update vuex with the results. see fetchApartments action for information about @param params
+     */
+    searchApartments({ commit, getters, dispatch }, params) {
+      return dispatch('fetchApartments', params)
+        .then((apartments) => {
+          commit('setApartments', apartments);
           return getters.getApartments;
         });
     },

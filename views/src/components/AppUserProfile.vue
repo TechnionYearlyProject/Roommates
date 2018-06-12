@@ -267,7 +267,7 @@ export default {
       if (this.publishes.values.length === 0) {
         this.publishes.loaded = true;
       } else if (!this.publishes.loaded) {
-        this.$store.dispatch('searchApartments', { id: this.publishes.values })
+        this.$store.dispatch('fetchApartments', { id: this.publishes.values })
           .then((apartments) => {
             this.publishes.values = apartments;
             this.publishes.loaded = true;
