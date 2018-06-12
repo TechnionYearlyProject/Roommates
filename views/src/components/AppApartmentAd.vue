@@ -151,19 +151,7 @@
         <transition name="slide-x-transition" mode="out-in" v-if="show">
           <div v-if="show === 'apartmentDetails'" ref='cardDetails' key="apartmentDetails">
             <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
-            <v-card class="mt-3">
-              <v-card-title>
-                <h4>Attributes</h4>
-              </v-card-title>
-              <v-divider></v-divider>
-              <v-list dense>
-                <v-list-tile v-for="(attribute,i) in attributes" :key="`attribute-${i}`">
-                  <v-list-tile-content>{{ attribute.label }}</v-list-tile-content>
-                  <v-list-tile-content class="align-end">{{ apartment[attribute.ref] || '-' }}</v-list-tile-content>
-                </v-list-tile>
-              </v-list>
-              <v-divider></v-divider>
-            </v-card>
+            <app-attribute-list v-model="attributes"/>
             <v-layout row wrap py-3>
               <v-flex xs3 v-for="(tag,i) in apartment.tags" :key="`tag-${i}`" mx-auto>
                 <div class="text-xs-center">
@@ -225,37 +213,12 @@
   import AppImageDialog from './sub-components/AppImageDialog';
   import AppSocialSharing from './AppSocialSharing';
   import AppImageGallery from './Galleries/AppImageGallery';
+  import AppAttributeList from './Lists/AppAttributeList';
 
   export default {
     props: ['apartment'],
     data() {
       return {
-        attributes: [
-          {
-            label: 'required roommates',
-            ref: 'requiredRoommates'
-          },
-          {
-            label: 'total roommates',
-            ref: 'totalRoommates' // change model from currentlyNumberOfRoommates -> totalRoommates
-          },
-          {
-            label: 'floor',
-            ref: 'floor'
-          },
-          {
-            label: 'total floors',
-            ref: 'totalFloors'
-          },
-          {
-            label: 'rooms number',
-            ref: 'numberOfRooms'
-          },
-          {
-            label: 'area (square meter)',
-            ref: 'area'
-          }
-        ],
         share: {
           url: null,
           title: null,
@@ -425,6 +388,34 @@
       },
       detailsHeight() {
         return `${this.$refs.cardDetails.clientHeight}px`;
+      },
+      attributes() {
+        return [
+          {
+            title: 'required roommates',
+            value: this.apartment.requiredRoommates
+          },
+          {
+            title: 'total roommates',
+            value: this.apartment.totalRoommates // change model from currentlyNumberOfRoommates -> totalRoommates
+          },
+          {
+            title: 'floor',
+            value: this.apartment.floor
+          },
+          {
+            title: 'total floors',
+            value: this.apartment.totalFloors
+          },
+          {
+            title: 'rooms number',
+            value: this.apartment.numberOfRooms
+          },
+          {
+            title: 'area (square meter)',
+            value: this.apartment.area
+          }
+        ]
       }
     },
     mounted() {
@@ -448,7 +439,8 @@
       AppFavors,
       AppImageDialog,
       AppSocialSharing,
-      AppImageGallery
+      AppImageGallery,
+      AppAttributeList
     }
   };
 </script>

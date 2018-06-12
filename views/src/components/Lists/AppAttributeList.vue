@@ -22,7 +22,7 @@ export default {
       default: () => []
     },
     title: {
-      type: string,
+      type: String,
       default: 'Attributes'
     }
   }

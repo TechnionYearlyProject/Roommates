@@ -14,6 +14,9 @@
         <v-card-media contain height="400" class="grey lighten-5">
           <app-image-gallery v-model="v.images"/>
         </v-card-media>
+        <v-card-text>
+          <app-attribute-list v-model="attributes" />
+        </v-card-text>
       </v-card>
     </v-tab-item>
   </v-tabs>
@@ -328,6 +331,7 @@
   import { mapGetters } from 'vuex';
   import AppSocialSharing from './AppSocialSharing';
   import AppImageGallery from './Galleries/AppImageGallery'
+  import AppAttributeList from './Lists/AppAttributeList'
 
     export default {
       props: {
@@ -517,24 +521,53 @@
         }
       },
       computed: {
-        ...mapGetters(['isAuthenticated', 'isVerified']),
-        image() {
-          return this.apartment.images[0]
-            ? this.apartment.images[this.imageNumber]
-            : this.defaultImage;
-        },
-        detailsHeight() {
-          return `${this.$refs.cardDetails.clientHeight}px`;
-        },
-        address() {
-            return `${this.v.location.address.street.capitalize()} ${ this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
-        },
-        position() {
-          return {
-            lat: this.v.location.geolocation[1],
-            lng: this.v.location.geolocation[0]
+        // ...mapGetters(['isAuthenticated', 'isVerified']),
+        attributes() {
+        return [
+          {
+            title: 'required roommates',
+            value: this.v.requiredRoommates
+          },
+          {
+            title: 'total roommates',
+            value: this.v.totalRoommates // change model from currentlyNumberOfRoommates -> totalRoommates
+          },
+          {
+            title: 'floor',
+            value: this.v.floor
+          },
+          {
+            title: 'total floors',
+            value: this.v.totalFloors
+          },
+          {
+            title: 'rooms number',
+            value: this.v.numberOfRooms
+          },
+          {
+            title: 'area (square meter)',
+            value: this.v.area
           }
-        }
+        ]
+      }
+        
+        // image() {
+        //   return this.apartment.images[0]
+        //     ? this.apartment.images[this.imageNumber]
+        //     : this.defaultImage;
+        // },
+        // detailsHeight() {
+        //   return `${this.$refs.cardDetails.clientHeight}px`;
+        // },
+        // address() {
+        //     return `${this.v.location.address.street.capitalize()} ${ this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
+        // },
+        // position() {
+        //   return {
+        //     lat: this.v.location.geolocation[1],
+        //     lng: this.v.location.geolocation[0]
+        //   }
+        // }
       },
       created() {
         if (!this.apartment) {
@@ -560,7 +593,8 @@
       components: {
         // AppAvatar,
         AppImageGallery,
-        AppSocialSharing
+        AppSocialSharing,
+        AppAttributeList
       },
       mounted() {
         // if (this.isAuthenticated) {
