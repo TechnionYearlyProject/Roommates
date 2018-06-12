@@ -52,50 +52,14 @@
           </v-btn>
           <span>Publisher profile</span>
         </v-tooltip>
-        <v-card style="min-height:60px">
-          <div v-if="fetchedPublisher">
-          <v-list>
-            <v-list-tile avatar  @click="$router.push({ name: 'AppUserProfile', params: { id: publisher._id } })">
-              <v-list-tile-avatar>
-                <app-avatar :image="publisher.image" :name="publisher.firstName" :size="40"></app-avatar>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title>{{ publisher.firstName.capitalize() }} {{ publisher.lastName.capitalize() }}</v-list-tile-title>
-                <v-list-tile-sub-title>rating</v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-          <v-divider></v-divider>
-          <v-list>
-            <v-list-tile>
-              <v-icon class="pr-1">email</v-icon>
-              <v-list-tile-title>
-                <small class="pr-3">E-mail</small>
-                {{ publisher.email }}
-              </v-list-tile-title>
-            </v-list-tile>
-            <v-list-tile>
-              <v-icon class="pr-1">phone</v-icon>
-              <v-list-tile-title>
-                <small class="pr-3">Phone</small>
-                {{ publisher.mobilePhone || 'No Phone' }}
-              </v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-          <v-divider inset></v-divider>
-          <v-card-actions>
-            <v-list-tile>
-              <v-list-tile-action>
-                <v-switch color="purple"></v-switch>
-              </v-list-tile-action>
-              <v-list-tile-title>Enable notifications</v-list-tile-title>
-            </v-list-tile>
-          </v-card-actions>
-          </div>
-          <div v-else class="text-xs-center mt-3">
+        <div v-if="fetchedPublisher">
+          <app-publisher-details v-model="publisher"/>
+        </div>
+        <div v-else class="text-xs-center mt-3">
+          <v-card>
             <v-progress-circular indeterminate color="purple"></v-progress-circular>
-          </div>
-        </v-card>
+          </v-card>
+        </div>
       </v-menu>
       <v-menu offset-y :nudge-bottom="15" bottom :close-on-content-click="false" max-width="340" lazy>
         <v-tooltip top slot="activator">
@@ -130,7 +94,7 @@
       </v-menu>
     </v-card-actions>
     <v-card-actions class="subheading">
-      <app-map-icon :location="location" class="pt-1"/>
+      <app-map-icon :location="location" class="pb-3"/>
       {{ getAddress() }}
       <v-spacer></v-spacer>
       ${{ apartment.price }}
@@ -205,6 +169,7 @@
   import AppAttributeList from './Lists/AppAttributeList';
   import AppTagList from './Lists/AppTagList';
   import AppMapIcon from './Maps/AppMapIcon';
+  import AppPublisherDetails from './Lists/AppPublisherDetails';
 
   export default {
     props: ['apartment'],
@@ -436,7 +401,8 @@
       AppImageGallery,
       AppAttributeList,
       AppTagList,
-      AppMapIcon  
+      AppMapIcon,
+      AppPublisherDetails
     }
   };
 </script>

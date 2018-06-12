@@ -1,10 +1,10 @@
 <template>
-  <v-layout justify-center>
+  <div class="text-xs-center">
     <v-btn icon @click.native="openMap" :class="color">
       <v-icon>place</v-icon>
     </v-btn>
     <app-map v-model="showMap" :center="location"></app-map>
-  </v-layout>
+  </div>
 </template>
 
 <script>
