@@ -107,6 +107,7 @@
               </v-layout>
               </div>
           </transition>
+          <app-map-icon :location="location" class="pt-1"/>
         <v-divider/>
         <v-list two-line>
           <v-list-tile @click="">

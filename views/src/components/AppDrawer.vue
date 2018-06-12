@@ -91,7 +91,7 @@
   import { mapGetters, mapMutations } from 'vuex';
   import vueSlider from 'vue-slider-component';
   import AppCalendarForm from './sub-components/AppCalendarForm';
-  import AppMap from './sub-components/AppMap';
+  import AppMap from './Maps/AppMap';
   import tags from '../assets/tags';
 
   export default {

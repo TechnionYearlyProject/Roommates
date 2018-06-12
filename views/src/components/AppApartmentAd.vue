@@ -28,7 +28,7 @@
         </v-layout>
       </v-container> -->
     </v-card-media>
-    <app-map v-model="showMap" :center="{ longitude: apartment.location.geolocation[0] , latitude: apartment.location.geolocation[1] }"></app-map>
+
 
     <v-card-actions class="pt-4">
 
@@ -130,9 +130,7 @@
       </v-menu>
     </v-card-actions>
     <v-card-actions class="subheading">
-      <v-btn icon @click.native="openMap" class="pink--text mb-1">
-        <v-icon>place</v-icon>
-      </v-btn>
+      <app-map-icon :location="location" class="pt-1"/>
       {{ getAddress() }}
       <v-spacer></v-spacer>
       ${{ apartment.price }}
@@ -199,7 +197,6 @@
 <script>
   import { mapGetters } from 'vuex';
   import AppAvatar from './sub-components/AppAvatar';
-  import AppMap from './sub-components/AppMap';
   import AppComments from './sub-components/AppComments';
   import AppFavors from './sub-components/AppFavors';
   import AppImageDialog from './sub-components/AppImageDialog';
@@ -207,6 +204,7 @@
   import AppImageGallery from './Galleries/AppImageGallery';
   import AppAttributeList from './Lists/AppAttributeList';
   import AppTagList from './Lists/AppTagList';
+  import AppMapIcon from './Maps/AppMapIcon';
 
   export default {
     props: ['apartment'],
@@ -249,7 +247,6 @@
         show: 'apartmentDetails',
         fav: false,
         showMap: false,
-        defaultImage: defaultApartmentImage,
         imageNumber: 0,
         imageDialog: false,
         interestedMessage: "I'm interested!",
@@ -408,6 +405,12 @@
             value: this.apartment.area
           }
         ]
+      },
+      location() {
+        return { 
+          longitude: this.apartment.location.geolocation[0],
+           latitude: this.apartment.location.geolocation[1] 
+        }
       }
     },
     mounted() {
@@ -426,14 +429,14 @@
     },
     components: {
       AppAvatar,
-      AppMap,
       AppComments,
       AppFavors,
       AppImageDialog,
       AppSocialSharing,
       AppImageGallery,
       AppAttributeList,
-      AppTagList    
+      AppTagList,
+      AppMapIcon  
     }
   };
 </script>
