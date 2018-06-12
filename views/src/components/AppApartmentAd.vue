@@ -161,7 +161,7 @@
 <script>
   import { mapGetters } from 'vuex';
   import AppAvatar from './sub-components/AppAvatar';
-  import AppComments from './sub-components/AppComments';
+  import AppComments from './Comments/AppComments';
   import AppImageDialog from './sub-components/AppImageDialog';
   import AppSocialSharing from './AppSocialSharing';
   import AppImageGallery from './Galleries/AppImageGallery';

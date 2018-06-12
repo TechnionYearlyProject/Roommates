@@ -52,8 +52,17 @@
             </v-card-text>
           </v-card>
         </v-tab-item>
+
         <v-tab-item id="tab-2">
+          <v-card height="500">
           <app-favor-list :favors="v._interested"/>
+          </v-card>
+        </v-tab-item>
+
+        <v-tab-item id="tab-3">
+          <v-card height="500">
+            <app-comments :comments="v.comments" :onComment="addComment"/>
+          </v-card>
         </v-tab-item>
       </v-tabs>
     </v-flex>
@@ -376,6 +385,7 @@
   import AppMapIcon from './Maps/AppMapIcon'
   import AppPublisherDetails from './Lists/AppPublisherDetails';
   import AppFavorList from './Lists/AppFavorList';
+  import AppComments from './Comments/AppComments'
 
     export default {
       props: {
@@ -438,116 +448,48 @@
         };
       },
       methods: {
-        getAddress() {
-          return 'Gilboa 35, Haifa';
-          // return `${this.apartment.location.address.street.capitalize()} ${
-          //   this.apartment.location.address.number
-          //   }, ${this.apartment.location.address.city.capitalize()}`;
-        },
-        favorite() {
-          if (!this.isAuthenticated) {
-            this.interestedMessage = 'Please login first';
-          } else if (!this.isVerified) {
-            this.interestedMessage = 'Please verify account';
-          } else {
-            this.fav = !this.fav;
-          //   this.$store
-          //     .dispatch('favor', { id: this.apartment._id })
-          //     .then((apartment) => {
-          //       this.apartment._interested = apartment._interested;
-          //     })
-          //     .catch((error) => {
-          //       // eslint-disable-next-line
-          //       console.log(error);
-          //       this.fav = !this.fav;
-          //     });
-          }
-        },
-        getPublisher() {
-          if (!this.fetchedPublisher) {
-            const id = this.apartment._createdBy;
-            this.$store.dispatch('fetchUser', { id }).then((users) => {
-              if (users[id]) {
-                this.publisher = users[id];
-              } else {
-                this.publisher = {
-                  firstName: 'Some',
-                  lastName: 'User',
-                  email: 'user@example.com',
-                  mobilePhone: '+972-8711111'
-                };
-              }
-              this.fetchedPublisher = true;
-            });
-          }
-        },
-        editProperty(property) {
-          if (property.value.current === property.value.previous) {
-            property.edit.active = false;
-            return;
-          }
+        // favorite() {
+        //   if (!this.isAuthenticated) {
+        //     this.interestedMessage = 'Please login first';
+        //   } else if (!this.isVerified) {
+        //     this.interestedMessage = 'Please verify account';
+        //   } else {
+        //     this.fav = !this.fav;
+        //   //   this.$store
+        //   //     .dispatch('favor', { id: this.apartment._id })
+        //   //     .then((apartment) => {
+        //   //       this.apartment._interested = apartment._interested;
+        //   //     })
+        //   //     .catch((error) => {
+        //   //       // eslint-disable-next-line
+        //   //       console.log(error);
+        //   //       this.fav = !this.fav;
+        //   //     });
+        //   }
+        // },
+        // editProperty(property) {
+        //   if (property.value.current === property.value.previous) {
+        //     property.edit.active = false;
+        //     return;
+        //   }
           
-          if ( (property.value.current >= 0)) {
-            property.value.previous = property.value.current;
-            property.edit.active = false;
-          }
-          else{
-            property.error.push("invalid value")
-          }
-        },
-        openMap() {
-          this.showMap = true;
-        },
-        addComment(comment) {
-          // return this.$store.dispatch('addApartmentComment', {
-          //   params: {
-          //     id: this.apartment._id
-          //   },
-          //   payload: {
-          //     text: comment.text
-          //   }
-          // });
-        },
-        expandDetails() {
-          if (this.expended) {
-            this.expended = false;
-          } else {
-            this.expended = true;
-          }
-        },
-        showFavores() {
-          this.show = 'favors';
-          this.goToTopOfAdd();
-        },
-        showComments() {
-          this.show = 'comments';
-          this.goToTopOfAdd();
-        },
+        //   if ( (property.value.current >= 0)) {
+        //     property.value.previous = property.value.current;
+        //     property.edit.active = false;
+        //   }
+        //   else{
+        //     property.error.push("invalid value")
+        //   }
+        // },
         addComment(comment) {
           return this.$store.dispatch('addApartmentComment', {
             params: {
-              id: this.apartment._id
+              id: this.v._id
             },
             payload: {
               text: comment.text
             }
           });
-        },
-        copyToClipboard() {
-          this.$refs.apartmentLink.$refs.input.select();
-          document.execCommand('copy');
-          this.clipboard.text = 'Copied!';
-          this.clipboard.color = 'success';
-          this.clipboard.closeDelay = 3000;
-          const lastCopyTime = Date.now();
-          this.clipboard.lastCopyTime = lastCopyTime;
-          setInterval(() => {
-            if (lastCopyTime === this.clipboard.lastCopyTime) {
-              this.clipboard.text = 'Copy link';
-              this.clipboard.color = undefined;
-              this.clipboard.closeDelay = 200;
-            }
-          }, 5000);
         },
         fetchApartment(id) {
           return this.$store.dispatch('searchApartments', { id })
@@ -651,7 +593,8 @@
         AppTagList,
         AppMapIcon,
         AppPublisherDetails,
-        AppFavorList
+        AppFavorList,
+        AppComments
       },
       mounted() {
         // if (this.isAuthenticated) {
