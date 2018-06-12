@@ -2,69 +2,73 @@
 <v-container fluid grid-list-lg>
   <v-layout row wrap v-if="loaded">
     <v-flex xs12 sm12 md9 order-xs2 order-md1>
-      <v-tabs icons-and-text centered dark color="primary">
-        <v-tabs-slider color="yellow"></v-tabs-slider>
-        <v-tab v-for="(tab,i) in tabs" :href="`#tab-${i+1}`">
-          {{ tab.title }}
-          <v-icon>{{ tab.icon }}</v-icon>
-        </v-tab>
+        <v-tabs card icons-and-text centered dark color="primary">
+          <v-tabs-slider color="yellow"></v-tabs-slider>
+          <v-tab v-for="(tab,i) in tabs" :href="`#tab-${i+1}`">
+            {{ tab.title }}
+            <v-icon>{{ tab.icon }}</v-icon>
+          </v-tab>
 
-        <v-tab-item id="tab-1">
-          <v-card>
-            <v-card-media contain :height="400" class="grey lighten-4">
-              <app-image-gallery v-model="v.images"/>
-            </v-card-media>
-            <v-card-text>
-              <v-layout wrap row >
-                <v-flex xs12>
-                  <v-card-title class="title">
-                    <app-map-icon :location="location"/>
-                    {{ address }}
-                    <v-spacer/>
-                    &#x24;{{ v.price }}
-                  </v-card-title>
-                  <v-divider/>
-                </v-flex>
-              <v-flex xs12 sm12 md7 mt-3>
-                <v-layout wrap row>
+          <v-tab-item id="tab-1">
+            <v-card>
+              <v-card-media contain :height="400" class="grey lighten-4">
+                <app-image-gallery v-model="v.images"/>
+              </v-card-media>
+              <v-card-text>
+                <v-layout wrap row >
                   <v-flex xs12>
-                    <v-card>
-                      <v-card-title><h4>Utilities</h4></v-card-title>
-                      <v-divider/>
-                      <app-tag-list v-model="v.tags"/>
-                    </v-card>
+                    <v-card-title class="title">
+                      <app-map-icon :location="location"/>
+                      {{ address }}
+                      <v-spacer/>
+                      &#x24;{{ v.price }}
+                    </v-card-title>
+                    <v-divider/>
                   </v-flex>
-                  <v-flex xs12 mt-3>
-                    <v-card>
-                      <v-card-title><h4>About</h4></v-card-title>
-                      <v-divider></v-divider>
-                      <v-card-text>
-                        <i>{{ about }}</i>
-                      </v-card-text>
-                    </v-card>
-                  </v-flex>
+                <v-flex xs12 sm12 md7 mt-3>
+                  <v-layout wrap row>
+                    <v-flex xs12>
+                      <v-card>
+                        <v-card-title><h4>Utilities</h4></v-card-title>
+                        <v-divider/>
+                        <app-tag-list v-model="v.tags"/>
+                      </v-card>
+                    </v-flex>
+                    <v-flex xs12 mt-3>
+                      <v-card>
+                        <v-card-title><h4>About</h4></v-card-title>
+                        <v-divider></v-divider>
+                        <v-card-text>
+                          <i>{{ about }}</i>
+                        </v-card-text>
+                      </v-card>
+                    </v-flex>
+                  </v-layout>
+                </v-flex>
+                <v-flex xs12 sm12 md4 offset-md1>
+                  <app-attribute-list v-model="attributes" />
+                </v-flex>
                 </v-layout>
-              </v-flex>
-              <v-flex xs12 sm12 md4 offset-md1>
-                <app-attribute-list v-model="attributes" />
-              </v-flex>
-              </v-layout>
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
 
-        <v-tab-item id="tab-2">
-          <v-card height="500">
-          <app-favor-list :favors="v._interested"/>
-          </v-card>
-        </v-tab-item>
+          <v-tab-item id="tab-2">
+            <v-card height="500">
+            <app-favor-list :favors="v._interested"/>
+            </v-card>
+          </v-tab-item>
 
-        <v-tab-item id="tab-3">
-          <v-card height="500">
-            <app-comments :comments="v.comments" :onComment="addComment"/>
-          </v-card>
-        </v-tab-item>
-      </v-tabs>
+          <v-tab-item id="tab-3">
+            <v-card height="500">
+              <app-comments :comments="v.comments" :onComment="addComment"/>
+            </v-card>
+          </v-tab-item>
+  
+          <v-tab-item id="tab-4">
+            <app-reviews :lat="v.location.geolocation[1]" :lng="v.location.geolocation[0]" :city="v.location.address.city" :street="v.location.address.street"/>
+          </v-tab-item>
+        </v-tabs>
     </v-flex>
     <v-flex order-xs1 order-md2>
       <v-toolbar color="primary" dark :height="72"><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
@@ -386,6 +390,7 @@
   import AppPublisherDetails from './Lists/AppPublisherDetails';
   import AppFavorList from './Lists/AppFavorList';
   import AppComments from './Comments/AppComments'
+  import AppReviews from './AppReviews'
 
     export default {
       props: {
@@ -594,7 +599,8 @@
         AppMapIcon,
         AppPublisherDetails,
         AppFavorList,
-        AppComments
+        AppComments,
+        AppReviews
       },
       mounted() {
         // if (this.isAuthenticated) {

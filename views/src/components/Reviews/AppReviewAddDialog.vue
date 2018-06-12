@@ -5,18 +5,19 @@
  * Dialog communicates with the back-end to store the reviews
  */
 <template>
- <v-container class="modal-backdrop">
-    <v-card max-width="750px">
-    <div dir="rtl">
-      <v-btn icon @click.native="close(); e6=1" flat small>
-        <v-icon>highlight_off</v-icon>
-      </v-btn>
-    </div>
-      <v-alert :type="alert.type" :value="alert.show" transition="scale-transition">
-      {{ alert.message }}
-    </v-alert>
-      <v-card-text>
+ <v-container fluid class="modal-backdrop">
+    <v-card>
         <v-stepper v-model="e6" vertical>
+          <v-layout align-center :class="alert.show? 'error' : 'auto'">
+            <v-alert :type="alert.type" :value="alert.show" transition="scale-transition" class="mb-0">
+              {{ alert.message }}
+            </v-alert>
+            <v-spacer/>
+            <v-btn icon @click.native="close(); e6=1" flat small class="mr-3 mt-3">
+              <v-icon>highlight_off</v-icon>
+            </v-btn>
+          </v-layout>
+          <v-divider/>
 					<v-stepper-step :complete="e6 > 1" step="1">Select a street</v-stepper-step>
 						<v-stepper-content step="1">
 						  <v-text-field v-model="reviewAddress" ref="reviewAddress" @placechanged="setReviewAddress" label="Street and City" validate-on-blur required></v-text-field>
@@ -40,7 +41,6 @@
 						  <v-btn flat @click.native="e6=2" small>Go Back</v-btn>
 						</v-stepper-content>
 			 </v-stepper>
-      </v-card-text>
     </v-card>
 </v-container>
 </template>

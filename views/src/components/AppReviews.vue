@@ -6,7 +6,7 @@
 <template>
     <div>
         <v-container>
-            <AppReviewAddDialog v-show="dialog" @close="dialog=false;"></AppReviewAddDialog>
+            <app-review-add-dialog v-show="dialog" @close="dialog=false;"></app-review-add-dialog>
             <AppReviewSearchDialog v-show="search_review" @close="search_review=false;"></AppReviewSearchDialog>
             <div style="position: relative; height: 500px">
                 <gmap-map :center="position" :zoom="15" map-type-id="roadmap" :style="{ width: '100%', height: '500px', position: 'absolute', bottom: 0 }">
@@ -16,17 +16,6 @@
                     {{ curReviewAddress }}
                 </h1>
             </div>
-            <v-layout column class="fab-container">
-              <v-btn small fab color="pink accent-1" dark  @click.native.stop="dialog = !dialog" v-if="isVerified">
-              	<v-icon>add</v-icon>
-            	</v-btn>
-              <v-btn small fab color="pink accent-1" dark  @click.native.stop="search_review = !search_review">
-                <v-icon>search</v-icon>
-              </v-btn>
-              <v-btn small fab color="pink accent-1" dark @click="$vuetify.goTo(0, scrollOptions)">
-                <v-icon>keyboard_arrow_up</v-icon>
-              </v-btn>
-            </v-layout>
         </v-container>
 
         <v-container>
@@ -83,21 +72,45 @@
                 </v-flex>
             </v-layout>
         </v-container>
-
+        <v-speed-dial right bottom fixed :value="true" class="mr-3">
+            <v-btn small fab color="secondary" dark @click.stop="$vuetify.goTo(0, scrollOptions)">
+            <v-icon>keyboard_arrow_up</v-icon>
+            </v-btn>
+            <v-btn small fab color="secondary" dark  @click.native.stop="search_review = !search_review">
+            <v-icon>search</v-icon>
+            </v-btn>
+            <v-btn small fab color="secondary" dark  @click.native.stop="dialog = !dialog" v-if="isVerified">
+            <v-icon>add</v-icon>
+            </v-btn>
+        </v-speed-dial>
     </div>
 
 </template>
 
 <script>
   import AppAvatar from './sub-components/AppAvatar';
-  import AppReviewTile from './sub-components/AppReviewTile';
-  import AppReviewAddDialog from './sub-components/AppReviewAddDialog';
-  import AppReviewSearchDialog from './sub-components/AppReviewSearchDialog';
+  import AppReviewTile from './Reviews/AppReviewTile';
+  import AppReviewAddDialog from './Reviews/AppReviewAddDialog';
+  import AppReviewSearchDialog from './Reviews/AppReviewSearchDialog';
   import StarRating from 'vue-star-rating'
   import { mapGetters } from 'vuex';
 
   export default {
     name: 'AppReviews',
+    props: {
+        lat: {
+            type: Number,
+        },
+        lng: {
+            type: Number,
+        },
+        city: {
+            type: String
+        },
+        street: {
+            type: String
+        }
+    },
     data() {
       return {
        dialog: false,
@@ -142,17 +155,17 @@
       },
     },
 	beforeMount() {
-    if(this.$route.query.lat !== undefined)
-      this.position.lat = parseFloat(this.$route.query.lat);
-    if(this.$route.query.lng !== undefined)
-      this.position.lng = parseFloat(this.$route.query.lng);
-    var street = this.defaultReviewStreet;
-    var city = this.defaultReviewCity;
-    if(this.$route.query.city !== undefined)
-      city = this.$route.query.city;
-    if(this.$route.query.street !== undefined)
-      street = this.$route.query.street;
-		this.loadReviews(this.position.lng, this.position.lat, city, street);
+        if(this.lat !== undefined)
+            this.position.lat = this.lat;
+        if(this.lng !== undefined)
+            this.position.lng = this.lng;
+        var street = this.defaultReviewStreet;
+        var city = this.defaultReviewCity;
+        if(this.city !== undefined)
+            city = this.city;
+        if(this.street !== undefined)
+            street = this.street;
+        this.loadReviews(this.position.lng, this.position.lat, city, street);
 	},
 	mounted() {
   },
@@ -179,6 +192,13 @@
           generalRating:
                 this.reviews.reduce((t, c) => t + c.ratedCharacteristics.generalRating, 0) /
                 reviewsLength
+        };
+      },
+      scrollOptions() {
+          return {
+            duration: 500,
+            offset: 10,
+            easing: 'easeInOutCubic',
         };
       }
     },

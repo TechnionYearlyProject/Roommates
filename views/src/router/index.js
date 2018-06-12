@@ -76,6 +76,7 @@ const router = new Router({
     {
       path: '/reviews/:location?',
       name: 'AppReviews',
+      props: true,
       component: AppReviews
     },
     {

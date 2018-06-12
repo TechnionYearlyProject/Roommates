@@ -135,7 +135,7 @@
 </template>
 
 <script>
-  import AppAvatar from './AppAvatar';
+  import AppAvatar from '../sub-components/AppAvatar';
 
   export default {
     name: 'AppReviewTile',

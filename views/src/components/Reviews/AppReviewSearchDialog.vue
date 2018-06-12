@@ -11,7 +11,8 @@
         <v-icon>highlight_off</v-icon>
       </v-btn>
     </div>
-      <v-card-title primary-title> Search for a review </v-card-title primary-title>
+    <v-divider/>
+      <v-card-title primary-title>Search for a review </v-card-title primary-title>
       <v-card-text>
         <v-layout wrap row>
           <v-flex>
