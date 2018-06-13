@@ -90,7 +90,7 @@
               abort: false
             };
             this.keys += 1;
-            if(!this.multipleFiles && this.files.length !== 0) {
+            if (!this.multipleFiles && this.files.length !== 0) {
               this.cancelUpload(0);
             }
             this.files.push(file);
@@ -131,7 +131,7 @@
       },
       created() {
         this.files = this.value.map(f => ({
-          key: this.keys++,
+          key: this.keys++, //eslint-disable-line
           imageURL: f,
           name: f,
           progress: 100,

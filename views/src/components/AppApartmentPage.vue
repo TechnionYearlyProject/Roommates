@@ -86,7 +86,16 @@
     <v-flex xs12 sm12 md3 order-xs1 order-md2>
       <v-layout wrap row>
         <v-flex xs12>
-          <v-toolbar color="primary" dark :height="60 "><v-toolbar-title>Publisher</v-toolbar-title></v-toolbar>
+          <v-toolbar color="primary" dark :height="60 ">
+            <v-toolbar-title>Publisher</v-toolbar-title>
+            <v-spacer/>
+              <app-share-icon v-if="loaded" left :url="share.url" :title="share.title" :description="share.description" :quote="share.quote"
+                email
+                facebook
+                googleplus
+                twitter
+                whatsapp/>
+            </v-toolbar>
           <app-publisher-details v-model="p"/>
         </v-flex>
         <v-flex xs12>
@@ -125,7 +134,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import AppSocialSharing from './AppSocialSharing';
 import AppImageGallery from './Galleries/AppImageGallery';
 import AppAttributeList from './Lists/AppAttributeList';
 import AppTagList from './Lists/AppTagList';
@@ -138,6 +146,7 @@ import AppGroupFull from './Groups/AppGroupFull';
 import AppFavoriteIcon from './Icons/AppFavoriteIcon';
 import AppRecommendedList from './Lists/AppRecommendedList';
 import AppPublishApartment from './AppPublishApartment';
+import AppShareIcon from './Icons/AppShareIcon';
 
 export default {
   props: {
@@ -155,8 +164,6 @@ export default {
       loaded: false,
       v: null,
       p: null,
-      dialog: false,
-      share: false,
       expendInterested: this.$vuetify.breakpoint.smAndUp,
       edit: false,
       tabs: [
@@ -253,6 +260,14 @@ export default {
     },
     expendInterestedIcon() {
       return this.expendInterested ? 'keyboard_arrow_down' : 'keyboard_arrow_up';
+    },
+    share() {
+      return {
+        url: `https://localhost:8080/${this.v._id}`,
+        title: 'Sharing this apartment I found on Roommates with you!',
+        description: `Located in ${this.address}, price: ${this.v.price}`,
+        quote: 'This is an apartment that I thought might interest you.'
+      };
     }
   },
   created() {
@@ -278,7 +293,6 @@ export default {
   },
   components: {
     AppImageGallery,
-    AppSocialSharing,
     AppAttributeList,
     AppTagList,
     AppMapIcon,
@@ -289,21 +303,8 @@ export default {
     AppGroupFull,
     AppFavoriteIcon,
     AppRecommendedList,
-    AppPublishApartment
-  },
-  mounted() {
-    // if (this.isAuthenticated) {
-    //   this.fav = this.apartment._interested.includes(
-    //     this.$store.getters.getUser._id
-    //   );
-    // }
-    // this.share.url = `https://localhost:8080/${this.apartment._id}`;
-    // this.share.title = 'Sharing this apartment I found on Roommates with you';
-    // this.share.description = `Located in ${this.getAddress()}, price: ${
-    //   this.apartment.price
-    //   }`;
-    // this.share.quote =
-    //   'This is an apartment that I thought might interest you.';
+    AppPublishApartment,
+    AppShareIcon
   }
 };
 </script>

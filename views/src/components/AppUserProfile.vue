@@ -339,7 +339,7 @@ export default {
       this.profile.properties.push({
         title: 'Name',
         value: {
-          current: `${user.firstName} ${` ${user.lastName  || ''}`}`,
+          current: `${user.firstName} ${` ${user.lastName || ''}`}`,
           previous: `${user.firstName} ${user.lastName}`,
         },
         icon: 'face',

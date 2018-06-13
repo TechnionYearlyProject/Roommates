@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     image() {
-    return this.value[this.imageNumber] || this.defaultImage;
+      return this.value[this.imageNumber] || this.defaultImage;
     }
   }
 };

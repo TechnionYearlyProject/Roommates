@@ -44,7 +44,7 @@
                             <v-slider v-model="requiredRoommatesSlider" label="" thumb-label step="1" min="0" max="10" ticks required></v-slider>
                         </v-flex>
                         <v-flex xs12 sm12 md2 order-sm2 order-md1>
-                            <v-subheader v-text="'Enterance date'"></v-subheader>
+                            <v-subheader v-text="'Entrance date'"></v-subheader>
                         </v-flex>
                         <v-flex xs12 sm12 md3 order-sm2 order-md1>
                             <app-calendar-form @dateUpdated="payload.brithdate = $event" label="when" single-line required />

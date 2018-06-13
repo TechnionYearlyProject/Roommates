@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     name() {
-      return `${this.value.firstName.capitalize()}`+ (this.value.lastName ? ` ${this.value.lastName.capitalize()}` : '');
+      return `${this.value.firstName.capitalize()}${this.value.lastName ? ` ${this.value.lastName.capitalize()}` : ''}`;
     },
     phone() {
       return this.value.phone || 'No Phone';
@@ -67,7 +67,7 @@ export default {
   components: {
     AppAvatar
   }
-}
+};
 </script>
 
 <style>

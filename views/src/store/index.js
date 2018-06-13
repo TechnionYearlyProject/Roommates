@@ -183,20 +183,21 @@ export default new Vuex.Store({
     /**
      * @author: Alon Talmor
      * @date: 12/6/18
-     * @param: params: object of {id, address, price, radius, roommates, floor, entranceDate, tags} -
+     * @param: params: object of {id,address,price,radius,roommates,floor,entranceDate,tags} -
      * filter of the apartments list (the properties are optional).
      * Empty object {} will return all apartments.
      */
     fetchApartments(context, params) {
       return axios.get('http://localhost:3000/apartments', { params })
-        .then((response) => {
-          return response.data.apartments;
-        });
+        .then(response =>
+          response.data.apartments
+        );
     },
     /**
      * @author: Alon Talmor
      * @date: 18/04/18
-     * search apartment and update vuex with the results. see fetchApartments action for information about @param params
+     * Search apartment and update vuex with the results.
+     * See fetchApartments action for information about @param params
      */
     searchApartments({ commit, getters, dispatch }, params) {
       return dispatch('fetchApartments', params)
@@ -209,13 +210,15 @@ export default new Vuex.Store({
      * @author: Alon Talmor
      * @date: 13/6/18
      * @param: params: object of {id} - the id to update
-     * @param: payload: object of {price,entranceDate,images,description,tags,requiredRoommates,totalRoommates, numberOfRooms,floor totalFloors, area} - the properties to update
+     * @param: payload: object of {price,entranceDate,images,description,tags,
+     * requiredRoommates,totalRoommates, numberOfRooms,floor totalFloors, area}
+     * - the properties to update
      */
-    editApartment(context, {params, payload}) {
+    editApartment(context, { params, payload }) {
       return axios.patch(`http://localhost:3000/apartments/${params.id}`, payload)
-        .then((response) => {
-          return response.data.apartment;
-        });
+        .then(response =>
+          response.data.apartment
+        );
     },
     /**
      * @author: Alon Talmor
@@ -283,8 +286,6 @@ export default new Vuex.Store({
     fetchSelf({ commit }) {
       return axios.get('http://localhost:3000/users/self')
       .then((response) => {
-        // eslint-disable-next-line
-        console.log(response.data);
         commit('setUser', response.data.self);
         return response.data.self;
       });

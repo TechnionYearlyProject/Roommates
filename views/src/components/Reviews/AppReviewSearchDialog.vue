@@ -26,46 +26,42 @@
 </template>
 
 <script>
-  export default {
-    name: 'AppReviewSearchDialog',
-    data() {
-      return {
-        address: '',
-        searchData: '',
-      };
+export default {
+  name: 'AppReviewSearchDialog',
+  data() {
+    return {
+      address: '',
+      searchData: ''
+    };
+  },
+  methods: {
+    search() {
+      this.$router.push({ name: 'AppReviews', query: { lat: this.searchData.latitude, lng: this.searchData.longitude, city: this.searchData.locality, street: this.searchData.route } });
     },
-    methods: {
-      search() {
-        this.$router.push({ name: 'AppReviews', query: {lat: this.searchData.latitude, lng: this.searchData.longitude, city: this.searchData.locality, street: this.searchData.route} });
-      },
-      close() {
-        this.$emit('close');
-      },
-      setAddress(data) {
-          this.address = data.full_name;
-          this.searchData = data;
-      },
+    close() {
+      this.$emit('close');
     },
-	 mounted() {
-      this.$setAutocomplete(this.$refs.address, ['address']);
-
+    setAddress(data) {
+      this.address = data.full_name;
+      this.searchData = data;
     }
-  };
+  },
+  mounted() {
+    this.$setAutocomplete(this.$refs.address, ['address']);
+  }
+};
 </script>
 
 <style scoped>
-
 .modal-backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index:99;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
 }
-
-
 </style>

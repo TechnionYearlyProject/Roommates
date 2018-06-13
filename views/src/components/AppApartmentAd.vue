@@ -56,37 +56,12 @@
           </v-card>
         </div>
       </v-menu>
-      <v-menu offset-y :nudge-bottom="15" bottom :close-on-content-click="false" max-width="340" lazy>
-        <v-tooltip top slot="activator">
-          <v-btn icon slot="activator">
-            <v-icon>share</v-icon>
-          </v-btn>
-          <span>Share</span>
-        </v-tooltip>
-        <v-card>
-          <v-container grid-list-sm pa-2>
-            <v-layout wrap row>
-              <v-flex xs10>
-                <v-text-field ref="apartmentLink" v-model="share.url" hide-details readonly class="pl-2" />
-              </v-flex>
-              <v-flex xs2 class="text-xs-center">
-                <v-tooltip top slot="activator" :color="clipboard.color" :close-delay="clipboard.closeDelay">
-                  <v-btn color="success" slot="activator" class="mt-2" style="min-width: 0;width:40px" @click="copyToClipboard">
-                    <v-icon color="white-text">content_copy</v-icon>
-                  </v-btn>
-                  <div class="text-xs-center">{{ clipboard.text }}</div>
-                </v-tooltip>
-              </v-flex>
-              <v-flex xs12 py-2>
-                <v-divider/>
-              </v-flex>
-              <v-flex>
-                <app-social-sharing :id="apartment._id" :price="apartment.price" :address="getAddress()"/>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </v-menu>
+      <app-share-icon top :url="share.url" :title="share.title" :description="share.description" :quote="share.quote"
+        email
+        facebook
+        googleplus
+        twitter
+        whatsapp/>
     </v-card-actions>
     <v-card-actions class="subheading">
       <app-map-icon :location="location" class="pb-3"/>
@@ -154,226 +129,171 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import AppAvatar from './sub-components/AppAvatar';
-  import AppComments from './Comments/AppComments';
-  import AppImageDialog from './sub-components/AppImageDialog';
-  import AppSocialSharing from './AppSocialSharing';
-  import AppImageGallery from './Galleries/AppImageGallery';
-  import AppAttributeList from './Lists/AppAttributeList';
-  import AppTagList from './Lists/AppTagList';
-  import AppMapIcon from './Icons/AppMapIcon';
-  import AppPublisherDetails from './Lists/AppPublisherDetails';
-  import AppFavorList from './Lists/AppFavorList';
-  import AppFavoriteIcon from './Icons/AppFavoriteIcon';
+import { mapGetters } from 'vuex';
+import AppAvatar from './sub-components/AppAvatar';
+import AppComments from './Comments/AppComments';
+import AppImageDialog from './sub-components/AppImageDialog';
+import AppShareIcon from './Icons/AppShareIcon';
+import AppImageGallery from './Galleries/AppImageGallery';
+import AppAttributeList from './Lists/AppAttributeList';
+import AppTagList from './Lists/AppTagList';
+import AppMapIcon from './Icons/AppMapIcon';
+import AppPublisherDetails from './Lists/AppPublisherDetails';
+import AppFavorList from './Lists/AppFavorList';
+import AppFavoriteIcon from './Icons/AppFavoriteIcon';
 
-  export default {
-    props: ['apartment'],
-    data() {
-      return {
-        share: {
-          url: null,
-          title: null,
-          description: null,
-          quote: null,
-          networks: [
-            {
-              name: 'email',
-              icon: 'mdi-email',
-              color: 'lime darken-4'
-            },
-            {
-              name: 'facebook',
-              icon: 'mdi-facebook-box',
-              color: 'blue darken-3'
-            },
-            {
-              name: 'googleplus',
-              icon: 'mdi-google-plus-box',
-              color: 'red darken-1'
-            },
-            {
-              name: 'twitter',
-              icon: 'mdi-twitter-box',
-              color: 'light-blue'
-            },
-            {
-              name: 'whatsapp',
-              icon: 'mdi-whatsapp',
-              color: 'teal darken-1'
-            }
-          ]
-        },
-        expended: false,
-        show: 'apartmentDetails',
-        showMap: false,
-        imageNumber: 0,
-        imageDialog: false,
-        clipboard: {
-          color: undefined,
-          text: 'Copy link',
-          closeDelay: 200,
-          lastCopyTime: 0
-        },
-        e1: 'recent',
-        fetchedPublisher: false,
-        publisher: null
-      };
+export default {
+  props: ['apartment'],
+  data() {
+    return {
+      share: null,
+      expended: false,
+      show: 'apartmentDetails',
+      showMap: false,
+      imageNumber: 0,
+      imageDialog: false,
+      e1: 'recent',
+      fetchedPublisher: false,
+      publisher: null
+    };
+  },
+  methods: {
+    getAddress() {
+      return `${this.apartment.location.address.street.capitalize()} ${this.apartment.location.address.number}, ${this.apartment.location.address.city.capitalize()}`;
     },
-    methods: {
-      getAddress() {
-        return `${this.apartment.location.address.street.capitalize()} ${
-          this.apartment.location.address.number
-        }, ${this.apartment.location.address.city.capitalize()}`;
-      },
-      getPublisher() {
-        if (!this.fetchedPublisher) {
-          const id = this.apartment._createdBy;
-          this.$store.dispatch('fetchUser', { id }).then((users) => {
-            if (users[id]) {
-              this.publisher = users[id];
-            } else {
-              this.publisher = {
-                firstName: 'Some',
-                lastName: 'User',
-                email: 'user@example.com',
-                mobilePhone: '+972-8711111'
-              };
-            }
-            this.fetchedPublisher = true;
-          });
-        }
-      },
+    getPublisher() {
+      if (!this.fetchedPublisher) {
+        const id = this.apartment._createdBy;
+        this.$store.dispatch('fetchUser', { id })
+        .then((users) => {
+          if (users[id]) {
+            this.publisher = users[id];
+          } else {
+            this.publisher = {
+              firstName: 'Some',
+              lastName: 'User',
+              email: 'user@example.com',
+              mobilePhone: '+972-8711111'
+            };
+          }
+          this.fetchedPublisher = true;
+        });
+      }
+    },
 
-      openMap() {
-        this.showMap = true;
-      },
-      expandDetails() {
-        if (this.expended) {
-          this.expended = false;
-        } else {
-          this.expended = true;
+    openMap() {
+      this.showMap = true;
+    },
+    expandDetails() {
+      if (this.expended) {
+        this.expended = false;
+      } else {
+        this.expended = true;
+      }
+    },
+    showApartmentDetails() {
+      this.show = 'apartmentDetails';
+      this.goToTopOfAdd();
+    },
+    showFavores() {
+      this.show = 'favors';
+      this.goToTopOfAdd();
+    },
+    showComments() {
+      this.show = 'comments';
+      this.goToTopOfAdd();
+    },
+    addComment(comment) {
+      return this.$store.dispatch('addApartmentComment', {
+        params: {
+          id: this.apartment._id
+        },
+        payload: {
+          text: comment.text
         }
-      },
-      showApartmentDetails() {
-        this.show = 'apartmentDetails';
-        this.goToTopOfAdd();
-      },
-      showFavores() {
-        this.show = 'favors';
-        this.goToTopOfAdd();
-      },
-      showComments() {
-        this.show = 'comments';
-        this.goToTopOfAdd();
-      },
-      addComment(comment) {
-        return this.$store.dispatch('addApartmentComment', {
-          params: {
-            id: this.apartment._id
-          },
-          payload: {
-            text: comment.text
-          }
-        });
-      },
-      goToTopOfAdd() {
-        this.$vuetify.goTo(this.$refs.details, {
-          duration: 1100,
-          offset: -200,
-          easing: 'easeInOutCubic'
-        });
-      },
-      copyToClipboard() {
-        this.$refs.apartmentLink.$refs.input.select();
-        document.execCommand('copy');
-        this.clipboard.text = 'Copied!';
-        this.clipboard.color = 'success';
-        this.clipboard.closeDelay = 3000;
-        const lastCopyTime = Date.now();
-        this.clipboard.lastCopyTime = lastCopyTime;
-        setInterval(() => {
-          if (lastCopyTime === this.clipboard.lastCopyTime) {
-            this.clipboard.text = 'Copy link';
-            this.clipboard.color = undefined;
-            this.clipboard.closeDelay = 200;
-          }
-        }, 5000);
-      },
-      visitPage() {
-        this.$router.push({name: 'AppApartmentPage', params: {
+      });
+    },
+    goToTopOfAdd() {
+      this.$vuetify.goTo(this.$refs.details, {
+        duration: 1100,
+        offset: -200,
+        easing: 'easeInOutCubic'
+      });
+    },
+    visitPage() {
+      this.$router.push({
+        name: 'AppApartmentPage',
+        params: {
           id: this.apartment._id,
-          apartment: this.apartment, 
+          apartment: this.apartment,
           publisher: this.publisher
-        }});
-      }
-    },
-    computed: {
-      ...mapGetters(['isAuthenticated', 'isVerified']),
-      image() {
-        return this.apartment.images[0]
-          ? this.apartment.images[this.imageNumber]
-          : this.defaultImage;
-      },
-      detailsHeight() {
-        return `${this.$refs.cardDetails.clientHeight}px`;
-      },
-      attributes() {
-        return [
-          {
-            title: 'required roommates',
-            value: this.apartment.requiredRoommates
-          },
-          {
-            title: 'total roommates',
-            value: this.apartment.totalRoommates // change model from currentlyNumberOfRoommates -> totalRoommates
-          },
-          {
-            title: 'floor',
-            value: this.apartment.floor
-          },
-          {
-            title: 'total floors',
-            value: this.apartment.totalFloors
-          },
-          {
-            title: 'rooms number',
-            value: this.apartment.numberOfRooms
-          },
-          {
-            title: 'area (square meter)',
-            value: this.apartment.area
-          }
-        ]
-      },
-      location() {
-        return { 
-          longitude: this.apartment.location.geolocation[0],
-           latitude: this.apartment.location.geolocation[1] 
         }
-      }
-    },
-    mounted() {
-      this.share.url = `https://localhost:8080/${this.apartment._id}`;
-      this.share.title = 'Sharing this apartment I found on Roommates with you';
-      this.share.description = `Located in ${this.getAddress()}, price: ${
-        this.apartment.price
-      }`;
-      this.share.quote =
-        'This is an apartment that I thought might interest you.';
-    },
-    components: {
-      AppAvatar,
-      AppComments,
-      AppFavorList,
-      AppImageDialog,
-      AppSocialSharing,
-      AppImageGallery,
-      AppAttributeList,
-      AppTagList,
-      AppMapIcon,
-      AppPublisherDetails,
-      AppFavoriteIcon
+      });
     }
-  };
+  },
+  computed: {
+    ...mapGetters(['isAuthenticated', 'isVerified']),
+    image() {
+      return this.apartment.images[0] ? this.apartment.images[this.imageNumber] : this.defaultImage;
+    },
+    detailsHeight() {
+      return `${this.$refs.cardDetails.clientHeight}px`;
+    },
+    attributes() {
+      return [
+        {
+          title: 'required roommates',
+          value: this.apartment.requiredRoommates
+        },
+        {
+          title: 'total roommates',
+          value: this.apartment.totalRoommates
+        },
+        {
+          title: 'floor',
+          value: this.apartment.floor
+        },
+        {
+          title: 'total floors',
+          value: this.apartment.totalFloors
+        },
+        {
+          title: 'rooms number',
+          value: this.apartment.numberOfRooms
+        },
+        {
+          title: 'area (square meter)',
+          value: this.apartment.area
+        }
+      ];
+    },
+    location() {
+      return {
+        longitude: this.apartment.location.geolocation[0],
+        latitude: this.apartment.location.geolocation[1]
+      };
+    }
+  },
+  created() {
+    this.share = {
+      url: `https://localhost:8080/${this.apartment._id}`,
+      title: 'Sharing this apartment I found on Roommates with you!',
+      description: `Located in ${this.getAddress()}, price: ${this.apartment.price}`,
+      quote: 'This is an apartment that I thought might interest you.'
+    };
+  },
+  components: {
+    AppAvatar,
+    AppComments,
+    AppFavorList,
+    AppImageDialog,
+    AppShareIcon,
+    AppImageGallery,
+    AppAttributeList,
+    AppTagList,
+    AppMapIcon,
+    AppPublisherDetails,
+    AppFavoriteIcon
+  }
+};
 </script>

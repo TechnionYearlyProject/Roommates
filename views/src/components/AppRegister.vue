@@ -47,17 +47,17 @@
       rules: {
         email: [
           v => !!v || 'E-mail is required',
-          v => v && 
-            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
+          v => (v &&
+            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v)) ||
             'E-mail must be valid'
         ],
         password: [
           v => !!v || 'Password is required',
-          v => v && v.length >= 6 || 'Password must be at least 6 characters'
+          v => (v && v.length >= 6) || 'Password must be at least 6 characters'
         ],
         firstName: [
           v => !!v || 'Name is required',
-          v => v && v.length >= 2 || 'Password must be at least 2 characters'
+          v => (v && v.length >= 2) || 'Password must be at least 2 characters'
         ]
       },
       showPassword: false,

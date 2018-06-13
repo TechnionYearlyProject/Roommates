@@ -331,12 +331,12 @@
         this.payload.totalFloors =
           val > this.payload.totalFloors ? val : this.payload.totalFloors;
       },
-      'payload.requiredRoommates'(val) {
+      'payload.requiredRoommates'(val) { // eslint-disable-line
         if (val > this.payload.totalRoommates) {
           this.payload.totalRoommates = val;
         }
       },
-      'payload.totalRoommates'(val) {
+      'payload.totalRoommates'(val) { // eslint-disable-line
         if (val < this.payload.requiredRoommates) {
           this.payload.requiredRoommates = val;
         }
