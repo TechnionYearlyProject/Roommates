@@ -9,7 +9,7 @@ const logger = new (winston.Logger)({
   levels: winston.config.syslog.levels,
   transports: [
     new (winston.transports.Console)(getLoggerToFileConfig()),
-    new (winston.transports.DailyRotateFile)(getLoggerToFileConfig())
+    //new (winston.transports.DailyRotateFile)(getLoggerToFileConfig())
   ]
 });
 
