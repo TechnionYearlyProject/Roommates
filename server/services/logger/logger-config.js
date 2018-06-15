@@ -1,17 +1,18 @@
 
-const fs = require('fs');
+//const fs = require('fs');
 const path = require('path');
 
 
 exports.getLoggerToFileConfig = function () {
-	const logDirectory = path.join(__dirname, 'server_logs');
-	const logFileName = path.join(logDirectory, 'server.log');
-	fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+	//return;
+	//const logDirectory = path.join(__dirname, 'server_logs');
+	//const logFileName = path.join(logDirectory, 'server.log');
+	//fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
 
 	const tsFormat = () => (new Date()).toLocaleTimeString();
 
     return  {
-	    		"filename": logFileName,
+	    		"filename": 'log',
 	      		"timestamp": tsFormat,
 	      		"datePattern": 'yyyy-MM-dd',
 	      		"colorize": 'true',
