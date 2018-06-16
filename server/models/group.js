@@ -67,8 +67,10 @@ const GroupSchema = new mongoose.Schema({
  */
 GroupSchema.pre('save', function (next) {
   const group = this;
+  // check whether the group is already signed - if so don't do the rest
+  if (group.status === groupStatus.COMPLETED) {} // eslint-disable-line 
   // check whether anyone declined - then set the group status to declined
-  if (group.members.some($ => $.status === memberStatus.DECLINED)) {
+  else if (group.members.some($ => $.status === memberStatus.DECLINED)) {
     group.status = groupStatus.DECLINED;
   } // eslint-disable-line
   // check whether all members accepted - then set the froup status to accepted

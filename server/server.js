@@ -1475,7 +1475,9 @@ app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
  * @date: 16/6/18
  *
  * change group status to COMPLETED which symbolize "Closing a Deal".
- * The route may fail if the group does not hold the required criteria.
+ * The route may fail if:
+ * 1. the group does not hold the required criteria.
+ * 2. the request was not sent by the apartment owner.
  * the body of the request should contain the id of the group.
  * returns the updated apartment as a response.
  */
@@ -1486,9 +1488,13 @@ app.patch('/apartments/:id/groups/sign', authenticate, async (req, res) => {
     if (!apartment) {
       return res.status(BAD_REQUEST).send(errors.apartmentNotFound);
     }
+    if (!apartment._createdBy.equals(req.user._id)) {
+      return res.status(BAD_REQUEST).send(errors.groupInvalidSigner);
+    }
     apartment = await apartment.signGroup(body.id);
     return res.send({ apartment });
   } catch (error) {
+    console.log(error);
     return res.status(BAD_REQUEST).send(error);
   }
 });

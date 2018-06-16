@@ -524,7 +524,7 @@ describe('#Server Tests', () => {
 
           try {
             const apartment = await Apartment.findById(id);
-            expect(apartment.groups.length).toBe(1);
+            expect(apartment.groups.length).toBe(2);
             return done();
           } catch (e) {
             return done(e);
@@ -1663,7 +1663,7 @@ describe('#Server Tests', () => {
           return User.findOne({
             email: users[0].email
           }).then((user) => {
-            expect(user.tokens.length).toBe(0);
+            expect(user.tokens.length).toBe(1); //the user has an old notification token
             done();
           }).catch((errr) => done(errr));
         });
@@ -2546,7 +2546,7 @@ describe('#Server Tests', () => {
         .get(`/apartments/${apartmentId}/groups`)
         .expect(OK)
         .expect((res) => {
-          expect(res.body.groups.length).toBe(2);
+          expect(res.body.groups.length).toBe(3);
           expect(res.body.groups[0].members[0].id).toBe(apartments[2].groups[0].members[0].id.toHexString());
           expect(res.body.groups[1].members[0].id).toBe(apartments[2].groups[1].members[0].id.toHexString());
         })
@@ -2769,6 +2769,81 @@ describe('#Server Tests', () => {
         .patch(`/apartments/${apartmentId}/groups`)
         .send({ id: groupId, status: memberStatus.ACCEPTED })
         .expect(UNAUTHORIZED)
+        .end(done);
+    });
+  });
+
+  describe('#PATCH /apartments/:id/groups/sign', () => {
+    it('should sign a group', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = apartments[2].groups[2]._id.toHexString(); // all members accepted
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups/sign`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ id: groupId })
+        .expect(OK)
+        .expect((res) => {
+          expect(res.body.apartment.groups[2].status).toBe(groupStatus.COMPLETED);
+        })
+        .end((error) => {
+          if (error) {
+            return done(error);
+          }
+
+          return Apartment.findById(apartmentId)
+            .then((apartment) => {
+              expect(apartment.groups[2].status).toBe(groupStatus.COMPLETED);
+              done();
+            });
+        });
+    });
+    it('should not sign a group when not all members accepted', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = apartments[2].groups[0]._id.toHexString(); // not all members accepted here
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups/sign`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ id: groupId })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+    it('should not sign a group by not the apartment\'s owner', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = apartments[2].groups[2]._id.toHexString();
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups/sign`)
+        .set(XAUTH, users[0].tokens[0].token)
+        .send({ id: groupId })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+    it('should not sign a group when not authorized', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = apartments[2].groups[2]._id.toHexString();
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups/sign`)
+        .send({ id: groupId })
+        .expect(UNAUTHORIZED)
+        .end(done);
+    });
+    it('should not sign a group when group does not exist', (done) => {
+      const apartmentId = apartments[2]._id.toHexString();
+      const groupId = new ObjectID().toHexString(); // fake object id
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups/sign`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ id: groupId })
+        .expect(BAD_REQUEST)
+        .end(done);
+    });
+    it('should not sign a group when apartment does not exist', (done) => {
+      const apartmentId = new ObjectID().toHexString(); // fake object id
+      const groupId = apartments[2].groups[2]._id.toHexString(); // not all members accepted here
+      request(app)
+        .patch(`/apartments/${apartmentId}/groups/sign`)
+        .set(XAUTH, users[1].tokens[0].token)
+        .send({ id: groupId })
+        .expect(BAD_REQUEST)
         .end(done);
     });
   });

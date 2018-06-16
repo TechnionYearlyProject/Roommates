@@ -16,9 +16,9 @@ const {
 const {
   NotificationsTypesEnum
 } = require('../../server/models/notification');
-// const {
-//   Group
-// } = require('../../server/models/group');
+const {
+  memberStatus
+} = require('../../server/models/group');
 const {
   XAUTH,
   VERIFICATION_SECRET,
@@ -128,7 +128,7 @@ const apartment2 = new Apartment({
 
 const apartment3 = new Apartment({
   _id: apartment3Id,
-  _createdBy: new ObjectID(),
+  _createdBy: user2Id,
   createdAt: Date.now(),
   price: 1,
   _interested: [user2Id],
@@ -156,9 +156,15 @@ const apartment3 = new Apartment({
   groups: [{
     members: [{ id: user1Id }],
     _apartmentId: apartment3Id,
+    _id: new ObjectID()
   },
   {
     members: [{ id: user3Id }, { id: user2Id }],
+    _apartmentId: apartment3Id,
+    _id: new ObjectID()
+  },
+  {
+    members: [{ id: user3Id, status: memberStatus.ACCEPTED }],
     _apartmentId: apartment3Id,
     _id: new ObjectID()
   }]
@@ -195,6 +201,14 @@ const user1 = {
   about: '',
   hobbies: [1, 2, 3],
   _givenReviews: [review1Id.toHexString()],
+  tokens: [{
+    access: XAUTH,
+    token: jwt.sign({
+      _id: user1Id.toHexString(),
+      access: XAUTH
+    }, process.env.JWT_SECRET).toString(),
+    expiration: Date.now() + 1000000
+  }],
   notifications: [{
     _id: user1Notification1Id,
     notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
@@ -650,7 +664,12 @@ const populateUsers = (done) => {
 
 const populateApartments = (done) => {
   Apartment.remove({})
-    .then(() => Apartment.insertMany(apartments))
+    .then(() =>
+      Promise.all([
+        new Apartment(apartments[0]).save(),
+        new Apartment(apartments[1]).save(),
+        new Apartment(apartments[2]).save()
+      ]))
     .then(() => done())
     .catch(done);
 };

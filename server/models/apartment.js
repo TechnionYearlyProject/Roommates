@@ -453,14 +453,15 @@ ApartmentSchema.methods.updateMemberStatus = function (groupId, memberId, status
  * @returns Promise object containing the updated apartment.
  * @throws  groupNotFound exception if the group does not exist.
  */
-ApartmentSchema.methods.SignGroup = function (groupId) {
+ApartmentSchema.methods.signGroup = function (groupId) {
   const apartment = this;
 
   const group = apartment.groups.id(groupId);
-  if (!groupId) {
+  if (!group) {
     return Promise.reject(errors.groupNotFound);
   }
   group.sign();
+  console.log(apartment);
   return apartment.save();
 };
 
