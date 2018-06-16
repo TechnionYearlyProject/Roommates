@@ -173,10 +173,10 @@ export default new Vuex.Store({
      * @param: jwt: jwt token
      * @param: payload: object of {email,password}.
      */
-    resetPassword({ commit, getters }, { jwt, payload }) {
+    resetPassword({ commit, getters, dispatch }, { jwt, payload }) {
       return axios.patch(`http://localhost:3000/users/reset/${jwt}`, payload)
         .then(() => {
-          commit('logout'); // clear user session (if logged in)
+          dispatch('logout'); // clear user session (if logged in)
           return getters.getUser;
         });
     },
