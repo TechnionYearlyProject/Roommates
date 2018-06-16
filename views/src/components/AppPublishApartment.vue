@@ -308,11 +308,17 @@
           return [() => true];
         }
         return [
-          () => this.payload.address.city !== null,
-          () => this.payload.address.street !== null,
-          () => this.payload.address.number !== null,
-          () => this.payload.price !== null,
-          () => this.payload.entranceDate !== null
+          this.rules.address[0],
+          this.rules.address[1],
+          this.rules.number[0],
+          this.rules.price[0],
+          this.rules.entranceDate[0],
+
+          // () => this.payload.address.city !== null,
+          // () => this.payload.address.street !== null,
+          // () => this.payload.address.number !== null,
+          // () => this.payload.price !== null,
+          // () => this.payload.entranceDate !== null
         ];
       },
       today() {
