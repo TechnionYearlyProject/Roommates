@@ -31,100 +31,99 @@
 </template>
 
 <script>
-  import AppCalendarForm from './sub-components/AppCalendarForm';
+import * as EmailValidator from 'email-validator';
+import AppCalendarForm from './sub-components/AppCalendarForm';
 
-  export default {
-    data: () => ({
-      valid: true,
-      payload: {
-        email: null,
-        password: null,
-        firstName: null,
-        lastName: null,
-        birthdate: 694224000000,
-        gender: null
-      },
-      rules: {
-        email: [
-          v => !!v || 'E-mail is required',
-          v => (v &&
-            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v)) ||
-            'E-mail must be valid'
-        ],
-        password: [
-          v => !!v || 'Password is required',
-          v => (v && v.length >= 6) || 'Password must be at least 6 characters'
-        ],
-        firstName: [
-          v => !!v || 'Name is required',
-          v => (v && v.length >= 2) || 'Name must be at least 2 characters'
-        ]
-      },
-      showPassword: false,
-      genderList: [
-        {
-          title: 'Male',
-          value: 'male'
-        },
-        {
-          title: 'Female',
-          value: 'female'
-        }
+export default {
+  data: () => ({
+    valid: true,
+    payload: {
+      email: null,
+      password: null,
+      firstName: null,
+      lastName: null,
+      birthdate: 694224000000,
+      gender: null
+    },
+    rules: {
+      email: [
+        v => !!v || 'E-mail is required',
+        v => (v && EmailValidator.validate(v)) || 'E-mail must be valid'
       ],
-      alert: {
-        show: false,
-        message: '',
-        type: 'error'
+      password: [
+        v => !!v || 'Password is required',
+        v => (v && v.length >= 6) || 'Password must be at least 6 characters'
+      ],
+      firstName: [
+        v => !!v || 'Name is required',
+        v => (v && v.length >= 2) || 'Name must be at least 2 characters'
+      ]
+    },
+    showPassword: false,
+    genderList: [
+      {
+        title: 'Male',
+        value: 'male'
       },
-      loading: false
-    }),
-    methods: {
-      showLoading() {
-        this.loading = true;
-      },
-      hideLoading() {
-        this.loading = false;
-      },
-      showSnackbarWelcome(user) {
-        this.$store.commit(
-          'showSnackbar',
-          `Welcome ${
-            user.firstName
-          }! Check your e-mail for the verification link to complete the registration`
-        );
-      },
-      async register() {
-        try {
-          this.showLoading();
-          await this.$store.dispatch('register', this.payload).then(async (user) => {
-            await this.$store.dispatch('sendVerificationMail', {
-              email: this.payload.email,
-              password: this.payload.password
-            });
-            this.$router.push({ name: 'AppMain' });
-            this.showSnackbarWelcome(user);
-          }).catch((e) => {
-            this.alert.message = e.response.data;
-            this.alert.show = true;
+      {
+        title: 'Female',
+        value: 'female'
+      }
+    ],
+    alert: {
+      show: false,
+      message: '',
+      type: 'error'
+    },
+    loading: false
+  }),
+  methods: {
+    showLoading() {
+      this.loading = true;
+    },
+    hideLoading() {
+      this.loading = false;
+    },
+    showSnackbarWelcome(user) {
+      this.$store.commit(
+        'showSnackbar',
+        `Welcome ${
+          user.firstName
+        }! Check your e-mail for the verification link to complete the registration`
+      );
+    },
+    async register() {
+      try {
+        this.showLoading();
+        await this.$store.dispatch('register', this.payload).then(async (user) => {
+          await this.$store.dispatch('sendVerificationMail', {
+            email: this.payload.email,
+            password: this.payload.password
           });
-        } catch (error) {
-          this.alert.message = 'Unknown error occurred';
+          this.$router.push({ name: 'AppMain' });
+          this.showSnackbarWelcome(user);
+        }).catch((e) => {
+          this.alert.message = e.response.data;
           this.alert.show = true;
-        } finally {
-          this.hideLoading();
-        }
+        });
+      } catch (error) {
+        this.alert.message = 'Unknown error occurred';
+        this.alert.show = true;
+      } finally {
+        this.hideLoading();
       }
-    },
-    computed: {
-      maxBirthdayDate() {
-        const date = Date.now() - (18 * 365 * 24 * 60 * 60 * 1000); // 18 years
-        return new Date(date).toISOString();
-      }
-    },
-    components: {
-      AppCalendarForm
     }
-  };
+  },
+  computed: {
+    maxBirthdayDate() {
+      const date = Date.now() - (18 * 365 * 24 * 60 * 60 * 1000); // 18 years
+      return new Date(date).toISOString();
+    }
+  },
+  components: {
+    AppCalendarForm
+  }
+};
 </script>
 
 <style scoped>
