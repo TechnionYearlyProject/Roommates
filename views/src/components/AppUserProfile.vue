@@ -303,7 +303,7 @@ export default {
         })
         .catch((error) => {
           property.value.current = property.value.previous;
-          property.error = 'An error occured!';
+          property.error = `Invalid information. Please make sure you fill in a correct ${property.title.toLowerCase()}.`;
           // eslint-disable-next-line
           console.log(error); // show an error message
         });
@@ -400,7 +400,7 @@ export default {
         },
       });
       this.profile.properties.push({
-        title: 'Phone',
+        title: 'Phone Number',
         value: {
           current: user.mobilePhone,
           previous: user.mobilePhone,
