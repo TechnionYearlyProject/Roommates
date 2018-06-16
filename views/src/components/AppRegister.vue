@@ -16,7 +16,7 @@
               <v-text-field label="Last Name" v-model="payload.lastName"></v-text-field>
             </v-flex>
           </v-layout>
-          <app-calendar-form @dateUpdated="payload.birthdate = new Date($event).getTime()" label="Birthday Date" :required="true" :max="maxBirthdayDate" start-date="1992-06-24"/>
+          <app-calendar-form @dateUpdated="payload.birthdate = new Date($event).getTime()" label="Birthday Date" :required="true" :max="maxBirthdayDate" :start-date="payload.birthdate"/>
           <v-radio-group v-model="payload.gender" row required>
             <v-radio v-for="(gender,i) in genderList" :key="i" :label="gender.title" :value="gender.value"></v-radio>
           </v-radio-group>
@@ -41,7 +41,7 @@
         password: null,
         firstName: null,
         lastName: null,
-        birthdate: '1-1-1992',
+        birthdate: 694224000000,
         gender: null
       },
       rules: {
@@ -57,7 +57,7 @@
         ],
         firstName: [
           v => !!v || 'Name is required',
-          v => (v && v.length >= 2) || 'Password must be at least 2 characters'
+          v => (v && v.length >= 2) || 'Name must be at least 2 characters'
         ]
       },
       showPassword: false,
