@@ -424,7 +424,7 @@ ApartmentSchema.methods.createGroup = function (id) {
  * @author: Alon Talmor
  * @date: 6/5/18
  *
- * This methods finds the appropriate group and updates the status of the specified member.
+ * This method finds the appropriate group and updates the status of the specified member.
  * Properties available:
  * @param groupId - the id of the group to update.
  * @param memberId - the id of the member to update.
@@ -441,6 +441,26 @@ ApartmentSchema.methods.updateMemberStatus = function (groupId, memberId, status
     return Promise.reject(errors.groupNotFound);
   }
   group.updateStatus(memberId, status);
+  return apartment.save();
+};
+
+/**
+ * @author: Alon Talmor
+ * @date: 16/6/18
+ *
+ * find the group specified by the groupId and change its status to be "signed".
+ * @param groupId - should be a valid group id.
+ * @returns Promise object containing the updated apartment.
+ * @throws  groupNotFound exception if the group does not exist.
+ */
+ApartmentSchema.methods.SignGroup = function (groupId) {
+  const apartment = this;
+
+  const group = apartment.groups.id(groupId);
+  if (!groupId) {
+    return Promise.reject(errors.groupNotFound);
+  }
+  group.sign();
   return apartment.save();
 };
 

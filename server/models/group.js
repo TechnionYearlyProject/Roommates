@@ -96,6 +96,12 @@ GroupSchema.methods.updateStatus = function (memberId, status) {
   throw errors.groupMemberNotFound;
 };
 
+/**
+ * @author: Alon Talmor
+ * @date: 16/6/18
+ * Change the group status to "complete".
+ * All group members must accept in order for the group to be completed.
+ */
 GroupSchema.methods.sign = function () {
   const group = this;
 
