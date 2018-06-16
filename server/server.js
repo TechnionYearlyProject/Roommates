@@ -949,7 +949,7 @@ app.patch('/users/reset/:token', async (req, res) => {
       user
     });
   } catch (err) {
-    res.status(BAD_REQUEST).send(err);
+    res.status(BAD_REQUEST).send(errors.PasswordResetFailure);
   }
 });
 /**
