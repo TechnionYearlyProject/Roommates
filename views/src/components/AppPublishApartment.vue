@@ -32,10 +32,10 @@
                 </v-flex>
 
                 <v-flex xs12 sm12 offset-xs1 md2 offset-md0>
-                  <v-text-field ref="number" v-model="payload.address.number" label="Street Number" type="number"  mask="#######" single-line :rules="rules.number" validate-on-blur required></v-text-field>
+                  <v-text-field ref="number" v-model="payload.address.number" label="Street Number" mask="#######" single-line :rules="rules.number" validate-on-blur required></v-text-field>
                 </v-flex>
                 <v-flex xs12 sm12 offset-xs1 md2 offset-md0>
-                  <v-text-field v-model="payload.address.apartmentNumber" label="Apartment Number" type="number"  mask="#######" single-line></v-text-field>
+                  <v-text-field v-model="payload.address.apartmentNumber" label="Apartment Number" mask="#######" single-line></v-text-field>
                 </v-flex>
 
               </v-layout>
