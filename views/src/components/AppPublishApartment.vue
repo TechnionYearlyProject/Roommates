@@ -69,7 +69,7 @@
                   <v-subheader>Total number of roommates</v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md3 order-sm1 order-md2>
-                                    <v-slider v-model="payload.totalRoommates" thumb-label step="1" :min="1" :max="11" ticks hide-details></v-slider>
+                  <v-slider v-model="payload.totalRoommates" thumb-label step="1" :min="1" :max="11" ticks hide-details></v-slider>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -89,7 +89,7 @@
                 <v-subheader v-text="'Floor'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
-                <v-text-field v-model="payload.floor" label="Floor" type="number" prepend-icon=""  single-line></v-text-field>
+                <v-text-field v-model="payload.floor" label="Floor" type="number" prepend-icon="" :rules="rules.floor" single-line></v-text-field>
               </v-flex>
               <v-flex xs12 sm12 md1>
               </v-flex>
@@ -97,7 +97,7 @@
                 <v-subheader v-text="'Building floors'"></v-subheader>
               </v-flex>
               <v-flex xs12 sm12 md3>
-                <v-text-field v-model="payload.totalFloors" label="Building floors" type="number" prepend-icon="" single-line></v-text-field>
+                <v-text-field v-model="payload.totalFloors" label="Building floors" type="number" prepend-icon="" :rules="rules.totalFloors" single-line></v-text-field>
               </v-flex>
               <v-flex xs12 sm12 md1>
               </v-flex>
@@ -232,7 +232,13 @@
           ],
           number: [() => !!this.payload.address.number || ''],
           price: [() => !!this.payload.price || ''],
-          entranceDate: [() => !!this.payload.entranceDate || '']
+          entranceDate: [() => !!this.payload.entranceDate || ''],
+          floor: [() => !this.payload.totalFloors ||
+                 (this.payload.totalFloors && this.payload.floor <= this.payload.totalFloors) ||
+                 'The apartment\'s floor number is more than the total building floors'],
+          totalFloors: [() => !this.payload.floor ||
+                        (this.payload.floor && this.payload.floor <= this.payload.totalFloors) ||
+                        'The total building floors are less than the apartment\'s floor number']
         },
         e6: 1,
         color: 'grey lighten-5',
