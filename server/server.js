@@ -1494,7 +1494,6 @@ app.patch('/apartments/:id/groups/sign', authenticate, async (req, res) => {
     apartment = await apartment.signGroup(body.id);
     return res.send({ apartment });
   } catch (error) {
-    console.log(error);
     return res.status(BAD_REQUEST).send(error);
   }
 });

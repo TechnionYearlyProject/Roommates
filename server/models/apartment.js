@@ -461,7 +461,6 @@ ApartmentSchema.methods.signGroup = function (groupId) {
     return Promise.reject(errors.groupNotFound);
   }
   group.sign();
-  console.log(apartment);
   return apartment.save();
 };
 
