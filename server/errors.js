@@ -14,6 +14,7 @@ const GROUP_CREATION_FAILURE    = 160001;
 const GROUP_NOT_FOUND           = 160002;
 const GROUP_MEMBER_NOT_FOUND    = 160003;
 const GROUP_SIGN_FAILURE        = 160004;
+const GROUP_INVALID_SINGER      = 160005;
 
 const USER_NOT_FOUND            = 170000;
 const USER_UPDATE_FAILURE       = 170001;
@@ -39,6 +40,7 @@ module.exports = {
   groupNotFound: Error(GROUP_NOT_FOUND, 'The group was not found.'),
   groupMemberNotFound: Error(GROUP_MEMBER_NOT_FOUND, 'The group member was not found.'),
   groupSignFailure: Error(GROUP_SIGN_FAILURE, 'Group cannot be signed.'),
+  groupInvalidSigner: Error(GROUP_INVALID_SINGER, 'Group must be signed by the apartment\'s owner.'),
   userNotFound: Error(USER_NOT_FOUND, 'The user was not found.'),
   userUpdateFailure: Error(USER_UPDATE_FAILURE, 'Failed to update user.')
 };

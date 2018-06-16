@@ -1394,7 +1394,7 @@ app.get('/apartments/:id/groups', async (req, res) => {
 
 /**
  * @author: Alon Talmor
- * @date: 6/5/18
+ * @date: 5/6/18
  *
  * Create a new group.
  * The request should include:
@@ -1448,13 +1448,13 @@ app.post('/apartments/:id/groups', authenticate, async (req, res) => {
 
 /**
  * @author: Alon Talmor
- * @date: 6/5/18
+ * @date: 5/6/18
  *
  * Update a group.
  * The initial version of this route will only support updating of the member status.
  * The body should include the id of the group and the new status in the
  * following way: {id, status}. A user is allowed to update ONLY his own status.
- * Returns the updated apartment.
+ * Returns the updated apartment as a response.
  */
 app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
   const body = _.pick(req.body, ['id', 'status']);
@@ -1469,6 +1469,30 @@ app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
     return res.status(BAD_REQUEST).send(error);
   }
 });
+
+/**
+ * @author: Alon Talmor
+ * @date: 16/6/18
+ *
+ * change group status to COMPLETED which symbolize "Closing a Deal".
+ * The route may fail if the group does not hold the required criteria.
+ * the body of the request should contain the id of the group.
+ * returns the updated apartment as a response.
+ */
+app.patch('/apartments/:id/groups/sign', authenticate, async (req, res) => {
+  const body = _.pick(req.body, ['id']);
+  try {
+    let apartment = await Apartment.findById(req.params.id);
+    if (!apartment) {
+      return res.status(BAD_REQUEST).send(errors.apartmentNotFound);
+    }
+    apartment = await apartment.signGroup(body.id);
+    return res.send({ apartment });
+  } catch (error) {
+    return res.status(BAD_REQUEST).send(error);
+  }
+});
+
 /**
  * @author: Alon Talmor
  * @date: 28/3/18
