@@ -503,8 +503,6 @@ describe('#Server Tests', () => {
             const user = await User.findById(users[1]._id);
             const apartment = await Apartment.findById(id);
             expect(user.isInterestedInApartment(id)).toBe(true);
-            console.log(users[1]._id);
-            console.log(apartment._interested);
             expect(apartment.isUserInterested(users[1]._id)).toBe(true);
             expect(apartment.groups.length).toBe(0); // should not add a group !
             return done();

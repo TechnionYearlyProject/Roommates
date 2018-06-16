@@ -95,6 +95,15 @@ GroupSchema.methods.updateStatus = function (memberId, status) {
   }
   throw errors.groupMemberNotFound;
 };
+
+GroupSchema.methods.sign = function () {
+  const group = this;
+
+  if (group.status !== groupStatus.ACCEPTED) {
+    throw errors.groupSignFailure;
+  }
+  group.status = groupStatus.COMPLETED;
+};
 // const Group = mongoose.model('Group', GroupSchema);
 
 module.exports = {
