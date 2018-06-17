@@ -24,6 +24,5 @@
     },
     "default": {
         "LOG_LEVEL": "info",
-        "CORS": ""
     }
 }
