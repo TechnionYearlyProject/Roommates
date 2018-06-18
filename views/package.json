@@ -27,9 +27,7 @@
     "vuedraggable": "^2.16.0",
     "vuetify": "^1.0.16",
     "vuex": "^3.0.1",
-    "vuex-persist": "^1.1.6"
-  },
-  "devDependencies": {
+    "vuex-persist": "^1.1.6",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-eslint": "^7.1.1",
@@ -73,6 +71,9 @@
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",
     "webpack-merge": "^4.1.0"
+  },
+  "devDependencies": {
+
   },
   "engines": {
     "node": ">= 6.0.0",
