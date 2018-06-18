@@ -2,10 +2,12 @@ const expect = require('expect');
 const geolib = require('geolib');
 
 const { Apartment } = require('../../../server/models/apartment');
+const { memberStatus, groupStatus } = require('../../../server/models/group');
 const {
   coords,
   populateApartments,
-  populateUsers
+  populateUsers,
+  apartments
 } = require('../../seed/seed');
 
 describe('Apartment Tests', () => {
@@ -44,9 +46,27 @@ describe('Apartment Tests', () => {
     it('should return all apartments', (done) => {
       Apartment.findInRange(coords.technionIsrael[0], coords.technionIsrael[1], 150)
         .then((result) => {
-          expect(result.length).toBe(2);
+          expect(result.length).toBe(3);
           done();
         }).catch(done);
+    });
+  });
+
+  describe('#updateMemberStatus Tests', () => {
+    it('should keep group declined invariant', async () => {
+      let apartment = await Apartment.findById(apartments[2]._id);
+      apartment = await apartment.updateMemberStatus(apartments[2].groups[1]._id, apartments[2].groups[1].members[0].id, memberStatus.DECLINED);
+      expect(apartment.groups[1].status).toBe(groupStatus.DECLINED);
+    });
+    it('should keep group accepted invariant', async () => {
+      let apartment = await Apartment.findById(apartments[2]._id);
+      apartment = await apartment.updateMemberStatus(apartments[2].groups[0]._id, apartments[2].groups[0].members[0].id, memberStatus.ACCEPTED);
+      expect(apartment.groups[0].status).toBe(groupStatus.ACCEPTED);
+    });
+    it('should not change group status to accepted when some members have not accepted', async () => {
+      let apartment = await Apartment.findById(apartments[2]._id);
+      apartment = await apartment.updateMemberStatus(apartments[2].groups[1]._id, apartments[2].groups[1].members[0].id, memberStatus.ACCEPTED);
+      expect(apartment.groups[1].status).toBe(groupStatus.PENDING);
     });
   });
 });

@@ -142,16 +142,16 @@ app.post('/apartments', authenticate, async (req, res) => {
       $push: {
         _publishedApartments: apartment._id
       }
-    }).catch(err => {
+    }).catch(() => {
       Apartment.findByIdAndRemove(apartment._id);
-      throw err;
+      throw errors.userUpdateFailure;
     });
 
     return res.send({
       apartment
     });
   } catch (err) {
-    return res.status(BAD_REQUEST).send(errors.unknownError);
+    return res.status(BAD_REQUEST).send(err);
   }
 });
 
@@ -354,39 +354,39 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
  *
  * @param {String} id
  */
-app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
-  try {
-    const {
-      id
-    } = req.params;
-    const userId = req.user._id;
+// app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
+//   try {
+//     const {
+//       id
+//     } = req.params;
+//     const userId = req.user._id;
 
-    const apartment = await Apartment.findById(id);
-    if (!apartment) {
-      return res.status(NOT_FOUND).send();
-    }
-    const roommates = apartment.totalRoommates;
+//     const apartment = await Apartment.findById(id);
+//     if (!apartment) {
+//       return res.status(NOT_FOUND).send();
+//     }
+//     const roommates = apartment.totalRoommates;
 
-    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
-    let usersIncluded = false;
+//     const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+//     let usersIncluded = false;
 
-    // get the group
-    const group = _interested.slice(0, roommates);
-    for (let u of group) {
-      if ((u._doc._id.id).equals(userId.id))
-        usersIncluded = true;
-    }
-    if (!usersIncluded)
-      group[roommates - 1] = userId;
+//     // get the group
+//     const group = _interested.slice(0, roommates);
+//     for (let u of group) {
+//       if ((u._doc._id.id).equals(userId.id))
+//         usersIncluded = true;
+//     }
+//     if (!usersIncluded)
+//       group[roommates - 1] = userId;
 
-    return res.send({
-      group
-    });
+//     return res.send({
+//       group
+//     });
 
-  } catch (err) {
-    return res.status(BAD_REQUEST).send(err);
-  }
-});
+//   } catch (err) {
+//     return res.status(BAD_REQUEST).send(err);
+//   }
+// });
 
 
 /**
@@ -436,41 +436,41 @@ app.put('/apartments/:id/interested', authenticate, async (req, res) => {
  *
  * @param {String} id
  */
-app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
-  try {
-    const {
-      id
-    } = req.params;
-    const userId = req.user._id;
+// app.get('/apartments/:id/interested/groups/self/lazy', authenticate, async (req, res) => {
+//   try {
+//     const {
+//       id
+//     } = req.params;
+//     const userId = req.user._id;
 
-    const apartment = await Apartment.findById(id);
-    if (!apartment) {
-      return res.status(NOT_FOUND).send();
-    }
-    const roommates = apartment.totalRoommates;
+//     const apartment = await Apartment.findById(id);
+//     if (!apartment) {
+//       return res.status(NOT_FOUND).send();
+//     }
+//     const roommates = apartment.totalRoommates;
 
-    const _interested = await req.user.getBestMatchingUsers(apartment._interested);
-    let usersIncluded = false;
+//     const _interested = await req.user.getBestMatchingUsers(apartment._interested);
+//     let usersIncluded = false;
 
-    // get the group
-    const group = _interested.slice(0, roommates);
-    //const group = [ _interested[1], _interested[1], _interested[1]];
-    //if((group.filter(user => (user._id() === userId))).length === 0)
-    for (let u of group) {
-      if ((u._doc._id.id).equals(userId.id))
-        usersIncluded = true;
-    }
-    if (!usersIncluded)
-      group[roommates - 1] = userId;
+//     // get the group
+//     const group = _interested.slice(0, roommates);
+//     //const group = [ _interested[1], _interested[1], _interested[1]];
+//     //if((group.filter(user => (user._id() === userId))).length === 0)
+//     for (let u of group) {
+//       if ((u._doc._id.id).equals(userId.id))
+//         usersIncluded = true;
+//     }
+//     if (!usersIncluded)
+//       group[roommates - 1] = userId;
 
-    return res.send({
-      group
-    });
+//     return res.send({
+//       group
+//     });
 
-  } catch (err) {
-    return res.status(BAD_REQUEST).send(err);
-  }
-});
+//   } catch (err) {
+//     return res.status(BAD_REQUEST).send(err);
+//   }
+// });
 
 
 /**
@@ -641,7 +641,7 @@ app.post('/users/login', async (req, res) => {
      * @updatedBy: Alon Talmor
      * @date: 16/04/18
      * We should generate a token even if the user is yet to be verified (verification is by mail).
-     
+
      if (!user.isVerified) {
        return res.send({ user });
       }
@@ -803,7 +803,9 @@ app.patch('/users/self', authenticate, async (req, res) => {
       '_interestedApartments'
     ]);
 
-    [body.image] = await imageService.uploadImages('USER_IMAGES', req.user._id, body.image);
+    if (body.image) {
+      [body.image] = await imageService.uploadImages('USER_IMAGES', req.user._id, body.image);
+    }
     const user = await User.findByIdAndUpdate(
       req.user._id, {
         $set: body
@@ -947,7 +949,7 @@ app.patch('/users/reset/:token', async (req, res) => {
       user
     });
   } catch (err) {
-    res.status(BAD_REQUEST).send(err);
+    res.status(BAD_REQUEST).send(errors.PasswordResetFailure);
   }
 });
 /**
@@ -1079,9 +1081,9 @@ app.post('/reviews', authenticate, async (req, res) => {
 });
 
 /**
- * Get calculated review of vacinity of given coordinadets.
+ * Get calculated aggregated review of vacinity of given coordinadets.
  */
-app.get('/reviews/:long/:lat', async (req, res) => {
+app.get('/reviews/aggregated/:long/:lat', async (req, res) => {
   try {
     const r = {
       ratedCharacteristics: {
@@ -1157,7 +1159,32 @@ app.get('/reviews/:long/:lat', async (req, res) => {
     res.status(BAD_REQUEST).send(err);
   }
 });
-
+/**
+ *
+ * @author: Or Abramovich
+ * @date: 06/18
+ *
+ * Gets all reviews near the given coordinates
+ *
+ * Parameters of the route:
+ *
+ * @param {Number} long: the longitude param of the coordinate.
+ * @param {Number} lat: the latitude param of the coordinate.
+ *
+ */
+app.get('/reviews/:long/:lat', async (req, res) => {
+  try {
+    var reviews = [];
+    Review.findInRange(req.params.long, req.params.lat, 1).then(result => {
+      for (let index = 0; index < result.length; index++) {
+        reviews.push(result[index]);
+      }
+      return res.send({reviews});
+    });
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err);
+  }
+});
 /**
  * Update review. The patching user has to be authenticated and the giver of the review.
  *
@@ -1351,6 +1378,128 @@ app.delete('/reviews/:id', authenticate, async (req, res) => {
 
 /**
  * @author: Alon Talmor
+ * @date: 30/5/18
+ *
+ * Get apartment's suggested groups by apartment-id
+ */
+app.get('/apartments/:id/groups', async (req, res) => {
+  try {
+    const apartment = await Apartment.findById(req.params.id);
+    const { groups } = apartment;
+    res.send({ groups });
+  } catch (error) {
+    res.status(BAD_REQUEST).send(errors.apartmentNotFound);
+  }
+});
+
+/**
+ * @author: Alon Talmor
+ * @date: 5/6/18
+ *
+ * Create a new group.
+ * The request should include:
+ * - String id (which should be a valid ObjectId) - in this case the route will try to
+ * build the best group for the id.
+ * or
+ * - list of String ids (which should be valid ObjectId's) - in this case the route will
+ * try to build a group based on the ids in the list
+ * The route will return the updated apartment (with the added group).
+ * The route might fail if creating the new group failed.
+ */
+app.post('/apartments/:id/groups', authenticate, async (req, res) => {
+  try {
+    const body = _.pick(req.body, ['id']);
+
+    // check that we received only valid ids
+    const isValidId = await User.isValidId(body.id);
+    if (!isValidId) {
+      return res.status(BAD_REQUEST).send(errors.userNotFound);
+    }
+    // now we know that all ids are valid so we can try to add this group
+    let apartment = await Apartment.findById(req.params.id);
+    let ids;
+    if (_.isArray(body.id)) { // add the group as is.
+      ids = body.id.map($ => new ObjectID($));
+    } else if (_.isString(body.id) && apartment.isTimeToOpenGroup()) { // find best group to build if it is time to open a group
+      ids = (await req.user.getBestMatchingUsers(apartment._interested))
+        .map($ => $._id)
+        .filter($ => !$.equals(req.user._id))
+        .slice(0, apartment.requiredRoommates);
+      ids[ids.length - 1] = req.user._id; // set the requesting member to be in the group
+    } else {
+      return res.status(BAD_REQUEST).send(errors.groupCreationFailed);
+    }
+    apartment = await apartment.createGroup(ids);
+
+    notifyUsers(
+      NotificationsTypesEnum.NEW_GROUP_CREATION,
+      req.user._id,
+      ids,
+      [apartment._id],
+      false,
+      Date.now()
+    );
+
+    return res.send({ apartment });
+  } catch (error) {
+    return res.status(BAD_REQUEST).send(error);
+  }
+});
+
+/**
+ * @author: Alon Talmor
+ * @date: 5/6/18
+ *
+ * Update a group.
+ * The initial version of this route will only support updating of the member status.
+ * The body should include the id of the group and the new status in the
+ * following way: {id, status}. A user is allowed to update ONLY his own status.
+ * Returns the updated apartment as a response.
+ */
+app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
+  const body = _.pick(req.body, ['id', 'status']);
+  try {
+    let apartment = await Apartment.findById(req.params.id);
+    if (!apartment) {
+      return res.status(BAD_REQUEST).send(errors.apartmentNotFound);
+    }
+    apartment = await apartment.updateMemberStatus(body.id, req.user._id, body.status);
+    return res.send({ apartment });
+  } catch (error) {
+    return res.status(BAD_REQUEST).send(error);
+  }
+});
+
+/**
+ * @author: Alon Talmor
+ * @date: 16/6/18
+ *
+ * change group status to COMPLETED which symbolize "Closing a Deal".
+ * The route may fail if:
+ * 1. the group does not hold the required criteria.
+ * 2. the request was not sent by the apartment owner.
+ * the body of the request should contain the id of the group.
+ * returns the updated apartment as a response.
+ */
+app.patch('/apartments/:id/groups/sign', authenticate, async (req, res) => {
+  const body = _.pick(req.body, ['id']);
+  try {
+    let apartment = await Apartment.findById(req.params.id);
+    if (!apartment) {
+      return res.status(BAD_REQUEST).send(errors.apartmentNotFound);
+    }
+    if (!apartment._createdBy.equals(req.user._id)) {
+      return res.status(BAD_REQUEST).send(errors.groupInvalidSigner);
+    }
+    apartment = await apartment.signGroup(body.id);
+    return res.send({ apartment });
+  } catch (error) {
+    return res.status(BAD_REQUEST).send(error);
+  }
+});
+
+/**
+ * @author: Alon Talmor
  * @date: 28/3/18
  *
  * This is considered as the "default route".
@@ -1359,7 +1508,7 @@ app.delete('/reviews/:id', authenticate, async (req, res) => {
  * Nothing special here, it only returns an 404 HTTP respond.
  *
  * TODO: Add a test that routes to an undefined route (such as "/undefined/:-)").
- * Expect to recieve 404 respond.
+ * Expect to receive 404 respond.
  */
 app.get('*', (req, res) => {
   res.status(NOT_FOUND).send('404');

@@ -5,11 +5,11 @@
         <v-card-media :src="image" height="300px">
           <v-layout column class="media">
             <v-card-title primary-title>
-              <div class="display-1 white--text ml-3">{{ title }}</div>
+              <v-chip class="display-1 primary--text headline ml-3"><v-icon class="mr-1">account_circle</v-icon>{{ title }}</v-chip>
               <v-spacer></v-spacer>
               <div v-if="isMyProfile">
               <v-btn dark icon class="mr-3" @click="uploadDialog = true">
-                <v-icon>edit</v-icon>
+                <v-icon color="info">edit</v-icon>
               </v-btn>
               <v-dialog v-model="uploadDialog" max-width="400">
                 <v-card>
@@ -79,7 +79,7 @@
               <v-select v-model="attributes.values" @input="updateAttributes" :items="allAttributes" label="Your attributes" :error-messages="attributes.error" :disabled="!isMyProfile" :hint="attributes.hint" persistent-hint chips deletable-chips multiple autocomplete />
             </v-container>
           </v-list-group>
-          
+
           <!-- Favorite Apartments -->
           <v-list-group v-model="favorites.active" :prepend-icon="favorites.icon" @click.native="loadFavoriteApartments" lazy>
             <v-list-tile slot="activator">
@@ -127,7 +127,7 @@
               <v-divider v-if="i < favorites.values.length -1" inset :key="`divider-${i}`"/>
             </template>
           </v-list-group>
-          
+
           <!-- Published Apartments -->
           <v-list-group v-model="publishes.active" :prepend-icon="publishes.icon" @click.native="loadPublishedApartments" lazy>
             <v-list-tile slot="activator">
@@ -185,7 +185,7 @@
 /* eslint no-param-reassign: ["error", { "props": false }] */
 import { mapGetters } from 'vuex';
 import defaultUserImage from '../assets/user-default.jpg';
-import defaultApartment from '../assets/apartment-defalut.jpg';
+import defaultApartment from '../assets/apartment-default.jpg';
 import attrList from '../assets/attributes';
 import AppUploader from './sub-components/AppUploader';
 
@@ -267,7 +267,7 @@ export default {
       if (this.publishes.values.length === 0) {
         this.publishes.loaded = true;
       } else if (!this.publishes.loaded) {
-        this.$store.dispatch('searchApartments', { id: this.publishes.values })
+        this.$store.dispatch('fetchApartments', { id: this.publishes.values })
           .then((apartments) => {
             this.publishes.values = apartments;
             this.publishes.loaded = true;
@@ -303,7 +303,7 @@ export default {
         })
         .catch((error) => {
           property.value.current = property.value.previous;
-          property.error = 'An error occured!';
+          property.error = `Invalid information. Please make sure you fill in a correct ${property.title.toLowerCase()}.`;
           // eslint-disable-next-line
           console.log(error); // show an error message
         });
@@ -339,7 +339,7 @@ export default {
       this.profile.properties.push({
         title: 'Name',
         value: {
-          current: `${user.firstName} ${user.lastName}`,
+          current: `${user.firstName} ${` ${user.lastName || ''}`}`,
           previous: `${user.firstName} ${user.lastName}`,
         },
         icon: 'face',
@@ -362,8 +362,8 @@ export default {
       this.profile.properties.push({
         title: 'Birthday date',
         value: {
-          current: '2018-03-02',
-          previous: '2018-03-02',
+          current: new Date(user.birthdate).toLocaleDateString(),
+          previous: new Date(user.birthdate).toLocaleDateString(),
         },
         icon: 'event',
         error: [],
@@ -371,11 +371,12 @@ export default {
         edit: {
           active: false,
           kind: 'text',
-          mask: '####-##-##',
         },
         getPayload() {
+          const date = this.value.current.split('.');
+          const birthdate = new Date(`${date[2]}-${date[1]}-${date[0]}`).getTime();
           return {
-            birthdate: new Date(this.value.current).getTime(),
+            birthdate
           };
         },
       });
@@ -399,7 +400,7 @@ export default {
         },
       });
       this.profile.properties.push({
-        title: 'Phone',
+        title: 'Phone Number',
         value: {
           current: user.mobilePhone,
           previous: user.mobilePhone,

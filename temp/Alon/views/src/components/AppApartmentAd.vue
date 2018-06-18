@@ -98,7 +98,7 @@
             <v-card-text v-show="apartment.show" class="pt-0">
                 <v-divider class="mb-3"></v-divider>
 
-                <strong>Enterance date:</strong> {{ new Date(apartment.enteranceDate).toDateString() }}
+                <strong>Entrance date:</strong> {{ new Date(apartment.entranceDate).toDateString() }}
                 <v-card class="mt-3">
                     <v-card-title>
                         <h4>Attributes</h4>
@@ -150,7 +150,7 @@
 </template>
 
 <script>
-    import defaultApartmentImage from '../assets/apartment-defalut.jpg';
+    import defaultApartmentImage from '../assets/apartment-default.png';
     import tagsList from '../assets/tags';
     import AppAvatar from './AppAvatar';
 

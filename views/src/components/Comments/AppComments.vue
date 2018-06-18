@@ -1,12 +1,17 @@
 <template>
   <v-container grid-list-lg style="overflow: hidden; height:100%;">
     <v-layout column fill-height>
-      <v-flex v-if="isVerified" ref="addComments" style="min-height: 60px; max-height: 180px; overflow-y: auto;">
-        <v-layout fill-height>
-          <v-text-field v-model="text" label="Add a comment" :error-messages="errorMessages" :loading="loading" :disabled="!isVerified || loading" multi-line auto-grow hide-details :rows="1" :row-height="1" />
-          <v-btn color="secondary" :loading="loading" :disabled="!isVerified || loading" @click="addComment">
-            <v-icon>send</v-icon>
-          </v-btn>
+      <v-flex v-if="isVerified" ref="addComments">
+        <v-layout fill-height warp row>
+          <v-flex xs12 style="min-height: 60px; max-height: 180px; overflow-y: auto;">
+            <v-text-field v-model="text" label="Add a comment" :error-messages="errorMessages" :loading="loading" :disabled="!isVerified || loading" multi-line auto-grow hide-details :rows="1" :row-height="30"/>
+          </v-flex>
+          <v-flex>
+            <v-spacer/>
+            <v-btn color="secondary" :loading="loading" :disabled="!isVerified || loading" @click="addComment">
+              <v-icon>send</v-icon>
+            </v-btn>
+          </v-flex>
         </v-layout>
       </v-flex>
       <v-divider v-if="isVerified" class="my-3" />
@@ -50,7 +55,7 @@
 
 <script>
   import { mapGetters } from 'vuex';
-  import AppAvatar from './AppAvatar';
+  import AppAvatar from '../sub-components/AppAvatar';
 
   export default {
     props: {
@@ -72,7 +77,7 @@
       return {
         commentsList: null,
         usersList: null,
-        text: null,
+        text: '',
         errorMessages: [],
         loading: false,
         myCommentColor: 'green lighten-2',
@@ -177,5 +182,4 @@
 </script>
 
 <style scoped src="../../assets/costum-scrollbar.css">
-
 </style>

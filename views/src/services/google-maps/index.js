@@ -57,7 +57,6 @@ export default {
             ref.$emit('no-results-found', place);
             return;
           }
-
           const addressComponents = {
             street_number: 'short_name',
             route: 'long_name',
@@ -81,7 +80,7 @@ export default {
 
             returnData.latitude = place.geometry.location.lat();
             returnData.longitude = place.geometry.location.lng();
-            returnData.full_name = `${returnData.route || ''}${returnData.street_number ? ` ${returnData.street_number}` : ''}`+
+            returnData.full_name = `${(place.name && place.name !== returnData.route)? `${place.name} ` : ''}${returnData.route || ''}${returnData.street_number ? ` ${returnData.street_number}` : ''}`+
                                    `${returnData.locality? ` ${returnData.locality}` : ''}${returnData.country? `, ${returnData.country}` : ''}`;
             // update autocompleteText then emit change event
             ref.autocompleteText = returnData.full_name;

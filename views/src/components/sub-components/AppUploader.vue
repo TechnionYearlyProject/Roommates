@@ -90,15 +90,11 @@
               abort: false
             };
             this.keys += 1;
-            if(this.multipleFiles) {
-              this.value.push(file);
-            } else {
-              if (this.files.length !== 0) {
-                this.cancelUpload(0);
-              }
-                this.files.push(file);
-                this.$emit('input', this.files);
+            if (!this.multipleFiles && this.files.length !== 0) {
+              this.cancelUpload(0);
             }
+            this.files.push(file);
+            this.$emit('input', this.files);
 
             fileReader.addEventListener('progress', (e) => {
               if (file.abort) fileReader.abort();
@@ -133,8 +129,15 @@
           ][Math.round(progress / 20)];
         }
       },
-      mounted() {
-        this.files = this.value;
+      created() {
+        this.files = this.value.map(f => ({
+          key: this.keys++, //eslint-disable-line
+          imageURL: f,
+          name: f,
+          progress: 100,
+          finished: true,
+          size: 0
+        }));
       }
     };
 </script>

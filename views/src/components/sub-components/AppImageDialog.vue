@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import image1 from '../../assets/apartment-defalut.jpg';
-import image2 from '../../assets/user-default.jpg';
+import image1 from '../../assets/apartment-default.png';
+import image2 from '../../assets/user-default.png';
 
 export default {
   props: {

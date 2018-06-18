@@ -16,15 +16,14 @@
 const _ = require('lodash');
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
 const arrayFunctions = require('../helpers/arrayFunctions');
 
 
 const NotificationsTypesEnum = {
   COMMENT_WAS_ADDED_TO_APARTMENT: 1,
   USER_LIKED_APARTMENT: 2,
-  APARTMENT_WAS_MODIFIED: 3
+  APARTMENT_WAS_MODIFIED: 3,
+  NEW_GROUP_CREATION: 4
 };
 
 const NotificationSchema = new mongoose.Schema({
@@ -53,7 +52,6 @@ const NotificationSchema = new mongoose.Schema({
     required: true
   },
 });
-
 
 
 /**
@@ -113,7 +111,7 @@ const getNotifiedObjectsIDs = (notification) => notification._notifiedObjectsIds
  */
 const containsNotifiedObjectIDs = (notification, _notifiedObjectIDsArr) => {
   const temp = arrayFunctions.unionArrays(notification._notifiedObjectsIds, _notifiedObjectIDsArr);
-  return temp.length == notification._notifiedObjectsIds.length;
+  return temp.length === notification._notifiedObjectsIds.length;
 }
 /**
  * @author: Or Abramovich

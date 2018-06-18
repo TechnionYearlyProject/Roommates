@@ -173,26 +173,52 @@ export default new Vuex.Store({
      * @param: jwt: jwt token
      * @param: payload: object of {email,password}.
      */
-    resetPassword({ commit, getters }, { jwt, payload }) {
+    resetPassword({ commit, getters, dispatch }, { jwt, payload }) {
       return axios.patch(`http://localhost:3000/users/reset/${jwt}`, payload)
         .then(() => {
-          commit('logout'); // clear user session (if logged in)
+          dispatch('logout'); // clear user session (if logged in)
           return getters.getUser;
         });
     },
     /**
      * @author: Alon Talmor
-     * @date: 18/04/18
-     * @param: params: object of {id, address, price, radius, roommates, floor, entranceDate,tags} -
+     * @date: 12/6/18
+     * @param: params: object of {id,address,price,radius,roommates,floor,entranceDate,tags} -
      * filter of the apartments list (the properties are optional).
      * Empty object {} will return all apartments.
      */
-    searchApartments({ commit, getters }, params) {
+    fetchApartments(context, params) {
       return axios.get('http://localhost:3000/apartments', { params })
-        .then((response) => {
-          commit('setApartments', response.data.apartments);
+        .then(response =>
+          response.data.apartments
+        );
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 18/04/18
+     * Search apartment and update vuex with the results.
+     * See fetchApartments action for information about @param params
+     */
+    searchApartments({ commit, getters, dispatch }, params) {
+      return dispatch('fetchApartments', params)
+        .then((apartments) => {
+          commit('setApartments', apartments);
           return getters.getApartments;
         });
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 13/6/18
+     * @param: params: object of {id} - the id to update
+     * @param: payload: object of {price,entranceDate,images,description,tags,
+     * requiredRoommates,totalRoommates, numberOfRooms,floor totalFloors, area}
+     * - the properties to update
+     */
+    editApartment(context, { params, payload }) {
+      return axios.patch(`http://localhost:3000/apartments/${params.id}`, payload)
+        .then(response =>
+          response.data.apartment
+        );
     },
     /**
      * @author: Alon Talmor
@@ -260,8 +286,6 @@ export default new Vuex.Store({
     fetchSelf({ commit }) {
       return axios.get('http://localhost:3000/users/self')
       .then((response) => {
-        // eslint-disable-next-line
-        console.log(response.data);
         commit('setUser', response.data.self);
         return response.data.self;
       });
@@ -295,6 +319,67 @@ export default new Vuex.Store({
         commit('setNotifications', response.data.user.notifications);
         return response.data.user.notifications;
       });
+    },
+    /**
+     * @author: Or Abramovich
+     * @date: 06/18
+     * @param: params: object of {long, lat} -
+     * Gets all reviews within a radius of 1 KM from the given coordinates
+     */
+    getReviews({ commit }, params) {
+      return axios.get(`http://localhost:3000/reviews/${params.long}/${params.lat}`)
+        .then(response =>
+          response.data.reviews
+        );
+    },
+    /**
+     * @author: Or Abramovich
+     * @date: 06/18
+     * @param: payload: object of review
+     * Adds the given review to the DB.
+     */
+    publishReview({ state }, payload) {
+      return axios.post('http://localhost:3000/reviews', payload)
+      .then(response =>
+        response.data.review
+      );
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 6/5/18
+     * @param: params: object of {id} which specified the apartment id.
+     */
+    fetchGroups(context, params) {
+      return axios.get(`http://localhost:3000/apartments/${params.id}/groups`)
+      .then(response =>
+        response.data.groups
+      );
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 6/5/18
+     * @param: params: object of {id} - the id of the apartment.
+     * @param: payload: Array of {id} - the ids array of the group members.
+     */
+    addGroup(context, { params, payload }) {
+      return axios.post(`http://localhost:3000/apartments/${params.id}/groups`, payload)
+      .then(response =>
+        response.data.apartment
+      );
+    },
+    /**
+     * @author: Alon Talmor
+     * @date: 6/6/18
+     * @param: params: object of {id} - the id of the apartment.
+     * @param: payload: Array of {id,status} - the id of the group to update,
+     * and the new member's status.
+     * Note that is it possible to update only self status.
+     */
+    updateGroupStatus(context, { params, payload }) {
+      return axios.patch(`http://localhost:3000/apartments/${params.id}/groups`, payload)
+      .then(response =>
+        response.data.apartment
+      );
     }
   },
   plugins: [vuexPersistence.plugin]
