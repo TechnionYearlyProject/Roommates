@@ -25,6 +25,7 @@ const {
   FORGOT_SECRET
 } = require('../../server/constants');
 const visit = require('../../server/models/visit');
+const { Search } = require('../../server/models/search');
 
 const user1Id = new ObjectID();
 const user2Id = new ObjectID();
@@ -50,6 +51,9 @@ const apartment1User1VisitId = new ObjectID();
 const apartment1User2VisitId = new ObjectID();
 
 const user1Notification1Id = new ObjectID();
+
+const newSearchID = new ObjectID;
+const oldSearchID = new ObjectID;
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
@@ -608,6 +612,58 @@ const notPublishedReview2 = {
 //   status: 2, //accepted
 // };
 
+
+
+const unsearchedSearch = {
+  createdBy:user1Id,
+  address: null,
+  geolocation: [35.020568, 32.776515],
+  price: [0, 10000],
+  radius: 10,
+  roommates: [1, 3],
+  floor: [1, 20],
+  entranceDate: new Date('2018-05-05').getTime(),
+  tags: []
+};
+
+
+const newSearch = {
+  _id: newSearchID,
+  createdBy:user1Id,
+  createdAt: Date.now(),
+  address: null,
+  geolocation: [35.2340603, 31.7765232],
+  price: [0, 9000],
+  radius: 20,
+  roommates: [1, 7],
+  floor: [1, 10],
+  entranceDate: new Date('2018-05-06').getTime(),
+  tags: []
+};
+
+const oldSearch = {
+  _id: oldSearchID,
+  createdBy:user1Id,
+  createdAt: (Date.now() - (1000*60*60*24*3)),
+  address: null,
+  geolocation: [35.2340603, 31.7765232],
+  price: [0, 9000],
+  radius: 20,
+  roommates: [1, 7],
+  floor: [1, 10],
+  entranceDate: new Date('2018-05-06').getTime(),
+  tags: []
+};
+
+
+const searchs = [
+  unsearchedSearch,
+  newSearch,
+  oldSearch
+];
+
+
+
 const apartments = [
   apartment1,
   apartment2,
@@ -690,6 +746,22 @@ const populateReviews = (done) => {
     .catch(done);
 };
 
+
+const populateSearchs = (done) => {
+  Search.remove({})
+    .then(() =>
+      Promise.all([
+        new Search(searchs[1]).save(),
+        new Search(searchs[2]).save(),
+      ]))
+    .then(() => done())
+    .catch(done);
+};
+
+
+
+
+
 // const populateGroups = (done) => {
 //   Group.remove({})
 //     .then(() =>
@@ -725,5 +797,9 @@ module.exports = {
   user2VerificationToken,
   getForgotPasswordToken,
   review1Id,
-  review2Id
+  review2Id,
+  populateSearchs,
+  unsearchedSearch,
+  newSearch,
+  oldSearch
 };

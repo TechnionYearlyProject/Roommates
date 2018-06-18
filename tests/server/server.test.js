@@ -46,6 +46,13 @@ const {
 } = require('../../server/models/visit');
 
 const {
+  Search
+} = require('../../server/models/search');
+
+
+
+
+const {
   apartment1User1VisitId,
   apartment1User2VisitId,
   apartments,
@@ -65,7 +72,11 @@ const {
   user2VerificationToken,
   getForgotPasswordToken,
   review1Id,
-  review2Id
+  review2Id,
+  populateSearchs,
+  unsearchedSearch,
+  newSearch,
+  oldSearch
 } = require('../seed/seed');
 
 describe('#Server Tests', () => {
@@ -78,6 +89,66 @@ describe('#Server Tests', () => {
   //     sleep(1.5 * 1000); //sleep 1.5 sec between queries for google map - we can't send too many requests in one second.
   //     done();
   // });
+
+
+
+
+  describe('#GET /searchs/toNotify',() => {
+    it('should return a list of one "to be notified" user', async () => {
+      const search = Object.assign({}, unsearchedSearch);  
+      search.createdAt = Date.now();
+      await new Search(search).save();
+      request(app)
+        .get('/searchs/toNotify')
+        .expect(OK)
+        .expect((res => {
+          expect(res.body.toBeNotified.length).toBe(1);
+        }))
+        .end((err) => {
+          if(err) {
+          }
+        });
+    }).timeout(5000);
+  });
+  
+  
+  
+  describe('#POST /searchs', () => {
+    it('should create a new search', (done) => {
+      const search = Object.assign({}, unsearchedSearch);    
+      request(app)
+        .post('/searchs')
+        .send(unsearchedSearch)
+        .expect(OK)
+        .expect((res)=>{
+          expect(res.body.search.createdAt).toBeTruthy();
+          expect(res.body.search.geolocation).toEqual(coords.technionIsrael);
+          expect(res.body.search.address).toBeNull();
+          expect(res.body.search.entranceDate).toEqual(new Date('2018-05-05').getTime());          
+        })
+        .end((err) => {
+          if (err) {
+            // console.log(err);
+            return done(err);
+          }
+          return Search.find({
+            radius: unsearchedSearch.radius
+          })
+            .then(($) => {
+              expect($[0].createdAt).toBeTruthy();
+              // expect($[0].toObject()).toMatchObject(search);
+              expect($[0].geolocation[0]).toEqual(coords.technionIsrael[0]);
+              expect($[0].geolocation[1]).toEqual(coords.technionIsrael[1]);
+              expect($[0].address).toBeNull();
+              expect($[0].entranceDate).toEqual(new Date('2018-05-05').getTime());
+              done();
+            }).catch((e) => done(e));
+        });
+    }).timeout(10000);
+  });
+  
+  
+
 
   describe('#POST /apartments', () => {
     it('should create a new apartment', (done) => {

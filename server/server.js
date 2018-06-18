@@ -30,6 +30,10 @@ const {
   User
 } = require('./models/user');
 const {
+  Search
+} = require('./models/search');
+
+const {
   XAUTH
 } = require('./constants');
 const {
@@ -65,6 +69,7 @@ const userVerificator = require('./services/user-verification/user-verificator')
 const passwordReset = require('./services/password-reset/password-reset');
 const errors = require('./errors');
 const imageService = require('./services/image-service/image-service');
+const mail = require('./services/mail/mail');
 
 const app = express();
 
@@ -1497,6 +1502,67 @@ app.patch('/apartments/:id/groups/sign', authenticate, async (req, res) => {
     return res.status(BAD_REQUEST).send(error);
   }
 });
+
+
+
+app.post('/searchs', async (req, res) => {
+  try {
+    const query = _.pick(req.body, [
+      'createdBy', // String of a legal ObjectID
+      'entranceDate', // A value which can be converted into Date
+      'address', // String of the full address
+      'radius', // Number, which indicates the range from the address or geolocation
+      'price', // Array of 2 Numbers, which indicates the price range
+      'roommates', // Array of 2 Numbers, which indicates the roommates range
+      'floor', // Array of 2 Numbers, which indicates the floor range
+      'tags', // Array of the tags Numbers (ids)
+      'geolocation' // Array of 2 numbers: ['longitude','latitude']
+    ]);
+    query.createdAt = Date.now();
+    const search = await new Search(query).save();
+    return res.send({
+      search
+    });    
+  } catch (err) {
+    res.status(BAD_REQUEST).send(err.message);
+  }
+});
+
+app.get('/searchs/toNotify', async (req, res) => {
+  try {
+    const search = new Search;
+    const toBeNotified = await search.checkNewApartments();
+    await User.find({}).then( res => {
+      res.forEach( user => {
+        toBeNotified.forEach(async id => {
+          if(user._id.equals(id)){
+            const msg = {
+              to: user.email,
+              from: 'newApartmentsForYou@roommatesyearlyproject.com',
+              subject: '[Roommates] New apartments you might like!',
+              html: `<h1>Come back to Roommates!</h1>
+                     <p>apartments matching your latest searchs have been added</p>`,
+            };
+            mail.sendMail(msg);          
+          }
+        });      
+      })
+    }); 
+
+
+    // console.log("got users to notify");
+    return res.send({
+      toBeNotified
+    });
+  } catch (err) {
+    return res.status(BAD_REQUEST).send(err);
+  }
+});
+
+
+
+
+
 
 /**
  * @author: Alon Talmor
