@@ -103,7 +103,7 @@ export default new Vuex.Store({
      * @param: payload: object of {email, password}.
      */
     login({ commit, getters, dispatch }, payload) {
-      return axios.post('http://localhost:3000/users/login', payload
+      return axios.post('https://roommatesrestapi.azurewebsites.net/users/login', payload
       ).then((response) => {
         commit('startSession', response.headers['x-auth']);
         commit('setUser', response.data.user);
@@ -128,7 +128,7 @@ export default new Vuex.Store({
      * @param: payload: object of {email, password, firstName, lastName, birthdate, gender}.
      */
     register({ commit, getters, dispatch }, payload) {
-      return axios.post('http://localhost:3000/users', payload
+      return axios.post('https://roommatesrestapi.azurewebsites.net/users', payload
       ).then((response) => {
         commit('startSession', response.headers['x-auth']);
         commit('setUser', response.data.user);
@@ -142,7 +142,7 @@ export default new Vuex.Store({
      * @param: payload: object of {email,password}.
      */
     sendVerificationMail(context, payload) {
-      return axios.post('http://localhost:3000/users/verify', payload);
+      return axios.post('https://roommatesrestapi.azurewebsites.net/users/verify', payload);
     },
     /**
      * @author: Alon Talmor
@@ -150,7 +150,7 @@ export default new Vuex.Store({
      * @param: payload: object of {email}.
      */
     sendResetMail(context, payload) {
-      return axios.post('http://localhost:3000/users/reset', payload);
+      return axios.post('https://roommatesrestapi.azurewebsites.net/users/reset', payload);
     },
     /**
      * @author: Alon Talmor
@@ -161,7 +161,7 @@ export default new Vuex.Store({
       if (getters.isVerified) {
         return Promise.reject('Account Already verified');
       }
-      return axios.patch(`http://localhost:3000/users/verify/${jwt}`)
+      return axios.patch(`https://roommatesrestapi.azurewebsites.net/users/verify/${jwt}`)
         .then((response) => {
           commit('setUser', response.data.user);
           return getters.getUser;
@@ -174,7 +174,7 @@ export default new Vuex.Store({
      * @param: payload: object of {email,password}.
      */
     resetPassword({ commit, getters, dispatch }, { jwt, payload }) {
-      return axios.patch(`http://localhost:3000/users/reset/${jwt}`, payload)
+      return axios.patch(`https://roommatesrestapi.azurewebsites.net/users/reset/${jwt}`, payload)
         .then(() => {
           dispatch('logout'); // clear user session (if logged in)
           return getters.getUser;
@@ -188,7 +188,7 @@ export default new Vuex.Store({
      * Empty object {} will return all apartments.
      */
     fetchApartments(context, params) {
-      return axios.get('http://localhost:3000/apartments', { params })
+      return axios.get('https://roommatesrestapi.azurewebsites.net/apartments', { params })
         .then(response =>
           response.data.apartments
         );
@@ -215,7 +215,7 @@ export default new Vuex.Store({
      * - the properties to update
      */
     editApartment(context, { params, payload }) {
-      return axios.patch(`http://localhost:3000/apartments/${params.id}`, payload)
+      return axios.patch(`https://roommatesrestapi.azurewebsites.net/apartments/${params.id}`, payload)
         .then(response =>
           response.data.apartment
         );
@@ -226,7 +226,7 @@ export default new Vuex.Store({
      * @param: params: object of {id} - the id of the apartment to favor.
      */
     favor({ state }, params) {
-      return axios.put(`http://localhost:3000/apartments/${params.id}/interested`)
+      return axios.put(`https://roommatesrestapi.azurewebsites.net/apartments/${params.id}/interested`)
         .then((response) => {
           const index = state.user._interestedApartments.indexOf(response.data.apartment._id);
           if (index >= 0) { // if favor exists it means we need to remove it
@@ -246,7 +246,7 @@ export default new Vuex.Store({
      * @param: payload: object of {text} - the text of the comment.
      */
     addApartmentComment(context, { params, payload }) {
-      return axios.put(`http://localhost:3000/apartments/${params.id}/comment`, payload)
+      return axios.put(`https://roommatesrestapi.azurewebsites.net/apartments/${params.id}/comment`, payload)
         .then((response) => {
           // eslint-disable-next-line 
           console.log(response.data);
@@ -261,7 +261,7 @@ export default new Vuex.Store({
      * numberOfRooms, area, description, tags} - the details of the new apartment.
      */
     publishApartment({ state }, payload) {
-      return axios.post('http://localhost:3000/apartments', payload)
+      return axios.post('https://roommatesrestapi.azurewebsites.net/apartments', payload)
       .then((response) => {
         state.user._publishedApartments.push(response.data.apartment._id);
         // eslint-disable-next-line 
@@ -275,7 +275,7 @@ export default new Vuex.Store({
      * @param: params: object of {id} where id can be a String or an Array of ids.
      */
     fetchUser(context, params) {
-      return axios.get('http://localhost:3000/users', { params })
+      return axios.get('https://roommatesrestapi.azurewebsites.net/users', { params })
       .then(response => response.data.users);
     },
     /**
@@ -284,7 +284,7 @@ export default new Vuex.Store({
      * required authentication.
      */
     fetchSelf({ commit }) {
-      return axios.get('http://localhost:3000/users/self')
+      return axios.get('https://roommatesrestapi.azurewebsites.net/users/self')
       .then((response) => {
         commit('setUser', response.data.self);
         return response.data.self;
@@ -297,7 +297,7 @@ export default new Vuex.Store({
      * about, image, hobbies, _interestedApartments} - the properties to update.
      */
     updateUser({ commit }, payload) {
-      return axios.patch('http://localhost:3000/users/self', payload)
+      return axios.patch('https://roommatesrestapi.azurewebsites.net/users/self', payload)
       .then((response) => {
         // eslint-disable-next-line
         console.log(response.data);
@@ -312,7 +312,7 @@ export default new Vuex.Store({
      * @param: payload object of {wasRead} - the notification new read state.
      */
     updateNotification({ commit }, { params, payload }) {
-      return axios.patch('http://localhost:3000/users/notifications', payload, { params })
+      return axios.patch('https://roommatesrestapi.azurewebsites.net/users/notifications', payload, { params })
       .then((response) => {
         // eslint-disable-next-line
         console.log(response.data);
@@ -327,7 +327,7 @@ export default new Vuex.Store({
      * Gets all reviews within a radius of 1 KM from the given coordinates
      */
     getReviews({ commit }, params) {
-      return axios.get(`http://localhost:3000/reviews/${params.long}/${params.lat}`)
+      return axios.get(`https://roommatesrestapi.azurewebsites.net/reviews/${params.long}/${params.lat}`)
         .then(response =>
           response.data.reviews
         );
@@ -339,7 +339,7 @@ export default new Vuex.Store({
      * Adds the given review to the DB.
      */
     publishReview({ state }, payload) {
-      return axios.post('http://localhost:3000/reviews', payload)
+      return axios.post('https://roommatesrestapi.azurewebsites.net/reviews', payload)
       .then(response =>
         response.data.review
       );
@@ -350,7 +350,7 @@ export default new Vuex.Store({
      * @param: params: object of {id} which specified the apartment id.
      */
     fetchGroups(context, params) {
-      return axios.get(`http://localhost:3000/apartments/${params.id}/groups`)
+      return axios.get(`https://roommatesrestapi.azurewebsites.net/apartments/${params.id}/groups`)
       .then(response =>
         response.data.groups
       );
@@ -362,7 +362,7 @@ export default new Vuex.Store({
      * @param: payload: Array of {id} - the ids array of the group members.
      */
     addGroup(context, { params, payload }) {
-      return axios.post(`http://localhost:3000/apartments/${params.id}/groups`, payload)
+      return axios.post(`https://roommatesrestapi.azurewebsites.net/apartments/${params.id}/groups`, payload)
       .then(response =>
         response.data.apartment
       );
@@ -376,7 +376,7 @@ export default new Vuex.Store({
      * Note that is it possible to update only self status.
      */
     updateGroupStatus(context, { params, payload }) {
-      return axios.patch(`http://localhost:3000/apartments/${params.id}/groups`, payload)
+      return axios.patch(`https://roommatesrestapi.azurewebsites.net/apartments/${params.id}/groups`, payload)
       .then(response =>
         response.data.apartment
       );
