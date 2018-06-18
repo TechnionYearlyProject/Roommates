@@ -7,13 +7,51 @@
  *
  *
  */
- module.exports = function(server) { 
-  const io = require('socket.io')(server);
+
+  var io;
   const socketioJwt = require('socketio-jwt');
 
   const { markNotificationAsRead, handleNewPrivateMessage, handleReadPrivateMessage } = require('./logic/socketsServerHandlers');
   const { logInfo, logError, logDebug } = require('./services/logger/logger');
   const { buildPrivateMessageJSON } = require('./models/privateMessage');
+
+
+  const initializeSocketsServer = (server) => {
+     io = require('socket.io')(server);
+     io.sockets
+    .on(
+      'connection',
+      socketioJwt.authorize({
+        secret: process.env.JWT_SECRET,
+        timeout: 15000
+      })
+    )
+    .on('authenticated', function(socket) {
+      //Establishes a new dedicated room which serves as a communication channel available only to the user
+      socket.on(SocketMsgTypes.JOIN, function(data) {
+        logDebug('someone connected');
+        establishRoomForUser(socket.decoded_token._id, socket);
+      });
+      //Marks the notification as read and saves it in the user document
+      socket.on(SocketMsgTypes.NOTIFICATION_READ, function(notification) {
+        markNotificationAsRead(socket.decoded_token._id, notification);
+      });
+      //Sends a private message to the receiver and stores it in the DB.
+      socket.on(SocketMsgTypes.CHAT_MSG, function (messageData) {
+      	const message = buildPrivateMessageJSON(new ObjectID(socket.decoded_token._id), new Date().getTime(), messageData.content, false);
+      	message[_id] = new ObjectID(); //the message id should be the same for both sides! (the sender and the reciever.)
+      	handleNewPrivateMessage(socket.decoded_token._id, messageData.to, message).then((res)=>{
+        		sendUserRealTimePrivateMessage(messageData.to, message);
+      	})
+    	});
+      //Updates that the message was read in the users (sender & receiver) documents and send it to the other user
+  	socket.on(SocketMsgTypes.CHAT_MSG_READ, function (messageData) {
+  	    handleReadPrivateMessage(socket.decoded_token._id, messageData.to, messageData._id).then((res)=>{
+  	      sendUserRealTimeReadPrivateMessage(messageData.to, messageData);
+  	    })
+    	});
+    });
+  };
 
   /**
    * @author: Or Abramovich
@@ -64,39 +102,7 @@
    * @param {Socket} socket: web socket that raised the connection request.
    *
    */
-  io.sockets
-    .on(
-      'connection',
-      socketioJwt.authorize({
-        secret: process.env.JWT_SECRET,
-        timeout: 15000
-      })
-    )
-    .on('authenticated', function(socket) {
-      //Establishes a new dedicated room which serves as a communication channel available only to the user
-      socket.on(SocketMsgTypes.JOIN, function(data) {
-        logDebug('someone connected');
-        establishRoomForUser(socket.decoded_token._id, socket);
-      });
-      //Marks the notification as read and saves it in the user document
-      socket.on(SocketMsgTypes.NOTIFICATION_READ, function(notification) {
-        markNotificationAsRead(socket.decoded_token._id, notification);
-      });
-      //Sends a private message to the receiver and stores it in the DB.
-      socket.on(SocketMsgTypes.CHAT_MSG, function (messageData) {
-      	const message = buildPrivateMessageJSON(new ObjectID(socket.decoded_token._id), new Date().getTime(), messageData.content, false);
-      	message[_id] = new ObjectID(); //the message id should be the same for both sides! (the sender and the reciever.)
-      	handleNewPrivateMessage(socket.decoded_token._id, messageData.to, message).then((res)=>{
-        		sendUserRealTimePrivateMessage(messageData.to, message);
-      	})
-    	});
-      //Updates that the message was read in the users (sender & receiver) documents and send it to the other user
-  	socket.on(SocketMsgTypes.CHAT_MSG_READ, function (messageData) {
-  	    handleReadPrivateMessage(socket.decoded_token._id, messageData.to, messageData._id).then((res)=>{
-  	      sendUserRealTimeReadPrivateMessage(messageData.to, messageData);
-  	    })
-    	});
-    });
+  
 
   /**
    * @author: Or Abramovich
@@ -183,6 +189,6 @@
     sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG_READ, message);
   }
   module.exports = {
-    sendUserRealTimeNotification
+    sendUserRealTimeNotification,
+    initializeSocketsServer
   };
-}
