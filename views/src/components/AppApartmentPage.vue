@@ -98,6 +98,21 @@
             </v-toolbar>
           <app-publisher-details v-model="p"/>
         </v-flex>
+        <v-flex xs12 v-if="isVerified">
+          <v-card class="mt-3" style="max-height: 400px">
+            <v-card-actions>
+              <v-list-tile>
+                <v-list-tile-action>
+                  <v-switch color="purple" :input-value="v._notificationSubscribers.includes(getUser._id)" @change="toggleSubscription"></v-switch>
+                </v-list-tile-action>
+                <v-list-tile-title>Enable notifications</v-list-tile-title>
+              </v-list-tile>
+            </v-card-actions>
+            <v-slide-y-transition mode="out-in">
+            <v-divider/>
+            </v-slide-y-transition>
+          </v-card>
+        </v-flex>
         <v-flex xs12>
           <v-card class="mt-3" style="max-height: 400px">
             <v-card-actions>
@@ -196,6 +211,10 @@ export default {
           text: comment.text
         }
       });
+    },
+    toggleSubscription() {
+     return this.$store.dispatch('toggleSubscription', {id:this.v._id})
+        .then((apartment) => {this.v._notificationSubscribers = apartment._notificationSubscribers; });
     },
     fetchApartment(id) {
       return this.$store.dispatch('fetchApartments', { id })

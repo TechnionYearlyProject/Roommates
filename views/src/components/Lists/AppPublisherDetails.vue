@@ -29,14 +29,6 @@
       </v-list-tile>
     </v-list>
     <v-divider inset></v-divider>
-    <v-card-actions>
-      <v-list-tile>
-        <v-list-tile-action>
-          <v-switch color="purple"></v-switch>
-        </v-list-tile-action>
-        <v-list-tile-title>Enable notifications</v-list-tile-title>
-      </v-list-tile>
-    </v-card-actions>
     </div>
   </v-card>
 </template>
