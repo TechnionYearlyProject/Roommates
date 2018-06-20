@@ -134,12 +134,7 @@
             const messages = conversation.messages.map(message => {
               ids[message._sentBy] = '';
 
-              return {
-                incoming: message._sentBy !== this.$store.getters.getUser._id,
-                author: message._sentBy,
-                content: message.content,
-                date: new Date(message.createdAt * 1000)
-              };
+              return this.createLocalMessageFromServerMessage(message);
             });
 
             this.$set(this.allContacts, contact, {
@@ -165,12 +160,25 @@
       this.mutationObserver.disconnect();
     },
     methods: {
+      createLocalMessageFromServerMessage({ _sentBy, createdAt, content }) {
+        return {
+          incoming: _sentBy !== this.$store.getters.getUser._id,
+          author: _sentBy,
+          content: content,
+          date: new Date(createdAt * 1000)
+        }
+      },
       sendMessage() {
         this.message = this.message.trim();
 
         if (this.message === '') {
           return;
         }
+
+        this.$socket.emit('chat_message', {
+          content: this.message,
+          to: Object.keys(this.allContacts)[this.activeContactIndex]
+        });
 
         this.activeContact.conversations.push({
           incoming: false,
@@ -197,6 +205,36 @@
           return `${Math.floor(time / 3600)} hours ago`;
         }
         return `${Math.floor(time / 86400)} days ago`;
+      }
+    },
+    sockets: {
+      chat_message(message) {
+        const m = this.createLocalMessageFromServerMessage(message);
+
+        if (!this.userById.hasOwnProperty(m.author)) {
+          axios.get('http://localhost:3000/users', { params: { id: [ m.author ] } }).then(response => {
+            const user = Object.values(response.data.users)[0];
+            this.userById[m.author] = `${user.firstName} ${user.lastName}`;
+
+            if (!this.allContacts.hasOwnProperty(m.author)) {
+              this.$set(this.allContacts, m.author, {
+                conversations: []
+              });
+            }
+
+            this.allContacts[m.author].conversations.push(m);
+
+          });
+        }
+        else {
+          if (!this.allContacts.hasOwnProperty(m.author)) {
+            this.$set(this.allContacts, m.author, {
+              conversations: []
+            });
+          }
+
+          this.allContacts[m.author].conversations.push(m);
+        }
       }
     }
   }

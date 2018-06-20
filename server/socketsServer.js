@@ -90,7 +90,6 @@ io.sockets
   .on('authenticated', function(socket) {
     //Establishes a new dedicated room which serves as a communication channel available only to the user
     socket.on(SocketMsgTypes.JOIN, function(data) {
-      logDebug('someone connected');
       establishRoomForUser(socket.decoded_token._id, socket);
     });
     //Marks the notification as read and saves it in the user document
@@ -99,7 +98,6 @@ io.sockets
     });
     //Sends a private message to the receiver and stores it in the DB.
     socket.on(SocketMsgTypes.CHAT_MSG, function (messageData) {
-      logDebug('someone msg');
     	const message = buildPrivateMessageJSON(new ObjectID(socket.decoded_token._id), new Date().getTime(), messageData.content, false);
     	message._id = new ObjectID(); //the message id should be the same for both sides! (the sender and the reciever.)
     	handleNewPrivateMessage(socket.decoded_token._id, messageData.to, message).then((res)=>{
