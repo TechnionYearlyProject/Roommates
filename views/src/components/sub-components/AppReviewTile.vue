@@ -3,10 +3,10 @@
         <v-card-title>
             <v-flex>
                 <v-list-tile-avatar style="display: inline">
-                    <app-avatar img="" :name="review.createdBy" :size="40"></app-avatar>
+                    <app-avatar :img="user.image" :name="user.firstName" :size="40"></app-avatar>
                 </v-list-tile-avatar>
                 <v-list-tile-content style="display: inline">
-                    {{ review.createdBy }}
+                    {{ user.firstName }} {{user.lastName}}
                 </v-list-tile-content>
             </v-flex>
             <v-spacer></v-spacer>
@@ -119,12 +119,12 @@
                     <v-tabs-items class="tabs-items">
                         <v-tab-item id="pros">
                             <div class="tab-item">
-                                {{ review.pros }}
+                                {{ review.Pros }}
                             </div>
                         </v-tab-item>
                         <v-tab-item id="cons">
                             <div class="tab-item">
-                                {{ review.cons }}
+                                {{ review.Cons }}
                             </div>
                         </v-tab-item>
                     </v-tabs-items>
@@ -139,10 +139,10 @@
 
   export default {
     name: 'AppReviewTile',
-    props: ['review'],
+    props: ['review', 'user'],
     data() {
       return {
-        expanded: false
+        expanded: false,
       };
     },
     components: {
