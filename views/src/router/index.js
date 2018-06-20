@@ -86,7 +86,7 @@ const router = new Router({
       component: AppPayment
     },
     {
-      path: '/chat',
+      path: '/App/chat',
       name: 'AppChat',
       component: AppChat,
       meta: {
