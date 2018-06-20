@@ -45,7 +45,7 @@ const sendResetPasswordMail = (user) => {
     if (err) {
       throw PasswordResetFailure;
     }
-    const resetPasswordURL = `${process.env.CORS}/users/reset-password/${ResetToken}`; //TODO: user CORS
+    const resetPasswordURL = `${process.env.APP_URL}/reset_password/${ResetToken}`;
 
     const msg = {
       to: user.email,

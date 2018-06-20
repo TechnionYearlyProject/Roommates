@@ -6,7 +6,7 @@
   "dependencies": {
     "@sendgrid/mail": "^6.2.1",
     "azure-storage": "^2.8.2",
-    "bcrypt": "^1.0.3",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "codecov.io": "^0.1.6",
     "colors": "^1.2.5",

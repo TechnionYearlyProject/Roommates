@@ -4,7 +4,7 @@
         "WEB_SOCKETS_PORT": 5000,
         "MONGODB_URI": "mongodb://localhost:27017/RoommatesApp",
         "JWT_SECRET": "developmentjwtsecret-hdjgmk3d0932mcm3x",
-        "CORS": "http://localhost:8080",
+        "APP_URL": "http://localhost:8080/App",
         "LOG_LEVEL": "debug"
     },
     "test": {

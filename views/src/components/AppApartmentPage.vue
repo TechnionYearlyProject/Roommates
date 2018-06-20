@@ -282,7 +282,7 @@ export default {
     },
     share() {
       return {
-        url: `https://localhost:8080/${this.v._id}`,
+        url: `${process.env.ROOT_API}/App/apartments/${this.v._id}`,
         title: 'Sharing this apartment I found on Roommates with you!',
         description: `Located in ${this.address}, price: ${this.v.price}`,
         quote: 'This is an apartment that I thought might interest you.'
