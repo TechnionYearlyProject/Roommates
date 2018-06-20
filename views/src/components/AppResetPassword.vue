@@ -79,14 +79,14 @@
     methods: {
       showSentSnackbar() {
         this.$store.commit(
-          'showSnackbarWelcome',
-          'Password reset was sent to your email, please check your inbox to continue'
+          'showSnackbar',
+          'Password reset was sent to your email, please check your inbox to continue.'
         );
       },
       showResetSnackbar() {
         this.$store.commit(
-          'showSnackbarWelcome',
-          'Your password was reset! You can now login to your account using your new password'
+          'showSnackbar',
+          'Your password was reset! You can now login to your account using your new password.'
         );
       },
       showInvalidEmail() {
@@ -94,8 +94,8 @@
       },
       showFailureSnackbar() {
         this.$store.commit(
-          'showSnackbarWelcome',
-          "Oops.. something didn't go well, please retry again or contact us"
+          'showSnackbar',
+          "Oops.. something didn't go well, please make sure you've entered correct email address. For further assistance please contact us."
         );
       },
       sendResetMail() {

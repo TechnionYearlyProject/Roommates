@@ -12,7 +12,7 @@
   import Paypal from 'vue-paypal-checkout';
 
   export default {
-    name: "AppPayPal",
+    name: 'AppPayPal',
     props: {
       amount: {
         type: Number,
@@ -36,7 +36,7 @@
     components: {
       Paypal
     }
-  }
+  };
 </script>
 
 <style scoped>

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const _ = require('lodash');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { ObjectID } = require('mongodb');
 
 const { isSupportedHobbieId } = require('./hobbie');
@@ -10,7 +10,7 @@ const {
   NotificationSchema,
   addAggregationDataInNotification
 } = require('./notification');
-const {PrivateMessageSchema, wasPrivateMessageWrittenByParticipants, setPrivateMessageReadState, getPrivateMessageCreationTime} = require('./privateMessage');
+const { PrivateMessageSchema, wasPrivateMessageWrittenByParticipants, setPrivateMessageReadState, getPrivateMessageCreationTime } = require('./privateMessage');
 const { getMatchScore } = require('../logic/matcher');
 const arrayFunctions = require('../helpers/arrayFunctions');
 const { XAUTH, XAUTH_EXPIRATION_TIME } = require('../constants');
@@ -103,6 +103,7 @@ const UserSchema = new mongoose.Schema({
     minlength: 5,
     trim: true,
     unique: true,
+    lowercase: true,
     validate: {
       validator: value => validator.isEmail(value),
       message: '{VALUE} is not a valid email'
@@ -177,6 +178,7 @@ UserSchema.pre('save', function (next) {
  */
 UserSchema.statics.findByCredentials = function (email, password) {
   const User = this;
+  email = email.toLowerCase();
 
   return User.findOne({ email }).then(user => {
     if (!user) {
@@ -247,6 +249,28 @@ UserSchema.statics.toJSON = function (user) {
 };
 
 /**
+ * @author: Alon Talmor
+ * @date: 6/5/18
+ *
+ * checks if all the id recieve is a valid user id,
+ *
+ * @param {String or Array of String} id - the id to test.
+ * @returns Promise Object with the boolean result (true or false).
+ */
+UserSchema.statics.isValidId = function (id) {
+  const User = this;
+
+  const ids = _.castArray(id);
+  return User.find({ _id: { $in: ids } })
+    .then((users) => {
+      if (users.length !== ids.length) {
+        return false;
+      }
+      return true;
+    });
+};
+
+/**
  * express uses this function when sending an object over HTTP requests.
  *
  * we don't want all of a user properties to be exposed.
@@ -291,7 +315,7 @@ UserSchema.methods.removeExpiredTokens = function () {
   const user = this;
 
   const currentTime = Date.now() / 1000;
-  const tokens = user.tokens.filter(t => currentTime < jwt.verify(t.token, process.env.JWT_SECRET).exp);
+  const tokens = user.tokens.filter(t => currentTime < jwt.decode(t.token, process.env.JWT_SECRET).exp);
   user.tokens = tokens;
   return user.save();
 };
@@ -617,11 +641,11 @@ UserSchema.methods.saveUpdatedNotifications = function (
 ) {
   const user = this;
 
-  if(_notificationsId.length != newNotifications.length){
+  if (_notificationsId.length !== newNotifications.length) {
     return Promise.reject();
   }
 
-  for(var i=0;i<_notificationsId.length;i++){  
+  for (let i = 0; i < _notificationsId.length; i++) {  
     const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationsId[i].toString());
     if (notificationIndex < 0) {
       continue;
@@ -661,7 +685,7 @@ UserSchema.methods.getNotificationById = function (_notificationId) {
 
   const notificationIndex = arrayFunctions.getIndexOfFirstElementMatchKey(user.notifications, '_id', _notificationId.toString());
 
-  if(notificationIndex < 0){
+  if (notificationIndex < 0) {
     return {};
   }
 

@@ -267,7 +267,7 @@ export default {
       if (this.publishes.values.length === 0) {
         this.publishes.loaded = true;
       } else if (!this.publishes.loaded) {
-        this.$store.dispatch('searchApartments', { id: this.publishes.values })
+        this.$store.dispatch('fetchApartments', { id: this.publishes.values })
           .then((apartments) => {
             this.publishes.values = apartments;
             this.publishes.loaded = true;
@@ -303,7 +303,7 @@ export default {
         })
         .catch((error) => {
           property.value.current = property.value.previous;
-          property.error = 'An error occured!';
+          property.error = `Invalid information. Please make sure you fill in a correct ${property.title.toLowerCase()}.`;
           // eslint-disable-next-line
           console.log(error); // show an error message
         });
@@ -339,7 +339,7 @@ export default {
       this.profile.properties.push({
         title: 'Name',
         value: {
-          current: `${user.firstName} ${` ${user.lastName  || ''}`}`,
+          current: `${user.firstName} ${` ${user.lastName || ''}`}`,
           previous: `${user.firstName} ${user.lastName}`,
         },
         icon: 'face',
@@ -400,7 +400,7 @@ export default {
         },
       });
       this.profile.properties.push({
-        title: 'Phone',
+        title: 'Phone Number',
         value: {
           current: user.mobilePhone,
           previous: user.mobilePhone,

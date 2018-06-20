@@ -38,6 +38,8 @@ export default {
         this.startSession(); // need to set up the session first
         this.$store.dispatch('fetchSelf')
         .then(() => {
+          // eslint-disable-next-line
+          console.log('[authorized] fetched self');
           this.$store.dispatch('socket_createConnection');
         })
         .catch(() => {
