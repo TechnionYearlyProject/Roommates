@@ -36,10 +36,10 @@
                     <v-flex>
                         <v-layout class="current-contact">
                             <div class="current-contact-avatar">
-                                <app-avatar :name="activeContact.name" />
+                                <app-avatar :name="userById[activeContact.name]" />
                             </div>
                             <div class="current-contact-name">
-                                {{ activeContact.name }}
+                                {{ userById[activeContact.name] }}
                             </div>
                         </v-layout>
                     </v-flex>
@@ -48,7 +48,7 @@
                             <ul class="messages-inner-container">
                                 <li v-for="msg in activeContact.conversations" :class="{ incoming: msg.incoming, 'message-container': true }">
                                     <div class="message-author">
-                                        <app-avatar :name="msg.author" />
+                                        <app-avatar :name="userById[msg.author]" />
                                     </div>
                                     <div class="message-data-content">
                                         <v-tooltip top>
@@ -71,6 +71,7 @@
 </template>
 
 <script>
+  import axios from 'axios';
   import AppAvatar from "./sub-components/AppAvatar";
 
   export default {
@@ -81,45 +82,17 @@
         mutationObserver: new MutationObserver(() => this.$refs.messagesScroller.scrollTop = this.$refs.messagesScroller.scrollHeight),
         searchInput: '',
         activeContactIndex: 0,
-        allContacts: {
-          'Alon Talmor': {
-            conversations: [
-              {
-                incoming: true,
-                author: 'Alon Talmor',
-                content: 'Hi Idan',
-                date: new Date(2018, 5, 3, 21, 23)
-              },
-              {
-                incoming: false,
-                author: 'Idan Yadgar',
-                content: 'Hi Alon,\nHow are you today?',
-                date: new Date(2018, 5, 3, 21, 47)
-              }
-            ]
-          },
-          'Or Abramovich': {
-            conversations: [
-              {
-                incoming: false,
-                author: 'Idan Yadgar',
-                content: 'Hi Or, I would like to talk about the project tomorrow',
-                date: new Date(2018, 5, 3, 21, 25)
-              },
-              {
-                incoming: true,
-                author: 'Or Abramovich',
-                content: 'No problem, we\'ll meet at the office',
-                date: new Date(2018, 5, 3, 21, 41)
-              }
-            ]
-          }
-        },
+        allContacts: {},
+        userById: {},
         message: ''
       };
     },
     computed: {
       activeContact() {
+        if (Object.keys(this.allContacts).length === 0) {
+          return {};
+        }
+
         let name = Object.keys(this.allContacts)[this.activeContactIndex];
 
         return {
@@ -132,17 +105,61 @@
         let searchInput = this.searchInput.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
         let contacts = {};
-        for (let contactName in this.allContacts) {
-          if (this.allContacts.hasOwnProperty(contactName) && new RegExp(searchInput, 'i').test(contactName)) {
-            contacts[contactName] = this.allContacts[contactName];
+        for (let contactId in this.allContacts) {
+          if (this.allContacts.hasOwnProperty(contactId)) {
+            const contactName = this.userById[contactId];
+
+            if (new RegExp(searchInput, 'i').test(contactName)) {
+              contacts[contactName] = this.allContacts[contactId];
+            }
           }
         }
 
         return contacts;
       }
     },
+    created() {
+      this.$store.dispatch('fetchSelfConversations')
+        .then(conversations => {
+          const ids = {};
+          ids[this.$store.getters.getUser._id] = '';
+
+          for (const conversation of conversations) {
+            const participants = conversation._participants.filter(p => p !== this.$store.getters.getUser._id);
+            for (const p of participants) {
+              ids[p] = '';
+            }
+
+            const contact = participants.join(', ');
+            const messages = conversation.messages.map(message => {
+              ids[message._sentBy] = '';
+
+              return {
+                incoming: message._sentBy !== this.$store.getters.getUser._id,
+                author: message._sentBy,
+                content: message.content,
+                date: new Date(message.createdAt * 1000)
+              };
+            });
+
+            this.$set(this.allContacts, contact, {
+              conversations: messages
+            });
+          }
+
+          axios.get('http://localhost:3000/users', { params: { id: Object.keys(ids) } }).then(response => {
+            Object.keys(response.data.users).forEach(id => {
+              const user = response.data.users[id];
+              response.data.users[id] = `${user.firstName} ${user.lastName}`;
+
+            });
+
+            this.userById = response.data.users;
+          });
+        });
+    },
     mounted() {
-        this.mutationObserver.observe(this.$refs.messagesScroller.children[0], { childList: true });
+      this.mutationObserver.observe(this.$refs.messagesScroller.children[0], { childList: true });
     },
     beforeDestroy() {
       this.mutationObserver.disconnect();
@@ -157,7 +174,7 @@
 
         this.activeContact.conversations.push({
           incoming: false,
-          author: 'Idan Yadgar',
+          author: this.$store.getters.getUser._id,
           content: this.message,
           date: new Date()
         });

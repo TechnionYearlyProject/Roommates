@@ -13,6 +13,7 @@ const vuexPersistence = new VuexPersistence({
 export default new Vuex.Store({
   state: {
     user: null,
+    conversations: {},
     apartments: null,
     loading: false,
     snackbar: {
@@ -24,6 +25,9 @@ export default new Vuex.Store({
   getters: {
     getUser(state) {
       return state.user;
+    },
+    getConversations(state) {
+      return state.conversations;
     },
     getApartments(state) {
       return state.apartments;
@@ -50,6 +54,9 @@ export default new Vuex.Store({
   mutations: {
     setUser(state, user) {
       state.user = user;
+    },
+    setConversations(state, conversations) {
+      state.conversations = conversations;
     },
     setApartments(state, apartments) {
       state.apartments = apartments;
@@ -266,6 +273,19 @@ export default new Vuex.Store({
         return response.data.self;
       });
     },
+
+    /**
+     * @author Idan Yadgar
+     * @date 20/06/18
+     */
+    fetchSelfConversations({ commit }) {
+      return axios.get('http://localhost:3000/users/self/conversations')
+        .then((response) => {
+          commit('setConversations', response.data.conversations);
+          return response.data.conversations;
+        });
+    },
+
     /**
      * @author: Alon Talmor
      * @date: 27/04/18

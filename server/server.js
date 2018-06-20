@@ -677,6 +677,16 @@ app.get('/users/self', authenticate, (req, res) => {
 });
 
 /**
+ * Get self user conversations. The user has to be the logged-in.
+ *
+ */
+app.get('/users/self/conversations', authenticate, async (req, res) => {
+  res.send({
+    conversations: (await User.findById(req.user._id)).conversations
+  });
+});
+
+/**
  * Get all server supported user tags
  *
  */
