@@ -86,7 +86,10 @@ const router = new Router({
     {
       path: '/chat',
       name: 'AppChat',
-      component: AppChat
+      component: AppChat,
+      meta: {
+        requiresVerify: true
+      }
     }
   ],
   scrollBehavior() {
