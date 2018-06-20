@@ -303,7 +303,7 @@ export default new Vuex.Store({
      * @date 20/06/18
      */
     fetchSelfConversations({ commit }) {
-      return axios.get('http://localhost:3000/users/self/conversations')
+      return axios.get(`${process.env.ROOT_API}/users/self/conversations`)
         .then((response) => {
           commit('setConversations', response.data.conversations);
           return response.data.conversations;
