@@ -1514,10 +1514,11 @@ app.get('*', (req, res) => {
   res.status(NOT_FOUND).send('404');
 });
 
-app.listen(process.env.PORT, (server) => {
+const server = app.listen(process.env.PORT, (server) => {
   logInfo(`Server is up on port ${process.env.PORT}.`);
-  socketServer.initServer(server);
 });
+
+socketServer.initServer(server);
 
 module.exports = {
   app
