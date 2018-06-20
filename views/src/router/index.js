@@ -28,7 +28,7 @@ const router = new Router({
       component: AppMain
     },
     {
-      path: '/identification',
+      path: '/App/identification',
       name: 'AppIdentification',
       component: AppIdentification,
       meta: {
@@ -36,7 +36,7 @@ const router = new Router({
       }
     },
     {
-      path: '/verification/:token?',
+      path: '/App/verification/:token?',
       name: 'AppVerification',
       alias: '/users/verify/:token',
       component: AppVerification,
@@ -46,13 +46,13 @@ const router = new Router({
       }
     },
     {
-      path: '/reset_password/:token?',
+      path: '/App/reset_password/:token?',
       name: 'AppResetPassword',
       alias: '/users/reset-password/:token',
       component: AppResetPassword
     },
     {
-      path: '/user_profile/:id?',
+      path: '/App/user_profile/:id?',
       name: 'AppUserProfile',
       component: AppUserProfile,
       meta: {
@@ -60,7 +60,7 @@ const router = new Router({
       }
     },
     {
-      path: '/advertise',
+      path: '/App/advertise',
       name: 'AppPublishApartment',
       component: AppPublishApartment,
       meta: {
@@ -68,19 +68,19 @@ const router = new Router({
       }
     },
     {
-      path: '/apartments/:id',
+      path: '/App/apartments/:id',
       name: 'AppApartmentPage',
       props: true,
       component: AppApartmentPage,
     },
     {
-      path: '/reviews/:location?',
+      path: '/App/reviews/:location?',
       name: 'AppReviews',
       props: true,
       component: AppReviews
     },
     {
-      path: '/payment',
+      path: '/App/payment',
       name: 'AppPayment',
       component: AppPayment
     }

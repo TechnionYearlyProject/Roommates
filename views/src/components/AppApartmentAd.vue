@@ -276,7 +276,7 @@ export default {
   },
   created() {
     this.share = {
-      url: `https://localhost:8080/${this.apartment._id}`,
+      url: `${process.env.ROOT_API}/App/apartments/${this.apartment._id}`,
       title: 'Sharing this apartment I found on Roommates with you!',
       description: `Located in ${this.getAddress()}, price: ${this.apartment.price}`,
       quote: 'This is an apartment that I thought might interest you.'
