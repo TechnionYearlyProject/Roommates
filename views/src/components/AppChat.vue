@@ -10,7 +10,7 @@
                         <div class="contacts-scroll">
                             <ul>
                                 <li v-for="(contact, contactName) in contacts" :key="contactName"
-                                    :class="{ active: activeContact.name === contactName, contact: true }"
+                                    :class="{ active: userById[activeContact.name] === contactName, contact: true }"
                                     @click="activeContactIndex = getIndexOfContact(contactName)">
                                     <v-layout>
                                         <div class="contact-avatar">
@@ -182,7 +182,7 @@
         this.message = '';
       },
       getIndexOfContact(contactName) {
-        return Object.keys(this.allContacts).indexOf(contactName);
+        return Object.keys(this.allContacts).findIndex(id => this.userById[id] === contactName);
       },
       nl2br(str) {
         return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
