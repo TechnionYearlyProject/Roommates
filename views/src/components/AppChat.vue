@@ -38,12 +38,9 @@
                             <div class="current-contact-avatar">
                                 <app-avatar :name="activeContact.name" />
                             </div>
-                            <v-flex>
+                            <div class="current-contact-name">
                                 {{ activeContact.name }}
-                                <div class="current-contact-status">
-                                    {{ activeContact.active ? 'Active' : 'Not Active' }}
-                                </div>
-                            </v-flex>
+                            </div>
                         </v-layout>
                     </v-flex>
                     <v-flex sm12 style="position: relative;">
@@ -86,7 +83,6 @@
         activeContactIndex: 0,
         allContacts: {
           'Alon Talmor': {
-            active: true,
             conversations: [
               {
                 incoming: true,
@@ -103,7 +99,6 @@
             ]
           },
           'Or Abramovich': {
-            active: false,
             conversations: [
               {
                 incoming: false,
@@ -286,9 +281,9 @@
         padding: 0;
     }
 
-    .current-contact-status {
-        font-size: 13px;
-        opacity: 0.7;
+    .current-contact-name {
+        font-size: 22px;
+        margin-top: 4px;
     }
 
     .current-contact, .search-contact-container, .message-field-container {
