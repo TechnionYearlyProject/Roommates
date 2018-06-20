@@ -12,7 +12,7 @@ const {
 } = require('mongodb');
 require('./server-config');
 require('./db/mongoose');
-require('./socketsServer');
+const socketServer = require('./socketsServer');
 const {
   useVue
 } = require('./middleware/vuejs');
@@ -1514,11 +1514,10 @@ app.get('*', (req, res) => {
   res.status(NOT_FOUND).send('404');
 });
 
-const server = app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT, (server) => {
   logInfo(`Server is up on port ${process.env.PORT}.`);
+  socketServer.initServer(server);
 });
-
-console.log(server);
 
 module.exports = {
   app
