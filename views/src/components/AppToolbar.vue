@@ -33,6 +33,15 @@
             </template>
             <!-- show only when authenticated -->
             <template v-if="isAuthenticated">
+                <v-btn flat exact :to="{ name: 'AppChat' }">
+                    <span class="text-xs-center">
+                        <v-icon>chat</v-icon>
+                        <span class="hidden-xs-only">
+                            <br>
+                            <small>Chat</small>
+                        </span>
+                    </span>
+                </v-btn>
                 <v-btn flat exact :to="{ name: 'AppPublishApartment' }">
                     <span class="text-xs-center">
                         <v-icon>add</v-icon>
