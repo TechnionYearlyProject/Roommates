@@ -153,28 +153,28 @@
 
             this.userById = response.data.users;
           });
+
+          const newContact = this.$route.query['startChatWith'];
+          if (newContact && newContact !== this.$store.getters.getUser._id) {
+            axios.get('http://localhost:3000/users', { params: { id: [ newContact ] } }).then(response => {
+              if (!response.data.users.hasOwnProperty(newContact)) {
+                return;
+              }
+
+              const user = response.data.users[newContact];
+              this.userById[newContact] = `${user.firstName} ${user.lastName}`;
+
+              if (!this.allContacts.hasOwnProperty(newContact)) {
+                this.$set(this.allContacts, newContact, {
+                  conversations: []
+                });
+              }
+            }).catch(e => {});
+          }
         });
     },
     mounted() {
       this.mutationObserver.observe(this.$refs.messagesScroller.children[0], { childList: true });
-
-      const newContact = this.$route.query['startChatWith'];
-      if (newContact) {
-        axios.get('http://localhost:3000/users', { params: { id: [ newContact ] } }).then(response => {
-          if (!response.data.users.hasOwnProperty(newContact)) {
-            return;
-          }
-
-          const user = response.data.users[newContact];
-          this.userById[newContact] = `${user.firstName} ${user.lastName}`;
-
-          if (!this.allContacts.hasOwnProperty(newContact)) {
-            this.$set(this.allContacts, newContact, {
-              conversations: []
-            });
-          }
-        }).catch(e => {});
-      }
     },
     beforeDestroy() {
       this.mutationObserver.disconnect();
