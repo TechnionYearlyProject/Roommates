@@ -42,8 +42,8 @@
           </v-list-tile-content>
           <v-list-tile-action>
             <v-tooltip top>
-              <v-btn slot="activator" icon @click.stop="">
-                <v-icon color="info">chat_bubble</v-icon>
+              <v-btn slot="activator" icon @click.stop="$router.push({ name: 'AppChat', query: { startChatWith: members[m.id]._id } })">
+                <v-icon color="info">chat</v-icon>
               </v-btn>
               <span>chat</span>
             </v-tooltip>
