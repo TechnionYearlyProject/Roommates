@@ -20,7 +20,7 @@
                                             <div class="contact-name">
                                                 {{ contactName }}
                                             </div><br style="clear: both;" />
-                                            <div class="contact-last-message">
+                                            <div class="contact-last-message" v-if="contact.conversations.length > 0">
                                                 {{ contact.conversations[contact.conversations.length - 1].content }}
                                             </div>
                                         </v-flex>
@@ -84,7 +84,12 @@
         mutationObserver: new MutationObserver(() => this.$refs.messagesScroller.scrollTop = this.$refs.messagesScroller.scrollHeight),
         searchInput: '',
         activeContactIndex: 0,
-        allContacts: {},
+        allContacts: {
+          '5b2bc6cd6fe078324c36687e': {
+            conversations: [
+            ]
+          }
+        },
         userById: {},
         message: ''
       };
