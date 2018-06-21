@@ -28,6 +28,11 @@
                 </v-card>
               </v-dialog>
               </div>
+              <div v-else>
+                <v-btn dark icon class="mr-3" @click="$router.push({ name: 'AppChat', query: { startChatWith: profile.id } })">
+                  <v-icon>chat</v-icon>
+                </v-btn>
+              </div>
             </v-card-title>
           </v-layout>
         </v-card-media>
@@ -199,6 +204,7 @@ export default {
         icon: 'person',
         title: 'Profile Information',
         properties: [],
+        id: null
       },
       attributes: {
         active: false,
@@ -461,6 +467,7 @@ export default {
       const user = this.$store.getters.getUser;
       this.isMyProfile = true;
       this.initProfile(user);
+      this.profile.id = user['_id'];
     } else {
       this.$store.commit('showLoading');
       this.$store
@@ -468,6 +475,7 @@ export default {
         .then((users) => {
           this.isMyProfile = this.isAuthenticated && this.getUser._id === id;
           this.initProfile(users[id]);
+          this.profile.id = id;
         })
         .catch(() => {
           this.$router.push({ name: 'AppMain' });
