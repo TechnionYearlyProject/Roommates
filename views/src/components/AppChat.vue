@@ -106,8 +106,28 @@
       contacts() {
         let searchInput = this.searchInput.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
+        const allContactsSorted = Object.keys(this.allContacts).sort((contact1, contact2) => {
+          const conversationsCount1 = this.allContacts[contact1].conversations.length,
+                conversationsCount2 = this.allContacts[contact2].conversations.length;
+
+          if (!conversationsCount1 && !conversationsCount2) {
+            return 0;
+          }
+
+          if (!conversationsCount1) {
+            return 1;
+          }
+
+          if (!conversationsCount2) {
+            return -1;
+          }
+
+          return this.allContacts[contact2].conversations[conversationsCount2 - 1].date.getTime()
+            - this.allContacts[contact1].conversations[conversationsCount1 - 1].date.getTime();
+        });
+
         let contacts = {};
-        for (let contactId in this.allContacts) {
+        for (let contactId of allContactsSorted) {
           if (this.allContacts.hasOwnProperty(contactId)) {
             const contactName = contactId;
 
@@ -205,11 +225,12 @@
           to: this.activeContactName
         });
 
+        const now = new Date();
         this.activeContact.conversations.push({
           incoming: false,
           author: this.$store.getters.getUser._id,
           content: this.message,
-          date: new Date()
+          date: now
         });
 
         this.message = '';
@@ -246,6 +267,7 @@
 
             this.allContacts[m.author].conversations.push(m);
 
+            this.$forceUpdate();
           });
         }
         else {
