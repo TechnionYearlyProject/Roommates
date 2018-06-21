@@ -166,7 +166,7 @@
 
           this.activeContactName = Object.keys(this.allContacts).length > 0 ? Object.keys(this.allContacts)[0] : null;
 
-          axios.get('http://localhost:3000/users', { params: { id: Object.keys(ids) } }).then(response => {
+          axios.get(`${process.env.ROOT_API}/users`, { params: { id: Object.keys(ids) } }).then(response => {
             Object.keys(response.data.users).forEach(id => {
               const user = response.data.users[id];
               response.data.users[id] = `${user.firstName} ${user.lastName}`;
@@ -178,7 +178,7 @@
 
             const newContact = this.$route.query['startChatWith'];
             if (newContact && newContact !== this.$store.getters.getUser._id) {
-              axios.get('http://localhost:3000/users', { params: { id: [ newContact ] } }).then(response => {
+              axios.get(`${process.env.ROOT_API}/users`, { params: { id: [ newContact ] } }).then(response => {
                 if (!response.data.users.hasOwnProperty(newContact)) {
                   return;
                 }
@@ -256,7 +256,7 @@
         const m = this.createLocalMessageFromServerMessage(message);
 
         if (!this.userById.hasOwnProperty(m.author)) {
-          axios.get('http://localhost:3000/users', { params: { id: [ m.author ] } }).then(response => {
+          axios.get(`${process.env.ROOT_API}/users`, { params: { id: [ m.author ] } }).then(response => {
             const user = Object.values(response.data.users)[0];
             this.userById[m.author] = `${user.firstName} ${user.lastName}`;
 
