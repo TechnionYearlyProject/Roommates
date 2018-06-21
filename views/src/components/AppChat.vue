@@ -84,12 +84,7 @@
         mutationObserver: new MutationObserver(() => this.$refs.messagesScroller.scrollTop = this.$refs.messagesScroller.scrollHeight),
         searchInput: '',
         activeContactIndex: 0,
-        allContacts: {
-          '5b2bc6cd6fe078324c36687e': {
-            conversations: [
-            ]
-          }
-        },
+        allContacts: {},
         userById: {},
         message: ''
       };
