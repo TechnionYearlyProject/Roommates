@@ -55,7 +55,7 @@
                                     </div>
                                     <div class="message-data-content">
                                         <v-tooltip top>
-                                            <span slot="activator" class="message-date">{{ dateIntervalFormat(msg.date) }}</span>
+                                            <span slot="activator" class="message-date">{{ dateIntervalFormat(msg.date.getTime()) }}</span>
                                             <span>{{ msg.date.toLocaleString() }}</span>
                                         </v-tooltip><br />
                                         <v-card class="message-content" v-html="nl2br(msg.content)" />
@@ -210,7 +210,7 @@
           incoming: _sentBy !== this.$store.getters.getUser._id,
           author: _sentBy,
           content: content,
-          date: new Date(createdAt * 1000)
+          date: new Date(createdAt)
         }
       },
       sendMessage() {
@@ -240,6 +240,7 @@
       },
       dateIntervalFormat(date) {
         const time = (Date.now() - date) / 1000;
+
         if (time < 60) {
           return 'Just now';
         } else if (time >= 60 && time < 3600) {
