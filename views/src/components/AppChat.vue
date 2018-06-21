@@ -267,8 +267,6 @@
             }
 
             this.allContacts[m.author].conversations.push(m);
-
-            this.$forceUpdate();
           });
         }
         else {

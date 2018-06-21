@@ -134,18 +134,18 @@ io.sockets
     });
     //Sends a private message to the receiver and stores it in the DB.
     socket.on(SocketMsgTypes.CHAT_MSG, function (messageData) {
-    	const message = buildPrivateMessageJSON(new ObjectID(socket.decoded_token._id), new Date().getTime(), messageData.content, false);
-    	message._id = new ObjectID(); //the message id should be the same for both sides! (the sender and the reciever.)
-    	handleNewPrivateMessage(socket.decoded_token._id, messageData.to, message).then((res)=>{
-      		sendUserRealTimePrivateMessage(messageData.to, message);
-    	})
-  	});
+      const message = buildPrivateMessageJSON(new ObjectID(socket.decoded_token._id), new Date().getTime(), messageData.content, false);
+      message._id = new ObjectID(); //the message id should be the same for both sides! (the sender and the reciever.)
+      handleNewPrivateMessage(socket.decoded_token._id, messageData.to, message).then((res)=>{
+        sendUserRealTimePrivateMessage(messageData.to, message);
+      })
+    });
     //Updates that the message was read in the users (sender & receiver) documents and send it to the other user
-	socket.on(SocketMsgTypes.CHAT_MSG_READ, function (messageData) {
-	    handleReadPrivateMessage(socket.decoded_token._id, messageData.to, messageData._id).then((res)=>{
-	      sendUserRealTimeReadPrivateMessage(messageData.to, messageData);
-	    })
-  	});
+    socket.on(SocketMsgTypes.CHAT_MSG_READ, function (messageData) {
+      handleReadPrivateMessage(socket.decoded_token._id, messageData.to, messageData._id).then((res)=>{
+        sendUserRealTimeReadPrivateMessage(messageData.to, messageData);
+      })
+    });
   });
 
 /**
@@ -214,7 +214,7 @@ const sendUserRealTimeNotification = (_userId, notification) => {
  *
  *
  */
-const sendUserRealTimePrivateMessage = (_userId, _toId, message) => {
+const sendUserRealTimePrivateMessage = (_userId, message) => {
   sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG, message);
 };
 /**
@@ -229,7 +229,7 @@ const sendUserRealTimePrivateMessage = (_userId, _toId, message) => {
  *
  *
  */
-const sendUserRealTimeReadPrivateMessage = (_userId, _toId, message) => {
+const sendUserRealTimeReadPrivateMessage = (_userId, message) => {
   sendUserRealTimeMsg(_userId, SocketMsgTypes.CHAT_MSG_READ, message);
 };
 module.exports = {
