@@ -1,14 +1,31 @@
-const { ObjectID } = require('mongodb');
+const {
+  ObjectID
+} = require('mongodb');
 const jwt = require('jsonwebtoken');
 
 require('../../server/server');
-const { Apartment } = require('../../server/models/apartment');
-const { Review } = require('../../server/models/review');
-const { User } = require('../../server/models/user');
-const { NotificationsTypesEnum } = require('../../server/models/notification');
-const { Group } = require('../../server/models/group');
-const { XAUTH, VERIFICATION_SECRET, FORGOT_SECRET } = require('../../server/constants');
+const {
+  Apartment
+} = require('../../server/models/apartment');
+const {
+  Review
+} = require('../../server/models/review');
+const {
+  User
+} = require('../../server/models/user');
+const {
+  NotificationsTypesEnum
+} = require('../../server/models/notification');
+const {
+  memberStatus
+} = require('../../server/models/group');
+const {
+  XAUTH,
+  VERIFICATION_SECRET,
+  FORGOT_SECRET
+} = require('../../server/constants');
 const visit = require('../../server/models/visit');
+const { Search } = require('../../server/models/search');
 
 const user1Id = new ObjectID();
 const user2Id = new ObjectID();
@@ -35,8 +52,8 @@ const apartment1User2VisitId = new ObjectID();
 
 const user1Notification1Id = new ObjectID();
 
-const group1Id = new ObjectID();
-const group2Id = new ObjectID();
+const newSearchID = new ObjectID;
+const oldSearchID = new ObjectID;
 
 const apartment1 = new Apartment({
   _id: apartment1Id,
@@ -78,10 +95,9 @@ const apartment1 = new Apartment({
     createdAt: new Date('1-1-2018').getTime(),
     scheduledTo: new Date('1-1-2019').getTime(),
     status: visit.getVisitStatusOnCreate()
-  }
-  ],
+  }],
   //comments
-   groups: []
+  groups: []
 });
 
 const apartment2 = new Apartment({
@@ -111,54 +127,51 @@ const apartment2 = new Apartment({
   requiredRoommates: 1,
   totalRoommates: 2,
   //comments
-    groups: []
+  groups: []
 });
 
 const apartment3 = new Apartment({
-    _id: apartment3Id,
-    _createdBy: new ObjectID(),
-    createdAt: Date.now(),
-    price: 1,
-    _interested:[user2Id],
-    entranceDate: new Date('12-29-2019').getTime(),
-    location: {
-        address: {
-            state: 'israel',
-            city: 'Tel-Aviv',
-            street: 'Rothschild',
-            number: 23
-            //apartmentNumber:
-        },
-        geolocation: [34.775313, 32.065887]
+  _id: apartment3Id,
+  _createdBy: user2Id,
+  createdAt: Date.now(),
+  price: 1,
+  _interested: [user2Id],
+  entranceDate: new Date('12-29-2019').getTime(),
+  location: {
+    address: {
+      state: 'israel',
+      city: 'Tel-Aviv',
+      street: 'Rothschild',
+      number: 23
+      //apartmentNumber:
     },
-    numberOfRooms: 3,
-    floor: 1,
-    totalFloors: 5,
-    //area:
-    //images:
-    //description:
-    tags: [0, 7],
-    requiredRoommates: 1,
-    totalRoommates: 2,
-    //comments
-    groups: [{
-        _id: group2Id,
-        members: [user1Id],
-        memberPayed: [0],
-        createdAt: new Date('2018-04-04').getTime(),
-        apartment: [apartment1Id],
-        score: 1,
-        status: 2, //accepted
-    },
-    {
-        _id: group1Id,
-        members: [user2Id, user3Id],
-        memberPayed: [0],
-        createdAt: new Date('2018-04-04').getTime(),
-        apartment: [apartment1Id],
-        score: 1,
-        status: 2, //accepted
-    }]
+    geolocation: [34.775313, 32.065887]
+  },
+  numberOfRooms: 3,
+  floor: 1,
+  totalFloors: 5,
+  //area:
+  //images:
+  //description:
+  tags: [0, 7],
+  requiredRoommates: 1,
+  totalRoommates: 2,
+  //comments
+  groups: [{
+    members: [{ id: user1Id }],
+    _apartmentId: apartment3Id,
+    _id: new ObjectID()
+  },
+  {
+    members: [{ id: user3Id }, { id: user2Id }],
+    _apartmentId: apartment3Id,
+    _id: new ObjectID()
+  },
+  {
+    members: [{ id: user3Id, status: memberStatus.ACCEPTED }],
+    _apartmentId: apartment3Id,
+    _id: new ObjectID()
+  }]
 });
 
 const notPublishedApartment = {
@@ -192,30 +205,36 @@ const user1 = {
   about: '',
   hobbies: [1, 2, 3],
   _givenReviews: [review1Id.toHexString()],
-  notifications: [
-    {
-      _id: user1Notification1Id,
-      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
-      _createdBy: [new ObjectID().toHexString()],
-      wasRead: false,
-      _notifiedObjectsIds: [new ObjectID().toHexString()],
-      createdAt: new Date().getTime()
-    },
-    {
-      notificationType: NotificationsTypesEnum.USER_LIKED_APARTMENT,
-      _createdBy: [new ObjectID().toHexString()],
-      wasRead: true,
-      _notifiedObjectsIds: [new ObjectID().toHexString()],
-      createdAt: new Date().getTime()
-    },
-    {
-      notificationType: NotificationsTypesEnum.APARTMENT_WAS_MODIFIED,
-      _createdBy: [new ObjectID().toHexString()],
-      wasRead: false,
-      _notifiedObjectsIds: [new ObjectID().toHexString()],
-      createdAt: new Date().getTime()
-    },
-  ],
+  tokens: [{
+    access: XAUTH,
+    token: jwt.sign({
+      _id: user1Id.toHexString(),
+      access: XAUTH
+    }, process.env.JWT_SECRET).toString(),
+    expiration: Date.now() + 1000000
+  }],
+  notifications: [{
+    _id: user1Notification1Id,
+    notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+    _createdBy: [new ObjectID().toHexString()],
+    wasRead: false,
+    _notifiedObjectsIds: [new ObjectID().toHexString()],
+    createdAt: new Date().getTime()
+  },
+  {
+    notificationType: NotificationsTypesEnum.USER_LIKED_APARTMENT,
+    _createdBy: [new ObjectID().toHexString()],
+    wasRead: true,
+    _notifiedObjectsIds: [new ObjectID().toHexString()],
+    createdAt: new Date().getTime()
+  },
+  {
+    notificationType: NotificationsTypesEnum.APARTMENT_WAS_MODIFIED,
+    _createdBy: [new ObjectID().toHexString()],
+    wasRead: false,
+    _notifiedObjectsIds: [new ObjectID().toHexString()],
+    createdAt: new Date().getTime()
+  }]
 };
 
 const user2 = {
@@ -235,19 +254,20 @@ const user2 = {
   _interestedApartments: [apartment2Id.toHexString()],
   tokens: [{
     access: XAUTH,
-    token: jwt.sign({ _id: user2Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString(),
+    token: jwt.sign({
+      _id: user2Id.toHexString(),
+      access: XAUTH
+    }, process.env.JWT_SECRET).toString(),
     expiration: Date.now() + 1000000
   }],
-  notifications: [
-    {
-      _id: new ObjectID().toHexString(),
-      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
-      _createdBy: [new ObjectID().toHexString()],
-      wasRead: false,
-      _notifiedObjectsIds: [new ObjectID().toHexString()],
-      createdAt: new Date().getTime()
-    },
-  ],
+  notifications: [{
+    _id: new ObjectID().toHexString(),
+    notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+    _createdBy: [new ObjectID().toHexString()],
+    wasRead: false,
+    _notifiedObjectsIds: [new ObjectID().toHexString()],
+    createdAt: new Date().getTime()
+  }]
 };
 
 const user3 = {
@@ -324,27 +344,28 @@ const user7 = {
   hobbies: [1, 4, 5, 6],
   tokens: [{
     access: XAUTH,
-    token: jwt.sign({ _id: user7Id.toHexString(), access: XAUTH }, process.env.JWT_SECRET).toString(),
+    token: jwt.sign({
+      _id: user7Id.toHexString(),
+      access: XAUTH
+    }, process.env.JWT_SECRET).toString(),
     expiration: Date.now() + 1000000
   }],
-  notifications: [
-    {
-      _id: new ObjectID().toHexString(),
-      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
-      _createdBy: [new ObjectID().toHexString()],
-      wasRead: false,
-      _notifiedObjectsIds: [new ObjectID().toHexString()],
-      createdAt: new Date().getTime()
-    },
-    {
-      _id: new ObjectID().toHexString(),
-      notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
-      _createdBy: [new ObjectID().toHexString()],
-      wasRead: false,
-      _notifiedObjectsIds: [new ObjectID().toHexString()],
-      createdAt: new Date().getTime()
-    },
-  ],
+  notifications: [{
+    _id: new ObjectID().toHexString(),
+    notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+    _createdBy: [new ObjectID().toHexString()],
+    wasRead: false,
+    _notifiedObjectsIds: [new ObjectID().toHexString()],
+    createdAt: new Date().getTime()
+  },
+  {
+    _id: new ObjectID().toHexString(),
+    notificationType: NotificationsTypesEnum.COMMENT_WAS_ADDED_TO_APARTMENT,
+    _createdBy: [new ObjectID().toHexString()],
+    wasRead: false,
+    _notifiedObjectsIds: [new ObjectID().toHexString()],
+    createdAt: new Date().getTime()
+  }]
 };
 
 const notRegisteredUser = {
@@ -356,16 +377,23 @@ const notRegisteredUser = {
   gender: 'male'
 };
 
-const user1VerificationToken = jwt.sign({ id: user1Id }, VERIFICATION_SECRET, { expiresIn: '1h' });
-const user2VerificationToken = jwt.sign({ id: user2Id }, VERIFICATION_SECRET, { expiresIn: '1h' });
+const user1VerificationToken = jwt.sign({
+  id: user1Id
+}, VERIFICATION_SECRET, {
+  expiresIn: '1h'
+});
+const user2VerificationToken = jwt.sign({
+  id: user2Id
+}, VERIFICATION_SECRET, {
+  expiresIn: '1h'
+});
 
-const getForgotPasswordToken = (hashedPassword) => jwt.sign(
-  {
+const getForgotPasswordToken = (hashedPassword) =>
+  jwt.sign({
     id: user2Id,
     email: user2.email
   },
-  `${hashedPassword}-${user2Id}-${FORGOT_SECRET}`,
-  {
+  `${hashedPassword}-${user2Id}-${FORGOT_SECRET}`, {
     expiresIn: '1h'
   });
 
@@ -483,7 +511,7 @@ const shouldUpdateToIrreleventReview = {
   _id: shouldUpdateToIrreleventReviewId,
   _createdBy: user4Id,
   createdAt: Date.now(),
-  activatedAt: Date.now() - (1000 * 60 * 60 * 24 * 400),  //make it a year old
+  activatedAt: Date.now() - (1000 * 60 * 60 * 24 * 400), //make it a year old
   street: 'west wall',
   city: 'jerusalem',
   state: 'israel',
@@ -564,25 +592,77 @@ const notPublishedReview2 = {
   Cons: 'no parks and no parking what so ever'
 };
 
-const group1 = {
-  _id: group1Id,
-  members: [user1Id, user2Id, user3Id],
-  memberPayed: [0, 0, 0],
-  createdAt: new Date('2018-05-05').getTime(),
-  apartment: [apartment1Id],
-  score: 0,
-  status: 0, //pending
+// const group1 = {
+//   _id: group1Id,
+//   members: [user1Id, user2Id, user3Id],
+//   memberPayed: [0, 0, 0],
+//   createdAt: new Date('2018-05-05').getTime(),
+//   apartment: [apartment1Id],
+//   score: 0,
+//   status: 0, //pending
+// };
+
+// const group2 = {
+//   _id: group2Id,
+//   members: [user1Id],
+//   memberPayed: [0],
+//   createdAt: new Date('2018-04-04').getTime(),
+//   apartment: [apartment1Id],
+//   score: 1,
+//   status: 2, //accepted
+// };
+
+
+
+const unsearchedSearch = {
+  createdBy:user1Id,
+  address: null,
+  geolocation: [35.020568, 32.776515],
+  price: [0, 10000],
+  radius: 10,
+  roommates: [1, 3],
+  floor: [1, 20],
+  entranceDate: new Date('2018-05-05').getTime(),
+  tags: []
 };
 
-const group2 = {
-  _id: group2Id,
-  members: [user1Id],
-  memberPayed: [0],
-  createdAt: new Date('2018-04-04').getTime(),
-  apartment: [apartment1Id],
-  score: 1,
-  status: 2, //accepted
+
+const newSearch = {
+  _id: newSearchID,
+  createdBy:user1Id,
+  createdAt: Date.now(),
+  address: null,
+  geolocation: [35.2340603, 31.7765232],
+  price: [0, 9000],
+  radius: 20,
+  roommates: [1, 7],
+  floor: [1, 10],
+  entranceDate: new Date('2018-05-06').getTime(),
+  tags: []
 };
+
+const oldSearch = {
+  _id: oldSearchID,
+  createdBy:user1Id,
+  createdAt: (Date.now() - (1000*60*60*24*3)),
+  address: null,
+  geolocation: [35.2340603, 31.7765232],
+  price: [0, 9000],
+  radius: 20,
+  roommates: [1, 7],
+  floor: [1, 10],
+  entranceDate: new Date('2018-05-06').getTime(),
+  tags: []
+};
+
+
+const searchs = [
+  unsearchedSearch,
+  newSearch,
+  oldSearch
+];
+
+
 
 const apartments = [
   apartment1,
@@ -610,10 +690,10 @@ const reviews = [
   shouldRemoveIrreleventReview
 ];
 
-const groups = [
-  group1,
-  group2
-];
+// const groups = [
+//   group1,
+//   group2
+// ];
 
 const coords = {
   andalusiaSpain: [-3.222444, 37.916345],
@@ -640,7 +720,12 @@ const populateUsers = (done) => {
 
 const populateApartments = (done) => {
   Apartment.remove({})
-    .then(() => Apartment.insertMany(apartments))
+    .then(() =>
+      Promise.all([
+        new Apartment(apartments[0]).save(),
+        new Apartment(apartments[1]).save(),
+        new Apartment(apartments[2]).save()
+      ]))
     .then(() => done())
     .catch(done);
 };
@@ -661,16 +746,32 @@ const populateReviews = (done) => {
     .catch(done);
 };
 
-const populateGroups = (done) => {
-  Group.remove({})
+
+const populateSearchs = (done) => {
+  Search.remove({})
     .then(() =>
       Promise.all([
-        new Group(groups[0]).save(),
-        new Group(groups[1]).save(),
+        new Search(searchs[1]).save(),
+        new Search(searchs[2]).save(),
       ]))
     .then(() => done())
     .catch(done);
 };
+
+
+
+
+
+// const populateGroups = (done) => {
+//   Group.remove({})
+//     .then(() =>
+//       Promise.all([
+//         new Group(groups[0]).save(),
+//         new Group(groups[1]).save(),
+//       ]))
+//     .then(() => done())
+//     .catch(done);
+// };
 
 module.exports = {
   apartment1User2VisitId,
@@ -683,7 +784,7 @@ module.exports = {
   populateApartments,
   populateReviews,
   populateUsers,
-  populateGroups,
+  // populateGroups,
   notPublishedApartment,
   notPublishedReview1,
   notPublishedReview2,
@@ -696,5 +797,9 @@ module.exports = {
   user2VerificationToken,
   getForgotPasswordToken,
   review1Id,
-  review2Id
+  review2Id,
+  populateSearchs,
+  unsearchedSearch,
+  newSearch,
+  oldSearch
 };
