@@ -39,7 +39,9 @@
                                 <app-avatar :name="userById[activeContact.name]" />
                             </div>
                             <div class="current-contact-name">
-                                {{ userById[activeContact.name] }}
+                                <router-link :to="{ name: 'AppUserProfile', params: { id: activeContact.name } }">
+                                    {{ userById[activeContact.name] }}
+                                </router-link>
                             </div>
                         </v-layout>
                     </v-flex>
@@ -339,6 +341,11 @@
     .current-contact-name {
         font-size: 22px;
         margin-top: 4px;
+    }
+
+    .current-contact-name a {
+        text-decoration: none;
+        color: inherit;
     }
 
     .current-contact, .search-contact-container, .message-field-container {
