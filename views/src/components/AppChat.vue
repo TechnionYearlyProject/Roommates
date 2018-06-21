@@ -10,15 +10,15 @@
                         <div class="contacts-scroll">
                             <ul>
                                 <li v-for="(contact, contactName) in contacts" :key="contactName"
-                                    :class="{ active: userById[activeContact.name] === contactName, contact: true }"
-                                    @click="activeContactIndex = getIndexOfContact(contactName)">
+                                    :class="{ active: activeContact.name === contactName, contact: true }"
+                                    @click="activeContactName = contactName">
                                     <v-layout>
                                         <div class="contact-avatar">
-                                            <app-avatar :name="contactName" :size="35" />
+                                            <app-avatar :name="userById[contactName]" :size="35" />
                                         </div>
                                         <v-flex>
                                             <div class="contact-name">
-                                                {{ contactName }}
+                                                {{ userById[contactName] }}
                                             </div><br style="clear: both;" />
                                             <div class="contact-last-message" v-if="contact.conversations.length > 0">
                                                 {{ contact.conversations[contact.conversations.length - 1].content }}
@@ -38,6 +38,7 @@
                             <div class="current-contact-avatar">
                                 <app-avatar :name="userById[activeContact.name]" />
                             </div>
+
                             <div class="current-contact-name">
                                 <router-link :to="{ name: 'AppUserProfile', params: { id: activeContact.name } }">
                                     {{ userById[activeContact.name] }}
@@ -83,7 +84,7 @@
       return {
         mutationObserver: new MutationObserver(() => this.$refs.messagesScroller.scrollTop = this.$refs.messagesScroller.scrollHeight),
         searchInput: '',
-        activeContactIndex: 0,
+        activeContactName: null,
         allContacts: {},
         userById: {},
         message: ''
@@ -91,15 +92,14 @@
     },
     computed: {
       activeContact() {
-        if (Object.keys(this.allContacts).length === 0) {
+        if (Object.keys(this.allContacts).length === 0 || this.activeContactName === null) {
           return {};
         }
 
-        let name = Object.keys(this.allContacts)[this.activeContactIndex];
+        let name = this.activeContactName;
 
         return {
           name,
-          active: this.allContacts[name].active,
           conversations: this.allContacts[name].conversations
         }
       },
@@ -109,7 +109,7 @@
         let contacts = {};
         for (let contactId in this.allContacts) {
           if (this.allContacts.hasOwnProperty(contactId)) {
-            const contactName = this.userById[contactId];
+            const contactName = contactId;
 
             if (new RegExp(searchInput, 'i').test(contactName)) {
               contacts[contactName] = this.allContacts[contactId];
@@ -144,6 +144,8 @@
             });
           }
 
+          this.activeContactName = Object.keys(this.allContacts).length > 0 ? Object.keys(this.allContacts)[0] : null;
+
           axios.get('http://localhost:3000/users', { params: { id: Object.keys(ids) } }).then(response => {
             Object.keys(response.data.users).forEach(id => {
               const user = response.data.users[id];
@@ -152,25 +154,28 @@
             });
 
             this.userById = response.data.users;
+
+
+            const newContact = this.$route.query['startChatWith'];
+            if (newContact && newContact !== this.$store.getters.getUser._id) {
+              axios.get('http://localhost:3000/users', { params: { id: [ newContact ] } }).then(response => {
+                if (!response.data.users.hasOwnProperty(newContact)) {
+                  return;
+                }
+
+                const user = response.data.users[newContact];
+                this.userById[newContact] = `${user.firstName} ${user.lastName}`;
+
+                if (!this.allContacts.hasOwnProperty(newContact)) {
+                  this.$set(this.allContacts, newContact, {
+                    conversations: []
+                  });
+                }
+
+                this.activeContactName = newContact;
+              }).catch(e => {});
+            }
           });
-
-          const newContact = this.$route.query['startChatWith'];
-          if (newContact && newContact !== this.$store.getters.getUser._id) {
-            axios.get('http://localhost:3000/users', { params: { id: [ newContact ] } }).then(response => {
-              if (!response.data.users.hasOwnProperty(newContact)) {
-                return;
-              }
-
-              const user = response.data.users[newContact];
-              this.userById[newContact] = `${user.firstName} ${user.lastName}`;
-
-              if (!this.allContacts.hasOwnProperty(newContact)) {
-                this.$set(this.allContacts, newContact, {
-                  conversations: []
-                });
-              }
-            }).catch(e => {});
-          }
         });
     },
     mounted() {
@@ -197,7 +202,7 @@
 
         this.$socket.emit('chat_message', {
           content: this.message,
-          to: Object.keys(this.allContacts)[this.activeContactIndex]
+          to: this.activeContactName
         });
 
         this.activeContact.conversations.push({
@@ -208,9 +213,6 @@
         });
 
         this.message = '';
-      },
-      getIndexOfContact(contactName) {
-        return Object.keys(this.allContacts).findIndex(id => this.userById[id] === contactName);
       },
       nl2br(str) {
         return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
