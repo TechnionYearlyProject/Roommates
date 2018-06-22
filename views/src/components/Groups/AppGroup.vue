@@ -147,7 +147,7 @@ export default {
       PENDING: 1,
       DECLINED: 2,
       ACCEPTED: 3,
-      COMPLETED: 4
+      PAYD: 4
     };
   },
   methods: {

@@ -12,8 +12,8 @@ const groupStatus = {
 
 const memberStatus = {
   PENDING: 1,
-  ACCEPTED: 2,
-  DECLINED: 3,
+  DECLINED: 2,
+  ACCEPTED: 3,
   PAYED: 4
 };
 
