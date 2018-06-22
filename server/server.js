@@ -32,7 +32,9 @@ const {
 const {
   Search
 } = require('./models/search');
-
+const {
+  groupStatus
+} = require('./models/group');
 const {
   XAUTH
 } = require('./constants');
@@ -1470,6 +1472,11 @@ app.post('/apartments/:id/groups', authenticate, async (req, res) => {
  * The body should include the id of the group and the new status in the
  * following way: {id, status}. A user is allowed to update ONLY his own status.
  * Returns the updated apartment as a response.
+ *
+ * @updatedBy: Or Abramovich
+ * @date: 06/18
+ * 
+ * Once group is accepted (i.e. accepted by all members) - notification should be sent to the apartment owner.
  */
 app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
   const body = _.pick(req.body, ['id', 'status']);
@@ -1479,7 +1486,21 @@ app.patch('/apartments/:id/groups', authenticate, async (req, res) => {
       return res.status(BAD_REQUEST).send(errors.apartmentNotFound);
     }
     apartment = await apartment.updateMemberStatus(body.id, req.user._id, body.status);
+
+    const group = apartment.groups.id(body.id);
+    if(group && group.status == groupStatus.ACCEPTED){
+    	notifyUsers(
+      		NotificationsTypesEnum.GROUP_ACCEPTED,
+      		req.user._id,
+      		[apartment._createdBy],
+      		[apartment._id],
+      		false,
+      		Date.now()
+    	);
+    }
+
     return res.send({ apartment });
+
   } catch (error) {
     return res.status(BAD_REQUEST).send(error);
   }
