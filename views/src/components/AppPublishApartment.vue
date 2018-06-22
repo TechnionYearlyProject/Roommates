@@ -228,6 +228,10 @@
             () =>
               (!!this.payload.address.street &&
                 this.payload.address.street.length > 0) ||
+              '',
+            () => 
+              (!!this.address && 
+                this.address.length > 0) ||
               ''
           ],
           number: [() => !!this.payload.address.number || ''],

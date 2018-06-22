@@ -18,6 +18,7 @@
                         :rules="rules"
                         :prepend-icon="noIcon? '' : 'event'"
                         @blur="date = parseDate(dateFormatted)"
+                        :readonly="true"
                         :required="required"
                         />
             <v-date-picker v-model="date" 
