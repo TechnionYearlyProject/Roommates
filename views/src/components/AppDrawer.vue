@@ -158,6 +158,20 @@
       ...mapMutations(['toggleDrawer']),
       search() {
         this.$emit('search', this.payload);
+        /* for futer use:
+        *** this code will save searchs to DB
+        *** for new apartment notification
+        *** only thing left is to call GET /searchs/toNotify
+        *** once a day.
+        *** for this to work need to add request to
+        *** mapMutations(['isAuthenticated', 'isVerified', 'getUser'])
+        *** and also include axios
+        if (this.isAuthenticated && this.isVerified && p.entranceDate) {
+          if (p.geolocation || p.address) {
+            p.createdBy = this.getUser._id;
+            axios.post('http://localhost:3000/searchs', p);
+          }
+        }*/
       },
       openMap() {
         this.showMap = true;
