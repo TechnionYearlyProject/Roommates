@@ -131,7 +131,7 @@
           if (this.allContacts.hasOwnProperty(contactId)) {
             const contactName = contactId;
 
-            if (new RegExp(searchInput, 'i').test(contactName)) {
+            if (new RegExp(searchInput, 'i').test(this.userById[contactName])) {
               contacts[contactName] = this.allContacts[contactId];
             }
           }
