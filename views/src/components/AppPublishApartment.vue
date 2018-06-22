@@ -234,10 +234,10 @@
           price: [() => !!this.payload.price || ''],
           entranceDate: [() => !!this.payload.entranceDate || ''],
           floor: [() => !this.payload.totalFloors ||
-                 (this.payload.totalFloors && this.payload.floor <= this.payload.totalFloors) ||
+                 (this.payload.totalFloors && parseInt(this.payload.floor) <= parseInt(this.payload.totalFloors)) ||
                  'The apartment\'s floor number is more than the total building floors'],
           totalFloors: [() => !this.payload.floor ||
-                        (this.payload.floor && this.payload.floor <= this.payload.totalFloors) ||
+                        (this.payload.floor && parseInt(this.payload.floor) <= parseInt(this.payload.totalFloors)) ||
                         'The total building floors are less than the apartment\'s floor number']
         },
         e6: 1,
