@@ -10,17 +10,17 @@
                         <div class="contacts-scroll">
                             <ul>
                                 <li v-for="(contact, contactName) in contacts" :key="contactName"
-                                    :class="{ active: userById[activeContact.name] === contactName, contact: true }"
-                                    @click="activeContactIndex = getIndexOfContact(contactName)">
+                                    :class="{ active: activeContact.name === contactName, contact: true }"
+                                    @click="activeContactName = contactName">
                                     <v-layout>
                                         <div class="contact-avatar">
-                                            <app-avatar :name="contactName" :size="35" />
+                                            <app-avatar :name="userById[contactName]" :size="35" />
                                         </div>
                                         <v-flex>
                                             <div class="contact-name">
-                                                {{ contactName }}
+                                                {{ userById[contactName] }}
                                             </div><br style="clear: both;" />
-                                            <div class="contact-last-message">
+                                            <div class="contact-last-message" v-if="contact.conversations.length > 0">
                                                 {{ contact.conversations[contact.conversations.length - 1].content }}
                                             </div>
                                         </v-flex>
@@ -38,8 +38,11 @@
                             <div class="current-contact-avatar">
                                 <app-avatar :name="userById[activeContact.name]" />
                             </div>
+
                             <div class="current-contact-name">
-                                {{ userById[activeContact.name] }}
+                                <router-link :to="{ name: 'AppUserProfile', params: { id: activeContact.name } }">
+                                    {{ userById[activeContact.name] }}
+                                </router-link>
                             </div>
                         </v-layout>
                     </v-flex>
@@ -52,7 +55,7 @@
                                     </div>
                                     <div class="message-data-content">
                                         <v-tooltip top>
-                                            <span slot="activator" class="message-date">{{ dateIntervalFormat(msg.date) }}</span>
+                                            <span slot="activator" class="message-date">{{ dateIntervalFormat(msg.date.getTime()) }}</span>
                                             <span>{{ msg.date.toLocaleString() }}</span>
                                         </v-tooltip><br />
                                         <v-card class="message-content" v-html="nl2br(msg.content)" />
@@ -81,7 +84,7 @@
       return {
         mutationObserver: new MutationObserver(() => this.$refs.messagesScroller.scrollTop = this.$refs.messagesScroller.scrollHeight),
         searchInput: '',
-        activeContactIndex: 0,
+        activeContactName: null,
         allContacts: {},
         userById: {},
         message: ''
@@ -89,25 +92,44 @@
     },
     computed: {
       activeContact() {
-        if (Object.keys(this.allContacts).length === 0) {
+        if (Object.keys(this.allContacts).length === 0 || this.activeContactName === null) {
           return {};
         }
 
-        let name = Object.keys(this.allContacts)[this.activeContactIndex];
+        let name = this.activeContactName;
 
         return {
           name,
-          active: this.allContacts[name].active,
           conversations: this.allContacts[name].conversations
         }
       },
       contacts() {
         let searchInput = this.searchInput.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
 
+        const allContactsSorted = Object.keys(this.allContacts).sort((contact1, contact2) => {
+          const conversationsCount1 = this.allContacts[contact1].conversations.length,
+                conversationsCount2 = this.allContacts[contact2].conversations.length;
+
+          if (!conversationsCount1 && !conversationsCount2) {
+            return 0;
+          }
+
+          if (!conversationsCount1) {
+            return 1;
+          }
+
+          if (!conversationsCount2) {
+            return -1;
+          }
+
+          return this.allContacts[contact2].conversations[conversationsCount2 - 1].date.getTime()
+            - this.allContacts[contact1].conversations[conversationsCount1 - 1].date.getTime();
+        });
+
         let contacts = {};
-        for (let contactId in this.allContacts) {
+        for (let contactId of allContactsSorted) {
           if (this.allContacts.hasOwnProperty(contactId)) {
-            const contactName = this.userById[contactId];
+            const contactName = contactId;
 
             if (new RegExp(searchInput, 'i').test(contactName)) {
               contacts[contactName] = this.allContacts[contactId];
@@ -142,7 +164,9 @@
             });
           }
 
-          axios.get('http://localhost:3000/users', { params: { id: Object.keys(ids) } }).then(response => {
+          this.activeContactName = Object.keys(this.allContacts).length > 0 ? Object.keys(this.allContacts)[0] : null;
+
+          axios.get(`${process.env.ROOT_API}/users`, { params: { id: Object.keys(ids) } }).then(response => {
             Object.keys(response.data.users).forEach(id => {
               const user = response.data.users[id];
               response.data.users[id] = `${user.firstName} ${user.lastName}`;
@@ -150,6 +174,27 @@
             });
 
             this.userById = response.data.users;
+
+
+            const newContact = this.$route.query['startChatWith'];
+            if (newContact && newContact !== this.$store.getters.getUser._id) {
+              axios.get(`${process.env.ROOT_API}/users`, { params: { id: [ newContact ] } }).then(response => {
+                if (!response.data.users.hasOwnProperty(newContact)) {
+                  return;
+                }
+
+                const user = response.data.users[newContact];
+                this.userById[newContact] = `${user.firstName} ${user.lastName}`;
+
+                if (!this.allContacts.hasOwnProperty(newContact)) {
+                  this.$set(this.allContacts, newContact, {
+                    conversations: []
+                  });
+                }
+
+                this.activeContactName = newContact;
+              }).catch(e => {});
+            }
           });
         });
     },
@@ -165,7 +210,7 @@
           incoming: _sentBy !== this.$store.getters.getUser._id,
           author: _sentBy,
           content: content,
-          date: new Date(createdAt * 1000)
+          date: new Date(createdAt)
         }
       },
       sendMessage() {
@@ -177,26 +222,25 @@
 
         this.$socket.emit('chat_message', {
           content: this.message,
-          to: Object.keys(this.allContacts)[this.activeContactIndex]
+          to: this.activeContactName
         });
 
+        const now = new Date();
         this.activeContact.conversations.push({
           incoming: false,
           author: this.$store.getters.getUser._id,
           content: this.message,
-          date: new Date()
+          date: now
         });
 
         this.message = '';
-      },
-      getIndexOfContact(contactName) {
-        return Object.keys(this.allContacts).findIndex(id => this.userById[id] === contactName);
       },
       nl2br(str) {
         return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
       },
       dateIntervalFormat(date) {
         const time = (Date.now() - date) / 1000;
+
         if (time < 60) {
           return 'Just now';
         } else if (time >= 60 && time < 3600) {
@@ -212,7 +256,7 @@
         const m = this.createLocalMessageFromServerMessage(message);
 
         if (!this.userById.hasOwnProperty(m.author)) {
-          axios.get('http://localhost:3000/users', { params: { id: [ m.author ] } }).then(response => {
+          axios.get(`${process.env.ROOT_API}/users`, { params: { id: [ m.author ] } }).then(response => {
             const user = Object.values(response.data.users)[0];
             this.userById[m.author] = `${user.firstName} ${user.lastName}`;
 
@@ -223,7 +267,6 @@
             }
 
             this.allContacts[m.author].conversations.push(m);
-
           });
         }
         else {
@@ -339,6 +382,11 @@
     .current-contact-name {
         font-size: 22px;
         margin-top: 4px;
+    }
+
+    .current-contact-name a {
+        text-decoration: none;
+        color: inherit;
     }
 
     .current-contact, .search-contact-container, .message-field-container {
