@@ -164,7 +164,8 @@
             });
           }
 
-          this.activeContactName = Object.keys(this.allContacts).length > 0 ? Object.keys(this.allContacts)[0] : null;
+          const contactNames = Object.keys(this.contacts);
+          this.activeContactName = contactNames.length > 0 ? contactNames[0] : null;
 
           axios.get(`${process.env.ROOT_API}/users`, { params: { id: Object.keys(ids) } }).then(response => {
             Object.keys(response.data.users).forEach(id => {
