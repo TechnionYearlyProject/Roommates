@@ -128,6 +128,16 @@
             color: 'info',
             icon: 'edit',
             title: 'An ad was updated'
+          },
+          {
+            color: 'info',
+            icon: 'person_add',
+            title: 'Added to group!'
+          },
+          {
+            color: 'info',
+            icon: 'group_add',
+            title: 'Group is accepted!'
           }
         ],
         notificationsReady: false,
