@@ -1550,6 +1550,7 @@ app.post('/searchs', async (req, res) => {
       'geolocation' // Array of 2 numbers: ['longitude','latitude']
     ]);
     query.createdAt = Date.now();
+    query.entranceDate = (new Date(query.entranceDate)).getTime();
     const search = await new Search(query).save();
     return res.send({
       search
