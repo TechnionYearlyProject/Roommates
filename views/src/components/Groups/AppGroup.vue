@@ -40,7 +40,7 @@
           <v-list-tile-content>
           {{ getName(members[m.id]) }}
           </v-list-tile-content>
-          <v-list-tile-action>
+          <v-list-tile-action v-if="j !== myIndex">
             <v-tooltip top>
               <v-btn slot="activator" icon @click.stop="$router.push({ name: 'AppChat', query: { startChatWith: members[m.id]._id } })">
                 <v-icon color="info">chat</v-icon>
