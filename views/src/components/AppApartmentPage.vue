@@ -68,7 +68,10 @@
           </v-tab-item>
 
           <v-tab-item id="tab-2">
-            <app-group-full :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
+            <app-group-full v-if="isVerified" :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
+             <v-card height="500" v-if="!isVerified">
+              <v-card-title><h4>This option is available for verified users only.</h4></v-card-title>
+            </v-card>
           </v-tab-item>
 
           <v-tab-item id="tab-3">
