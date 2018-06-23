@@ -76,10 +76,10 @@
             <v-btn small fab color="secondary" dark @click.stop="$vuetify.goTo(0, scrollOptions)">
             <v-icon>keyboard_arrow_up</v-icon>
             </v-btn>
-            <v-btn small fab color="secondary" dark  @click.native.stop="search_review = !search_review">
+            <v-btn small fab color="secondary" dark  @click.native.stop="search_review = !search_review" v-show="!dialog">
             <v-icon>search</v-icon>
             </v-btn>
-            <v-btn small fab color="secondary" dark  @click.native.stop="dialog = !dialog" v-if="isVerified">
+            <v-btn small fab color="secondary" dark  @click.native.stop="dialog = !dialog" v-if="isVerified" v-show="!search_review">
             <v-icon>add</v-icon>
             </v-btn>
         </v-speed-dial>
