@@ -409,7 +409,7 @@ export default new Vuex.Store({
      * The following function toggles the logged-in user subscription (on/off) state for the given apartment.
      */
     toggleSubscription({ state }, params) {
-      return axios.put(`http://localhost:3000/apartments/${params.id}/subscription`)
+      return axios.put(`${process.env.ROOT_API}/apartments/${params.id}/subscription`)
         .then((response) => {
           return response.data.apartment;
         });
