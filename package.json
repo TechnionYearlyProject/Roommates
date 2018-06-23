@@ -29,6 +29,7 @@
     "uuid": "^3.2.1",
     "validator": "^9.4.1",
     "winston": "^2.4.2",
+    "winston-azure-blob-transport": "^0.2.7",
     "winston-daily-rotate-file": "^1.7.2"
   },
   "devDependencies": {

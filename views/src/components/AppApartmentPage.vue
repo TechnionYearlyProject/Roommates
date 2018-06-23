@@ -271,7 +271,7 @@ export default {
       return `${this.v.location.address.street.capitalize()} ${this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
     },
     isClosedDeal(){
-      return this.v.groups.some(g => g.status == this.CONST_GROUP_STATUS_ACCEPTED);
+      return this.v && this.v.groups.length > 0 && this.v.groups.some(g => g.status == this.CONST_GROUP_STATUS_ACCEPTED);
     },
     location() {
       return {
