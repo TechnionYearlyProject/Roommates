@@ -37,7 +37,14 @@
 
             <v-list-tile>
               <v-list-tile-action>
-                {{ slider.label }}
+                <div>
+                  <span style="float: left; margin-top: 5px; margin-right: 20px;">
+                    {{ slider.label }}
+                  </span>
+                    <div style="float: left">
+                      <v-switch v-if="slider.label === 'Floor'" v-model="floorEnabled"></v-switch>
+                    </div>
+                </div>
               </v-list-tile-action>
               <v-list-tile-content>
                 <v-list-tile-title class="grey--text">
@@ -49,7 +56,7 @@
           </v-flex>
           <v-flex offset-xs1 xs10>
             <!-- <v-slider class="pa-0" hide-details color="secondary" v-model="payload[slider.ref]" :step="slider.interval" :min="slider.value.min" :max="slider.value.max" ticks thumb-label></v-slider> -->
-            <vue-slider :processStyle="{backgroundColor: $vuetify.theme.secondary}" :tooltipStyle="{backgroundColor: $vuetify.theme.primary, borderColor: $vuetify.theme.primary}" :min="slider.value.min" :max="slider.value.max" :interval="slider.interval" tooltip="hover" v-model="payload[slider.ref]" :debug="false"></vue-slider>
+            <vue-slider :disabled="slider.label === 'Floor' && !floorEnabled" :processStyle="{backgroundColor: $vuetify.theme.secondary}" :tooltipStyle="{backgroundColor: $vuetify.theme.primary, borderColor: $vuetify.theme.primary}" :min="slider.value.min" :max="slider.value.max" :interval="slider.interval" tooltip="hover" v-model="payload[slider.ref]" :debug="false"></vue-slider>
           </v-flex>
         </v-layout>
       </div>
@@ -98,6 +105,7 @@
     data() {
       return {
         value: [5, 8],
+        floorEnabled: true,
         payload: {
           address: null,
           geolocation: null,
@@ -157,7 +165,7 @@
     methods: {
       ...mapMutations(['toggleDrawer']),
       search() {
-        this.$emit('search', this.payload);
+        this.$emit('search', this.floorEnabled ? this.payload : { ...this.payload, floor: null });
         /* for futer use:
         *** this code will save searchs to DB
         *** for new apartment notification

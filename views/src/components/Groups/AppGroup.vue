@@ -56,7 +56,7 @@
       <v-progress-linear :value="optInNumber / value.members.length * 100" height="4" color="teal" class="mt-0 mb-1"></v-progress-linear>
       <div v-if="closeTheDeal">
         <v-btn block outline slot="activator" color="primary" style="height:75px" @click="$router.push({name:'AppPayment'})">
-          <v-icon class="mr-1">fa-handshake</v-icon>
+          <v-icon size="22" class="mr-1 mb-1">fa-handshake-o</v-icon>
           Close The Deal !
         </v-btn>
         <v-dialog v-model="PaymentMenuDialog" max-width="320">
