@@ -92,7 +92,6 @@ const initServer = (server) => {
     .on('authenticated', (socket) => {
       //Establishes a new dedicated room which serves as a communication channel available only to the user
       socket.on(SocketMsgTypes.JOIN, () => {
-        logDebug('someone connected');
         establishRoomForUser(socket.decoded_token._id, socket);
       });
       //Marks the notification as read and saves it in the user document
