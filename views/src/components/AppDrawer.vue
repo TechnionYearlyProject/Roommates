@@ -105,7 +105,7 @@
     data() {
       return {
         value: [5, 8],
-        floorEnabled: true,
+        floorEnabled: false,
         payload: {
           address: null,
           geolocation: null,
