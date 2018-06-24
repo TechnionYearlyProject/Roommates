@@ -701,7 +701,7 @@ describe('#Server Tests', () => {
         .set(XAUTH, users[1].tokens[0].token)
         .expect(OK)
         .expect((res) => {
-          expect(res.body._interested.length).toBe(0);
+          expect(Object.values(res.body.users).length).toBe(0);
         })
         .end(async (err) => {
           if (err) {
@@ -718,10 +718,10 @@ describe('#Server Tests', () => {
         .set(XAUTH, users[1].tokens[0].token)
         .expect(OK)
         .expect((res) => {
-          expect(res.body._interested.length).toBe(apartments[0]._interested.length);
-          expect(res.body._interested[0]._id).toEqual(users[1]._id.toHexString());
-          expect(res.body._interested[1]._id).toEqual(users[0]._id.toHexString());
-          expect(res.body._interested[2]._id).toEqual(users[2]._id.toHexString());
+          expect(Object.values(res.body.users).length).toBe(apartments[0]._interested.length);
+          expect(Object.values(res.body.users)[0]._id).toEqual(users[1]._id.toHexString());
+          expect(Object.values(res.body.users)[1]._id).toEqual(users[0]._id.toHexString());
+          expect(Object.values(res.body.users)[2]._id).toEqual(users[2]._id.toHexString());
         })
         .end(async (err) => {
           if (err) {

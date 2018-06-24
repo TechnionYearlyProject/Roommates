@@ -15,7 +15,7 @@
 <script>
     export default {
       data: () => ({
-        links: ['Home', 'About Us', 'Contact Us']
+        links: ['Home', 'Reviews', 'About Us']
       })
     };
 </script>

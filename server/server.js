@@ -340,12 +340,20 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
       return res.status(NOT_FOUND).send();
     }
 
+   
+
     const _interested = await req.user.getBestMatchingUsers(
       apartment._interested
     );
 
+    for (let i = 0; i < _interested.length; i += 1) {
+      [_interested[i].image] = imageService.getImages('USER_IMAGES', _interested[i]._id, [_interested[i].image]);
+    }
+
+    const users = convertArrayToJsonMap(_interested, '_id');
+
     return res.send({
-      _interested
+      users
     });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
@@ -1528,6 +1536,28 @@ app.patch('/apartments/:id/groups/sign', authenticate, async (req, res) => {
       return res.status(BAD_REQUEST).send(errors.groupInvalidSigner);
     }
     apartment = await apartment.signGroup(body.id);
+
+    const apartmentURL = `${process.env.APP_URL}/apartments/${apartment._id}`;
+    const paymentURL = `${process.env.APP_URL}/payment/?id=${apartment._id}`;
+
+    const group = apartment.groups.id(body.id);
+    for (let i = 0; i < group.members.length; i++) {
+      let user = await User.findById(group.members[i].id);
+      if(user){
+         const msg = {
+              to: user.email,
+              from: 'deals@roommatesyearlyproject.com',
+              subject: '[Roommates] Close the Deal!',
+              html: `<h3>Yey! You are just one step from closing the deal!</h3></br>
+                     <p> The owner of ${apartment.getAddressString()} has just confirmed a group you are part of. </p></br>
+                     <p><a href="${paymentURL}">Click here to close the deal!</a></p></br>
+                     <p><a href="${apartmentURL}">Go to the apartment ad</a>.</p></br>
+                     <h3> Roommates </h3>`
+          };
+          mail.sendMail(msg);   
+      }
+    }
+
     return res.send({ apartment });
   } catch (error) {
     return res.status(BAD_REQUEST).send(error);
