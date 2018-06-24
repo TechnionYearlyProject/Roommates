@@ -164,14 +164,14 @@
           <v-btn outline @click.native="goPreviousStep">
             <v-icon left>keyboard_arrow_up</v-icon>Return</v-btn>
           <v-spacer/>
-          <v-btn block @click.native="submit" color="secondary" :disabled="!valid">
-            {{ submitText }}
-            <v-icon right>send</v-icon>
-          </v-btn>
         </v-layout>
 
       </v-stepper-content>
     </v-stepper>
+                <v-btn block v-show="e6 === 4" @click.native="submit" color="secondary" :disabled="!valid">
+            {{ submitText }}
+            <v-icon right>send</v-icon>
+          </v-btn>
   </v-container>
 </template>
 
