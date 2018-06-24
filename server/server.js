@@ -340,12 +340,20 @@ app.get('/apartments/:id/interested', authenticate, async (req, res) => {
       return res.status(NOT_FOUND).send();
     }
 
+   
+
     const _interested = await req.user.getBestMatchingUsers(
       apartment._interested
     );
 
+    for (let i = 0; i < _interested.length; i += 1) {
+      [_interested[i].image] = imageService.getImages('USER_IMAGES', _interested[i]._id, [_interested[i].image]);
+    }
+
+    const users = convertArrayToJsonMap(_interested, '_id');
+
     return res.send({
-      _interested
+      users
     });
   } catch (err) {
     return res.status(BAD_REQUEST).send(err);
