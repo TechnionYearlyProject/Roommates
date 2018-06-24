@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import AppMain from '@/components/AppMain';
+import AppAboutUs from '@/components/AppAboutUs';
 import AppIdentification from '@/components/AppIdentification';
 import AppVerification from '@/components/AppVerification';
 import AppResetPassword from '@/components/AppResetPassword';
@@ -27,6 +28,11 @@ const router = new Router({
       path: '/',
       name: 'AppMain',
       component: AppMain
+    },
+    {
+      path: '/App/about_us',
+      name: 'AppAboutUs',
+      component: AppAboutUs
     },
     {
       path: '/App/identification',
