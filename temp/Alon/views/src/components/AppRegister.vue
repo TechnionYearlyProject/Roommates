@@ -106,6 +106,7 @@
             email: this.payload.email,
             password: this.payload.password
           });
+          //location.reload();
           this.$router.push({ name: 'AppMain' });
           this.showSnackbarWelcome(user);
         } catch (error) {
