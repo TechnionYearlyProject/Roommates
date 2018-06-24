@@ -45,15 +45,11 @@
     },
     sockets: {
       chat_message(m) {
-        if (!document.hasFocus() && this.audioLoaded) {
-          this.$refs.audio.play();
-        }
+        if (!document.hasFocus()) {
+          if (this.audioLoaded) {
+            this.$refs.audio.play();
+          }
 
-        if (this.$router.history.current.name === 'AppChat') {
-          return;
-        }
-
-        if (this.newMessages === 0) {
           let flag = true;
           this.intervalHandler = setInterval(() => {
             document.title = flag ? 'Unread Messages!' : this.pageDefaultTitle;
@@ -62,7 +58,9 @@
           }, 1300);
         }
 
-        ++this.newMessages;
+        if (this.$router.history.current.name !== 'AppChat') {
+          ++this.newMessages;
+        }
       }
     }
   }
