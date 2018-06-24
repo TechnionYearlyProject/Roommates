@@ -18,7 +18,7 @@
             </v-btn>
           </v-layout>
           <v-divider/>
-					<v-stepper-step :complete="e6 > 1" step="1">Select a street</v-stepper-step>
+					<v-stepper-step :complete="e6 > 1" step="1">Select a location</v-stepper-step>
 						<v-stepper-content step="1">
 						  <v-text-field v-model="reviewAddress" ref="reviewAddress" @placechanged="setReviewAddress" label="Street and City" validate-on-blur required></v-text-field>
 						  <v-btn color="primary" @click.native="locationStepOnFinish" small>Continue</v-btn>

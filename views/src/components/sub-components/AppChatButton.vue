@@ -10,6 +10,7 @@
         <small>Chat</small>
       </span>
     </span>
+    <audio src="static/new-message-tone.mp3" hidden preload="auto" ref="audio"></audio>
   </v-btn>
 </template>
 
@@ -20,8 +21,14 @@
       return {
         newMessages: 0,
         intervalHandler: null,
-        pageDefaultTitle: document.title
+        pageDefaultTitle: document.title,
+        audioLoaded: false
       }
+    },
+    mounted() {
+      this.$refs.audio.addEventListener("canplaythrough", () => {
+        this.audioLoaded = true;
+      });
     },
     methods: {
       nullifyMessages() {
@@ -35,6 +42,10 @@
     },
     sockets: {
       chat_message(m) {
+        if (!document.hasFocus() && this.audioLoaded) {
+          this.$refs.audio.play();
+        }
+
         if (this.$router.history.current.name === 'AppChat') {
           return;
         }

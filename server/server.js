@@ -853,7 +853,7 @@ app.patch('/users/self', authenticate, async (req, res) => {
  * @date: 28/3/18
  *
  * This route is used to verify new user account.
- * User should recieve a verification code by mail.
+ * User should receive a verification code by mail.
  * After clicking the link, the browser should redirect the user to a page
  * which in its turn should sent a verification request using this route.
  * By the end of this procedure, an user account status should be "verified".
