@@ -202,10 +202,12 @@
       },
       async goToAd(n) {
         this.$store.commit('showLoading');
-        this.$router.push({ name: 'AppMain' });
-        await this.$store.dispatch('searchApartments', {
-          id: n._notifiedObjectsIds[0]
-        });
+        this.$router.push({
+	        name: 'AppApartmentPage',
+	        	params: {
+	          		id: n._notifiedObjectsIds[0]
+	        	}
+      	});
         this.$store.commit('hideLoading');
       },
       openDialog(n) {

@@ -12,7 +12,8 @@ const AZURE = {
     ACCESS_KEY: 'FR/rtDGmDqg1Hnh49NaMBYihKiWnMLFDGKdmQSFVGUV0lx3JP7DUHAAebOnYmUiJIkIh16K0eJb1O1O5sszZXg==',
     CONTAINERS: {
       APARTMENT_IMAGES: 'apartment-images',
-      USER_IMAGES: 'user-images'
+      USER_IMAGES: 'user-images',
+      APP_LOGS: "app-logs"
     }
   }
 };

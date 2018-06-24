@@ -29,6 +29,7 @@
                     <v-card-title class="title py-0">
                       <app-map-icon :location="location" class="pb-3"/>
                       {{ address }}
+                      <v-chip v-if="isClosedDeal" color="red" text-color="white">Deal Closed!</v-chip>
                     </v-card-title>
                   </v-flex>
                   <v-flex xs12 sm4>
@@ -68,7 +69,10 @@
           </v-tab-item>
 
           <v-tab-item id="tab-2">
-            <app-group-full :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
+            <app-group-full v-if="isVerified" :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
+             <v-card height="500" v-if="!isVerified">
+              <v-card-title><h4>This option is available for verified users only.</h4></v-card-title>
+            </v-card>
           </v-tab-item>
 
           <v-tab-item id="tab-3">
@@ -180,6 +184,7 @@ export default {
       v: null,
       p: null,
       expendInterested: this.$vuetify.breakpoint.smAndUp,
+      CONST_GROUP_STATUS_ACCEPTED: 3,
       edit: false,
       tabs: [
         {
@@ -264,6 +269,9 @@ export default {
     },
     address() {
       return `${this.v.location.address.street.capitalize()} ${this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
+    },
+    isClosedDeal(){
+      return this.v && this.v.groups.length > 0 && this.v.groups.some(g => g.status == this.CONST_GROUP_STATUS_ACCEPTED);
     },
     location() {
       return {

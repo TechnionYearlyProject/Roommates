@@ -140,10 +140,10 @@ export default {
       return this.myGroupIds.length < this.myGroupMaxSize;
     },
     updateAvailableMembers() {
-      this.availableMemebers = this.availableMemebers.filter(e => !this.myGroupIds.includes(e));
+      this.interestedUsersids = this.interestedUsersids.filter(e => !this.myGroupIds.includes(e));
     },
     clearMyGroup() {
-      this.availableMemebers = this.availableMemebers.concat(this.myGroupIds);
+      this.interestedUsersids = this.interestedUsersids.concat(this.myGroupIds);
       this.myGroupIds = [];
     },
     toggleSelection(id) {

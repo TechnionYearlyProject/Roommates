@@ -2,6 +2,9 @@
     <div>
   <v-container fluid grid-list-xl px-0 pt-0>
     <v-card flat>
+      <v-alert :value="true" type="error" v-if="isClosedDeal">
+        Deal Closed! 
+      </v-alert>
       <v-toolbar card>
       <v-icon>mdi-account-group</v-icon>
       <v-toolbar-title>Suggested Groups</v-toolbar-title>
@@ -18,7 +21,7 @@
     </v-card>
   </v-container>
   <v-container fluid grid-list-xl px-0 pt-0>
-    <v-card flat>
+    <v-card flat v-if="!isClosedDeal">
         <v-toolbar card>
             <v-icon>mdi-account-multiple-plus</v-icon>
             <v-toolbar-title>Create Your Own Group</v-toolbar-title>
@@ -57,7 +60,8 @@ export default {
   },
   data() {
     return {
-      groups: []
+      groups: [],
+      CONST_GROUP_STATUS_ACCEPTED: 3,
     };
   },
   methods: {
@@ -72,6 +76,11 @@ export default {
         .catch(error => console.log(error)) // eslint-disable-line
         .then(() => this.hideLoading());
     }
+  },
+  computed: {
+    isClosedDeal() {
+      return this.groups.length > 0 && this.groups.some(g => g.status == this.CONST_GROUP_STATUS_ACCEPTED);
+    },
   },
   mounted() {
     this.$store
