@@ -14,7 +14,7 @@
       <v-alert :value="error.show" type="error">
         {{ error.message }}
       </v-alert>
-      <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="step1Rules" editable edit-icon="check">
+      <v-stepper-step ref="step1" :step="1" :complete="e6 > 1" :rules="step1Rules" editable edit-icon="check">
         Main details
         <small>The most important stuff!</small>
       </v-stepper-step>
@@ -80,7 +80,7 @@
         </v-btn>
 
       </v-stepper-content>
-      <v-stepper-step ref="step2" step="2" :complete="e6 > 2" editable edit-icon="check">Nice to know</v-stepper-step>
+      <v-stepper-step ref="step2" :step="2" :complete="e6 > 2" editable edit-icon="check">Nice to know</v-stepper-step>
       <v-stepper-content step="2">
         <v-card :color="color" class="mb-1" height="auto">
           <v-container fluid grid-list-md>
@@ -134,7 +134,7 @@
         </v-btn>
       </v-stepper-content>
 
-      <v-stepper-step ref="step3" step="3" :complete="e6 > 3" editable edit-icon="check">Select the asset's special attributes</v-stepper-step>
+      <v-stepper-step ref="step3" :step="3" :complete="e6 > 3" editable edit-icon="check">Select the asset's special attributes</v-stepper-step>
       <v-stepper-content step="3">
         <v-card :color="color" class="mb-1" height="auto">
           <template>
@@ -155,7 +155,7 @@
         </v-btn>
       </v-stepper-content>
 
-      <v-stepper-step ref="step4" step="4" editable edit-icon="check">Upload some images</v-stepper-step>
+      <v-stepper-step ref="step4" :step="4" editable edit-icon="check">Upload some images</v-stepper-step>
       <v-stepper-content step="4">
         <v-card :color="color" class="mb-5 pa-3" height="auto" style="min-height: 300px">
           <app-uploader v-model="payload.images" fileType="image/*"></app-uploader>
