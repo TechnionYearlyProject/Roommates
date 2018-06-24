@@ -184,7 +184,7 @@ export default {
       v: null,
       p: null,
       expendInterested: this.$vuetify.breakpoint.smAndUp,
-      CONST_GROUP_STATUS_ACCEPTED: 3,
+      CONST_GROUP_STATUS_COMPLETED: 4,
       edit: false,
       tabs: [
         {
@@ -271,7 +271,7 @@ export default {
       return `${this.v.location.address.street.capitalize()} ${this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
     },
     isClosedDeal(){
-      return this.v && this.v.groups.length > 0 && this.v.groups.some(g => g.status == this.CONST_GROUP_STATUS_ACCEPTED);
+      return this.v && this.v.groups.length > 0 && this.v.groups.some(g => g.status == this.CONST_GROUP_STATUS_COMPLETED);
     },
     location() {
       return {
