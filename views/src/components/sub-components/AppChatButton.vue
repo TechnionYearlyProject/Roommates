@@ -10,11 +10,13 @@
         <small>Chat</small>
       </span>
     </span>
-    <audio src="static/new-message-tone.mp3" hidden preload="auto" ref="audio"></audio>
+    <audio :src="tone" hidden preload="auto" ref="audio"></audio>
   </v-btn>
 </template>
 
 <script>
+  import tone from '../../../static/new-message-tone.mp3';
+
   export default {
     name: "AppChatButton",
     data() {
@@ -22,7 +24,8 @@
         newMessages: 0,
         intervalHandler: null,
         pageDefaultTitle: document.title,
-        audioLoaded: false
+        audioLoaded: false,
+        tone
       }
     },
     mounted() {
