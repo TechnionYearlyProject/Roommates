@@ -111,30 +111,16 @@ export default {
         message: '',
         type: 'error'
       },
-      apartment: {
-        _id: '5b154565bfc2730600d892c3',
-        _createdBy: '',
-        createdAt: Date.now(),
-        price: 1000,
-        entranceDate: new Date('12-29-2019').getTime(),
-        location: {
-          address: {
-            state: 'israel',
-            city: 'Tel-Aviv',
-            street: 'Rothschild',
-            number: 23
-          },
-          geolocation: [34.775313, 32.065887]
-        },
-        numberOfRooms: 3,
-        floor: 1,
-        totalFloors: 5,
-        tags: [0, 7],
-        requiredRoommates: 1,
-        totalRoommates: 2,
-        groups: []
-      }
+      apartment: {}
     };
+  },
+  created() {
+    const apartmentID = this.$route.query['id'];
+
+    this.$store.commit('showLoading');
+    this.$store.dispatch('fetchApartments', { apartmentID })
+      .then(apartment => this.apartment = apartment[0])
+      .then(() => this.$store.commit('hideLoading'));
   },
   methods: {
     paymentSuccess(payment) {
