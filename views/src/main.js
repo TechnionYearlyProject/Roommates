@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.min.css';
 import '@mdi/font/css/materialdesignicons.min.css';
+import 'font-awesome/css/font-awesome.min.css';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
 import SocialSharing from 'vue-social-sharing';
