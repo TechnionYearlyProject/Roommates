@@ -83,6 +83,12 @@ export default new Vuex.Store({
     endSession(state) {
       state.sessionToken = null;
       axios.defaults.headers.common['x-auth'] = null;
+    },
+    SOCKET_CONNECT(state) {
+      console.log("connected");
+    },
+    SOCKET_DISCONNECT() {
+      console.log("disconnect");
     }
   },
   actions: {
@@ -92,6 +98,8 @@ export default new Vuex.Store({
      * connect to socket server
      */
     socket_createConnection({ getters }) {
+      // console.log("test");
+      this._vm.$socket.connect();
       this._vm.$socket
           .emit('authenticate', { token: getters.getToken })
           .on('authenticated', () => {
@@ -103,6 +111,9 @@ export default new Vuex.Store({
             // eslint-disable-next-line 
             console.log(`[unauthorized] socket server connection refused\n${message}`);
           });
+    },
+    socket_closeConnection({ getters }) {
+      this._vm.$socket.disconnect();
     },
     /**
      * @author: Alon Talmor
@@ -122,10 +133,11 @@ export default new Vuex.Store({
      * @author: Alon Talmor
      * @date: 13/04/18
      */
-    logout({ commit }) {
+    logout({ commit, dispatch }) {
       commit('showLoading');
       // TODO: send request to the server to logout user (delete token) and then...
       commit('endSession');
+      dispatch('socket_closeConnection');
       commit('setUser', null);
       commit('hideLoading');
     },

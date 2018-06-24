@@ -33,15 +33,7 @@
             </template>
             <!-- show only when authenticated -->
             <template v-if="isAuthenticated">
-                <v-btn flat exact :to="{ name: 'AppChat' }">
-                    <span class="text-xs-center">
-                        <v-icon>chat</v-icon>
-                        <span class="hidden-xs-only">
-                            <br>
-                            <small>Chat</small>
-                        </span>
-                    </span>
-                </v-btn>
+                <app-chat-button />
                 <v-btn flat exact :to="{ name: 'AppPublishApartment' }">
                     <span class="text-xs-center">
                         <v-icon>add</v-icon>
@@ -74,10 +66,12 @@
 import { mapGetters, mapMutations } from 'vuex';
 import AppAvatar from './sub-components/AppAvatar';
 import AppNotifications from './sub-components/AppNotifications';
+import AppChatButton from "./sub-components/AppChatButton";
 
 export default {
   data() {
     return {
+      hasNewMessages: false,
       menuItems: [
         {
           title: 'Profile',
@@ -115,6 +109,7 @@ export default {
     ...mapGetters(['isAuthenticated', 'isVerified', 'getUser']),
   },
   components: {
+    AppChatButton,
     AppAvatar,
     AppNotifications
   },

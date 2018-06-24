@@ -85,6 +85,7 @@ export default {
         .dispatch('login', this.payload)
         .then((user) => {
           this.hideAlert();
+          //location.reload();
           this.$router.push({ name: 'AppMain' });
           this.showSnackbarWelcome(user);
         })
