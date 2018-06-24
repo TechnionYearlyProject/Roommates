@@ -2,26 +2,23 @@
     <div>
   <v-container fluid grid-list-xl px-0 pt-0>
     <v-card flat>
-      <v-alert :value="true" type="error" v-if="isClosedDeal">
-        Deal Closed! 
-      </v-alert>
       <v-toolbar card>
       <v-icon>mdi-account-group</v-icon>
-      <v-toolbar-title>Suggested Groups</v-toolbar-title>
+      <v-toolbar-title>Suggested Groups <span v-if="isDealClosed" class="success--text">(Deal Closed!!!)</span></v-toolbar-title>
     </v-toolbar>
       <v-card-title></v-card-title>
       <v-container>
         <v-layout wrap>
             <div v-if="groups.length === 0" class="pb-4 pl-3 body-1">There are no groups</div>
             <v-flex v-else xs12 sm6 md4 v-for="(g,i) in groups" :key="`group-${i}`">
-                <app-group v-model="groups[i]" :apartmentId="apartmentId" :ownerId="ownerId" :group-title="`Group #${i+1}`"></app-group>
+                <app-group v-model="groups[i]" :apartmentId="apartmentId" :ownerId="ownerId" :group-title="`Group #${i+1}`" @dealClosed="dealClosed" :disableClicks="isDealClosed"></app-group>
             </v-flex>
         </v-layout>
       </v-container>
     </v-card>
   </v-container>
   <v-container fluid grid-list-xl px-0 pt-0>
-    <v-card flat v-if="!isClosedDeal">
+    <v-card flat v-if="!isDealClosed">
         <v-toolbar card>
             <v-icon>mdi-account-multiple-plus</v-icon>
             <v-toolbar-title>Create Your Own Group</v-toolbar-title>
@@ -61,7 +58,7 @@ export default {
   data() {
     return {
       groups: [],
-      CONST_GROUP_STATUS_ACCEPTED: 3,
+      isDealClosed: false
     };
   },
   methods: {
@@ -75,11 +72,9 @@ export default {
         })
         .catch(error => console.log(error)) // eslint-disable-line
         .then(() => this.hideLoading());
-    }
-  },
-  computed: {
-    isClosedDeal() {
-      return this.groups.length > 0 && this.groups.some(g => g.status == this.CONST_GROUP_STATUS_ACCEPTED);
+    },
+    dealClosed() {
+      this.isDealClosed=true;
     },
   },
   mounted() {

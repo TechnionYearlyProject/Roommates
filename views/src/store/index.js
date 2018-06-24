@@ -423,6 +423,18 @@ export default new Vuex.Store({
         .then((response) => {
           return response.data.apartment;
         });
+    },
+    /**
+     * @author: Or Abramovich
+     * @date: 24/6/18
+     * @param: params: object of {id} - the id of the apartment.
+     * @param: payload: object of {id} - the id of the group to sign
+     */
+    signGroup(context, { params, payload }) {
+      return axios.patch(`${process.env.ROOT_API}/apartments/${params.id}/groups/sign`, payload)
+      .then(response =>
+        response.data.apartment
+      );
     }
   },
   plugins: [vuexPersistence.plugin]
