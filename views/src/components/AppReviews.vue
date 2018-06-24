@@ -99,16 +99,20 @@ export default {
   name: 'AppReviews',
   props: {
     lat: {
-      type: Number
+      type: Number,
+      default: 32.776515
     },
     lng: {
-      type: Number
+      type: Number,
+      default: 35.020568
     },
     city: {
-      type: String
+      type: String,
+      default: 'haifa'
     },
     street: {
-      type: String
+      type: String,
+      default: 'Sderot David Rose'
     }
   },
   data() {
@@ -129,6 +133,8 @@ export default {
   },
   methods: {
     loadReviews(long, lat, city, street) {
+      this.position.lat = lat;
+      this.position.lng = long;
       this.$store.dispatch('getReviews', { long, lat })
       .then((reviews) => {
         const id = reviews.map(review => review._createdBy);
@@ -167,13 +173,19 @@ export default {
     }
   },
   beforeMount() {
-    if (this.lat !== undefined) this.position.lat = this.lat;
-    if (this.lng !== undefined) this.position.lng = this.lng;
-    let street = this.defaultReviewStreet;
-    let city = this.defaultReviewCity;
-    if (this.city !== undefined) city = this.city;
-    if (this.street !== undefined) street = this.street;
-    this.loadReviews(this.position.lng, this.position.lat, city, street);
+    let street = this.street;
+    let city = this.city;
+    let lat = this.lat;
+    let lng = this.lng;
+    if (this.$route.query.lat) lat = this.$route.query.lat;
+    if (this.$route.query.lng) lng = this.$route.query.lng;
+    if (this.$route.query.city) city = this.$route.query.city;
+    if (this.$route.query.street) street = this.$route.query.street;
+    console.log(lng)
+    console.log(lat)
+    console.log(city)
+    console.log(street)
+    this.loadReviews(lng, lat, city, street);
   },
   mounted() {},
   computed: {
