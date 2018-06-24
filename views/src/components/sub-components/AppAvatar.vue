@@ -1,11 +1,13 @@
 <template>
-  <v-avatar v-if="image" class="accent"><img :src="image" :size="size" :alt="name"></v-avatar>
-  <v-avatar v-else :color="avatarColor" :size="size">
+  <v-avatar v-if="image" :size="`${size}px`" class="accent"><img :src="image" :alt="name"></v-avatar>
+  <v-avatar v-else :color="avatarColor" :size="`${size}px`">
     <span class="white--text headline">{{ name.charAt(0).capitalize() }}</span>
   </v-avatar>
 </template>
 
 <script>
+import colorGenerator from '../../assets/colorGenerator';
+
   export default {
     props: {
       image: {
@@ -27,29 +29,9 @@
     },
     data() {
       return {
-        avatarColor: null
+        avatarColor: null,
+        generateColor: colorGenerator
       };
-    },
-    methods: {
-      generateColor() {
-        const color = Math.floor(Math.random() * 5);
-        let accent = Math.floor(Math.random() * 5);
-        accent = accent === 0 ? '' : `accent-${accent}`;
-        switch (color) {
-          case 0:
-            return `red ${accent}`;
-          case 1:
-            return `blue ${accent}`;
-          case 2:
-            return `green ${accent}`;
-          case 3:
-            return `purple ${accent}`;
-          case 4:
-            return `orange ${accent}`;
-          default:
-            return '';
-        }
-      }
     },
     created() {
       this.avatarColor = this.color ? this.color : this.generateColor();

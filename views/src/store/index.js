@@ -83,12 +83,6 @@ export default new Vuex.Store({
     endSession(state) {
       state.sessionToken = null;
       axios.defaults.headers.common['x-auth'] = null;
-    },
-    SOCKET_CONNECT(state) {
-      console.log("connected");
-    },
-    SOCKET_DISCONNECT() {
-      console.log("disconnect");
     }
   },
   actions: {
@@ -98,7 +92,6 @@ export default new Vuex.Store({
      * connect to socket server
      */
     socket_createConnection({ getters }) {
-      // console.log("test");
       this._vm.$socket.connect();
       this._vm.$socket
           .emit('authenticate', { token: getters.getToken })
@@ -112,6 +105,11 @@ export default new Vuex.Store({
             console.log(`[unauthorized] socket server connection refused\n${message}`);
           });
     },
+    /**
+     * @author: Alon Talmor
+     * @date: 24/06/18
+     * disconnect from socket server
+     */
     socket_closeConnection({ getters }) {
       this._vm.$socket.disconnect();
     },
@@ -299,6 +297,16 @@ export default new Vuex.Store({
     },
     /**
      * @author: Alon Talmor
+     * @date: 24/06/18
+     * get interest users ordered by their matching to the logged in user 
+     * @param: param: object of {id} the id of the apartment 
+     */
+    fetchInterestedUsersOrdered(context, params) {
+      return axios.get(`${process.env.ROOT_API}/apartments/${params.id}/interested`)
+      .then(response => response.data.users);
+    },
+    /**
+     * @author: Alon Talmor
      * @date: 07/05/18
      * required authentication.
      */
@@ -425,6 +433,18 @@ export default new Vuex.Store({
         .then((response) => {
           return response.data.apartment;
         });
+    },
+    /**
+     * @author: Or Abramovich
+     * @date: 24/6/18
+     * @param: params: object of {id} - the id of the apartment.
+     * @param: payload: object of {id} - the id of the group to sign
+     */
+    signGroup(context, { params, payload }) {
+      return axios.patch(`${process.env.ROOT_API}/apartments/${params.id}/groups/sign`, payload)
+      .then(response =>
+        response.data.apartment
+      );
     }
   },
   plugins: [vuexPersistence.plugin]

@@ -1,6 +1,6 @@
 <template>
 <div>
-  <v-toolbar color="primary" dark dense>
+  <v-toolbar :color="isClosedDeal ? 'success' : 'primary'" dark dense>
     <span>{{ groupTitle }}</span>
     <v-spacer></v-spacer>
     <v-tooltip left class="mx-0">
@@ -54,21 +54,16 @@
       </v-list>
       <v-divider></v-divider>
       <v-progress-linear :value="optInNumber / value.members.length * 100" height="4" color="teal" class="mt-0 mb-1"></v-progress-linear>
-      <div v-if="closeTheDeal">
-        <v-btn block outline slot="activator" color="primary" style="height:75px" @click="$router.push({name:'AppPayment'})">
+      <div v-if="closeTheDeal && !isClosedDeal">
+        <v-btn block outline slot="activator" color="primary" style="height:75px" @click.native="optSign()">
           <v-icon size="22" class="mr-1 mb-1">fa-handshake-o</v-icon>
           Close The Deal !
         </v-btn>
-        <v-dialog v-model="PaymentMenuDialog" max-width="320">
-          <v-card v-if="PaymentMenuDialog" height="200">
-            <app-payment></app-payment>
-          </v-card>
-        </v-dialog>
       </div>
-      <div v-else-if="participatingInGroup">
+      <div v-else-if="participatingInGroup && !isClosedDeal">
         <div>
           <div>
-            <v-btn slot="activator" block outline @click.stop="optInDialog = true" color="success" class="pa-0 ma-0 mb-1" :disabled="disabled" :loading="loading">
+            <v-btn slot="activator" block outline @click.stop="optInDialog = true" color="success" class="pa-0 ma-0 mb-1" :disabled="disabled || disableClicks" :loading="loading">
                 <v-icon>check</v-icon>
                 Count me in !
             </v-btn>
@@ -85,7 +80,7 @@
             </v-dialog>
           </div>
           <div>
-            <v-btn block outline @click.stop="optOutDialog = true" color="error" class="pa-0 ma-0" :disabled="disabled" :loading="loading">
+            <v-btn block outline @click.stop="optOutDialog = true" color="error" class="pa-0 ma-0" :disabled="disabled || disableClicks" :loading="loading">
               <v-icon>close</v-icon>
               Not a chance
             </v-btn>
@@ -103,8 +98,11 @@
           </div>
         </div>
       </div>
-      <div v-else class="body-1 pt-4 text-xs-center">
+      <div v-else-if="!isClosedDeal" class="body-1 pt-4 text-xs-center">
         <v-icon>lock</v-icon>You are not participating in this group.
+      </div>
+       <div v-else class="body-1 pt-4 text-xs-center">
+          <v-icon size="22" class="mr-1 mb-1">fa-handshake-o</v-icon>Closed!
       </div>
     </div>
   </v-card>
@@ -132,6 +130,10 @@ export default {
     groupTitle: {
       type: String,
       default: 'Group'
+    },
+    disableClicks: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -147,13 +149,17 @@ export default {
       PENDING: 1,
       DECLINED: 2,
       ACCEPTED: 3,
-      PAYD: 4
+      PAYD: 4,
+      CONST_GROUP_STATUS_COMPLETED: 4
     };
   },
   methods: {
     ...mapMutations(['showSnackbar']),
     showThankYouMessage() {
       this.showSnackbar('Thank you for voting!');
+    },
+    showCloseDealMessage() {
+      this.showSnackbar('Congratulations! You have just found your Roommates!');
     },
     optOut() {
       this.loading = true;
@@ -183,6 +189,20 @@ export default {
           this.value.members[this.myIndex].status = this.ACCEPTED;
           this.value.members.splice();
           this.showThankYouMessage();
+        })
+        .catch(error => console.log(error)) // eslint-disable-line
+        .then(() => { this.loading = false; });
+    },
+    optSign() {
+      this.loading = true;
+      this.$store
+        .dispatch('signGroup', {
+          params: { id: this.apartmentId },
+          payload: { id: this.value._id }
+        })
+        .then(() => {
+          this.value.status=this.CONST_GROUP_STATUS_COMPLETED; 
+          showCloseDealMessage();
         })
         .catch(error => console.log(error)) // eslint-disable-line
         .then(() => { this.loading = false; });
@@ -227,6 +247,13 @@ export default {
         declined: this.optOutNumber,
         pending: this.pendingNumber
       };
+    },
+    isClosedDeal() {
+      if(this.value.status == this.CONST_GROUP_STATUS_COMPLETED){
+        this.$emit('dealClosed');
+        return true;
+      }
+      return false;
     },
     participatingInGroup() {
       return this.myIndex > -1;

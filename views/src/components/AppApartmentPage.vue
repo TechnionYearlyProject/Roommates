@@ -71,7 +71,7 @@
           <v-tab-item id="tab-2">
             <app-group-full v-if="isVerified" :apartmentId="v._id" :ownerId="v._createdBy" :requiredRoommates="v.requiredRoommates" :interestedList="v._interested"/>
              <v-card height="500" v-if="!isVerified">
-              <v-card-title><h4>This option is available for verified users only.</h4></v-card-title>
+              <div class="text-xs-center pt-3">This option is available for verified users only.</div>
             </v-card>
           </v-tab-item>
 
@@ -184,7 +184,7 @@ export default {
       v: null,
       p: null,
       expendInterested: this.$vuetify.breakpoint.smAndUp,
-      CONST_GROUP_STATUS_ACCEPTED: 3,
+      CONST_GROUP_STATUS_COMPLETED: 4,
       edit: false,
       tabs: [
         {
@@ -271,7 +271,7 @@ export default {
       return `${this.v.location.address.street.capitalize()} ${this.v.location.address.number}, ${this.v.location.address.city.capitalize()}`;
     },
     isClosedDeal(){
-      return this.v && this.v.groups.length > 0 && this.v.groups.some(g => g.status == this.CONST_GROUP_STATUS_ACCEPTED);
+      return this.v && this.v.groups.length > 0 && this.v.groups.some(g => g.status == this.CONST_GROUP_STATUS_COMPLETED);
     },
     location() {
       return {

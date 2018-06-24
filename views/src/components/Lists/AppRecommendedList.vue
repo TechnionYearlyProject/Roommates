@@ -57,7 +57,7 @@ export default {
     .then((apartments) => {
       this.recommended = apartments
       .filter(a => !this.filtered.includes(a._id))
-      .slice(0, Math.max(this.listLength, apartments.length));
+      .slice(0, Math.min(this.listLength, apartments.length));
     })
     .catch(e => console.log(e)); // eslint-disable-line
   }
