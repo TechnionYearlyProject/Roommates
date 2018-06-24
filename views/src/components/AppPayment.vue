@@ -2,10 +2,6 @@
   <v-container style="padding: 50px;">
     <h1>You ane one step away from getting your dream apartment</h1>
 
-    <v-alert :type="alert.type" :value="alert.show" transition="scale-transition">
-      {{ alert.message }}
-    </v-alert>
-
     <v-icon :color="agreedToS ? 'green' : 'grey lighten-1'" x-large style="margin-top: -15px">fa-check</v-icon>
     <span class="step">Step one:</span>
     <span class="step-content">Read and accept the</span>
@@ -81,7 +77,7 @@
     <div style="text-align: center; margin-top: 15px">
       <span class="checkout">And now you can checkout:</span>
       <div style="margin-top: 15px"></div>
-      <app-paypal :amount="apartment.price" @completed="paymentSuccess"></app-paypal>
+      <app-paypal :amount="apartment.price" :disabled="!agreedContract || !agreedToS" @completed="paymentSuccess"></app-paypal>
     </div>
   </v-container>
 </template>
@@ -125,20 +121,9 @@ export default {
   methods: {
     paymentSuccess(payment) {
       if (payment.state === 'approved') {
-        if (this.agreedToS === true) {
-          if (this.agreedContract === true) {
-            this.visitPage();
-          } else {
-            this.alert.message = 'please read and agree to the Apartment Contract';
-            this.alert.show = true;
-          }
-        } else {
-          this.alert.message = 'please read and agree to the Terms of Service';
-          this.alert.show = true;
-        }
+        this.visitPage();
       } else {
-        this.alert.message = 'payment not completed';
-        this.alert.show = true;
+        this.$store.commit('showSnackbar', 'Payment was not made, an error occurred');
       }
     },
     ToSClick() {
