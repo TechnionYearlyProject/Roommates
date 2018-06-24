@@ -8,12 +8,12 @@
           <v-icon>close</v-icon>
         </v-btn>
       </v-layout>
-     
+
 
       <v-divider></v-divider>
-    <v-alert :value="error.show" type="error">
-      {{ error.message }}
-    </v-alert>
+      <v-alert :value="error.show" type="error">
+        {{ error.message }}
+      </v-alert>
       <v-stepper-step ref="step1" step="1" :complete="e6 > 1" :rules="step1Rules" editable edit-icon="check">
         Main details
         <small>The most important stuff!</small>
@@ -28,7 +28,7 @@
                   <v-subheader v-text="'Address'"></v-subheader>
                 </v-flex>
                 <v-flex xs12 sm12 md6>
-                  <v-text-field v-model="address" ref="address" @placechanged="setAddress" label="Street and City" prepend-icon="map" single-line :rules="rules.address" :validate-on-blur="isLazyValidate" clearable required></v-text-field>
+                  <v-text-field v-model="address" :disabled="edit" ref="address" @placechanged="setAddress" label="Street and City" prepend-icon="map" single-line :rules="rules.address" :validate-on-blur="isLazyValidate" clearable required></v-text-field>
                 </v-flex>
 
                 <v-flex xs12 sm12 offset-xs1 md2 offset-md0>
@@ -51,7 +51,7 @@
                 </v-flex>
                 <v-flex xs12 sm12 md3>
                   <v-subheader>Number of roommates I'm looking for*</v-subheader>
-                  
+
                 </v-flex>
                 <v-flex xs12 sm12 md3>
                   <v-slider v-model="payload.requiredRoommates" thumb-label step="1" :min="0" :max="10" ticks hide-details></v-slider>
@@ -229,8 +229,8 @@
               (!!this.payload.address.street &&
                 this.payload.address.street.length > 0) ||
               '',
-            () => 
-              (!!this.address && 
+            () =>
+              (!!this.address &&
                 this.address.length > 0) ||
               ''
           ],
@@ -238,11 +238,11 @@
           price: [() => !!this.payload.price || ''],
           entranceDate: [() => !!this.payload.entranceDate || ''],
           floor: [() => !this.payload.totalFloors ||
-                 (this.payload.totalFloors && parseInt(this.payload.floor) <= parseInt(this.payload.totalFloors)) ||
-                 'The apartment\'s floor number is more than the total building floors'],
+            (this.payload.totalFloors && parseInt(this.payload.floor) <= parseInt(this.payload.totalFloors)) ||
+            'The apartment\'s floor number is more than the total building floors'],
           totalFloors: [() => !this.payload.floor ||
-                        (this.payload.floor && parseInt(this.payload.floor) <= parseInt(this.payload.totalFloors)) ||
-                        'The total building floors are less than the apartment\'s floor number']
+            (this.payload.floor && parseInt(this.payload.floor) <= parseInt(this.payload.totalFloors)) ||
+            'The total building floors are less than the apartment\'s floor number']
         },
         e6: 1,
         color: 'grey lighten-5',
@@ -264,11 +264,11 @@
       },
       editApartment() {
         return this.$store.dispatch('editApartment', { params: { id: this.id }, payload: this.payload })
-        .then((apartment) => {
-          this.$emit('input', apartment);
-          this.$emit('updated');
-          return apartment;
-        });
+          .then((apartment) => {
+            this.$emit('input', apartment);
+            this.$emit('updated');
+            return apartment;
+          });
       },
       async submit() {
         if (this.$refs.form.validate()) {
