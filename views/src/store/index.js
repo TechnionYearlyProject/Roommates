@@ -297,6 +297,16 @@ export default new Vuex.Store({
     },
     /**
      * @author: Alon Talmor
+     * @date: 24/06/18
+     * get interest users ordered by their matching to the logged in user 
+     * @param: param: object of {id} the id of the apartment 
+     */
+    fetchInterestedUsersOrdered(context, params) {
+      return axios.get(`${process.env.ROOT_API}/apartments/${params.id}/interested`)
+      .then(response => response.data.users);
+    },
+    /**
+     * @author: Alon Talmor
      * @date: 07/05/18
      * required authentication.
      */

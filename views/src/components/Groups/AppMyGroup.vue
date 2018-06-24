@@ -80,7 +80,7 @@
             <v-list>
               <draggable v-model="interestedUsersids" :options="dragOptions" :move="onMove" @start="isDragging = true" @end="isDragging = false" style="height:300px;overflow-y: auto;">
                 <div v-for="(id,i) in interestedUsersids">
-                  <v-list-tile :key="`interest-${i}`" @click="" avatar>
+                  <v-list-tile :key="`interest-${id}`" @click="" avatar>
                     <v-list-tile-avatar>
                       <app-avatar :name="getName(interestedUsers[id])" :size="40"></app-avatar>
                     </v-list-tile-avatar>
@@ -192,8 +192,9 @@ export default {
         .dispatch('fetchApartments', { id: this.apartmentId })
         .then((apartments) => {
           this.interestedUsersids = apartments[0]._interested;
-          this.$store.dispatch('fetchUser', { id: this.interestedUsersids })
+          this.$store.dispatch('fetchInterestedUsersOrdered', { id: this.apartmentId })
           .then((users) => {
+            this.interestedUsersids = Object.keys(users);
             this.interestedUsers = users;
             this.loaded = true;
           });
@@ -201,8 +202,9 @@ export default {
         .catch(error => console.log(error)); // eslint-disable-line
     } else {
       this.interestedUsersids = this.interested;
-      this.$store.dispatch('fetchUser', { id: this.interestedUsersids })
+      this.$store.dispatch('fetchInterestedUsersOrdered', { id: this.apartmentId })
       .then((users) => {
+        this.interestedUsersids = Object.keys(users);
         this.interestedUsers = users;
         this.loaded = true;
       });
