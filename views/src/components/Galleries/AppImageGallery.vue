@@ -33,7 +33,7 @@ export default {
       defaultImage: d
     };
   },
-  metohds: {
+  methods: {
     nextImage(e) {
       e.stopPropagation();
 
